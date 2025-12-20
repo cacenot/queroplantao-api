@@ -9,20 +9,35 @@ from fastapi.responses import JSONResponse
 
 from app.core.dependencies import get_settings
 from app.core.exceptions import AppException
+from app.core.logging import LoggingMiddleware, configure_logging, get_logger
 from app.presentation.api.health import router as health_router
 from app.presentation.api.v1.router import router as v1_router
 
 
 @asynccontextmanager
-async def lifespan():
+async def lifespan(app: FastAPI):
     """
     Application lifespan manager.
 
     Handles startup and shutdown events.
     """
-    # Startup
+    # Get settings and configure logging first
     settings = get_settings()
-    print(f"Starting {settings.APP_NAME} in {settings.APP_ENV} mode...")
+    configure_logging(
+        log_level=settings.LOG_LEVEL,
+        log_format=settings.LOG_FORMAT,
+        is_development=settings.is_development,
+    )
+
+    logger = get_logger(__name__)
+
+    # Startup
+    logger.info(
+        "application_starting",
+        app_name=settings.APP_NAME,
+        environment=settings.APP_ENV,
+        log_level=settings.LOG_LEVEL,
+    )
 
     # TODO: Initialize database connection pool
     # TODO: Initialize message broker connection
@@ -30,7 +45,7 @@ async def lifespan():
     yield
 
     # Shutdown
-    print(f"Shutting down {settings.APP_NAME}...")
+    logger.info("application_shutting_down", app_name=settings.APP_NAME)
 
     # TODO: Close database connections
     # TODO: Close message broker connections
@@ -58,6 +73,9 @@ def create_app() -> FastAPI:
         allow_methods=settings.CORS_ALLOW_METHODS,
         allow_headers=settings.CORS_ALLOW_HEADERS,
     )
+
+    # Add logging middleware (after CORS, before routes)
+    app.add_middleware(LoggingMiddleware)
 
     # Register exception handlers
     @app.exception_handler(AppException)
@@ -92,6 +110,7 @@ def run() -> None:
         port=settings.PORT,
         reload=settings.RELOAD,
         workers=settings.WORKERS if not settings.RELOAD else 1,
+        access_log=False,  # Disable uvicorn access log, we use LoggingMiddleware
     )
 
 

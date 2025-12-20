@@ -3,6 +3,7 @@
 from typing import Annotated
 from uuid import UUID
 
+import structlog
 from fastapi import Depends, Header
 from jose import JWTError, jwt
 from pydantic import BaseModel, Field
@@ -113,6 +114,15 @@ async def get_current_context(
         roles=payload.roles,
         correlation_id=x_correlation_id,
     )
+
+    # Bind user context to structlog for all subsequent logs
+    structlog.contextvars.bind_contextvars(
+        user_id=str(context.user_id),
+        tenant_id=str(context.tenant_id),
+        roles=context.roles,
+    )
+    if x_correlation_id:
+        structlog.contextvars.bind_contextvars(correlation_id=x_correlation_id)
 
     # Set in context var for access in deeper layers
     set_request_context(context)
