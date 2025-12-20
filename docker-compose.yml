@@ -1,0 +1,38 @@
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: queroplantao-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: queroplantao
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  lavinmq:
+    image: cloudamqp/lavinmq:latest
+    container_name: queroplantao-mq
+    ports:
+      - "5672:5672"   # AMQP
+      - "15672:15672" # Management UI
+    environment:
+      LAVINMQ_DEFAULT_USER: guest
+      LAVINMQ_DEFAULT_PASS: guest
+    volumes:
+      - lavinmq_data:/var/lib/lavinmq
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:15672/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+  lavinmq_data:
