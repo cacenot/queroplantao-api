@@ -1,0 +1,4 @@
+# Configuração adicional do Ruff
+[lint.per-file-ignores]
+"__init__.py" = ["F401"]   # Permite imports não utilizados em __init__.py
+"tests/*" = ["ARG", "SIM"] # Menos rigoroso nos testes

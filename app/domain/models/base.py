@@ -1,11 +1,16 @@
-"""Base models and mixins for SQLModel entities."""
+"""Base models using mixins for SQLModel entities."""
 
-from datetime import datetime
 from typing import Any
-from uuid import UUID, uuid4
 
 from sqlalchemy import MetaData
-from sqlmodel import Field, SQLModel
+from sqlmodel import SQLModel
+
+from app.domain.models.mixins import (
+    PrimaryKeyMixin,
+    TenantMixin,
+    TimestampMixin,
+    TrackingMixin,
+)
 
 
 # Naming convention for constraints (helps with Alembic migrations)
@@ -20,30 +25,14 @@ NAMING_CONVENTION: dict[str, str] = {
 metadata = MetaData(naming_convention=NAMING_CONVENTION)
 
 
-class BaseModel(SQLModel):
+class BaseModel(PrimaryKeyMixin, TimestampMixin, SQLModel):
     """
     Base model with common fields for all entities.
 
     Provides:
-    - UUID primary key
-    - Created/updated timestamps
+    - UUID v7 primary key (PrimaryKeyMixin)
+    - Created/updated timestamps (TimestampMixin)
     """
-
-    id: UUID = Field(
-        default_factory=uuid4,
-        primary_key=True,
-        description="Unique identifier",
-    )
-    created_at: datetime = Field(
-        default_factory=datetime.utcnow,
-        description="Creation timestamp",
-        sa_column_kwargs={"nullable": False},
-    )
-    updated_at: datetime = Field(
-        default_factory=datetime.utcnow,
-        description="Last update timestamp",
-        sa_column_kwargs={"nullable": False, "onupdate": datetime.utcnow},
-    )
 
     def model_dump_for_update(self, **kwargs: Any) -> dict[str, Any]:
         """Dump model excluding id and timestamps for updates."""
@@ -52,33 +41,36 @@ class BaseModel(SQLModel):
         return self.model_dump(exclude=exclude, **kwargs)
 
 
-class TenantMixin(SQLModel):
-    """
-    Mixin for multi-tenant entities.
-
-    All tenant-scoped tables should inherit from this mixin.
-    The tenant_id is required and indexed for efficient filtering.
-    """
-
-    tenant_id: UUID = Field(
-        index=True,
-        nullable=False,
-        description="Tenant identifier for multi-tenancy isolation",
-    )
-
-
 class TenantBaseModel(BaseModel, TenantMixin):
     """
     Base model for tenant-scoped entities.
 
-    Combines BaseModel (id, timestamps) with TenantMixin (tenant_id).
+    Combines:
+    - BaseModel (id, timestamps)
+    - TenantMixin (tenant_id)
+
     Use this as base for all multi-tenant tables.
 
     Example:
         class Shift(TenantBaseModel, table=True):
+            __tablename__ = "shifts"
             title: str
             start_time: datetime
             end_time: datetime
+    """
+
+    pass
+
+
+class TenantTrackableModel(TenantBaseModel, TrackingMixin):
+    """
+    Tenant model with user tracking.
+
+    Combines:
+    - TenantBaseModel (id, timestamps, tenant_id)
+    - TrackingMixin (created_by, updated_by)
+
+    Use for entities that need to track which user created/modified them.
     """
 
     pass
@@ -93,6 +85,7 @@ class GlobalBaseModel(BaseModel):
 
     Example:
         class Professional(GlobalBaseModel, table=True):
+            __tablename__ = "professionals"
             crm: str
             uf: str
             name: str
