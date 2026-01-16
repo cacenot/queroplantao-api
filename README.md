@@ -29,13 +29,6 @@ app/
 └── workers/                 # Consumidores de eventos (FastStream)
 ```
 
-## Multi-tenancy
-
-- Implementado via `tenant_id` em todas as tabelas de dados de tenant
-- Isolamento automático via `TenantRepository` base
-- JWT interno carrega `tenant_id` do BFF
-- Context vars para acesso em qualquer camada
-
 ## Configuração
 
 ### Instalação

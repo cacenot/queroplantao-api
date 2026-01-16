@@ -18,7 +18,6 @@ class JWTPayload(BaseModel):
     """JWT payload schema from BFF."""
 
     sub: UUID = Field(description="User ID")
-    tenant_id: UUID = Field(description="Tenant ID")
     roles: list[str] = Field(default_factory=list, description="User roles")
     exp: int = Field(description="Expiration timestamp")
     iat: int | None = Field(default=None, description="Issued at timestamp")
@@ -100,7 +99,7 @@ async def get_current_context(
         settings: Application settings
 
     Returns:
-        RequestContext with user and tenant information
+        RequestContext with user information
 
     Raises:
         AuthenticationError: If authentication fails
@@ -110,7 +109,6 @@ async def get_current_context(
 
     context = RequestContext(
         user_id=payload.sub,
-        tenant_id=payload.tenant_id,
         roles=payload.roles,
         correlation_id=x_correlation_id,
     )
@@ -118,7 +116,6 @@ async def get_current_context(
     # Bind user context to structlog for all subsequent logs
     structlog.contextvars.bind_contextvars(
         user_id=str(context.user_id),
-        tenant_id=str(context.tenant_id),
         roles=context.roles,
     )
     if x_correlation_id:

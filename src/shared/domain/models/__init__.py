@@ -4,11 +4,8 @@ Base models e mixins compartilhados.
 
 from src.shared.domain.models.base import (
     BaseModel,
-    GlobalBaseModel,
     NAMING_CONVENTION,
     metadata,
-    TenantBaseModel,
-    TenantTrackableModel,
 )
 from src.shared.domain.models.fields import (
     AwareDatetimeField,
@@ -20,7 +17,7 @@ from src.shared.domain.models.fields import (
 from src.shared.domain.models.mixins import (
     MetadataMixin,
     PrimaryKeyMixin,
-    TenantMixin,
+    SoftDeleteMixin,
     TimestampMixin,
     TrackingMixin,
     VersionMixin,
@@ -29,11 +26,8 @@ from src.shared.domain.models.mixins import (
 __all__ = [
     # Base models
     "BaseModel",
-    "GlobalBaseModel",
     "NAMING_CONVENTION",
     "metadata",
-    "TenantBaseModel",
-    "TenantTrackableModel",
     # Fields
     "AwareDatetimeField",
     "CNPJField",
@@ -43,7 +37,7 @@ __all__ = [
     # Mixins
     "MetadataMixin",
     "PrimaryKeyMixin",
-    "TenantMixin",
+    "SoftDeleteMixin",
     "TimestampMixin",
     "TrackingMixin",
     "VersionMixin",

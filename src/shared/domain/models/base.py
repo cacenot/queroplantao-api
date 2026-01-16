@@ -1,16 +1,7 @@
-"""Base models using mixins for SQLModel entities."""
-
-from typing import Any
+"""Base models for SQLModel entities."""
 
 from sqlalchemy import MetaData
 from sqlmodel import SQLModel
-
-from src.shared.domain.models.mixins import (
-    PrimaryKeyMixin,
-    TenantMixin,
-    TimestampMixin,
-    TrackingMixin,
-)
 
 
 # Naming convention for constraints (helps with Alembic migrations)
@@ -25,70 +16,7 @@ NAMING_CONVENTION: dict[str, str] = {
 metadata = MetaData(naming_convention=NAMING_CONVENTION)
 
 
-class BaseModel(PrimaryKeyMixin, TimestampMixin, SQLModel):
-    """
-    Base model with common fields for all entities.
-
-    Provides:
-    - UUID v7 primary key (PrimaryKeyMixin)
-    - Created/updated timestamps (TimestampMixin)
-    """
-
-    def model_dump_for_update(self, **kwargs: Any) -> dict[str, Any]:
-        """Dump model excluding id and timestamps for updates."""
-        exclude = kwargs.pop("exclude", set())
-        exclude = set(exclude) | {"id", "created_at", "updated_at"}
-        return self.model_dump(exclude=exclude, **kwargs)
-
-
-class TenantBaseModel(BaseModel, TenantMixin):
-    """
-    Base model for tenant-scoped entities.
-
-    Combines:
-    - BaseModel (id, timestamps)
-    - TenantMixin (tenant_id)
-
-    Use this as base for all multi-tenant tables.
-
-    Example:
-        class Shift(TenantBaseModel, table=True):
-            __tablename__ = "shifts"
-            title: str
-            start_time: datetime
-            end_time: datetime
-    """
-
-    pass
-
-
-class TenantTrackableModel(TenantBaseModel, TrackingMixin):
-    """
-    Tenant model with user tracking.
-
-    Combines:
-    - TenantBaseModel (id, timestamps, tenant_id)
-    - TrackingMixin (created_by, updated_by)
-
-    Use for entities that need to track which user created/modified them.
-    """
-
-    pass
-
-
-class GlobalBaseModel(BaseModel):
-    """
-    Base model for global (cross-tenant) entities.
-
-    Use this for entities that are shared across all tenants,
-    such as the global professionals registry (CRM/UF).
-
-    Example:
-        class Professional(GlobalBaseModel, table=True):
-            __tablename__ = "professionals"
-            crm: str
-            uf: str
-            name: str
-    """
+class BaseModel(SQLModel):
+    """Base model for all entities."""
 
     pass

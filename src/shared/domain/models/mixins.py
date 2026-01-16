@@ -56,21 +56,6 @@ class TimestampMixin(SQLModel):
     )
 
 
-class TenantMixin(SQLModel):
-    """
-    Mixin for multi-tenant entities.
-
-    All tenant-scoped tables should inherit from this mixin.
-    The tenant_id is required and indexed for efficient filtering.
-    """
-
-    tenant_id: UUID = Field(
-        index=True,
-        nullable=False,
-        description="Tenant identifier for multi-tenancy isolation",
-    )
-
-
 class TrackingMixin(SQLModel):
     """
     Mixin for tracking who created and last modified a record.
@@ -109,13 +94,37 @@ class VersionMixin(SQLModel):
     )
 
 
+class SoftDeleteMixin(SQLModel):
+    """
+    Mixin for soft delete functionality.
+
+    Instead of physically deleting records, marks them as deleted
+    with a timestamp. This allows:
+    - Recovery of accidentally deleted data
+    - Audit trails and compliance
+    - Historical data analysis
+    """
+
+    deleted_at: Optional[AwareDatetime] = AwareDatetimeField(
+        default=None,
+        sa_column_kwargs={"nullable": True},
+        nullable=True,
+        description="Timestamp when the record was soft deleted (UTC)",
+    )
+
+    @property
+    def is_deleted(self) -> bool:
+        """Check if the record is soft deleted."""
+        return self.deleted_at is not None
+
+
 class MetadataMixin(SQLModel):
     """
     Mixin for flexible metadata storage.
 
     Stores arbitrary JSON data for extensibility without schema changes.
     Useful for:
-    - Custom fields per tenant
+    - Custom fields
     - Feature flags
     - Experimental data
     """
