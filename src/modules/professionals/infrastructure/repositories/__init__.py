@@ -1,0 +1,3 @@
+"""
+Repositórios para ProfessionalProfile, Specialty.
+"""

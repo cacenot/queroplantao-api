@@ -5,9 +5,9 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.pool import StaticPool
 from sqlmodel import SQLModel
 
-from app.core.context import RequestContext, set_request_context
-from app.domain.models.base import metadata
-from app.infrastructure.database.connection import async_session_factory
+from src.app.context import RequestContext, set_request_context
+from src.shared.domain.models import metadata
+from src.shared.infrastructure.database.connection import async_session_factory
 
 from uuid import UUID
 
