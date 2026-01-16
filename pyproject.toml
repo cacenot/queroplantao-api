@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Quero Plantão REST API - Medical shift management platform"
 readme = "README.md"
 license = { text = "MIT" }
-requires-python = ">=3.14"
+requires-python = ">=3.14.2"
 authors = [{ name = "Quero Plantão", email = "dev@queroplantao.com.br" }]
 keywords = ["fastapi", "medical", "shifts", "plantao", "healthcare"]
 classifiers = [
@@ -18,15 +18,15 @@ classifiers = [
 
 dependencies = [
     # Web Framework
-    "fastapi[standard]>=0.115.0",
-    "uvicorn[standard]>=0.32.0",
+    "fastapi[standard]>=0.128.0",
+    "uvicorn[standard]>=0.40.0",
     # Database & ORM
-    "sqlmodel>=0.0.22",
+    "sqlmodel>=0.0.31",
     "sqlalchemy[asyncio]>=2.0.36",
     "asyncpg>=0.30.0",
-    "alembic>=1.14.0",
+    "alembic>=1.18.1",
     # Messaging & Workers
-    "faststream[rabbit]>=0.5.0",
+    "faststream[rabbit]>=0.6.4",
     # Validation & Settings
     "pydantic>=2.10.0",
     "pydantic-settings>=2.6.0",
