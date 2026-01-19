@@ -19,7 +19,7 @@ A documentação detalhada de cada módulo está em arquivos separados:
 |--------|---------|--------|
 | **Autenticação e Autorização** | [AUTH_MODULE.md](modules/AUTH_MODULE.md) | ✅ Implementado |
 | **Profissionais** | [PROFESSIONALS_MODULE.md](modules/PROFESSIONALS_MODULE.md) | ✅ Implementado |
-| **Organizações** | modules/ORGANIZATIONS_MODULE.md | 🔜 Planejado |
+| **Organizações** | [ORGANIZATIONS_MODULE.md](modules/ORGANIZATIONS_MODULE.md) | ✅ Implementado |
 | **Escalas e Plantões** | modules/SHIFTS_MODULE.md | 🔜 Planejado |
 | **Vagas e Candidaturas** | modules/JOB_POSTINGS_MODULE.md | 🔜 Planejado |
 | **Disponibilidade e Matching** | modules/MATCHING_MODULE.md | 🔜 Planejado |
@@ -285,8 +285,8 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";  -- UUID (fallback)
 
 1. [x] Definir models do módulo Auth
 2. [x] Definir models do módulo Professionals
-3. [ ] Gerar migrations com Alembic
-4. [ ] Implementar módulo Organizations
+3. [x] Definir models do módulo Organizations
+4. [ ] Gerar migrations com Alembic
 5. [ ] Implementar módulo Shifts/Schedules
 6. [ ] Implementar módulo Job Postings
 7. [ ] Criar schemas Pydantic para APIs
