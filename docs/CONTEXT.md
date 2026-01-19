@@ -96,29 +96,44 @@ Organização (Organization)
 └─────────────────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────────────────┐
-│                                    ESTRUTURA ORGANIZACIONAL                             │
+│                              ESTRUTURA ORGANIZACIONAL (Multi-Tenant)                    │
 ├─────────────────────────────────────────────────────────────────────────────────────────┤
 │                                                                                         │
-│  ┌──────────────┐      ┌──────────┐      ┌──────────┐      ┌────────────┐               │
-│  │ Organization │──1:N─│   Unit   │──1:N─│  Sector  │──1:N─│  Schedule  │               │
-│  └──────────────┘      └──────────┘      └──────────┘      └────────────┘               │
-│         │                   │                 │                   │                     │
-│         │                   │                 │                   │                     │
-│         └───────────────────┴────────N:N──────┴───────────────────┘                     │
-│                                       │                                                 │
-│                              ┌─────────────────┐                                        │
-│                              │ OrganizationUser│ (membership com role context)          │
-│                              └─────────────────┘                                        │
-│                                       │                                                 │
-│                                      N:1                                                │
-│                                       │                                                 │
-│                                  ┌──────────┐                                           │
-│                                  │   User   │                                           │
-│                                  └──────────┘                                           │
+│  ┌──────────────┐◄─────────────────────┐                                                │
+│  │ Organization │ (self-ref: parent_id)│                                                │
+│  └──────────────┘──────────────────────┘                                                │
+│         │                                                                               │
+│    ┌────┴────┬────────────────┐                                                         │
+│   1:N       1:N              N:1                                                        │
+│    │         │                │                                                         │
+│    ▼         ▼                ▼                                                         │
+│  ┌────────────────┐  ┌────────────────────────┐  ┌───────────┐                          │
+│  │ Organization   │  │ OrganizationProfessional│  │  Company  │                          │
+│  │    Member      │  │     (multi-tenant)      │  │           │                          │
+│  └────────────────┘  └────────────────────────┘  └───────────┘                          │
+│         │                     │                        │                                │
+│        N:1                   1:N                      1:N                               │
+│         │                     │                        │                                │
+│    ┌──────────┐       ┌───────────────────┐     ┌───────────┐                           │
+│    │   User   │       │ ProfessionalQualif │     │   Bank    │                           │
+│    └──────────┘       └───────────────────┘     │  Account  │                           │
+│                              │                  └───────────┘                           │
+│                         ┌────┴────┐                                                     │
+│                        1:N       1:N                                                    │
+│                         │         │                                                     │
+│            ┌────────────────┐  ┌───────────────────┐                                    │
+│            │ProfSpecialty   │  │ProfEducation      │                                    │
+│            └────────────────┘  └───────────────────┘                                    │
+│                   │                                                                     │
+│                  N:1                                                                    │
+│                   │                                                                     │
+│            ┌───────────┐                                                                │
+│            │ Specialty │                                                                │
+│            └───────────┘                                                                │
 └─────────────────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────────────────┐
-│                                    PLANTÕES & VAGAS                                     │
+│                                    PLANTÕES & VAGAS (🔜 Planejado)                      │
 ├─────────────────────────────────────────────────────────────────────────────────────────┤
 │                                                                                         │
 │  ┌────────────┐      ┌─────────┐      ┌─────────────┐                                   │
@@ -135,18 +150,18 @@ Organização (Organization)
 │                           │                  │                                          │
 │                           └────────┬─────────┘                                          │
 │                                    │                                                    │
-│                             ┌──────────────┐                                            │
-│                             │ Professional │ (pode existir sem User)                    │
-│                             └──────────────┘                                            │
+│                         ┌──────────────────────────┐                                    │
+│                         │ OrganizationProfessional │                                    │
+│                         └──────────────────────────┘                                    │
 └─────────────────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────────────────┐
-│                                    MATCHING & DISPONIBILIDADE                           │
+│                                 MATCHING & DISPONIBILIDADE (🔜 Planejado)               │
 ├─────────────────────────────────────────────────────────────────────────────────────────┤
 │                                                                                         │
-│  ┌──────────────┐      ┌──────────────┐      ┌─────────────┐                            │
-│  │ Professional │──1:N─│ Availability │──N:N─│ Job Posting │──> Match Score             │
-│  └──────────────┘      └──────────────┘      └─────────────┘                            │
+│  ┌──────────────────────────┐      ┌──────────────┐      ┌─────────────┐                │
+│  │ OrganizationProfessional │──1:N─│ Availability │──N:N─│ Job Posting │──> Match Score │
+│  └──────────────────────────┘      └──────────────┘      └─────────────┘                │
 │                                                                                         │
 └─────────────────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -157,9 +172,10 @@ Organização (Organization)
 
 > **Nota:** O esquema detalhado de cada módulo está nos documentos específicos:
 > - [AUTH_MODULE.md](modules/AUTH_MODULE.md) - Tabelas: users, permissions, roles, role_permissions, user_roles, user_permissions
-> - [PROFESSIONALS_MODULE.md](modules/PROFESSIONALS_MODULE.md) - Tabelas: specialties, professional_profiles, professional_qualifications, professional_specialties, professional_educations, professional_documents
+> - [PROFESSIONALS_MODULE.md](modules/PROFESSIONALS_MODULE.md) - Tabelas: specialties, organization_professionals, professional_qualifications, professional_specialties, professional_educations, professional_documents, professional_companies
+> - [ORGANIZATIONS_MODULE.md](modules/ORGANIZATIONS_MODULE.md) - Tabelas: organizations, organization_members, companies, banks, bank_accounts
 
-Os demais módulos (Organizations, Shifts, Job Postings, etc.) serão documentados conforme forem implementados.
+Os demais módulos (Shifts, Job Postings, etc.) serão documentados conforme forem implementados.
 
 ---
 
@@ -196,15 +212,16 @@ Os demais módulos (Organizations, Shifts, Job Postings, etc.) serão documentad
 2. O score considera: horário, especialidade, localização, valor e tipo de profissional
 3. Matches são a principal fonte de monetização
 
-### 7.5 Profissionais
+### 7.5 Profissionais e Multi-Tenancy
 
-1. Um profissional pode existir **sem** ter um usuário na plataforma (pré-cadastro por escalista)
-2. Quando o profissional criar conta, o sistema tentará vincular via `email` ou `cpf`
-3. O campo `claimed_at` marca quando o profissional "reivindicou" seu perfil pré-cadastrado
-4. Um profissional pode ter múltiplas qualificações (CRM em 2 estados, ou CRM + COREN)
-5. Especialidades podem ter status de residência para profissionais em formação
-6. O campo `is_generalist` na especialidade identifica profissionais sem especialização
-7. Documentos (diplomas, RQEs, contratos) são vinculados ao perfil, podendo ter associação opcional com qualificação ou especialidade
+1. Profissionais são **isolados por organização** (multi-tenant)
+2. Cada organização mantém seus próprios registros de profissionais
+3. A mesma pessoa (CPF) pode existir em múltiplas organizações com dados diferentes
+4. Organizações **não podem** acessar profissionais de outras organizações
+5. Um profissional pode ter múltiplas qualificações (CRM em 2 estados, ou CRM + COREN)
+6. Especialidades podem ter status de residência para profissionais em formação
+7. O campo `is_generalist` na especialidade identifica profissionais sem especialização
+8. Documentos (diplomas, RQEs, contratos) são vinculados ao profissional, podendo ter associação opcional com qualificação ou especialidade
 
 ---
 
@@ -214,9 +231,9 @@ Os demais módulos (Organizations, Shifts, Job Postings, etc.) serão documentad
 
 ```
 1. Criar Organization
-2. Adicionar Units (com geolocalização)
-3. Adicionar Sectors nas Units
-4. Criar Schedules nos Sectors
+2. Cadastrar profissionais na organização
+3. Adicionar membros (ADMIN, MANAGER, SCHEDULER, VIEWER)
+4. Criar Schedules (futuro: em Sectors)
 5. Criar Shifts nas Schedules (ou avulsos)
 6. Publicar Job Postings a partir dos Shifts
 7. Receber candidaturas
@@ -228,8 +245,8 @@ Os demais módulos (Organizations, Shifts, Job Postings, etc.) serão documentad
 ### 8.2 Fluxo do Profissional
 
 ```
-1. Criar conta ou reivindicar perfil pré-cadastrado
-2. Completar perfil (dados pessoais, qualificações, especialidades)
+1. Ser cadastrado por uma organização
+2. Ter perfil completado (dados pessoais, qualificações, especialidades)
 3. Definir disponibilidade (escala reversa)
 4. Buscar vagas / Receber matches
 5. Candidatar-se às vagas
@@ -239,14 +256,13 @@ Os demais módulos (Organizations, Shifts, Job Postings, etc.) serão documentad
 9. Visualizar pagamentos
 ```
 
-### 8.3 Fluxo de Pré-cadastro (Escalista)
+### 8.3 Fluxo de Cadastro (Escalista)
 
 ```
-1. Escalista cadastra profissional com dados básicos
-2. Profissional recebe convite por email/SMS
-3. Profissional cria conta na plataforma
-4. Sistema vincula conta ao perfil via email ou CPF
-5. Profissional confirma e completa o perfil
+1. Escalista cria organização
+2. Escalista cadastra profissional com dados básicos na organização
+3. Escalista pode adicionar qualificações, especialidades e documentos
+4. Profissional pode receber convite para acessar a plataforma (futuro)
 ```
 
 ---
@@ -269,7 +285,8 @@ Os demais módulos (Organizations, Shifts, Job Postings, etc.) serão documentad
 - **Mixins** para reuso: `PrimaryKeyMixin`, `TimestampMixin`, `SoftDeleteMixin`, `TrackingMixin`, `AddressMixin`, `VerificationMixin`
 - **UUID v7** para primary keys (ordenação temporal)
 - **TYPE_CHECKING** para evitar imports circulares
-- **Soft Delete** apenas onde fizer sentido (professional_profiles, organizations)
+- **Soft Delete** apenas onde fizer sentido (organization_professionals, organizations)
+- **Multi-Tenancy** por organização para dados de profissionais
 
 ### 9.3 Extensões PostgreSQL
 
@@ -286,7 +303,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";  -- UUID (fallback)
 1. [x] Definir models do módulo Auth
 2. [x] Definir models do módulo Professionals
 3. [x] Definir models do módulo Organizations
-4. [ ] Gerar migrations com Alembic
+4. [x] Gerar migrations com Alembic
 5. [ ] Implementar módulo Shifts/Schedules
 6. [ ] Implementar módulo Job Postings
 7. [ ] Criar schemas Pydantic para APIs
@@ -302,12 +319,12 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";  -- UUID (fallback)
 | Termo EN | Termo PT | Descrição |
 |----------|----------|-----------|
 | Organization | Organização | Entidade principal (hospital, clínica) |
-| Unit | Unidade | Local físico (ala, filial, prédio) |
-| Sector | Setor | Subdivisão (sala, departamento) |
+| Unit | Unidade | Local físico (ala, filial, prédio) - 🔜 Planejado |
+| Sector | Setor | Subdivisão (sala, departamento) - 🔜 Planejado |
 | Schedule | Escala | Agenda de plantões |
 | Shift | Plantão | Turno de trabalho individual |
 | Job Posting | Vaga/Anúncio | Publicação de oportunidade |
-| Professional | Profissional | Médico, enfermeiro, técnico, etc. |
+| OrganizationProfessional | Profissional | Profissional vinculado a uma organização |
 | Qualification | Qualificação | Registro em conselho profissional |
 | Council | Conselho | Órgão regulador (CRM, COREN, etc.) |
 | Specialty | Especialidade | Área de atuação do profissional |
@@ -317,4 +334,4 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";  -- UUID (fallback)
 | Time Record | Registro de Ponto | Check-in/out do plantão |
 | Match | Correspondência | Compatibilidade entre profissional e vaga |
 | Geofence | Cerca Virtual | Área permitida para ponto |
-| Claim Profile | Reivindicar Perfil | Quando profissional assume perfil pré-cadastrado |
+| Multi-Tenant | Multi-Inquilino | Isolamento de dados por organização |

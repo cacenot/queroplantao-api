@@ -1,8 +1,8 @@
-"""add professionals
+"""add professionals and organizations
 
-Revision ID: a16d735522cf
+Revision ID: 8ece189cb1b7
 Revises: 3b2baefd4a62
-Create Date: 2026-01-19 14:36:24.460044
+Create Date: 2026-01-19 18:37:32.282664
 
 """
 
@@ -14,7 +14,7 @@ import sqlmodel
 
 
 # revision identifiers, used by Alembic.
-revision: str = "a16d735522cf"
+revision: str = "8ece189cb1b7"
 down_revision: Union[str, Sequence[str], None] = "3b2baefd4a62"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -162,7 +162,167 @@ def upgrade() -> None:
         sa.UniqueConstraint("cnpj", name="uq_companies_cnpj"),
     )
     op.create_table(
-        "professional_profiles",
+        "organizations",
+        sa.Column("deleted_at", sa.DateTime(timezone=True), nullable=True),
+        sa.Column(
+            "created_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
+        ),
+        sa.Column(
+            "updated_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=True,
+        ),
+        sa.Column("id", sa.Uuid(), nullable=False),
+        sa.Column("created_by", sa.Uuid(), nullable=True),
+        sa.Column("updated_by", sa.Uuid(), nullable=True),
+        sa.Column("verified_at", sa.DateTime(timezone=True), nullable=True),
+        sa.Column("verified_by", sa.Uuid(), nullable=True),
+        sa.Column(
+            "address", sqlmodel.sql.sqltypes.AutoString(length=255), nullable=True
+        ),
+        sa.Column("number", sqlmodel.sql.sqltypes.AutoString(length=20), nullable=True),
+        sa.Column(
+            "complement", sqlmodel.sql.sqltypes.AutoString(length=100), nullable=True
+        ),
+        sa.Column(
+            "neighborhood", sqlmodel.sql.sqltypes.AutoString(length=100), nullable=True
+        ),
+        sa.Column("city", sqlmodel.sql.sqltypes.AutoString(length=100), nullable=True),
+        sa.Column(
+            "state_code", sqlmodel.sql.sqltypes.AutoString(length=2), nullable=True
+        ),
+        sa.Column(
+            "state_name", sqlmodel.sql.sqltypes.AutoString(length=100), nullable=True
+        ),
+        sa.Column(
+            "postal_code", sqlmodel.sql.sqltypes.AutoString(length=10), nullable=True
+        ),
+        sa.Column("latitude", sa.Float(), nullable=True),
+        sa.Column("longitude", sa.Float(), nullable=True),
+        sa.Column("name", sqlmodel.sql.sqltypes.AutoString(length=255), nullable=False),
+        sa.Column(
+            "trading_name", sqlmodel.sql.sqltypes.AutoString(length=255), nullable=True
+        ),
+        sa.Column(
+            "organization_type",
+            sa.Enum(
+                "HOSPITAL",
+                "CLINIC",
+                "LABORATORY",
+                "EMERGENCY_UNIT",
+                "HEALTH_CENTER",
+                "HOME_CARE",
+                "OUTSOURCING_COMPANY",
+                "OTHER",
+                name="organization_type",
+                create_constraint=True,
+            ),
+            nullable=False,
+        ),
+        sa.Column("cnpj", sqlmodel.sql.sqltypes.AutoString(length=14), nullable=True),
+        sa.Column("email", sqlmodel.sql.sqltypes.AutoString(length=255), nullable=True),
+        sa.Column("phone", sqlmodel.sql.sqltypes.AutoString(length=20), nullable=True),
+        sa.Column(
+            "website", sqlmodel.sql.sqltypes.AutoString(length=500), nullable=True
+        ),
+        sa.Column(
+            "sharing_scope",
+            sa.Enum(
+                "NONE",
+                "PROFESSIONALS",
+                "SCHEDULES",
+                "FULL",
+                name="sharing_scope",
+                create_constraint=True,
+            ),
+            nullable=False,
+        ),
+        sa.Column("is_active", sa.Boolean(), nullable=False),
+        sa.Column("parent_id", sa.Uuid(), nullable=True),
+        sa.Column("company_id", sa.Uuid(), nullable=True),
+        sa.ForeignKeyConstraint(
+            ["company_id"],
+            ["companies.id"],
+        ),
+        sa.ForeignKeyConstraint(
+            ["parent_id"],
+            ["organizations.id"],
+        ),
+        sa.ForeignKeyConstraint(
+            ["verified_by"],
+            ["users.id"],
+        ),
+        sa.PrimaryKeyConstraint("id"),
+    )
+    op.create_index(
+        "uq_organizations_cnpj",
+        "organizations",
+        ["cnpj"],
+        unique=True,
+        postgresql_where="cnpj IS NOT NULL AND deleted_at IS NULL",
+    )
+    op.create_table(
+        "organization_members",
+        sa.Column(
+            "created_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
+        ),
+        sa.Column(
+            "updated_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=True,
+        ),
+        sa.Column("id", sa.Uuid(), nullable=False),
+        sa.Column("created_by", sa.Uuid(), nullable=True),
+        sa.Column("updated_by", sa.Uuid(), nullable=True),
+        sa.Column(
+            "role",
+            sa.Enum(
+                "OWNER",
+                "ADMIN",
+                "MANAGER",
+                "SCHEDULER",
+                "VIEWER",
+                name="member_role",
+                create_constraint=True,
+            ),
+            nullable=False,
+        ),
+        sa.Column("invited_at", sa.DateTime(timezone=True), nullable=True),
+        sa.Column("accepted_at", sa.DateTime(timezone=True), nullable=True),
+        sa.Column("is_active", sa.Boolean(), nullable=False),
+        sa.Column("user_id", sa.Uuid(), nullable=False),
+        sa.Column("organization_id", sa.Uuid(), nullable=False),
+        sa.ForeignKeyConstraint(
+            ["organization_id"],
+            ["organizations.id"],
+        ),
+        sa.ForeignKeyConstraint(
+            ["user_id"],
+            ["users.id"],
+        ),
+        sa.PrimaryKeyConstraint("id"),
+        sa.UniqueConstraint(
+            "user_id", "organization_id", name="uq_organization_members_user_org"
+        ),
+    )
+    op.create_index(
+        "ix_organization_members_user_id", "organization_members", ["user_id"]
+    )
+    op.create_index(
+        "ix_organization_members_organization_id",
+        "organization_members",
+        ["organization_id"],
+    )
+    op.create_table(
+        "organization_professionals",
         sa.Column("deleted_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column(
             "created_at",
@@ -235,20 +395,36 @@ def upgrade() -> None:
         sa.Column(
             "avatar_url", sqlmodel.sql.sqltypes.AutoString(length=2048), nullable=True
         ),
-        sa.Column("profile_completed_at", sa.DateTime(timezone=True), nullable=True),
-        sa.Column("claimed_at", sa.DateTime(timezone=True), nullable=True),
-        sa.Column("user_id", sa.Uuid(), nullable=True),
+        sa.Column("is_active", sa.Boolean(), nullable=False),
+        sa.Column("organization_id", sa.Uuid(), nullable=False),
         sa.ForeignKeyConstraint(
-            ["user_id"],
-            ["users.id"],
+            ["organization_id"],
+            ["organizations.id"],
         ),
         sa.ForeignKeyConstraint(
             ["verified_by"],
             ["users.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
-        sa.UniqueConstraint("cpf", name="uq_professional_profiles_cpf"),
-        sa.UniqueConstraint("user_id", name="uq_professional_profiles_user_id"),
+    )
+    op.create_index(
+        "uq_organization_professionals_org_cpf",
+        "organization_professionals",
+        ["organization_id", "cpf"],
+        unique=True,
+        postgresql_where="cpf IS NOT NULL AND deleted_at IS NULL",
+    )
+    op.create_index(
+        "uq_organization_professionals_org_email",
+        "organization_professionals",
+        ["organization_id", "email"],
+        unique=True,
+        postgresql_where="email IS NOT NULL AND deleted_at IS NULL",
+    )
+    op.create_index(
+        "ix_organization_professionals_organization_id",
+        "organization_professionals",
+        ["organization_id"],
     )
     op.create_table(
         "bank_accounts",
@@ -315,10 +491,10 @@ def upgrade() -> None:
         sa.Column("is_primary", sa.Boolean(), nullable=False),
         sa.Column("is_active", sa.Boolean(), nullable=False),
         sa.Column("bank_id", sa.Uuid(), nullable=False),
-        sa.Column("professional_id", sa.Uuid(), nullable=True),
+        sa.Column("organization_professional_id", sa.Uuid(), nullable=True),
         sa.Column("company_id", sa.Uuid(), nullable=True),
         sa.CheckConstraint(
-            "(professional_id IS NOT NULL AND company_id IS NULL) OR (professional_id IS NULL AND company_id IS NOT NULL)",
+            "(organization_professional_id IS NOT NULL AND company_id IS NULL) OR (organization_professional_id IS NULL AND company_id IS NOT NULL)",
             name="ck_bank_accounts_owner",
         ),
         sa.ForeignKeyConstraint(
@@ -330,8 +506,8 @@ def upgrade() -> None:
             ["companies.id"],
         ),
         sa.ForeignKeyConstraint(
-            ["professional_id"],
-            ["professional_profiles.id"],
+            ["organization_professional_id"],
+            ["organization_professionals.id"],
         ),
         sa.ForeignKeyConstraint(
             ["verified_by"],
@@ -349,8 +525,8 @@ def upgrade() -> None:
             "bank_id",
             "agency",
             "account_number",
-            "professional_id",
-            name="uq_bank_accounts_professional_account",
+            "organization_professional_id",
+            name="uq_bank_accounts_org_professional_account",
         ),
     )
     op.create_index(
@@ -361,11 +537,11 @@ def upgrade() -> None:
         postgresql_where="is_primary = true AND company_id IS NOT NULL",
     )
     op.create_index(
-        "uq_bank_accounts_professional_primary",
+        "uq_bank_accounts_org_professional_primary",
         "bank_accounts",
-        ["professional_id"],
+        ["organization_professional_id"],
         unique=True,
-        postgresql_where="is_primary = true AND professional_id IS NOT NULL",
+        postgresql_where="is_primary = true AND organization_professional_id IS NOT NULL",
     )
     op.create_table(
         "professional_companies",
@@ -386,21 +562,21 @@ def upgrade() -> None:
         sa.Column("updated_by", sa.Uuid(), nullable=True),
         sa.Column("joined_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("left_at", sa.DateTime(timezone=True), nullable=True),
-        sa.Column("professional_id", sa.Uuid(), nullable=False),
+        sa.Column("organization_professional_id", sa.Uuid(), nullable=False),
         sa.Column("company_id", sa.Uuid(), nullable=False),
         sa.ForeignKeyConstraint(
             ["company_id"],
             ["companies.id"],
         ),
         sa.ForeignKeyConstraint(
-            ["professional_id"],
-            ["professional_profiles.id"],
+            ["organization_professional_id"],
+            ["organization_professionals.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint(
-            "professional_id",
+            "organization_professional_id",
             "company_id",
-            name="uq_professional_companies_professional_company",
+            name="uq_professional_companies_org_professional_company",
         ),
     )
     op.create_table(
@@ -465,10 +641,10 @@ def upgrade() -> None:
         sa.Column(
             "council_state", sqlmodel.sql.sqltypes.AutoString(length=2), nullable=False
         ),
-        sa.Column("professional_id", sa.Uuid(), nullable=False),
+        sa.Column("organization_professional_id", sa.Uuid(), nullable=False),
         sa.ForeignKeyConstraint(
-            ["professional_id"],
-            ["professional_profiles.id"],
+            ["organization_professional_id"],
+            ["organization_professionals.id"],
         ),
         sa.ForeignKeyConstraint(
             ["verified_by"],
@@ -476,10 +652,15 @@ def upgrade() -> None:
         ),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint(
-            "professional_id",
+            "organization_professional_id",
             "professional_type",
-            name="uq_professional_qualifications_professional_type",
+            name="uq_professional_qualifications_org_professional_type",
         ),
+    )
+    op.create_index(
+        "ix_professional_qualifications_org_professional_id",
+        "professional_qualifications",
+        ["organization_professional_id"],
     )
     op.create_table(
         "professional_educations",
@@ -676,12 +857,12 @@ def upgrade() -> None:
         ),
         sa.Column("expires_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column("notes", sqlmodel.sql.sqltypes.AutoString(), nullable=True),
-        sa.Column("professional_id", sa.Uuid(), nullable=False),
+        sa.Column("organization_professional_id", sa.Uuid(), nullable=False),
         sa.Column("qualification_id", sa.Uuid(), nullable=True),
         sa.Column("specialty_id", sa.Uuid(), nullable=True),
         sa.ForeignKeyConstraint(
-            ["professional_id"],
-            ["professional_profiles.id"],
+            ["organization_professional_id"],
+            ["organization_professionals.id"],
         ),
         sa.ForeignKeyConstraint(
             ["qualification_id"],
@@ -705,13 +886,17 @@ def downgrade() -> None:
     # ### commands auto generated by Alembic - please adjust! ###
     op.drop_table("professional_documents")
     op.drop_table("professional_specialties")
+    op.drop_index(
+        "ix_professional_qualifications_org_professional_id",
+        table_name="professional_qualifications",
+    )
     op.drop_table("professional_educations")
     op.drop_table("professional_qualifications")
     op.drop_table("professional_companies")
     op.drop_index(
-        "uq_bank_accounts_professional_primary",
+        "uq_bank_accounts_org_professional_primary",
         table_name="bank_accounts",
-        postgresql_where="is_primary = true AND professional_id IS NOT NULL",
+        postgresql_where="is_primary = true AND organization_professional_id IS NOT NULL",
     )
     op.drop_index(
         "uq_bank_accounts_company_primary",
@@ -719,14 +904,39 @@ def downgrade() -> None:
         postgresql_where="is_primary = true AND company_id IS NOT NULL",
     )
     op.drop_table("bank_accounts")
-    op.drop_table("professional_profiles")
+    op.drop_index(
+        "ix_organization_professionals_organization_id",
+        table_name="organization_professionals",
+    )
+    op.drop_index(
+        "uq_organization_professionals_org_email",
+        table_name="organization_professionals",
+        postgresql_where="email IS NOT NULL AND deleted_at IS NULL",
+    )
+    op.drop_index(
+        "uq_organization_professionals_org_cpf",
+        table_name="organization_professionals",
+        postgresql_where="cpf IS NOT NULL AND deleted_at IS NULL",
+    )
+    op.drop_table("organization_professionals")
+    op.drop_index(
+        "ix_organization_members_organization_id", table_name="organization_members"
+    )
+    op.drop_index("ix_organization_members_user_id", table_name="organization_members")
+    op.drop_table("organization_members")
+    op.drop_index(
+        "uq_organizations_cnpj",
+        table_name="organizations",
+        postgresql_where="cnpj IS NOT NULL AND deleted_at IS NULL",
+    )
+    op.drop_table("organizations")
     op.drop_table("companies")
     op.drop_table("specialties")
     op.drop_table("banks")
 
     # Drop ENUMs (PostgreSQL doesn't remove them automatically)
-    sa.Enum(name="document_type").drop(op.get_bind(), checkfirst=True)
     sa.Enum(name="document_category").drop(op.get_bind(), checkfirst=True)
+    sa.Enum(name="document_type").drop(op.get_bind(), checkfirst=True)
     sa.Enum(name="residency_status").drop(op.get_bind(), checkfirst=True)
     sa.Enum(name="education_level").drop(op.get_bind(), checkfirst=True)
     sa.Enum(name="council_type").drop(op.get_bind(), checkfirst=True)
@@ -734,5 +944,8 @@ def downgrade() -> None:
     sa.Enum(name="account_type").drop(op.get_bind(), checkfirst=True)
     sa.Enum(name="marital_status").drop(op.get_bind(), checkfirst=True)
     sa.Enum(name="gender").drop(op.get_bind(), checkfirst=True)
+    sa.Enum(name="member_role").drop(op.get_bind(), checkfirst=True)
+    sa.Enum(name="sharing_scope").drop(op.get_bind(), checkfirst=True)
+    sa.Enum(name="organization_type").drop(op.get_bind(), checkfirst=True)
     sa.Enum(name="professional_type").drop(op.get_bind(), checkfirst=True)
     # ### end Alembic commands ###

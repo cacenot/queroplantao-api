@@ -22,8 +22,8 @@ if TYPE_CHECKING:
     from src.modules.professionals.domain.models.professional_education import (
         ProfessionalEducation,
     )
-    from src.modules.professionals.domain.models.professional_profile import (
-        ProfessionalProfile,
+    from src.modules.professionals.domain.models.organization_professional import (
+        OrganizationProfessional,
     )
     from src.modules.professionals.domain.models.professional_specialty import (
         ProfessionalSpecialty,
@@ -87,20 +87,22 @@ class ProfessionalQualification(
     __tablename__ = "professional_qualifications"
     __table_args__ = (
         UniqueConstraint(
-            "professional_id",
+            "organization_professional_id",
             "professional_type",
-            name="uq_professional_qualifications_professional_type",
+            name="uq_professional_qualifications_org_professional_type",
         ),
     )
 
-    professional_id: UUID = Field(
-        foreign_key="professional_profiles.id",
+    organization_professional_id: UUID = Field(
+        foreign_key="organization_professionals.id",
         nullable=False,
-        description="Professional profile ID",
+        description="Organization professional ID",
     )
 
     # Relationships
-    professional: "ProfessionalProfile" = Relationship(back_populates="qualifications")
+    professional: "OrganizationProfessional" = Relationship(
+        back_populates="qualifications"
+    )
     specialties: list["ProfessionalSpecialty"] = Relationship(
         back_populates="qualification"
     )

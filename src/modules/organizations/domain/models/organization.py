@@ -22,7 +22,9 @@ if TYPE_CHECKING:
     from src.modules.organizations.domain.models.organization_member import (
         OrganizationMember,
     )
-    from src.modules.organizations.domain.models.unit import Unit
+    from src.modules.professionals.domain.models.organization_professional import (
+        OrganizationProfessional,
+    )
     from src.shared.domain.models.company import Company
 
 
@@ -154,7 +156,9 @@ class Organization(
             "lazy": "selectin",
         }
     )
-    units: list["Unit"] = Relationship(back_populates="organization")
+    professionals: list["OrganizationProfessional"] = Relationship(
+        back_populates="organization"
+    )
     members: list["OrganizationMember"] = Relationship(
         back_populates="organization",
         sa_relationship_kwargs={

@@ -17,8 +17,8 @@ from src.shared.domain.models.mixins import (
 )
 
 if TYPE_CHECKING:
-    from src.modules.professionals.domain.models.professional_profile import (
-        ProfessionalProfile,
+    from src.modules.professionals.domain.models.organization_professional import (
+        OrganizationProfessional,
     )
     from src.shared.domain.models.bank import Bank
     from src.shared.domain.models.company import Company
@@ -108,16 +108,16 @@ class BankAccount(
     __table_args__ = (
         # Ensure at least one owner is set
         CheckConstraint(
-            "(professional_id IS NOT NULL AND company_id IS NULL) OR "
-            "(professional_id IS NULL AND company_id IS NOT NULL)",
+            "(organization_professional_id IS NOT NULL AND company_id IS NULL) OR "
+            "(organization_professional_id IS NULL AND company_id IS NOT NULL)",
             name="ck_bank_accounts_owner",
         ),
-        # Only one primary account per professional
+        # Only one primary account per organization professional
         Index(
-            "uq_bank_accounts_professional_primary",
-            "professional_id",
+            "uq_bank_accounts_org_professional_primary",
+            "organization_professional_id",
             unique=True,
-            postgresql_where="is_primary = true AND professional_id IS NOT NULL",
+            postgresql_where="is_primary = true AND organization_professional_id IS NOT NULL",
         ),
         # Only one primary account per company
         Index(
@@ -131,8 +131,8 @@ class BankAccount(
             "bank_id",
             "agency",
             "account_number",
-            "professional_id",
-            name="uq_bank_accounts_professional_account",
+            "organization_professional_id",
+            name="uq_bank_accounts_org_professional_account",
         ),
         UniqueConstraint(
             "bank_id",
@@ -149,11 +149,11 @@ class BankAccount(
         nullable=False,
         description="Bank reference ID",
     )
-    professional_id: Optional[UUID] = Field(
+    organization_professional_id: Optional[UUID] = Field(
         default=None,
-        foreign_key="professional_profiles.id",
+        foreign_key="organization_professionals.id",
         nullable=True,
-        description="Professional profile ID (if directly owned by professional)",
+        description="Organization professional ID (if directly owned by professional)",
     )
     company_id: Optional[UUID] = Field(
         default=None,
@@ -164,7 +164,7 @@ class BankAccount(
 
     # Relationships
     bank: "Bank" = Relationship(back_populates="accounts")
-    professional: Optional["ProfessionalProfile"] = Relationship(
+    professional: Optional["OrganizationProfessional"] = Relationship(
         back_populates="bank_accounts"
     )
     company: Optional["Company"] = Relationship(back_populates="bank_accounts")

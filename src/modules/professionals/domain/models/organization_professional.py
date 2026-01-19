@@ -1,17 +1,14 @@
-"""ProfessionalProfile model."""
+"""OrganizationProfessional model - tenant-scoped professional data."""
 
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID
 
-from pydantic import AwareDatetime
-from sqlalchemy import Enum as SAEnum
-from sqlalchemy import UniqueConstraint
+from sqlalchemy import Enum as SAEnum, Index
 from sqlmodel import Field, Relationship
 
 from src.modules.professionals.domain.models.enums import Gender, MaritalStatus
 from src.shared.domain.models import (
     AddressMixin,
-    AwareDatetimeField,
     BaseModel,
     CPFField,
     PhoneField,
@@ -23,7 +20,7 @@ from src.shared.domain.models import (
 )
 
 if TYPE_CHECKING:
-    from src.modules.auth.domain.models import User
+    from src.modules.organizations.domain.models.organization import Organization
     from src.modules.professionals.domain.models.professional_company import (
         ProfessionalCompany,
     )
@@ -36,10 +33,10 @@ if TYPE_CHECKING:
     from src.shared.domain.models.bank_account import BankAccount
 
 
-class ProfessionalProfileBase(BaseModel):
-    """Base fields for ProfessionalProfile."""
+class OrganizationProfessionalBase(BaseModel):
+    """Base fields for OrganizationProfessional."""
 
-    # Personal data (required even without user account)
+    # Personal data
     full_name: str = Field(
         max_length=255,
         description="Professional's full name",
@@ -84,21 +81,15 @@ class ProfessionalProfileBase(BaseModel):
         description="Profile picture URL",
     )
 
-    # Status timestamps
-    profile_completed_at: Optional[AwareDatetime] = AwareDatetimeField(
-        default=None,
-        nullable=True,
-        description="Timestamp when profile was completed (UTC)",
-    )
-    claimed_at: Optional[AwareDatetime] = AwareDatetimeField(
-        default=None,
-        nullable=True,
-        description="Timestamp when professional claimed pre-registered profile (UTC)",
+    # Status
+    is_active: bool = Field(
+        default=True,
+        description="Whether this professional is active in the organization",
     )
 
 
-class ProfessionalProfile(
-    ProfessionalProfileBase,
+class OrganizationProfessional(
+    OrganizationProfessionalBase,
     AddressMixin,
     VerificationMixin,
     TrackingMixin,
@@ -108,34 +99,47 @@ class ProfessionalProfile(
     table=True,
 ):
     """
-    ProfessionalProfile table model.
+    OrganizationProfessional table model.
 
-    Stores healthcare professional data. Can exist without a user account
-    (pre-registration by scale managers). When the professional creates
-    an account, the system links it via email or CPF.
+    Stores professional data scoped to a specific organization.
+    Each organization maintains its own professional records, isolated from others.
+    The same person (by CPF) can exist in multiple organizations with different data.
+
+    Multi-tenancy:
+    - Data is isolated per organization_id
+    - Unique constraint on (organization_id, cpf) ensures no duplicate CPFs within an org
+    - Organizations cannot see or access other organizations' professionals
     """
 
-    __tablename__ = "professional_profiles"
+    __tablename__ = "organization_professionals"
     __table_args__ = (
-        UniqueConstraint("user_id", name="uq_professional_profiles_user_id"),
-        UniqueConstraint("cpf", name="uq_professional_profiles_cpf"),
+        # Unique CPF per organization (when CPF is set and not soft-deleted)
+        Index(
+            "uq_organization_professionals_org_cpf",
+            "organization_id",
+            "cpf",
+            unique=True,
+            postgresql_where="cpf IS NOT NULL AND deleted_at IS NULL",
+        ),
+        # Unique email per organization (when email is set and not soft-deleted)
+        Index(
+            "uq_organization_professionals_org_email",
+            "organization_id",
+            "email",
+            unique=True,
+            postgresql_where="email IS NOT NULL AND deleted_at IS NULL",
+        ),
     )
 
-    # User link (nullable for pre-registration)
-    user_id: Optional[UUID] = Field(
-        default=None,
-        foreign_key="users.id",
-        nullable=True,
-        description="User ID (null for pre-registered profiles)",
+    # Organization reference (required - tenant isolation)
+    organization_id: UUID = Field(
+        foreign_key="organizations.id",
+        nullable=False,
+        description="Organization that owns this professional record",
     )
 
     # Relationships
-    user: Optional["User"] = Relationship(
-        sa_relationship_kwargs={
-            "foreign_keys": "[ProfessionalProfile.user_id]",
-            "lazy": "selectin",
-        }
-    )
+    organization: "Organization" = Relationship(back_populates="professionals")
     qualifications: list["ProfessionalQualification"] = Relationship(
         back_populates="professional"
     )

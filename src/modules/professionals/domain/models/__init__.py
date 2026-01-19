@@ -12,6 +12,10 @@ from src.modules.professionals.domain.models.enums import (
     ProfessionalType,
     ResidencyStatus,
 )
+from src.modules.professionals.domain.models.organization_professional import (
+    OrganizationProfessional,
+    OrganizationProfessionalBase,
+)
 from src.modules.professionals.domain.models.professional_company import (
     ProfessionalCompany,
     ProfessionalCompanyBase,
@@ -23,10 +27,6 @@ from src.modules.professionals.domain.models.professional_document import (
 from src.modules.professionals.domain.models.professional_education import (
     ProfessionalEducation,
     ProfessionalEducationBase,
-)
-from src.modules.professionals.domain.models.professional_profile import (
-    ProfessionalProfile,
-    ProfessionalProfileBase,
 )
 from src.modules.professionals.domain.models.professional_qualification import (
     ProfessionalQualification,
@@ -49,18 +49,18 @@ __all__ = [
     "ProfessionalType",
     "ResidencyStatus",
     # Base schemas
+    "OrganizationProfessionalBase",
     "ProfessionalCompanyBase",
     "ProfessionalDocumentBase",
     "ProfessionalEducationBase",
-    "ProfessionalProfileBase",
     "ProfessionalQualificationBase",
     "ProfessionalSpecialtyBase",
     "SpecialtyBase",
     # Table models
+    "OrganizationProfessional",
     "ProfessionalCompany",
     "ProfessionalDocument",
     "ProfessionalEducation",
-    "ProfessionalProfile",
     "ProfessionalQualification",
     "ProfessionalSpecialty",
     "Specialty",

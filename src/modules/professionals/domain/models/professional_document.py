@@ -20,8 +20,8 @@ from src.shared.domain.models import (
 )
 
 if TYPE_CHECKING:
-    from src.modules.professionals.domain.models.professional_profile import (
-        ProfessionalProfile,
+    from src.modules.professionals.domain.models.organization_professional import (
+        OrganizationProfessional,
     )
     from src.modules.professionals.domain.models.professional_qualification import (
         ProfessionalQualification,
@@ -98,11 +98,11 @@ class ProfessionalDocument(
 
     __tablename__ = "professional_documents"
 
-    # Always linked to professional (required for listing all docs)
-    professional_id: UUID = Field(
-        foreign_key="professional_profiles.id",
+    # Always linked to organization professional (required for listing all docs)
+    organization_professional_id: UUID = Field(
+        foreign_key="organization_professionals.id",
         nullable=False,
-        description="Professional profile ID (always required)",
+        description="Organization professional ID (always required)",
     )
 
     # Optional links for QUALIFICATION and SPECIALTY category documents
@@ -120,7 +120,7 @@ class ProfessionalDocument(
     )
 
     # Relationships
-    professional: "ProfessionalProfile" = Relationship(back_populates="documents")
+    professional: "OrganizationProfessional" = Relationship(back_populates="documents")
     qualification: Optional["ProfessionalQualification"] = Relationship(
         back_populates="documents"
     )

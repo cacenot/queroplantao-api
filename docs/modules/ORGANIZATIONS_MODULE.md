@@ -2,7 +2,9 @@
 
 ## Visão Geral
 
-O módulo de organizações gerencia a estrutura hierárquica de hospitais, clínicas e empresas terceirizadoras. Suporta uma hierarquia de **um nível** entre organizações (pai → filhas), além da estrutura interna Organization → Unit → Sector.
+O módulo de organizações gerencia a estrutura hierárquica de hospitais, clínicas e empresas terceirizadoras. Suporta uma hierarquia de **um nível** entre organizações (pai → filhas). Cada organização mantém seus próprios profissionais isolados (multi-tenant).
+
+> **Nota:** As tabelas `units` e `sectors` estão planejadas para implementação futura.
 
 ## Diagrama ER
 
@@ -23,20 +25,19 @@ O módulo de organizações gerencia a estrutura hierárquica de hospitais, clí
 │  │    (Hospital)    │                                                                   │
 │  └──────────────────┘                                                                   │
 │          │                                                                              │
-│         1:N                                                                             │
+│          ├──────────────────1:N──────────────────┐                                      │
+│          │                                       │                                      │
+│          ▼                                       ▼                                      │
+│  ┌──────────────────┐                  ┌──────────────────────────┐                     │
+│  │ OrganizationMember│                 │ OrganizationProfessional │                     │
+│  │   (User + Role)   │                 │     (multi-tenant)       │                     │
+│  └──────────────────┘                  └──────────────────────────┘                     │
+│          │                                                                              │
+│         N:1                                                                             │
 │          ▼                                                                              │
-│  ┌──────────────────┐      ┌──────────────────┐                                         │
-│  │       Unit       │──1:N─│      Sector      │                                         │
-│  │    (Ala Sul)     │      │      (UTI)       │                                         │
-│  └──────────────────┘      └──────────────────┘                                         │
-│                                                                                         │
-│  ┌──────────────────────────────────────────────────────────────────────────────────┐   │
-│  │                           MEMBROS (Polimórfico)                                  │   │
-│  │                                                                                  │   │
-│  │  User ──N:N── OrganizationMember ──N:1── Organization / Unit / Sector            │   │
-│  │                      │                                                           │   │
-│  │                      └── role (OWNER, ADMIN, MANAGER, SCHEDULER, VIEWER)         │   │
-│  └──────────────────────────────────────────────────────────────────────────────────┘   │
+│  ┌──────────────────┐                                                                   │
+│  │       User       │                                                                   │
+│  └──────────────────┘                                                                   │
 │                                                                                         │
 │  ┌──────────────────────────────────────────────────────────────────────────────────┐   │
 │  │                           ENTIDADE LEGAL (Opcional)                              │   │
@@ -87,15 +88,6 @@ Define o que uma organização pai compartilha com as filhas.
 | SCHEDULES | Compartilha profissionais + escalas |
 | FULL | Compartilhamento total |
 
-### EntityType
-Tipos de entidade para membership polimórfico.
-
-| Valor | Descrição |
-|-------|-----------|
-| ORGANIZATION | Membro da organização |
-| UNIT | Membro de uma unidade |
-| SECTOR | Membro de um setor |
-
 ## Tabelas
 
 ### organizations
@@ -134,7 +126,36 @@ Organizações de saúde (hospitais, clínicas, terceirizadoras).
 - Se `parent_id IS NOT NULL` → organização filha (NÃO pode ter filhas)
 - Validação no application layer: `parent.parent_id` deve ser NULL
 
-### units
+### organization_members
+
+Membros (usuários) vinculados a organizações.
+
+| Campo | Tipo | Nullable | Descrição |
+|-------|------|----------|-----------|
+| id | UUID (v7) | ❌ | Primary key |
+| user_id | UUID | ❌ | FK para users |
+| organization_id | UUID | ❌ | FK para organizations |
+| role | MemberRole | ❌ | Papel do membro |
+| invited_at | TIMESTAMP | ✅ | Quando foi convidado |
+| accepted_at | TIMESTAMP | ✅ | Quando aceitou |
+| is_active | BOOLEAN | ❌ | Status ativo/inativo |
+| **Tracking (TrackingMixin)** | | | |
+| created_by, updated_by | | ✅ | |
+| **Timestamps** | | | |
+| created_at, updated_at | | | |
+
+**Constraints:**
+- UNIQUE(user_id, organization_id)
+
+**Índices de Performance:**
+- `ix_organization_members_user_id` - busca por membros de um usuário
+- `ix_organization_members_organization_id` - busca por membros de uma organização
+
+## Tabelas Planejadas (Futuro)
+
+> As tabelas abaixo estão documentadas para referência futura e serão implementadas quando necessário.
+
+### units (🔜 Planejado)
 
 Unidades físicas dentro de uma organização.
 
@@ -187,32 +208,6 @@ Setores dentro de uma unidade.
 **Herança de Geofence:**
 - Se `latitude/longitude/geofence_radius_meters` forem NULL, herda da Unit pai
 
-### organization_members
-
-Membros (usuários) vinculados a organizações, unidades ou setores.
-
-| Campo | Tipo | Nullable | Descrição |
-|-------|------|----------|-----------|
-| id | UUID (v7) | ❌ | Primary key |
-| user_id | UUID | ❌ | FK para users |
-| organization_id | UUID | ✅ | FK para organizations (XOR) |
-| unit_id | UUID | ✅ | FK para units (XOR) |
-| sector_id | UUID | ✅ | FK para sectors (XOR) |
-| role | MemberRole | ❌ | Papel do membro |
-| invited_at | TIMESTAMP | ✅ | Quando foi convidado |
-| accepted_at | TIMESTAMP | ✅ | Quando aceitou |
-| is_active | BOOLEAN | ❌ | Status ativo/inativo |
-| **Tracking (TrackingMixin)** | | | |
-| created_by, updated_by | | ✅ | |
-| **Timestamps** | | | |
-| created_at, updated_at | | | |
-
-**Constraints:**
-- CHECK: Exatamente um de (organization_id, unit_id, sector_id) deve ser NOT NULL
-- UNIQUE PARTIAL INDEX: `(user_id, organization_id) WHERE organization_id IS NOT NULL`
-- UNIQUE PARTIAL INDEX: `(user_id, unit_id) WHERE unit_id IS NOT NULL`
-- UNIQUE PARTIAL INDEX: `(user_id, sector_id) WHERE sector_id IS NOT NULL`
-
 ## Regras de Negócio
 
 ### Hierarquia de Organizações
@@ -222,23 +217,19 @@ Membros (usuários) vinculados a organizações, unidades ou setores.
 3. O `sharing_scope` da organização pai define o que as filhas podem acessar
 4. Organizações filhas herdam profissionais e/ou escalas conforme configurado
 
-### Hierarquia Organization → Unit → Sector
+### Multi-Tenancy de Profissionais
 
-1. Uma organização pode ter múltiplas unidades
-2. Uma unidade pode ter múltiplos setores
-3. Setores herdam geofence da unit se não definirem o próprio
-4. Escalas (Schedules) serão vinculadas a Sectors
+1. Cada organização mantém seus próprios registros de profissionais
+2. Profissionais são isolados por `organization_id`
+3. A mesma pessoa (CPF) pode existir em múltiplas organizações
+4. Organizações **não podem** acessar profissionais de outras organizações
 
 ### Membros e Permissões
 
-1. Um usuário pode ser membro de múltiplas entidades (org, unit, sector)
-2. **Herança de acesso**:
-   - Membro de Organization → acesso a todas Units e Sectors
-   - Membro de Unit → acesso a todos Sectors da Unit
-   - Membro de Sector → acesso apenas ao Sector
-3. O `role` define o que o membro pode fazer (OWNER > ADMIN > MANAGER > SCHEDULER > VIEWER)
-4. `invited_at` + `accepted_at` = NULL → acesso imediato (adicionado diretamente)
-5. `invited_at` NOT NULL + `accepted_at` = NULL → convite pendente
+1. Um usuário pode ser membro de múltiplas organizações
+2. O `role` define o que o membro pode fazer (OWNER > ADMIN > MANAGER > SCHEDULER > VIEWER)
+3. `invited_at` + `accepted_at` = NULL → acesso imediato (adicionado diretamente)
+4. `invited_at` NOT NULL + `accepted_at` = NULL → convite pendente
 
 ### Company vs Organization
 
@@ -251,10 +242,8 @@ Membros (usuários) vinculados a organizações, unidades ou setores.
 ```
 src/modules/organizations/domain/models/
 ├── __init__.py
-├── enums.py                  # OrganizationType, MemberRole, SharingScope, EntityType
+├── enums.py                  # OrganizationType, MemberRole, SharingScope
 ├── organization.py           # Organization model
-├── unit.py                   # Unit model
-├── sector.py                 # Sector model
 └── organization_member.py    # OrganizationMember model
 ```
 
@@ -265,9 +254,9 @@ src/modules/organizations/domain/models/
 | PrimaryKeyMixin | id (UUID v7) | Todas as tabelas |
 | TimestampMixin | created_at, updated_at | Todas as tabelas |
 | SoftDeleteMixin | deleted_at | Organization |
-| TrackingMixin | created_by, updated_by | Todas as tabelas |
-| AddressMixin | address, ..., latitude, longitude | Organization, Unit |
-| VerificationMixin | verified_at, verified_by | Organization, Unit |
+| TrackingMixin | created_by, updated_by | Organization, OrganizationMember |
+| AddressMixin | address, ..., latitude, longitude | Organization |
+| VerificationMixin | verified_at, verified_by | Organization |
 
 ## Fluxos Principais
 
@@ -277,9 +266,8 @@ src/modules/organizations/domain/models/
 1. Criar Organization (tipo: HOSPITAL, CLINIC, etc.)
 2. [Opcional] Vincular a uma Company existente ou criar CNPJ próprio
 3. Adicionar primeiro membro como OWNER
-4. Criar Units com endereço e geofence
-5. Criar Sectors dentro das Units
-6. Adicionar membros (ADMIN, MANAGER, SCHEDULER, VIEWER)
+4. Cadastrar profissionais (organization_professionals)
+5. Adicionar membros (ADMIN, MANAGER, SCHEDULER, VIEWER)
 ```
 
 ### Fluxo de Terceirização

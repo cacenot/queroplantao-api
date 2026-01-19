@@ -45,15 +45,3 @@ class SharingScope(str, Enum):
     PROFESSIONALS = "PROFESSIONALS"  # Compartilha apenas profissionais
     SCHEDULES = "SCHEDULES"  # Compartilha profissionais + escalas
     FULL = "FULL"  # Compartilhamento total
-
-
-class EntityType(str, Enum):
-    """
-    Types of entities that can have members.
-
-    Used for polymorphic membership in OrganizationMember.
-    """
-
-    ORGANIZATION = "ORGANIZATION"
-    UNIT = "UNIT"
-    SECTOR = "SECTOR"

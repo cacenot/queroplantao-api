@@ -16,8 +16,8 @@ from src.shared.domain.models import (
 )
 
 if TYPE_CHECKING:
-    from src.modules.professionals.domain.models.professional_profile import (
-        ProfessionalProfile,
+    from src.modules.professionals.domain.models.organization_professional import (
+        OrganizationProfessional,
     )
     from src.shared.domain.models.company import Company
 
@@ -55,17 +55,17 @@ class ProfessionalCompany(
     __tablename__ = "professional_companies"
     __table_args__ = (
         UniqueConstraint(
-            "professional_id",
+            "organization_professional_id",
             "company_id",
-            name="uq_professional_companies_professional_company",
+            name="uq_professional_companies_org_professional_company",
         ),
     )
 
     # Foreign keys
-    professional_id: UUID = Field(
-        foreign_key="professional_profiles.id",
+    organization_professional_id: UUID = Field(
+        foreign_key="organization_professionals.id",
         nullable=False,
-        description="Professional profile ID",
+        description="Organization professional ID",
     )
     company_id: UUID = Field(
         foreign_key="companies.id",
@@ -74,7 +74,7 @@ class ProfessionalCompany(
     )
 
     # Relationships
-    professional: "ProfessionalProfile" = Relationship(
+    professional: "OrganizationProfessional" = Relationship(
         back_populates="professional_companies"
     )
     company: "Company" = Relationship(back_populates="professional_companies")

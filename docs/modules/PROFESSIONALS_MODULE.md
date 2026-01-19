@@ -2,7 +2,7 @@
 
 ## Visão Geral
 
-O módulo de profissionais gerencia dados de profissionais de saúde (médicos, enfermeiros, técnicos, etc.), suas qualificações, especialidades, educação, documentos, empresas (PJ) e contas bancárias. Um profissional pode existir **antes** de ter uma conta na plataforma (pré-cadastro por gestores de escala).
+O módulo de profissionais gerencia dados de profissionais de saúde (médicos, enfermeiros, técnicos, etc.) **com escopo de organização (multi-tenant)**. Cada organização mantém seus próprios registros de profissionais, isolados de outras organizações. A mesma pessoa (por CPF) pode existir em múltiplas organizações com dados diferentes.
 
 ## Diagrama ER
 
@@ -11,36 +11,59 @@ O módulo de profissionais gerencia dados de profissionais de saúde (médicos, 
 │                                    PROFISSIONAIS                                        │
 ├─────────────────────────────────────────────────────────────────────────────────────────┤
 │                                                                                         │
-│  ┌──────────┐      ┌─────────────────────┐      ┌───────────────────────────┐           │
-│  │   User   │──0:1─│ ProfessionalProfile │──1:N─│ ProfessionalQualification │           │
-│  └──────────┘      └─────────────────────┘      └───────────────────────────┘           │
-│                              │                              │                           │
-│                    ┌─────────┼─────────┬────────────────────┤                           │
-│                   1:N       N:N       1:N                  1:N                          │
-│                    │         │         │                    │                           │
-│            ┌───────────┐  ┌──────────────────┐    ┌─────────┴─────────┐                 │
-│            │  Bank     │  │ Professional     │    │                   │                 │
-│            │  Account  │  │ Company          │    │   ┌────────────────┐  ┌───────────┐ │
-│            └───────────┘  └──────────────────┘    │   │ Professional   │  │Professional│ │
-│                  │                 │              │   │ Specialty      │  │ Education  │ │
-│                  │                N:1             │   └────────────────┘  └───────────┘ │
-│                  │                 │              │          │                          │
-│                  │           ┌───────────┐        │         N:1                         │
-│                  │           │  Company  │        │          │                          │
-│                  │           └───────────┘        │    ┌───────────┐                    │
-│                  │                 │              │    │ Specialty │                    │
-│                  │                1:N             │    └───────────┘                    │
-│                  │                 │              │                                     │
-│                  └────────► ┌───────────┐ ◄───────┘                                     │
-│                             │  Bank     │                                               │
-│                             │  Account  │                                               │
-│                             └───────────┘                                               │
-│                                    │                                                    │
-│                                   N:1                                                   │
-│                                    │                                                    │
-│                              ┌───────────┐                                              │
-│                              │   Bank    │ (shared module)                              │
-│                              └───────────┘                                              │
+│  ┌──────────────────┐      ┌──────────────────────────┐                                 │
+│  │   Organization   │──1:N─│ OrganizationProfessional │                                 │
+│  └──────────────────┘      └──────────────────────────┘                                 │
+│                                        │                                                │
+│                    ┌───────────────────┼───────────────────┐                            │
+│                   1:N                 1:N                 1:N                           │
+│                    │                   │                   │                            │
+│            ┌───────────────┐   ┌───────────────────────┐   │                            │
+│            │    Bank       │   │ ProfessionalCompany   │   │                            │
+│            │   Account     │   └───────────────────────┘   │                            │
+│            └───────────────┘           │                   │                            │
+│                    │                  N:1                  │                            │
+│                   N:1                  │                   │                            │
+│                    │             ┌───────────┐             │                            │
+│              ┌───────────┐       │  Company  │             │                            │
+│              │   Bank    │       └───────────┘             │                            │
+│              └───────────┘             │                   │                            │
+│                                       1:N                  │                            │
+│                                        │                   │                            │
+│                                  ┌───────────┐             │                            │
+│                                  │   Bank    │             │                            │
+│                                  │  Account  │             │                            │
+│                                  └───────────┘             │                            │
+│                                                            │                            │
+│                            ┌───────────────────────────────┘                            │
+│                            │                                                            │
+│                    ┌───────────────────────────┐                                        │
+│                    │ ProfessionalQualification │                                        │
+│                    └───────────────────────────┘                                        │
+│                               │         │                                               │
+│                    ┌──────────┘         └──────────┐                                    │
+│                   1:N                             1:N                                   │
+│                    │                               │                                    │
+│        ┌────────────────────┐          ┌───────────────────┐                            │
+│        │ ProfessionalSpecialty│        │ProfessionalEducation│                          │
+│        └────────────────────┘          └───────────────────┘                            │
+│                  │                                                                      │
+│                 N:1                                                                     │
+│                  │                                                                      │
+│           ┌───────────┐                                                                 │
+│           │ Specialty │                                                                 │
+│           └───────────┘                                                                 │
+│                                                                                         │
+│  ┌──────────────────────────────────────────────────────────────────────────────────┐   │
+│  │                           DOCUMENTOS                                              │   │
+│  │                                                                                   │   │
+│  │  OrganizationProfessional ──1:N── ProfessionalDocument                            │   │
+│  │                                         │                                         │   │
+│  │                                ┌────────┴────────┐                                │   │
+│  │                           (opcional)        (opcional)                            │   │
+│  │                                │                 │                                │   │
+│  │                   ProfessionalQualification  ProfessionalSpecialty                │   │
+│  └──────────────────────────────────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -170,23 +193,24 @@ Catálogo de especialidades médicas e de outras áreas da saúde.
 | created_at | TIMESTAMP | ❌ | Timestamp de criação |
 | updated_at | TIMESTAMP | ✅ | Timestamp de atualização |
 
-### professional_profiles
+### organization_professionals
 
-Perfil do profissional de saúde.
+Profissionais vinculados a uma organização específica (multi-tenant).
 
 | Campo | Tipo | Nullable | Descrição |
 |-------|------|----------|-----------|
 | id | UUID (v7) | ❌ | Primary key |
-| user_id | UUID | ✅ | FK para users (null = pré-cadastro) |
+| organization_id | UUID | ❌ | FK para organizations (tenant isolation) |
 | full_name | VARCHAR(255) | ❌ | Nome completo |
 | email | VARCHAR(255) | ✅ | Email |
 | phone | VARCHAR(20) | ✅ | Telefone (E.164) |
-| cpf | VARCHAR(11) | ✅ | CPF (11 dígitos, unique) |
+| cpf | VARCHAR(11) | ✅ | CPF (11 dígitos) |
 | birth_date | VARCHAR | ✅ | Data de nascimento (YYYY-MM-DD) |
 | nationality | VARCHAR(100) | ✅ | Nacionalidade |
 | gender | Gender | ✅ | Gênero |
 | marital_status | MaritalStatus | ✅ | Estado civil |
-| avatar_url | HttpUrl | ✅ | URL do avatar |
+| avatar_url | VARCHAR(2048) | ✅ | URL do avatar |
+| is_active | BOOLEAN | ❌ | Status ativo/inativo |
 | **Endereço (AddressMixin)** | | | |
 | address | VARCHAR(255) | ✅ | Logradouro |
 | number | VARCHAR(20) | ✅ | Número |
@@ -198,23 +222,23 @@ Perfil do profissional de saúde.
 | postal_code | VARCHAR(10) | ✅ | CEP |
 | latitude | FLOAT | ✅ | Latitude |
 | longitude | FLOAT | ✅ | Longitude |
-| **Status** | | | |
-| profile_completed_at | TIMESTAMP | ✅ | Quando perfil foi completado |
-| claimed_at | TIMESTAMP | ✅ | Quando perfil foi reivindicado |
 | **Verificação (VerificationMixin)** | | | |
 | verified_at | TIMESTAMP | ✅ | Quando foi verificado |
 | verified_by | UUID | ✅ | FK para users (quem verificou) |
 | **Tracking (TrackingMixin)** | | | |
 | created_by | UUID | ✅ | FK para users (quem criou) |
 | updated_by | UUID | ✅ | FK para users (quem atualizou) |
-| **Timestamps** | | | |
+| **Timestamps & Soft Delete** | | | |
 | created_at | TIMESTAMP | ❌ | Timestamp de criação |
 | updated_at | TIMESTAMP | ✅ | Timestamp de atualização |
 | deleted_at | TIMESTAMP | ✅ | Soft delete |
 
 **Constraints:**
-- UNIQUE(user_id)
-- UNIQUE(cpf)
+- UNIQUE PARTIAL INDEX: `(organization_id, cpf) WHERE cpf IS NOT NULL AND deleted_at IS NULL`
+- UNIQUE PARTIAL INDEX: `(organization_id, email) WHERE email IS NOT NULL AND deleted_at IS NULL`
+
+**Índices de Performance:**
+- `ix_organization_professionals_organization_id` - busca por organização
 
 ### professional_qualifications
 
@@ -223,7 +247,7 @@ Qualificações/formações do profissional. Inclui registro no conselho.
 | Campo | Tipo | Nullable | Descrição |
 |-------|------|----------|-----------|
 | id | UUID (v7) | ❌ | Primary key |
-| professional_id | UUID | ❌ | FK para professional_profiles |
+| organization_professional_id | UUID | ❌ | FK para organization_professionals |
 | professional_type | ProfessionalType | ❌ | Tipo (DOCTOR, NURSE, etc.) |
 | is_primary | BOOLEAN | ❌ | Se é a qualificação principal |
 | graduation_year | INTEGER | ✅ | Ano de formatura |
@@ -239,7 +263,10 @@ Qualificações/formações do profissional. Inclui registro no conselho.
 | updated_at | TIMESTAMP | ✅ | Timestamp de atualização |
 
 **Constraints:**
-- UNIQUE(professional_id, professional_type)
+- UNIQUE(organization_professional_id, professional_type)
+
+**Índices de Performance:**
+- `ix_professional_qualifications_org_professional_id`
 
 **Nota:** Uma qualificação agrupa conselho, especialidades e educação de uma formação específica. Ex: Um profissional com formação em Medicina e Enfermagem terá 2 qualificações.
 
@@ -302,13 +329,13 @@ Documentos enviados pelo/para o profissional.
 | Campo | Tipo | Nullable | Descrição |
 |-------|------|----------|-----------|
 | id | UUID (v7) | ❌ | Primary key |
-| professional_id | UUID | ❌ | FK para professional_profiles |
+| organization_professional_id | UUID | ❌ | FK para organization_professionals |
 | qualification_id | UUID | ✅ | FK para professional_qualifications |
 | specialty_id | UUID | ✅ | FK para professional_specialties |
 | document_type | DocumentType | ❌ | Tipo do documento |
 | document_category | DocumentCategory | ❌ | Categoria do documento |
 | **Arquivo** | | | |
-| file_url | HttpUrl | ❌ | URL do arquivo |
+| file_url | VARCHAR(2048) | ❌ | URL do arquivo |
 | file_name | VARCHAR(255) | ❌ | Nome original do arquivo |
 | file_size | INTEGER | ✅ | Tamanho em bytes |
 | mime_type | VARCHAR(100) | ✅ | MIME type |
@@ -370,7 +397,7 @@ Associação N:N entre profissionais e empresas.
 | Campo | Tipo | Nullable | Descrição |
 |-------|------|----------|-----------|
 | id | UUID (v7) | ❌ | Primary key |
-| professional_id | UUID | ❌ | FK para professional_profiles |
+| organization_professional_id | UUID | ❌ | FK para organization_professionals |
 | company_id | UUID | ❌ | FK para companies |
 | joined_at | TIMESTAMP | ❌ | Quando o profissional entrou na empresa |
 | left_at | TIMESTAMP | ✅ | Quando o profissional saiu (null = ativo) |
@@ -382,7 +409,7 @@ Associação N:N entre profissionais e empresas.
 | updated_at | TIMESTAMP | ✅ | Timestamp de atualização |
 
 **Constraints:**
-- UNIQUE(professional_id, company_id)
+- UNIQUE(organization_professional_id, company_id)
 
 ### banks (shared module)
 
@@ -414,8 +441,8 @@ Contas bancárias para pagamentos.
 |-------|------|----------|-----------|
 | id | UUID (v7) | ❌ | Primary key |
 | bank_id | UUID | ❌ | FK para banks |
-| professional_id | UUID | ✅ | FK para professional_profiles (XOR company_id) |
-| company_id | UUID | ✅ | FK para companies (XOR professional_id) |
+| organization_professional_id | UUID | ✅ | FK para organization_professionals (XOR company_id) |
+| company_id | UUID | ✅ | FK para companies (XOR organization_professional_id) |
 | **Dados bancários** | | | |
 | agency | VARCHAR(10) | ❌ | Número da agência |
 | agency_digit | VARCHAR(2) | ✅ | Dígito da agência |
@@ -441,10 +468,10 @@ Contas bancárias para pagamentos.
 | updated_at | TIMESTAMP | ✅ | Timestamp de atualização |
 
 **Constraints:**
-- CHECK: `(professional_id IS NOT NULL AND company_id IS NULL) OR (professional_id IS NULL AND company_id IS NOT NULL)`
-- UNIQUE PARTIAL INDEX: `(professional_id) WHERE is_primary = true AND professional_id IS NOT NULL`
+- CHECK: `(organization_professional_id IS NOT NULL AND company_id IS NULL) OR (organization_professional_id IS NULL AND company_id IS NOT NULL)`
+- UNIQUE PARTIAL INDEX: `(organization_professional_id) WHERE is_primary = true AND organization_professional_id IS NOT NULL`
 - UNIQUE PARTIAL INDEX: `(company_id) WHERE is_primary = true AND company_id IS NOT NULL`
-- UNIQUE(bank_id, agency, account_number, professional_id)
+- UNIQUE(bank_id, agency, account_number, organization_professional_id)
 - UNIQUE(bank_id, agency, account_number, company_id)
 
 ### Enums Financeiros (shared module)
@@ -466,13 +493,13 @@ Contas bancárias para pagamentos.
 
 ## Regras de Negócio
 
-### Pré-cadastro
+### Multi-Tenancy (Isolamento por Organização)
 
-1. Um profissional pode existir **sem** ter um usuário na plataforma (pré-cadastro por gestor)
-2. O `user_id` é nullable para suportar pré-cadastros
-3. O `created_by` indica quem criou o perfil (para pré-cadastros)
-4. Quando o profissional criar conta, o sistema tenta vincular via `email` ou `cpf`
-5. O campo `claimed_at` marca quando o profissional "reivindicou" seu perfil
+1. Profissionais são **isolados por organização** - cada organização mantém seus próprios registros
+2. A mesma pessoa (CPF) pode existir em múltiplas organizações com dados diferentes
+3. `organization_id` é obrigatório e define o tenant
+4. Unique constraints são por organização: `(organization_id, cpf)` e `(organization_id, email)`
+5. Organizações **não podem** acessar profissionais de outras organizações
 
 ### Qualificações e Conselhos
 
@@ -484,9 +511,9 @@ Contas bancárias para pagamentos.
 ### Documentos
 
 1. Documentos **não têm soft delete** - múltiplas versões podem coexistir
-2. Documentos de PROFILE: vinculados apenas ao professional_id
-3. Documentos de QUALIFICATION: vinculados ao professional_id + qualification_id
-4. Documentos de SPECIALTY: vinculados ao professional_id + specialty_id
+2. Documentos de PROFILE: vinculados apenas ao organization_professional_id
+3. Documentos de QUALIFICATION: vinculados ao organization_professional_id + qualification_id
+4. Documentos de SPECIALTY: vinculados ao organization_professional_id + specialty_id
 5. Alguns documentos têm validade (ex: certidões do CRM) - usar `expires_at`
 6. Documento válido = verificado + não expirado + mais recente
 
@@ -511,20 +538,20 @@ Contas bancárias para pagamentos.
 ```
 src/modules/professionals/domain/models/
 ├── __init__.py
-├── enums.py                      # Enums do módulo
-├── specialty.py                  # Catálogo de especialidades
-├── professional_profile.py       # Perfil do profissional
-├── professional_qualification.py # Qualificações (com conselho)
-├── professional_specialty.py     # Especialidades do profissional
-├── professional_education.py     # Histórico educacional
-├── professional_document.py      # Documentos do profissional
-├── company.py                    # Empresas (PJ)
-└── professional_company.py       # Junção profissional-empresa
+├── enums.py                        # Enums do módulo
+├── specialty.py                    # Catálogo de especialidades
+├── organization_professional.py    # Profissional por organização (multi-tenant)
+├── professional_qualification.py   # Qualificações (com conselho)
+├── professional_specialty.py       # Especialidades do profissional
+├── professional_education.py       # Histórico educacional
+├── professional_document.py        # Documentos do profissional
+└── professional_company.py         # Junção profissional-empresa
 
 src/shared/domain/models/
-├── enums.py                      # AccountType, PixKeyType
-├── bank.py                       # Catálogo de bancos
-└── bank_account.py               # Contas bancárias
+├── enums.py                        # AccountType, PixKeyType
+├── company.py                      # Empresas (PJ)
+├── bank.py                         # Catálogo de bancos
+└── bank_account.py                 # Contas bancárias
 ```
 
 ## Mixins Utilizados
@@ -533,7 +560,7 @@ src/shared/domain/models/
 |-------|--------|----------|
 | PrimaryKeyMixin | id (UUID v7) | Todas as tabelas |
 | TimestampMixin | created_at, updated_at | Todas as tabelas |
-| SoftDeleteMixin | deleted_at | ProfessionalProfile |
-| TrackingMixin | created_by, updated_by | ProfessionalProfile, Company, ProfessionalCompany, BankAccount |
-| AddressMixin | address, number, complement, neighborhood, city, state_code, state_name, postal_code, latitude, longitude | ProfessionalProfile, Company |
-| VerificationMixin | verified_at, verified_by | ProfessionalProfile, ProfessionalQualification, ProfessionalSpecialty, ProfessionalEducation, ProfessionalDocument, Company, BankAccount |
+| SoftDeleteMixin | deleted_at | OrganizationProfessional |
+| TrackingMixin | created_by, updated_by | OrganizationProfessional, Company, ProfessionalCompany, BankAccount |
+| AddressMixin | address, number, complement, neighborhood, city, state_code, state_name, postal_code, latitude, longitude | OrganizationProfessional, Company |
+| VerificationMixin | verified_at, verified_by | OrganizationProfessional, ProfessionalQualification, ProfessionalSpecialty, ProfessionalEducation, ProfessionalDocument, Company, BankAccount |
