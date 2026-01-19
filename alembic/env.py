@@ -26,7 +26,9 @@ settings = Settings()
 config.set_main_option("sqlalchemy.url", settings.database_url_sync)
 
 # Import models for autogenerate support
+from src.shared.domain import models as shared_models  # noqa: E402, F401
 from src.modules.auth.domain import models as auth_models  # noqa: E402, F401
+from src.modules.professionals.domain import models as professionals_models  # noqa: E402, F401
 
 # Import SQLModel metadata
 from sqlmodel import SQLModel  # noqa: E402

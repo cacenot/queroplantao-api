@@ -134,3 +134,88 @@ class MetadataMixin(SQLModel):
         sa_column_kwargs={"nullable": True},
         description="Flexible JSON metadata storage",
     )
+
+
+class AddressMixin(SQLModel):
+    """
+    Mixin for address fields.
+
+    Provides complete address information including:
+    - Street address with number and complement
+    - Neighborhood, city, and state (with both code and full name)
+    - Postal code
+    - Geographic coordinates
+    """
+
+    address: Optional[str] = Field(
+        default=None,
+        max_length=255,
+        description="Street address",
+    )
+    number: Optional[str] = Field(
+        default=None,
+        max_length=20,
+        description="Street number",
+    )
+    complement: Optional[str] = Field(
+        default=None,
+        max_length=100,
+        description="Address complement (apt, suite, etc.)",
+    )
+    neighborhood: Optional[str] = Field(
+        default=None,
+        max_length=100,
+        description="Neighborhood/district",
+    )
+    city: Optional[str] = Field(
+        default=None,
+        max_length=100,
+        description="City name",
+    )
+    state_code: Optional[str] = Field(
+        default=None,
+        max_length=2,
+        description="State abbreviation (UF - 2 chars)",
+    )
+    state_name: Optional[str] = Field(
+        default=None,
+        max_length=100,
+        description="State full name",
+    )
+    postal_code: Optional[str] = Field(
+        default=None,
+        max_length=10,
+        description="Postal/ZIP code (CEP format: XXXXX-XXX)",
+    )
+    latitude: Optional[float] = Field(
+        default=None,
+        description="Latitude coordinate",
+    )
+    longitude: Optional[float] = Field(
+        default=None,
+        description="Longitude coordinate",
+    )
+
+
+class VerificationMixin(SQLModel):
+    """
+    Mixin for verification tracking.
+
+    Tracks when and by whom a record was verified.
+    Useful for:
+    - Document verification
+    - Profile verification
+    - Data validation workflows
+    """
+
+    verified_at: Optional[AwareDatetime] = AwareDatetimeField(
+        default=None,
+        nullable=True,
+        description="Timestamp when the record was verified (UTC)",
+    )
+    verified_by: Optional[UUID] = Field(
+        default=None,
+        foreign_key="users.id",
+        nullable=True,
+        description="User ID who verified this record",
+    )
