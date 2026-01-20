@@ -10,6 +10,9 @@ from starlette.requests import Request
 from starlette.responses import Response
 from starlette.types import ASGIApp
 
+from src.app.middlewares.constants import DEFAULT_EXCLUDE_PATHS
+
+
 logger = structlog.get_logger(__name__)
 
 
@@ -41,7 +44,7 @@ class LoggingMiddleware(BaseHTTPMiddleware):
             exclude_paths: Paths to exclude from logging (e.g., health checks)
         """
         super().__init__(app)
-        self.exclude_paths = exclude_paths or {"/health", "/health/", "/metrics"}
+        self.exclude_paths = exclude_paths or DEFAULT_EXCLUDE_PATHS
 
     async def dispatch(
         self,

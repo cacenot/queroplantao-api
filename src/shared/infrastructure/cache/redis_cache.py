@@ -179,6 +179,33 @@ class RedisCache:
         """
         return f"user:fb:{firebase_uid}"
 
+    @staticmethod
+    def organization_cache_key(organization_id: str) -> str:
+        """
+        Generate cache key for an organization.
+
+        Args:
+            organization_id: Organization UUID as string.
+
+        Returns:
+            Cache key string.
+        """
+        return f"org:{organization_id}"
+
+    @staticmethod
+    def membership_cache_key(user_id: str, organization_id: str) -> str:
+        """
+        Generate cache key for a user's organization membership.
+
+        Args:
+            user_id: User UUID as string.
+            organization_id: Organization UUID as string.
+
+        Returns:
+            Cache key string.
+        """
+        return f"membership:{user_id}:{organization_id}"
+
 
 # Global cache instance (initialized in app lifespan)
 _redis_cache: RedisCache | None = None

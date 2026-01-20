@@ -9,8 +9,12 @@ from fastapi.responses import JSONResponse
 
 from src.app.dependencies import get_settings
 from src.app.exceptions import AppException
-from src.app.logging import LoggingMiddleware, configure_logging, get_logger
-from src.app.middlewares import FirebaseAuthMiddleware
+from src.app.logging import configure_logging, get_logger
+from src.app.middlewares import (
+    FirebaseAuthMiddleware,
+    LoggingMiddleware,
+    OrganizationIdentityMiddleware,
+)
 from src.app.presentation.api.health import router as health_router
 from src.app.presentation.api.v1.router import router as v1_router
 from src.shared.infrastructure.cache import RedisCache, set_redis_cache
@@ -116,6 +120,17 @@ def create_app() -> FastAPI:
         exclude_prefixes=(
             f"{settings.API_V1_PREFIX}/auth",  # Auth routes don't require auth
         ),
+    )
+
+    # Add organization identity middleware
+    # Runs after FirebaseAuthMiddleware to have user context available
+    app.add_middleware(
+        OrganizationIdentityMiddleware,
+        exclude_prefixes=(
+            f"{settings.API_V1_PREFIX}/auth",  # Auth routes don't require org
+            f"{settings.API_V1_PREFIX}/users/me",  # User profile doesn't require org
+        ),
+        require_organization=False,  # Organization header is optional by default
     )
 
     # Register exception handlers

@@ -113,6 +113,14 @@ class Settings(BaseSettings):
         default=1800,
         description="TTL do cache de usuário em segundos (30 min)",
     )
+    REDIS_ORG_CACHE_TTL: int = Field(
+        default=1800,
+        description="TTL do cache de organização em segundos (30 min)",
+    )
+    REDIS_MEMBERSHIP_CACHE_TTL: int = Field(
+        default=900,
+        description="TTL do cache de membership em segundos (15 min)",
+    )
 
     # Logging
     LOG_LEVEL: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = Field(
