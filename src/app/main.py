@@ -10,8 +10,11 @@ from fastapi.responses import JSONResponse
 from src.app.dependencies import get_settings
 from src.app.exceptions import AppException
 from src.app.logging import LoggingMiddleware, configure_logging, get_logger
+from src.app.middlewares import FirebaseAuthMiddleware
 from src.app.presentation.api.health import router as health_router
 from src.app.presentation.api.v1.router import router as v1_router
+from src.shared.infrastructure.cache import RedisCache, set_redis_cache
+from src.shared.infrastructure.firebase import FirebaseService, set_firebase_service
 
 
 @asynccontextmanager
@@ -39,6 +42,27 @@ async def lifespan(app: FastAPI):
         log_level=settings.LOG_LEVEL,
     )
 
+    # Initialize Redis cache
+    redis_cache = RedisCache(settings.REDIS_URL)
+    try:
+        await redis_cache.connect()
+        set_redis_cache(redis_cache)
+        logger.info("redis_cache_initialized")
+    except Exception as e:
+        logger.warning("redis_cache_init_failed", error=str(e))
+        # Continue without cache - graceful degradation
+
+    # Initialize Firebase service
+    try:
+        firebase_service = FirebaseService(settings)
+        firebase_service.initialize()
+        set_firebase_service(firebase_service)
+        logger.info("firebase_service_initialized")
+    except Exception as e:
+        logger.error("firebase_service_init_failed", error=str(e))
+        # Firebase is required - but we log and continue
+        # Authentication will fail if Firebase is not configured
+
     # TODO: Initialize database connection pool
     # TODO: Initialize message broker connection
 
@@ -46,6 +70,13 @@ async def lifespan(app: FastAPI):
 
     # Shutdown
     logger.info("application_shutting_down", app_name=settings.APP_NAME)
+
+    # Close Redis connection
+    try:
+        await redis_cache.disconnect()
+        logger.info("redis_cache_disconnected")
+    except Exception as e:
+        logger.warning("redis_cache_disconnect_failed", error=str(e))
 
     # TODO: Close database connections
     # TODO: Close message broker connections
@@ -76,6 +107,16 @@ def create_app() -> FastAPI:
 
     # Add logging middleware (after CORS, before routes)
     app.add_middleware(LoggingMiddleware)
+
+    # Add Firebase authentication middleware
+    # Note: Middleware order is reversed - last added runs first
+    # So auth runs before logging for authenticated routes
+    app.add_middleware(
+        FirebaseAuthMiddleware,
+        exclude_prefixes=(
+            f"{settings.API_V1_PREFIX}/auth",  # Auth routes don't require auth
+        ),
+    )
 
     # Register exception handlers
     @app.exception_handler(AppException)

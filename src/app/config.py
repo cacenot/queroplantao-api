@@ -22,14 +22,18 @@ class Settings(BaseSettings):
         default="development", description="Ambiente da aplicação"
     )
     DEBUG: bool = Field(default=False, description="Modo debug")
-    SECRET_KEY: str = Field(default="change-me-in-production", description="Chave secreta da aplicação")
+    SECRET_KEY: str = Field(
+        default="change-me-in-production", description="Chave secreta da aplicação"
+    )
     API_V1_PREFIX: str = Field(default="/api/v1", description="Prefixo da API v1")
 
     # Server
     HOST: str = Field(default="0.0.0.0", description="Host do servidor")
     PORT: int = Field(default=8000, description="Porta do servidor")
     WORKERS: int = Field(default=1, description="Número de workers")
-    RELOAD: bool = Field(default=True, description="Reload automático em desenvolvimento")
+    RELOAD: bool = Field(
+        default=True, description="Reload automático em desenvolvimento"
+    )
 
     # Database
     DATABASE_URL: str = Field(
@@ -61,27 +65,62 @@ class Settings(BaseSettings):
         default="amqp://guest:guest@localhost:5672/",
         description="URL de conexão do LavinMQ/RabbitMQ",
     )
-    LAVINMQ_EXCHANGE: str = Field(default="queroplantao", description="Exchange do LavinMQ")
+    LAVINMQ_EXCHANGE: str = Field(
+        default="queroplantao", description="Exchange do LavinMQ"
+    )
     LAVINMQ_QUEUE_PREFIX: str = Field(default="qp_", description="Prefixo das filas")
 
     # JWT (Internal - from BFF)
-    JWT_SECRET_KEY: str = Field(default="change-me-in-production", description="Chave secreta do JWT interno")
-    JWT_ALGORITHM: str = Field(default="HS256", description="Algoritmo de assinatura JWT")
+    JWT_SECRET_KEY: str = Field(
+        default="change-me-in-production", description="Chave secreta do JWT interno"
+    )
+    JWT_ALGORITHM: str = Field(
+        default="HS256", description="Algoritmo de assinatura JWT"
+    )
     JWT_ISSUER: str = Field(default="queroplantao-bff", description="Emissor do JWT")
 
     # CORS
     CORS_ORIGINS: list[str] = Field(
-        default=["http://localhost:3000", "http://localhost:8080"], description="Origens permitidas para CORS"
+        default=["http://localhost:3000", "http://localhost:8080"],
+        description="Origens permitidas para CORS",
     )
-    CORS_ALLOW_CREDENTIALS: bool = Field(default=True, description="Permitir credenciais CORS")
-    CORS_ALLOW_METHODS: list[str] = Field(default=["*"], description="Métodos HTTP permitidos")
-    CORS_ALLOW_HEADERS: list[str] = Field(default=["*"], description="Headers permitidos")
+    CORS_ALLOW_CREDENTIALS: bool = Field(
+        default=True, description="Permitir credenciais CORS"
+    )
+    CORS_ALLOW_METHODS: list[str] = Field(
+        default=["*"], description="Métodos HTTP permitidos"
+    )
+    CORS_ALLOW_HEADERS: list[str] = Field(
+        default=["*"], description="Headers permitidos"
+    )
+
+    # Firebase Authentication
+    FIREBASE_PROJECT_ID: str = Field(
+        default="",
+        description="Firebase Project ID",
+    )
+    FIREBASE_CREDENTIALS_BASE64: str = Field(
+        default="",
+        description="Firebase service account credentials JSON encoded in base64",
+    )
+
+    # Redis Cache
+    REDIS_URL: str = Field(
+        default="redis://localhost:6379/0",
+        description="URL de conexão do Redis",
+    )
+    REDIS_USER_CACHE_TTL: int = Field(
+        default=1800,
+        description="TTL do cache de usuário em segundos (30 min)",
+    )
 
     # Logging
     LOG_LEVEL: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = Field(
         default="INFO", description="Nível de log"
     )
-    LOG_FORMAT: Literal["json", "text"] = Field(default="json", description="Formato do log")
+    LOG_FORMAT: Literal["json", "text"] = Field(
+        default="json", description="Formato do log"
+    )
 
     @property
     def is_development(self) -> bool:

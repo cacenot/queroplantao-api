@@ -9,6 +9,7 @@ from sqlmodel import Field, Relationship
 from src.shared.domain.models import (
     AwareDatetimeField,
     BaseModel,
+    CPFField,
     PhoneField,
     PrimaryKeyMixin,
     TimestampMixin,
@@ -39,6 +40,11 @@ class UserBase(BaseModel):
         nullable=True,
         description="Phone number (E.164 format)",
     )
+    cpf: Optional[str] = CPFField(
+        default=None,
+        nullable=True,
+        description="Brazilian CPF number (11 digits, unique)",
+    )
     avatar_url: Optional[str] = Field(
         default=None,
         max_length=500,
@@ -67,6 +73,7 @@ class User(UserBase, PrimaryKeyMixin, TimestampMixin, table=True):
     __table_args__ = (
         UniqueConstraint("firebase_uid", name="uq_users_firebase_uid"),
         UniqueConstraint("email", name="uq_users_email"),
+        UniqueConstraint("cpf", name="uq_users_cpf"),
     )
 
     # Relationships

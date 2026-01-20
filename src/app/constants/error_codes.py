@@ -1,0 +1,31 @@
+"""Error code constants for the application."""
+
+from enum import StrEnum
+
+
+class AuthErrorCodes(StrEnum):
+    """Authentication and authorization error codes."""
+
+    # Token errors
+    MISSING_TOKEN = "AUTH_MISSING_TOKEN"
+    INVALID_TOKEN = "AUTH_INVALID_TOKEN"
+    EXPIRED_TOKEN = "AUTH_EXPIRED_TOKEN"
+    REVOKED_TOKEN = "AUTH_REVOKED_TOKEN"
+    MALFORMED_TOKEN = "AUTH_MALFORMED_TOKEN"
+
+    # Firebase errors
+    FIREBASE_ERROR = "AUTH_FIREBASE_ERROR"
+    FIREBASE_INIT_ERROR = "AUTH_FIREBASE_INIT_ERROR"
+    FIREBASE_VERIFICATION_ERROR = "AUTH_FIREBASE_VERIFICATION_ERROR"
+
+    # User errors
+    USER_NOT_FOUND = "AUTH_USER_NOT_FOUND"
+    USER_INACTIVE = "AUTH_USER_INACTIVE"
+
+    # Cache errors
+    CACHE_ERROR = "AUTH_CACHE_ERROR"
+    CACHE_CONNECTION_ERROR = "AUTH_CACHE_CONNECTION_ERROR"
+
+    # Authorization errors
+    INSUFFICIENT_PERMISSIONS = "AUTH_INSUFFICIENT_PERMISSIONS"
+    ROLE_REQUIRED = "AUTH_ROLE_REQUIRED"

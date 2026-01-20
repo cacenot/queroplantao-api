@@ -1,7 +1,7 @@
 """Request context for user information."""
 
 from contextvars import ContextVar
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from uuid import UUID
 
 
@@ -10,7 +10,13 @@ class RequestContext:
     """Immutable request context holding user information."""
 
     user_id: UUID
-    roles: list[str]
+    firebase_uid: str
+    email: str
+    full_name: str
+    roles: list[str] = field(default_factory=list)
+    permissions: list[str] = field(default_factory=list)
+    phone: str | None = None
+    cpf: str | None = None
     correlation_id: str | None = None
 
     def has_role(self, role: str) -> bool:
@@ -24,6 +30,18 @@ class RequestContext:
     def has_all_roles(self, roles: list[str]) -> bool:
         """Check if user has all of the specified roles."""
         return all(role in self.roles for role in roles)
+
+    def has_permission(self, permission: str) -> bool:
+        """Check if user has a specific permission."""
+        return permission in self.permissions
+
+    def has_any_permission(self, permissions: list[str]) -> bool:
+        """Check if user has any of the specified permissions."""
+        return any(permission in self.permissions for permission in permissions)
+
+    def has_all_permissions(self, permissions: list[str]) -> bool:
+        """Check if user has all of the specified permissions."""
+        return all(permission in self.permissions for permission in permissions)
 
 
 # Context variable to hold request context
