@@ -4,7 +4,7 @@
 
 O módulo de organizações gerencia a estrutura hierárquica de hospitais, clínicas e empresas terceirizadoras. Suporta uma hierarquia de **um nível** entre organizações (pai → filhas). Cada organização mantém seus próprios profissionais isolados (multi-tenant).
 
-> **Nota:** As tabelas `units` e `sectors` estão planejadas para implementação futura.
+> **Nota:** As tabelas `units` e `sectors` foram movidas para o módulo de Unidades. Ver [UNITS_MODULE.md](UNITS_MODULE.md).
 
 ## Diagrama ER
 
@@ -151,62 +151,10 @@ Membros (usuários) vinculados a organizações.
 - `ix_organization_members_user_id` - busca por membros de um usuário
 - `ix_organization_members_organization_id` - busca por membros de uma organização
 
-## Tabelas Planejadas (Futuro)
+## Tabelas Relacionadas (Outros Módulos)
 
-> As tabelas abaixo estão documentadas para referência futura e serão implementadas quando necessário.
-
-### units (🔜 Planejado)
-
-Unidades físicas dentro de uma organização.
-
-| Campo | Tipo | Nullable | Descrição |
-|-------|------|----------|-----------|
-| id | UUID (v7) | ❌ | Primary key |
-| organization_id | UUID | ❌ | FK para organizations |
-| name | VARCHAR(255) | ❌ | Nome da unidade |
-| code | VARCHAR(50) | ✅ | Código interno |
-| description | TEXT | ✅ | Descrição |
-| email | VARCHAR(255) | ✅ | Email |
-| phone | VARCHAR(20) | ✅ | Telefone (E.164) |
-| geofence_radius_meters | INTEGER | ✅ | Raio do geofence (0-10000) |
-| is_active | BOOLEAN | ❌ | Status ativo/inativo |
-| **Endereço (AddressMixin)** | | | |
-| address, ..., latitude, longitude | | ✅ | Usado para geofence |
-| **Verificação (VerificationMixin)** | | | |
-| verified_at, verified_by | | ✅ | |
-| **Tracking (TrackingMixin)** | | | |
-| created_by, updated_by | | ✅ | |
-| **Timestamps** | | | |
-| created_at, updated_at | | | |
-
-**Constraints:**
-- UNIQUE(organization_id, code)
-
-### sectors
-
-Setores dentro de uma unidade.
-
-| Campo | Tipo | Nullable | Descrição |
-|-------|------|----------|-----------|
-| id | UUID (v7) | ❌ | Primary key |
-| unit_id | UUID | ❌ | FK para units |
-| name | VARCHAR(255) | ❌ | Nome do setor |
-| code | VARCHAR(50) | ✅ | Código interno |
-| description | TEXT | ✅ | Descrição |
-| latitude | FLOAT | ✅ | Override de latitude |
-| longitude | FLOAT | ✅ | Override de longitude |
-| geofence_radius_meters | INTEGER | ✅ | Override de raio |
-| is_active | BOOLEAN | ❌ | Status ativo/inativo |
-| **Tracking (TrackingMixin)** | | | |
-| created_by, updated_by | | ✅ | |
-| **Timestamps** | | | |
-| created_at, updated_at | | | |
-
-**Constraints:**
-- UNIQUE(unit_id, code)
-
-**Herança de Geofence:**
-- Se `latitude/longitude/geofence_radius_meters` forem NULL, herda da Unit pai
+> As tabelas de unidades e setores foram implementadas no módulo de Unidades.
+> Ver [UNITS_MODULE.md](UNITS_MODULE.md) para detalhes.
 
 ## Regras de Negócio
 

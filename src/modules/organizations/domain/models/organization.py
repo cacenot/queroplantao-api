@@ -19,12 +19,14 @@ from src.shared.domain.models.mixins import (
 )
 
 if TYPE_CHECKING:
+    from src.modules.contracts.domain.models.client_contract import ClientContract
     from src.modules.organizations.domain.models.organization_member import (
         OrganizationMember,
     )
     from src.modules.professionals.domain.models.organization_professional import (
         OrganizationProfessional,
     )
+    from src.modules.units.domain.models.unit import Unit
     from src.shared.domain.models.company import Company
 
 
@@ -164,6 +166,10 @@ class Organization(
         sa_relationship_kwargs={
             "foreign_keys": "[OrganizationMember.organization_id]",
         },
+    )
+    units: list["Unit"] = Relationship(back_populates="organization")
+    client_contracts: list["ClientContract"] = Relationship(
+        back_populates="organization"
     )
 
     @property

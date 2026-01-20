@@ -1,0 +1,1 @@
+"""Contracts use cases."""

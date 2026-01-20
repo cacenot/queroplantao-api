@@ -31,6 +31,8 @@ from src.shared.domain import models as shared_models  # noqa: E402, F401
 from src.modules.auth.domain import models as auth_models  # noqa: E402, F401
 from src.modules.professionals.domain import models as professionals_models  # noqa: E402, F401
 from src.modules.organizations.domain import models as organizations_models  # noqa: E402, F401
+from src.modules.units.domain import models as units_models  # noqa: E402, F401
+from src.modules.contracts.domain import models as contracts_models  # noqa: E402, F401
 
 # Import SQLModel metadata
 from sqlmodel import SQLModel  # noqa: E402

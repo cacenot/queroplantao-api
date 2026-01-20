@@ -20,6 +20,9 @@ from src.shared.domain.models import (
 )
 
 if TYPE_CHECKING:
+    from src.modules.contracts.domain.models.professional_contract import (
+        ProfessionalContract,
+    )
     from src.modules.organizations.domain.models.organization import Organization
     from src.modules.professionals.domain.models.professional_company import (
         ProfessionalCompany,
@@ -150,3 +153,6 @@ class OrganizationProfessional(
         back_populates="professional"
     )
     bank_accounts: list["BankAccount"] = Relationship(back_populates="professional")
+    contracts: list["ProfessionalContract"] = Relationship(
+        back_populates="organization_professional"
+    )
