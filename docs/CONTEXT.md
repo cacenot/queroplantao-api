@@ -20,6 +20,7 @@ A documentação detalhada de cada módulo está em arquivos separados:
 | **Autenticação e Autorização** | [AUTH_MODULE.md](modules/AUTH_MODULE.md) | ✅ Implementado |
 | **Profissionais** | [PROFESSIONALS_MODULE.md](modules/PROFESSIONALS_MODULE.md) | ✅ Implementado |
 | **Organizações** | [ORGANIZATIONS_MODULE.md](modules/ORGANIZATIONS_MODULE.md) | ✅ Implementado |
+| **Triagem** | [SCREENING_MODULE.md](modules/SCREENING_MODULE.md) | ✅ Implementado |
 | **Escalas e Plantões** | modules/SHIFTS_MODULE.md | 🔜 Planejado |
 | **Vagas e Candidaturas** | modules/JOB_POSTINGS_MODULE.md | 🔜 Planejado |
 | **Disponibilidade e Matching** | modules/MATCHING_MODULE.md | 🔜 Planejado |
@@ -174,6 +175,7 @@ Organização (Organization)
 > - [AUTH_MODULE.md](modules/AUTH_MODULE.md) - Tabelas: users, permissions, roles, role_permissions, user_roles, user_permissions
 > - [PROFESSIONALS_MODULE.md](modules/PROFESSIONALS_MODULE.md) - Tabelas: specialties, organization_professionals, professional_qualifications, professional_specialties, professional_educations, professional_documents, professional_companies
 > - [ORGANIZATIONS_MODULE.md](modules/ORGANIZATIONS_MODULE.md) - Tabelas: organizations, organization_members, companies, banks, bank_accounts
+> - [SCREENING_MODULE.md](modules/SCREENING_MODULE.md) - Tabelas: screening_templates, screening_template_steps, screening_processes, screening_process_steps, screening_required_documents, screening_document_reviews
 
 Os demais módulos (Shifts, Job Postings, etc.) serão documentados conforme forem implementados.
 
@@ -335,3 +337,6 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";  -- UUID (fallback)
 | Match | Correspondência | Compatibilidade entre profissional e vaga |
 | Geofence | Cerca Virtual | Área permitida para ponto |
 | Multi-Tenant | Multi-Inquilino | Isolamento de dados por organização |
+| Screening | Triagem | Processo de coleta e validação de dados/documentos de profissionais |
+| Screening Template | Modelo de Triagem | Template configurável com etapas para triagem |
+| Document Review | Verificação de Documento | Revisão individual de documentos enviados |

@@ -33,6 +33,7 @@ if TYPE_CHECKING:
     from src.modules.professionals.domain.models.professional_qualification import (
         ProfessionalQualification,
     )
+    from src.modules.screening.domain.models.screening_process import ScreeningProcess
     from src.shared.domain.models.bank_account import BankAccount
 
 
@@ -154,5 +155,8 @@ class OrganizationProfessional(
     )
     bank_accounts: list["BankAccount"] = Relationship(back_populates="professional")
     contracts: list["ProfessionalContract"] = Relationship(
+        back_populates="organization_professional"
+    )
+    screening_processes: list["ScreeningProcess"] = Relationship(
         back_populates="organization_professional"
     )

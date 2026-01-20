@@ -26,6 +26,8 @@ if TYPE_CHECKING:
     from src.modules.professionals.domain.models.organization_professional import (
         OrganizationProfessional,
     )
+    from src.modules.screening.domain.models.screening_process import ScreeningProcess
+    from src.modules.screening.domain.models.screening_template import ScreeningTemplate
     from src.modules.units.domain.models.unit import Unit
     from src.shared.domain.models.company import Company
 
@@ -169,6 +171,12 @@ class Organization(
     )
     units: list["Unit"] = Relationship(back_populates="organization")
     client_contracts: list["ClientContract"] = Relationship(
+        back_populates="organization"
+    )
+    screening_templates: list["ScreeningTemplate"] = Relationship(
+        back_populates="organization"
+    )
+    screening_processes: list["ScreeningProcess"] = Relationship(
         back_populates="organization"
     )
 

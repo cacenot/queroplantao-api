@@ -4,7 +4,7 @@ from typing import Optional
 from uuid import UUID, uuid7
 
 from pydantic import AwareDatetime
-from sqlalchemy import func
+from sqlalchemy import JSON, func
 from sqlmodel import Field, SQLModel
 
 from src.shared.domain.models.fields import AwareDatetimeField
@@ -127,10 +127,14 @@ class MetadataMixin(SQLModel):
     - Custom fields
     - Feature flags
     - Experimental data
+
+    Note: Field named 'extra_metadata' to avoid conflict with SQLModel's
+    reserved 'metadata' attribute.
     """
 
-    metadata: Optional[dict] = Field(
+    extra_metadata: Optional[dict] = Field(
         default=None,
+        sa_type=JSON,
         sa_column_kwargs={"nullable": True},
         description="Flexible JSON metadata storage",
     )

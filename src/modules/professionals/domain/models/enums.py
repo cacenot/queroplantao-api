@@ -115,6 +115,7 @@ class DocumentType(str, Enum):
 
     # Profile documents (PROFILE category)
     ID_DOCUMENT = "ID_DOCUMENT"  # Documento oficial com foto (RG ou CNH)
+    PHOTO = "PHOTO"  # Foto do profissional (3x4 ou similar)
     CRIMINAL_RECORD = "CRIMINAL_RECORD"  # Antecedentes criminais
     ADDRESS_PROOF = "ADDRESS_PROOF"  # Comprovante de endereço
     CV = "CV"  # Currículo

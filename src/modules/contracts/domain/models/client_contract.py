@@ -20,6 +20,7 @@ if TYPE_CHECKING:
         ProfessionalContract,
     )
     from src.modules.organizations.domain.models.organization import Organization
+    from src.modules.screening.domain.models.screening_process import ScreeningProcess
 
 
 class ClientContractBase(BaseModel):
@@ -96,5 +97,8 @@ class ClientContract(
     # Relationships
     organization: "Organization" = Relationship(back_populates="client_contracts")
     professional_contracts: list["ProfessionalContract"] = Relationship(
+        back_populates="client_contract"
+    )
+    screening_processes: list["ScreeningProcess"] = Relationship(
         back_populates="client_contract"
     )

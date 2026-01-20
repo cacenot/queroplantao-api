@@ -29,6 +29,9 @@ if TYPE_CHECKING:
     from src.modules.professionals.domain.models.professional_specialty import (
         ProfessionalSpecialty,
     )
+    from src.modules.screening.domain.models.screening_document_review import (
+        ScreeningDocumentReview,
+    )
 
 
 class ProfessionalDocumentBase(BaseModel):
@@ -126,4 +129,7 @@ class ProfessionalDocument(
     )
     specialty: Optional["ProfessionalSpecialty"] = Relationship(
         back_populates="documents"
+    )
+    screening_reviews: list["ScreeningDocumentReview"] = Relationship(
+        back_populates="professional_document"
     )

@@ -29,6 +29,7 @@ if TYPE_CHECKING:
     from src.modules.professionals.domain.models.organization_professional import (
         OrganizationProfessional,
     )
+    from src.modules.screening.domain.models.screening_process import ScreeningProcess
     from src.modules.units.domain.models.unit import Unit
     from src.shared.domain.models.bank_account import BankAccount
     from src.shared.domain.models.company import Company
@@ -228,6 +229,9 @@ class ProfessionalContract(
     unit: Optional["Unit"] = Relationship(back_populates="professional_contracts")
     amendments: list["ContractAmendment"] = Relationship(back_populates="contract")
     documents: list["ContractDocument"] = Relationship(back_populates="contract")
+    screening_processes: list["ScreeningProcess"] = Relationship(
+        back_populates="professional_contract"
+    )
 
     @property
     def is_pending_signatures(self) -> bool:
