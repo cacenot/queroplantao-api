@@ -20,8 +20,8 @@ from src.shared.domain.models.mixins import (
 
 if TYPE_CHECKING:
     from src.modules.contracts.domain.models.client_contract import ClientContract
-    from src.modules.organizations.domain.models.organization_member import (
-        OrganizationMember,
+    from src.modules.organizations.domain.models.organization_membership import (
+        OrganizationMembership,
     )
     from src.modules.professionals.domain.models.organization_professional import (
         OrganizationProfessional,
@@ -163,10 +163,10 @@ class Organization(
     professionals: list["OrganizationProfessional"] = Relationship(
         back_populates="organization"
     )
-    members: list["OrganizationMember"] = Relationship(
+    memberships: list["OrganizationMembership"] = Relationship(
         back_populates="organization",
         sa_relationship_kwargs={
-            "foreign_keys": "[OrganizationMember.organization_id]",
+            "foreign_keys": "[OrganizationMembership.organization_id]",
         },
     )
     units: list["Unit"] = Relationship(back_populates="organization")

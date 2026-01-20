@@ -20,20 +20,6 @@ class OrganizationType(str, Enum):
     OTHER = "OTHER"  # Outros
 
 
-class MemberRole(str, Enum):
-    """
-    Roles for organization members.
-
-    Defines what a user can do within an organization context.
-    """
-
-    OWNER = "OWNER"  # Proprietário - acesso total, pode deletar org
-    ADMIN = "ADMIN"  # Administrador - gerencia membros e configurações
-    MANAGER = "MANAGER"  # Gestor - gerencia escalas e plantões
-    SCHEDULER = "SCHEDULER"  # Escalista - cria/edita escalas
-    VIEWER = "VIEWER"  # Visualizador - apenas leitura
-
-
 class SharingScope(str, Enum):
     """
     Defines what data a parent organization shares with child organizations.
