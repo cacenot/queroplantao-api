@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Optional
 from uuid import UUID
 
 from pydantic import AwareDatetime
-from sqlalchemy import Enum as SAEnum
+from sqlalchemy import Enum as SAEnum, Index, text
 from sqlmodel import Field, Relationship
 
 from src.modules.professionals.domain.models.enums import (
@@ -15,6 +15,7 @@ from src.shared.domain.models import (
     AwareDatetimeField,
     BaseModel,
     PrimaryKeyMixin,
+    SoftDeleteMixin,
     TimestampMixin,
     VerificationMixin,
 )
@@ -86,6 +87,7 @@ class ProfessionalDocument(
     VerificationMixin,
     PrimaryKeyMixin,
     TimestampMixin,
+    SoftDeleteMixin,
     table=True,
 ):
     """
@@ -100,6 +102,34 @@ class ProfessionalDocument(
     """
 
     __tablename__ = "professional_documents"
+    __table_args__ = (
+        # GIN trigram index for file_name search
+        Index(
+            "idx_professional_documents_filename_trgm",
+            text("f_unaccent(lower(file_name))"),
+            postgresql_using="gin",
+            postgresql_ops={"": "gin_trgm_ops"},
+            postgresql_where=text("deleted_at IS NULL"),
+        ),
+        # B-tree index for document_type filtering
+        Index(
+            "idx_professional_documents_type",
+            "document_type",
+            postgresql_where=text("deleted_at IS NULL"),
+        ),
+        # B-tree index for document_category filtering
+        Index(
+            "idx_professional_documents_category",
+            "document_category",
+            postgresql_where=text("deleted_at IS NULL"),
+        ),
+        # B-tree index for expires_at filtering (only where not null)
+        Index(
+            "idx_professional_documents_expires",
+            "expires_at",
+            postgresql_where=text("deleted_at IS NULL AND expires_at IS NOT NULL"),
+        ),
+    )
 
     # Always linked to organization professional (required for listing all docs)
     organization_professional_id: UUID = Field(

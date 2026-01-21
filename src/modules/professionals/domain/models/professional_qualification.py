@@ -4,13 +4,14 @@ from typing import TYPE_CHECKING, Optional
 from uuid import UUID
 
 from sqlalchemy import Enum as SAEnum
-from sqlalchemy import UniqueConstraint
+from sqlalchemy import Index, UniqueConstraint, text
 from sqlmodel import Field, Relationship
 
 from src.modules.professionals.domain.models.enums import CouncilType, ProfessionalType
 from src.shared.domain.models import (
     BaseModel,
     PrimaryKeyMixin,
+    SoftDeleteMixin,
     TimestampMixin,
     VerificationMixin,
 )
@@ -28,6 +29,7 @@ if TYPE_CHECKING:
     from src.modules.professionals.domain.models.professional_specialty import (
         ProfessionalSpecialty,
     )
+    from src.modules.organizations.domain.models.organization import Organization
 
 
 class ProfessionalQualificationBase(BaseModel):
@@ -68,6 +70,7 @@ class ProfessionalQualification(
     VerificationMixin,
     PrimaryKeyMixin,
     TimestampMixin,
+    SoftDeleteMixin,
     table=True,
 ):
     """
@@ -82,15 +85,65 @@ class ProfessionalQualification(
     - Council registration (CRM, COREN, etc.) - only one per qualification
     - Related specialties
     - Complementary education (specializations, courses, etc.)
+
+    Multi-tenancy:
+    - organization_id is denormalized for unique constraint on council registration
+    - A council number + state must be unique within an organization
     """
 
     __tablename__ = "professional_qualifications"
     __table_args__ = (
+        # Unique professional type per organization professional
         UniqueConstraint(
             "organization_professional_id",
             "professional_type",
             name="uq_professional_qualifications_org_professional_type",
         ),
+        # Unique council registration per organization (when not soft-deleted)
+        # The same professional can exist in multiple organizations
+        Index(
+            "uq_professional_qualifications_council_org",
+            "organization_id",
+            "council_number",
+            "council_state",
+            unique=True,
+            postgresql_where=text("deleted_at IS NULL"),
+        ),
+        # GIN trigram index for council number search
+        Index(
+            "idx_professional_qualifications_council_trgm",
+            text("lower(council_number)"),
+            postgresql_using="gin",
+            postgresql_ops={"": "gin_trgm_ops"},
+            postgresql_where=text("deleted_at IS NULL"),
+        ),
+        # B-tree index for professional type filtering
+        Index(
+            "idx_professional_qualifications_type",
+            "professional_type",
+            postgresql_where=text("deleted_at IS NULL"),
+        ),
+        # B-tree index for council type + state filtering
+        Index(
+            "idx_professional_qualifications_council",
+            "council_type",
+            "council_state",
+            postgresql_where=text("deleted_at IS NULL"),
+        ),
+        # B-tree composite index for org + type filtering
+        Index(
+            "idx_professional_qualifications_org_type",
+            "organization_id",
+            "professional_type",
+            postgresql_where=text("deleted_at IS NULL"),
+        ),
+    )
+
+    # Organization reference (denormalized for unique constraint)
+    organization_id: UUID = Field(
+        foreign_key="organizations.id",
+        nullable=False,
+        description="Organization ID (denormalized for unique constraint)",
     )
 
     organization_professional_id: UUID = Field(
@@ -100,6 +153,7 @@ class ProfessionalQualification(
     )
 
     # Relationships
+    organization: "Organization" = Relationship()
     professional: "OrganizationProfessional" = Relationship(
         back_populates="qualifications"
     )

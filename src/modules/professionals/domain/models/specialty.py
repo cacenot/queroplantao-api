@@ -2,14 +2,13 @@
 
 from typing import TYPE_CHECKING, Optional
 
-from sqlalchemy import Enum as SAEnum
-from sqlalchemy import UniqueConstraint
+from sqlalchemy import Index, text
 from sqlmodel import Field, Relationship
 
-from src.modules.professionals.domain.models.enums import ProfessionalType
 from src.shared.domain.models import (
     BaseModel,
     PrimaryKeyMixin,
+    SoftDeleteMixin,
     TimestampMixin,
 )
 
@@ -20,50 +19,67 @@ if TYPE_CHECKING:
 
 
 class SpecialtyBase(BaseModel):
-    """Base fields for Specialty."""
+    """Base fields for Specialty.
+
+    Specialties are medical specialties recognized by CFM (Conselho Federal de Medicina).
+    All specialties require residency and are specific to doctors.
+    """
 
     code: str = Field(
-        max_length=20,
-        description="Specialty code from the council (e.g., CFM code for doctors)",
+        max_length=50,
+        description="Specialty code (e.g., 'CARDIOLOGIA', 'ANESTESIOLOGIA')",
     )
     name: str = Field(
-        max_length=100,
-        description="Specialty name",
+        max_length=150,
+        description="Specialty name in Portuguese",
     )
     description: Optional[str] = Field(
         default=None,
         description="Specialty description",
     )
-    professional_type: ProfessionalType = Field(
-        sa_type=SAEnum(
-            ProfessionalType, name="professional_type", create_constraint=True
-        ),
-        description="Type of professional that can have this specialty",
-    )
-    is_generalist: bool = Field(
-        default=False,
-        description="TRUE for 'General Practitioner', 'General Nurse', etc.",
-    )
-    requires_residency: bool = Field(
-        default=False,
-        description="Whether this specialty requires residency/specialization",
-    )
-    is_active: bool = Field(
-        default=True,
-        description="Whether this specialty is active",
-    )
 
 
-class Specialty(SpecialtyBase, PrimaryKeyMixin, TimestampMixin, table=True):
+class Specialty(
+    SpecialtyBase, PrimaryKeyMixin, TimestampMixin, SoftDeleteMixin, table=True
+):
     """
     Specialty table model.
 
-    Defines medical and healthcare specialties for professionals.
-    Each specialty is associated with a professional type.
+    Defines medical specialties recognized by CFM (Conselho Federal de Medicina).
+    This is a global reference table - all specialties require residency and are
+    specific to doctors (physicians).
+
+    Note: This is a global entity, not tenant-scoped. Organizations can only
+    read specialties, not create or modify them.
     """
 
     __tablename__ = "specialties"
-    __table_args__ = (UniqueConstraint("code", name="uq_specialties_code"),)
+    __table_args__ = (
+        # Unique code when not soft-deleted
+        Index(
+            "uq_specialties_code",
+            "code",
+            unique=True,
+            postgresql_where=text("deleted_at IS NULL"),
+        ),
+        # GIN trigram index for search (code + name)
+        Index(
+            "idx_specialties_search_trgm",
+            text(
+                "(COALESCE(lower(code), '') || ' ' || "
+                "COALESCE(f_unaccent(lower(name)), ''))"
+            ),
+            postgresql_using="gin",
+            postgresql_ops={"": "gin_trgm_ops"},
+            postgresql_where=text("deleted_at IS NULL"),
+        ),
+        # B-tree index for name sorting
+        Index(
+            "idx_specialties_name",
+            "name",
+            postgresql_where=text("deleted_at IS NULL"),
+        ),
+    )
 
     # Relationships
     professionals: list["ProfessionalSpecialty"] = Relationship(

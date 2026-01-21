@@ -11,6 +11,7 @@ from src.modules.professionals.domain.models.enums import ResidencyStatus
 from src.shared.domain.models import (
     BaseModel,
     PrimaryKeyMixin,
+    SoftDeleteMixin,
     TimestampMixin,
     VerificationMixin,
 )
@@ -76,6 +77,7 @@ class ProfessionalSpecialty(
     VerificationMixin,
     PrimaryKeyMixin,
     TimestampMixin,
+    SoftDeleteMixin,
     table=True,
 ):
     """

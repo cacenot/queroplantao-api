@@ -3,7 +3,7 @@
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID
 
-from sqlalchemy import Enum as SAEnum, Index
+from sqlalchemy import Enum as SAEnum, Index, text
 from sqlmodel import Field, Relationship
 
 from src.modules.professionals.domain.models.enums import Gender, MaritalStatus
@@ -123,7 +123,7 @@ class OrganizationProfessional(
             "organization_id",
             "cpf",
             unique=True,
-            postgresql_where="cpf IS NOT NULL AND deleted_at IS NULL",
+            postgresql_where=text("cpf IS NOT NULL AND deleted_at IS NULL"),
         ),
         # Unique email per organization (when email is set and not soft-deleted)
         Index(
@@ -131,7 +131,46 @@ class OrganizationProfessional(
             "organization_id",
             "email",
             unique=True,
-            postgresql_where="email IS NOT NULL AND deleted_at IS NULL",
+            postgresql_where=text("email IS NOT NULL AND deleted_at IS NULL"),
+        ),
+        # GIN trigram index for full-text search (name + email + cpf)
+        Index(
+            "idx_organization_professionals_search_trgm",
+            text(
+                "(COALESCE(f_unaccent(lower(full_name)), '') || ' ' || "
+                "COALESCE(f_unaccent(lower(email)), '') || ' ' || "
+                "COALESCE(cpf, ''))"
+            ),
+            postgresql_using="gin",
+            postgresql_ops={"": "gin_trgm_ops"},
+            postgresql_where=text("deleted_at IS NULL"),
+        ),
+        # GIN trigram index for name search
+        Index(
+            "idx_organization_professionals_full_name_trgm",
+            text("f_unaccent(lower(full_name))"),
+            postgresql_using="gin",
+            postgresql_ops={"": "gin_trgm_ops"},
+            postgresql_where=text("deleted_at IS NULL"),
+        ),
+        # B-tree index for active status filtering
+        Index(
+            "idx_organization_professionals_is_active",
+            "is_active",
+            postgresql_where=text("deleted_at IS NULL"),
+        ),
+        # B-tree composite index for org + active filtering
+        Index(
+            "idx_organization_professionals_org_active",
+            "organization_id",
+            "is_active",
+            postgresql_where=text("deleted_at IS NULL"),
+        ),
+        # B-tree index for created_at sorting
+        Index(
+            "idx_organization_professionals_created_at",
+            "created_at",
+            postgresql_where=text("deleted_at IS NULL"),
         ),
     )
 

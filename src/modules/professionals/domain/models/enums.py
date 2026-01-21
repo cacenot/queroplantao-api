@@ -139,3 +139,76 @@ class DocumentType(str, Enum):
 
     # Generic
     OTHER = "OTHER"  # Outros documentos
+
+
+# ============================================================================
+# COUNCIL ↔ PROFESSIONAL TYPE VALIDATION
+# ============================================================================
+
+# Mapping of which professional types are valid for each council
+COUNCIL_TO_PROFESSIONAL_TYPES: dict[CouncilType, frozenset[ProfessionalType]] = {
+    CouncilType.CRM: frozenset({ProfessionalType.DOCTOR}),
+    CouncilType.COREN: frozenset(
+        {ProfessionalType.NURSE, ProfessionalType.NURSING_TECH}
+    ),
+    CouncilType.CRF: frozenset({ProfessionalType.PHARMACIST}),
+    CouncilType.CRO: frozenset({ProfessionalType.DENTIST}),
+    CouncilType.CREFITO: frozenset({ProfessionalType.PHYSIOTHERAPIST}),
+    CouncilType.CRP: frozenset({ProfessionalType.PSYCHOLOGIST}),
+    CouncilType.CRN: frozenset({ProfessionalType.NUTRITIONIST}),
+    CouncilType.CRBM: frozenset({ProfessionalType.BIOMEDIC}),
+    CouncilType.OTHER: frozenset({ProfessionalType.OTHER}),
+}
+
+# Reverse mapping: which council corresponds to each professional type
+PROFESSIONAL_TYPE_TO_COUNCIL: dict[ProfessionalType, CouncilType] = {
+    ProfessionalType.DOCTOR: CouncilType.CRM,
+    ProfessionalType.NURSE: CouncilType.COREN,
+    ProfessionalType.NURSING_TECH: CouncilType.COREN,
+    ProfessionalType.PHARMACIST: CouncilType.CRF,
+    ProfessionalType.DENTIST: CouncilType.CRO,
+    ProfessionalType.PHYSIOTHERAPIST: CouncilType.CREFITO,
+    ProfessionalType.PSYCHOLOGIST: CouncilType.CRP,
+    ProfessionalType.NUTRITIONIST: CouncilType.CRN,
+    ProfessionalType.BIOMEDIC: CouncilType.CRBM,
+    ProfessionalType.OTHER: CouncilType.OTHER,
+}
+
+
+def validate_council_for_professional_type(
+    council_type: CouncilType,
+    professional_type: ProfessionalType,
+) -> bool:
+    """
+    Validate that a council type is valid for a professional type.
+
+    For example, a DOCTOR must have CRM council, not COREN.
+
+    Args:
+        council_type: The council registration type (CRM, COREN, etc.)
+        professional_type: The declared professional type (DOCTOR, NURSE, etc.)
+
+    Returns:
+        True if the council is valid for the professional type, False otherwise.
+    """
+    # Allow OTHER for flexibility (unknown/new professional types or councils)
+    if council_type == CouncilType.OTHER or professional_type == ProfessionalType.OTHER:
+        return True
+
+    valid_types = COUNCIL_TO_PROFESSIONAL_TYPES.get(council_type, frozenset())
+    return professional_type in valid_types
+
+
+def get_expected_council_for_professional_type(
+    professional_type: ProfessionalType,
+) -> CouncilType:
+    """
+    Get the expected council type for a professional type.
+
+    Args:
+        professional_type: The professional type (DOCTOR, NURSE, etc.)
+
+    Returns:
+        The expected council type for this professional.
+    """
+    return PROFESSIONAL_TYPE_TO_COUNCIL.get(professional_type, CouncilType.OTHER)

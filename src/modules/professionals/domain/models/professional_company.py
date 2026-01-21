@@ -11,6 +11,7 @@ from src.shared.domain.models import (
     AwareDatetimeField,
     BaseModel,
     PrimaryKeyMixin,
+    SoftDeleteMixin,
     TimestampMixin,
     TrackingMixin,
 )
@@ -42,6 +43,7 @@ class ProfessionalCompany(
     TrackingMixin,
     PrimaryKeyMixin,
     TimestampMixin,
+    SoftDeleteMixin,
     table=True,
 ):
     """
