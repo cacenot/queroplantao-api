@@ -2,11 +2,12 @@
 Filters and sorting for ProfessionalDocument entity.
 """
 
-from typing import Annotated
+from typing import Optional
 
-from fastapi import Query
+from pydantic import Field
+from fastapi_restkit.filters import BooleanFilter, ListFilter, SearchFilter
 from fastapi_restkit.filterset import FilterSet
-from fastapi_restkit.sortingset import SortingSet
+from fastapi_restkit.sortingset import SortableField, SortingSet
 
 from src.modules.professionals.domain.models import DocumentCategory, DocumentType
 
@@ -22,46 +23,31 @@ class ProfessionalDocumentFilter(FilterSet):
     - is_verified: Filter by verification status
     """
 
-    search: Annotated[
-        str | None,
-        Query(
-            default=None,
-            description="Search by file name (partial, case-insensitive)",
-        ),
-    ] = None
+    search: Optional[SearchFilter] = Field(
+        default=None,
+        description="Search by file name (partial, case-insensitive)",
+    )
 
-    document_type: Annotated[
-        DocumentType | None,
-        Query(
-            default=None,
-            description="Filter by document type",
-        ),
-    ] = None
+    document_type: Optional[ListFilter[DocumentType]] = Field(
+        default=None,
+        description="Filter by document type",
+    )
 
-    document_category: Annotated[
-        DocumentCategory | None,
-        Query(
-            default=None,
-            description="Filter by document category",
-        ),
-    ] = None
+    document_category: Optional[ListFilter[DocumentCategory]] = Field(
+        default=None,
+        description="Filter by document category",
+    )
 
-    is_verified: Annotated[
-        bool | None,
-        Query(
-            default=None,
-            description="Filter by verification status",
-        ),
-    ] = None
+    is_verified: Optional[BooleanFilter] = Field(
+        default=None,
+        description="Filter by verification status",
+    )
 
     class Config:
         """FilterSet configuration."""
 
-        search_fields = ["file_name"]
         field_columns = {
-            "document_type": "document_type",
-            "document_category": "document_category",
-            "is_verified": "is_verified",
+            "search": ["file_name"],
         }
 
 
@@ -72,54 +58,13 @@ class ProfessionalDocumentSorting(SortingSet):
     Default sorting is by id (UUID v7 - time-ordered).
     """
 
-    id: Annotated[
-        str | None,
-        Query(
-            default=None,
-            description="Sort by id (asc or desc). UUID v7 is time-ordered.",
-        ),
-    ] = None
-
-    document_type: Annotated[
-        str | None,
-        Query(
-            default=None,
-            description="Sort by document type (asc or desc)",
-        ),
-    ] = None
-
-    file_name: Annotated[
-        str | None,
-        Query(
-            default=None,
-            description="Sort by file name (asc or desc)",
-        ),
-    ] = None
-
-    expires_at: Annotated[
-        str | None,
-        Query(
-            default=None,
-            description="Sort by expiration date (asc or desc)",
-        ),
-    ] = None
-
-    created_at: Annotated[
-        str | None,
-        Query(
-            default=None,
-            description="Sort by creation date (asc or desc)",
-        ),
-    ] = None
+    id: SortableField = SortableField(description="ID (UUID v7 is time-ordered)")
+    document_type: SortableField = SortableField(description="Document type")
+    file_name: SortableField = SortableField(description="File name")
+    expires_at: SortableField = SortableField(description="Expiration date")
+    created_at: SortableField = SortableField(description="Creation date")
 
     class Config:
         """SortingSet configuration."""
 
-        default_sort = [("id", "asc")]
-        field_columns = {
-            "id": "id",
-            "document_type": "document_type",
-            "file_name": "file_name",
-            "expires_at": "expires_at",
-            "created_at": "created_at",
-        }
+        default_sorting = ["id:asc"]

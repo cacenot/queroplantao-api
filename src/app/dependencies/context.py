@@ -85,7 +85,9 @@ def get_validated_context(
     return ValidatedContext.from_request_context(context)
 
 
-def get_organization_context() -> ValidatedContext:
+def get_organization_context(
+    credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(security)],
+) -> ValidatedContext:
     """
     Get the current request context, validating organization context exists.
 
@@ -93,7 +95,7 @@ def get_organization_context() -> ValidatedContext:
         AuthenticationError: If no context exists (user not authenticated).
         AuthorizationError: If no organization context is set.
     """
-    context = get_validated_context()
+    context = get_validated_context(credentials)
     if not context.has_organization():
         raise AuthorizationError(
             message="Organization context required. Set X-Organization-Id header."

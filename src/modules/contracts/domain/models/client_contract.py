@@ -95,7 +95,7 @@ class ClientContract(
     )
 
     # Relationships
-    organization: "Organization" = Relationship(back_populates="client_contracts")
+    organization: "Organization" = Relationship()
     professional_contracts: list["ProfessionalContract"] = Relationship(
         back_populates="client_contract"
     )

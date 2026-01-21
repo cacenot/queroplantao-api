@@ -154,9 +154,7 @@ class ScreeningDocumentReview(
     process_step: Optional["ScreeningProcessStep"] = Relationship(
         back_populates="document_reviews",
     )
-    professional_document: "ProfessionalDocument" = Relationship(
-        back_populates="screening_reviews",
-    )
+    professional_document: "ProfessionalDocument" = Relationship()
     required_document: Optional["ScreeningRequiredDocument"] = Relationship(
         back_populates="reviews",
     )

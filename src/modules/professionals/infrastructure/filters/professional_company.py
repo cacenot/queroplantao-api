@@ -5,11 +5,8 @@ Note: ProfessionalCompany is a junction table. Search by company_name
 requires joining with Company table and is handled at repository level.
 """
 
-from typing import Annotated
-
-from fastapi import Query
 from fastapi_restkit.filterset import FilterSet
-from fastapi_restkit.sortingset import SortingSet
+from fastapi_restkit.sortingset import SortableField, SortingSet
 
 
 class ProfessionalCompanyFilter(FilterSet):
@@ -19,8 +16,6 @@ class ProfessionalCompanyFilter(FilterSet):
     Note: Search by company_name is not available as it requires
     a join with the Company table.
     """
-
-    # Note: Removed search as company_name is in related Company table
 
     class Config:
         """FilterSet configuration."""
@@ -36,36 +31,11 @@ class ProfessionalCompanySorting(SortingSet):
     Note: Sorting by company_name requires join and is not supported here.
     """
 
-    id: Annotated[
-        str | None,
-        Query(
-            default=None,
-            description="Sort by id (asc or desc). UUID v7 is time-ordered.",
-        ),
-    ] = None
-
-    joined_at: Annotated[
-        str | None,
-        Query(
-            default=None,
-            description="Sort by join date (asc or desc)",
-        ),
-    ] = None
-
-    created_at: Annotated[
-        str | None,
-        Query(
-            default=None,
-            description="Sort by creation date (asc or desc)",
-        ),
-    ] = None
+    id: SortableField = SortableField(description="ID (UUID v7 is time-ordered)")
+    joined_at: SortableField = SortableField(description="Join date")
+    created_at: SortableField = SortableField(description="Creation date")
 
     class Config:
         """SortingSet configuration."""
 
-        default_sort = [("id", "asc")]
-        field_columns = {
-            "id": "id",
-            "joined_at": "joined_at",
-            "created_at": "created_at",
-        }
+        default_sorting = ["id:asc"]

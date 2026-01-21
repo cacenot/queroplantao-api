@@ -31,7 +31,7 @@ class GetSpecialtyUseCase:
         Raises:
             NotFoundError: If specialty not found.
         """
-        specialty = await self.repository.get(specialty_id)
+        specialty = await self.repository.get_by_id(specialty_id)
         if specialty is None:
             raise NotFoundError(
                 resource="Specialty",

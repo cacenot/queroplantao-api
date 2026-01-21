@@ -1,4 +1,4 @@
-.PHONY: install dev test test-cov lint format migrate migrate-create migrate-rollback run worker docker-up docker-down docker-logs clean pre-commit-install pre-commit help
+.PHONY: install dev test test-cov lint format migrate migrate-create migrate-rollback run worker docker-up docker-down docker-logs clean pre-commit-install pre-commit firebase-token help
 
 ## Install dependencies
 install:
@@ -75,6 +75,10 @@ pre-commit-install:
 ## Run pre-commit on all files
 pre-commit:
 	uv run pre-commit run --all-files
+
+## Generate Firebase Auth token for API testing
+firebase-token:
+	@set -a && [ -f .env ] && . ./.env && set +a; uv run python scripts/generate_firebase_token.py
 
 ## Show this help message
 help:

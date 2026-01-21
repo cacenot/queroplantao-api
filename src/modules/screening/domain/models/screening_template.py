@@ -112,9 +112,7 @@ class ScreeningTemplate(
     )
 
     # Relationships
-    organization: "Organization" = Relationship(
-        back_populates="screening_templates",
-    )
+    organization: "Organization" = Relationship()
     steps: list["ScreeningTemplateStep"] = Relationship(
         back_populates="template",
         sa_relationship_kwargs={"order_by": "ScreeningTemplateStep.order"},

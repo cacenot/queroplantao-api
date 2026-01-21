@@ -141,6 +141,12 @@ class Settings(BaseSettings):
         return self.APP_ENV == "production"
 
     @property
+    def is_local_database(self) -> bool:
+        """Check if using local database (no SSL required)."""
+        url = str(self.DATABASE_URL).lower()
+        return "localhost" in url or "127.0.0.1" in url
+
+    @property
     def database_url_sync(self) -> str:
         """URL síncrona do banco de dados."""
         url = str(self.DATABASE_URL)
@@ -160,13 +166,16 @@ class Settings(BaseSettings):
     @property
     def neon_connection_args_sync(self) -> dict:
         """Argumentos de conexão síncronos otimizados para Neon (psycopg)"""
+        # Para banco local, desabilita SSL
+        sslmode = "disable" if self.is_local_database else self.NEON_SSL_MODE
+
         return {
             "pool_size": self.NEON_POOL_SIZE,
             "max_overflow": self.NEON_MAX_OVERFLOW,
             "pool_timeout": self.NEON_POOL_TIMEOUT,
             "pool_recycle": self.NEON_POOL_RECYCLE,
             "connect_args": {
-                "sslmode": self.NEON_SSL_MODE,
+                "sslmode": sslmode,
                 "connect_timeout": 30,
                 "options": "-c default_transaction_isolation=read_committed",
             },
@@ -175,6 +184,11 @@ class Settings(BaseSettings):
     @property
     def neon_connection_args_async(self) -> dict:
         """Argumentos de conexão assíncronos otimizados para Neon (asyncpg)"""
+        # Para banco local, desabilita SSL; para remoto (Neon), usa a config
+        require_ssl = (
+            False if self.is_local_database else (self.NEON_SSL_MODE == "require")
+        )
+
         return {
             "pool_size": self.NEON_POOL_SIZE,
             "max_overflow": self.NEON_MAX_OVERFLOW,
@@ -182,7 +196,7 @@ class Settings(BaseSettings):
             "pool_recycle": self.NEON_POOL_RECYCLE,
             "connect_args": {
                 "statement_cache_size": 0,
-                "ssl": self.NEON_SSL_MODE == "require",
+                "ssl": require_ssl,
                 "command_timeout": 30,
                 "server_settings": {
                     "application_name": "queroplantao_api",

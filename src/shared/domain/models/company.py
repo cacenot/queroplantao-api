@@ -99,7 +99,5 @@ class Company(
         back_populates="company"
     )
     bank_accounts: list["BankAccount"] = Relationship(back_populates="company")
-    units: list["Unit"] = Relationship(back_populates="company")
-    professional_contracts: list["ProfessionalContract"] = Relationship(
-        back_populates="company"
-    )
+    # Note: units and professional_contracts relationships are defined on Unit and ProfessionalContract
+    # to avoid circular import issues

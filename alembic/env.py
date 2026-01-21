@@ -26,7 +26,7 @@ settings = Settings()
 config.set_main_option("sqlalchemy.url", settings.database_url_sync)
 
 # Import models for autogenerate support
-from src.shared.domain import models as shared_models  # noqa: E402, F401
+# Order matters! Import modules with dependencies after their dependents
 
 from src.modules.auth.domain import models as auth_models  # noqa: E402, F401
 from src.modules.professionals.domain import models as professionals_models  # noqa: E402, F401
@@ -34,6 +34,9 @@ from src.modules.organizations.domain import models as organizations_models  # n
 from src.modules.units.domain import models as units_models  # noqa: E402, F401
 from src.modules.contracts.domain import models as contracts_models  # noqa: E402, F401
 from src.modules.screening.domain import models as screening_models  # noqa: E402, F401
+
+# Import shared models AFTER contracts (BankAccount references ProfessionalContract)
+from src.shared.domain import models as shared_models  # noqa: E402, F401
 
 # Import SQLModel metadata
 from sqlmodel import SQLModel  # noqa: E402

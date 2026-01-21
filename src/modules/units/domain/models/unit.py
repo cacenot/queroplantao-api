@@ -136,8 +136,8 @@ class Unit(
     )
 
     # Relationships
-    organization: "Organization" = Relationship(back_populates="units")
-    company: Optional["Company"] = Relationship(back_populates="units")
+    organization: "Organization" = Relationship()
+    company: Optional["Company"] = Relationship()
     sectors: list["Sector"] = Relationship(back_populates="unit")
     professional_contracts: list["ProfessionalContract"] = Relationship(
         back_populates="unit"

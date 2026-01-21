@@ -267,18 +267,12 @@ class ScreeningProcess(
     )
 
     # Relationships
-    organization: "Organization" = Relationship(
-        back_populates="screening_processes",
-    )
+    organization: "Organization" = Relationship()
     template: "ScreeningTemplate" = Relationship(
         back_populates="processes",
     )
-    organization_professional: Optional["OrganizationProfessional"] = Relationship(
-        back_populates="screening_processes",
-    )
-    professional_contract: Optional["ProfessionalContract"] = Relationship(
-        back_populates="screening_processes",
-    )
+    organization_professional: Optional["OrganizationProfessional"] = Relationship()
+    professional_contract: Optional["ProfessionalContract"] = Relationship()
     client_contract: Optional["ClientContract"] = Relationship(
         back_populates="screening_processes",
     )
@@ -328,8 +322,12 @@ class ScreeningProcess(
     @property
     def can_be_filled(self) -> bool:
         """Check if screening can still accept input."""
-        return self.status in (
-            ScreeningStatus.CONVERSATION,
-            ScreeningStatus.IN_PROGRESS,
-            ScreeningStatus.PENDING_CORRECTION,
-        ) and not self.is_expired
+        return (
+            self.status
+            in (
+                ScreeningStatus.CONVERSATION,
+                ScreeningStatus.IN_PROGRESS,
+                ScreeningStatus.PENDING_CORRECTION,
+            )
+            and not self.is_expired
+        )

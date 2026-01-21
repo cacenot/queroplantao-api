@@ -160,6 +160,4 @@ class ProfessionalDocument(
     specialty: Optional["ProfessionalSpecialty"] = Relationship(
         back_populates="documents"
     )
-    screening_reviews: list["ScreeningDocumentReview"] = Relationship(
-        back_populates="professional_document"
-    )
+    # Note: screening_reviews relationship is defined on ScreeningDocumentReview to avoid circular imports

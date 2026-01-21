@@ -193,9 +193,5 @@ class OrganizationProfessional(
         back_populates="professional"
     )
     bank_accounts: list["BankAccount"] = Relationship(back_populates="professional")
-    contracts: list["ProfessionalContract"] = Relationship(
-        back_populates="organization_professional"
-    )
-    screening_processes: list["ScreeningProcess"] = Relationship(
-        back_populates="organization_professional"
-    )
+    # Note: contracts and screening_processes relationships are defined on ProfessionalContract and ScreeningProcess
+    # to avoid circular import issues

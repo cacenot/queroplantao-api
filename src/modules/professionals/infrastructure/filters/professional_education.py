@@ -2,11 +2,12 @@
 Filters and sorting for ProfessionalEducation entity.
 """
 
-from typing import Annotated
+from typing import Optional
 
-from fastapi import Query
+from pydantic import Field
+from fastapi_restkit.filters import BooleanFilter, ListFilter, SearchFilter
 from fastapi_restkit.filterset import FilterSet
-from fastapi_restkit.sortingset import SortingSet
+from fastapi_restkit.sortingset import SortableField, SortingSet
 
 from src.modules.professionals.domain.models import EducationLevel
 
@@ -22,46 +23,31 @@ class ProfessionalEducationFilter(FilterSet):
     - is_verified: Filter by verification status
     """
 
-    search: Annotated[
-        str | None,
-        Query(
-            default=None,
-            description="Search by course name or institution (partial, case-insensitive)",
-        ),
-    ] = None
+    search: Optional[SearchFilter] = Field(
+        default=None,
+        description="Search by course name or institution (partial, case-insensitive)",
+    )
 
-    level: Annotated[
-        EducationLevel | None,
-        Query(
-            default=None,
-            description="Filter by education level",
-        ),
-    ] = None
+    level: Optional[ListFilter[EducationLevel]] = Field(
+        default=None,
+        description="Filter by education level",
+    )
 
-    is_completed: Annotated[
-        bool | None,
-        Query(
-            default=None,
-            description="Filter by completion status",
-        ),
-    ] = None
+    is_completed: Optional[BooleanFilter] = Field(
+        default=None,
+        description="Filter by completion status",
+    )
 
-    is_verified: Annotated[
-        bool | None,
-        Query(
-            default=None,
-            description="Filter by verification status",
-        ),
-    ] = None
+    is_verified: Optional[BooleanFilter] = Field(
+        default=None,
+        description="Filter by verification status",
+    )
 
     class Config:
         """FilterSet configuration."""
 
-        search_fields = ["course_name", "institution"]
         field_columns = {
-            "level": "level",
-            "is_completed": "is_completed",
-            "is_verified": "is_verified",
+            "search": ["course_name", "institution"],
         }
 
 
@@ -72,45 +58,12 @@ class ProfessionalEducationSorting(SortingSet):
     Default sorting is by id (UUID v7 - time-ordered).
     """
 
-    id: Annotated[
-        str | None,
-        Query(
-            default=None,
-            description="Sort by id (asc or desc). UUID v7 is time-ordered.",
-        ),
-    ] = None
-
-    level: Annotated[
-        str | None,
-        Query(
-            default=None,
-            description="Sort by education level (asc or desc)",
-        ),
-    ] = None
-
-    end_year: Annotated[
-        str | None,
-        Query(
-            default=None,
-            description="Sort by end year (asc or desc)",
-        ),
-    ] = None
-
-    created_at: Annotated[
-        str | None,
-        Query(
-            default=None,
-            description="Sort by creation date (asc or desc)",
-        ),
-    ] = None
+    id: SortableField = SortableField(description="ID (UUID v7 is time-ordered)")
+    level: SortableField = SortableField(description="Education level")
+    end_year: SortableField = SortableField(description="End year")
+    created_at: SortableField = SortableField(description="Creation date")
 
     class Config:
         """SortingSet configuration."""
 
-        default_sort = [("id", "asc")]
-        field_columns = {
-            "id": "id",
-            "level": "level",
-            "end_year": "end_year",
-            "created_at": "created_at",
-        }
+        default_sorting = ["id:asc"]

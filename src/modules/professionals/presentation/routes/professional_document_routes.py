@@ -3,7 +3,9 @@
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, status
+from fastapi_restkit.filterset import filter_as_query
 from fastapi_restkit.pagination import PaginatedResponse, PaginationParams
+from fastapi_restkit.sortingset import sorting_as_query
 
 from src.modules.professionals.domain.schemas import (
     ProfessionalDocumentCreate,
@@ -64,8 +66,12 @@ async def list_documents(
     ctx: OrganizationContext,
     use_case: ListProfessionalDocumentsUC,
     pagination: PaginationParams = Depends(),
-    filters: ProfessionalDocumentFilter = Depends(),
-    sorting: ProfessionalDocumentSorting = Depends(),
+    filters: ProfessionalDocumentFilter = Depends(
+        filter_as_query(ProfessionalDocumentFilter)
+    ),
+    sorting: ProfessionalDocumentSorting = Depends(
+        sorting_as_query(ProfessionalDocumentSorting)
+    ),
 ) -> PaginatedResponse[ProfessionalDocumentResponse]:
     """List all documents for a professional."""
     result = await use_case.execute(

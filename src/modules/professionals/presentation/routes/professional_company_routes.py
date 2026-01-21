@@ -3,7 +3,9 @@
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, status
+from fastapi_restkit.filterset import filter_as_query
 from fastapi_restkit.pagination import PaginatedResponse, PaginationParams
+from fastapi_restkit.sortingset import sorting_as_query
 
 from src.modules.professionals.domain.schemas import (
     ProfessionalCompanyCreate,
@@ -64,8 +66,12 @@ async def list_company_links(
     ctx: OrganizationContext,
     use_case: ListProfessionalCompaniesUC,
     pagination: PaginationParams = Depends(),
-    filters: ProfessionalCompanyFilter = Depends(),
-    sorting: ProfessionalCompanySorting = Depends(),
+    filters: ProfessionalCompanyFilter = Depends(
+        filter_as_query(ProfessionalCompanyFilter)
+    ),
+    sorting: ProfessionalCompanySorting = Depends(
+        sorting_as_query(ProfessionalCompanySorting)
+    ),
 ) -> PaginatedResponse[ProfessionalCompanyResponse]:
     """List all company links for a professional."""
     result = await use_case.execute(

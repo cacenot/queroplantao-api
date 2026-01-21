@@ -171,6 +171,5 @@ class BankAccount(
         back_populates="bank_accounts"
     )
     company: Optional["Company"] = Relationship(back_populates="bank_accounts")
-    professional_contracts: list["ProfessionalContract"] = Relationship(
-        back_populates="bank_account"
-    )
+    # Note: professional_contracts relationship is defined via ProfessionalContract.bank_account
+    # to avoid circular import issues

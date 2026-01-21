@@ -3,7 +3,9 @@
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query
+from fastapi_restkit.filterset import filter_as_query
 from fastapi_restkit.pagination import PaginatedResponse, PaginationParams
+from fastapi_restkit.sortingset import sorting_as_query
 
 from src.shared.domain.schemas.specialty import (
     SpecialtyListResponse,
@@ -35,8 +37,8 @@ async def list_specialties(
     _context: CurrentContext,  # Require authentication but not organization
     use_case: ListSpecialtiesUC,
     pagination: PaginationParams = Depends(),
-    filters: SpecialtyFilter = Depends(),
-    sorting: SpecialtySorting = Depends(),
+    filters: SpecialtyFilter = Depends(filter_as_query(SpecialtyFilter)),
+    sorting: SpecialtySorting = Depends(sorting_as_query(SpecialtySorting)),
 ) -> PaginatedResponse[SpecialtyListResponse]:
     """List all medical specialties."""
     result = await use_case.execute(
@@ -58,7 +60,7 @@ async def search_specialties(
     use_case: SearchSpecialtiesUC,
     q: str = Query(..., min_length=2, description="Search query (min 2 characters)"),
     pagination: PaginationParams = Depends(),
-    sorting: SpecialtySorting = Depends(),
+    sorting: SpecialtySorting = Depends(sorting_as_query(SpecialtySorting)),
 ) -> PaginatedResponse[SpecialtyListResponse]:
     """Search specialties by name or code."""
     result = await use_case.execute(

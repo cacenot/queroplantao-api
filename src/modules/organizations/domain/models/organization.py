@@ -169,16 +169,8 @@ class Organization(
             "foreign_keys": "[OrganizationMembership.organization_id]",
         },
     )
-    units: list["Unit"] = Relationship(back_populates="organization")
-    client_contracts: list["ClientContract"] = Relationship(
-        back_populates="organization"
-    )
-    screening_templates: list["ScreeningTemplate"] = Relationship(
-        back_populates="organization"
-    )
-    screening_processes: list["ScreeningProcess"] = Relationship(
-        back_populates="organization"
-    )
+    # Note: units, client_contracts, screening_templates, and screening_processes relationships
+    # are defined on their respective models to avoid circular imports
 
     @property
     def is_parent(self) -> bool:

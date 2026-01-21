@@ -3,7 +3,9 @@
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, status
+from fastapi_restkit.filterset import filter_as_query
 from fastapi_restkit.pagination import PaginatedResponse, PaginationParams
+from fastapi_restkit.sortingset import sorting_as_query
 
 from src.modules.professionals.domain.schemas import (
     ProfessionalQualificationCreate,
@@ -64,8 +66,12 @@ async def list_qualifications(
     ctx: OrganizationContext,
     use_case: ListProfessionalQualificationsUC,
     pagination: PaginationParams = Depends(),
-    filters: ProfessionalQualificationFilter = Depends(),
-    sorting: ProfessionalQualificationSorting = Depends(),
+    filters: ProfessionalQualificationFilter = Depends(
+        filter_as_query(ProfessionalQualificationFilter)
+    ),
+    sorting: ProfessionalQualificationSorting = Depends(
+        sorting_as_query(ProfessionalQualificationSorting)
+    ),
 ) -> PaginatedResponse[ProfessionalQualificationResponse]:
     """List all qualifications for a professional."""
     result = await use_case.execute(

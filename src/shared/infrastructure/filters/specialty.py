@@ -2,11 +2,12 @@
 Filters and sorting for Specialty entity (global reference data).
 """
 
-from typing import Annotated
+from typing import Optional
 
-from fastapi import Query
+from pydantic import Field
+from fastapi_restkit.filters import SearchFilter
 from fastapi_restkit.filterset import FilterSet
-from fastapi_restkit.sortingset import SortingSet
+from fastapi_restkit.sortingset import SortableField, SortingSet
 
 
 class SpecialtyFilter(FilterSet):
@@ -17,18 +18,17 @@ class SpecialtyFilter(FilterSet):
     - search: Search across code, name (using pg_trgm for fuzzy matching)
     """
 
-    search: Annotated[
-        str | None,
-        Query(
-            default=None,
-            description="Search by code or name (partial, case-insensitive, accent-insensitive)",
-        ),
-    ] = None
+    search: Optional[SearchFilter] = Field(
+        default=None,
+        description="Search by code or name (partial, case-insensitive, accent-insensitive)",
+    )
 
     class Config:
         """FilterSet configuration."""
 
-        search_fields = ["code", "name"]
+        field_columns = {
+            "search": ["code", "name"],
+        }
 
 
 class SpecialtySorting(SortingSet):
@@ -38,36 +38,11 @@ class SpecialtySorting(SortingSet):
     Default sorting is by name alphabetically.
     """
 
-    id: Annotated[
-        str | None,
-        Query(
-            default=None,
-            description="Sort by id (asc or desc). UUID v7 is time-ordered.",
-        ),
-    ] = None
-
-    code: Annotated[
-        str | None,
-        Query(
-            default=None,
-            description="Sort by code (asc or desc)",
-        ),
-    ] = None
-
-    name: Annotated[
-        str | None,
-        Query(
-            default=None,
-            description="Sort by name (asc or desc)",
-        ),
-    ] = None
+    id: SortableField = SortableField(description="ID (UUID v7 is time-ordered)")
+    code: SortableField = SortableField(description="Specialty code")
+    name: SortableField = SortableField(description="Specialty name")
 
     class Config:
         """SortingSet configuration."""
 
-        default_sort = [("name", "asc")]
-        field_columns = {
-            "id": "id",
-            "code": "code",
-            "name": "name",
-        }
+        default_sorting = ["name:asc"]

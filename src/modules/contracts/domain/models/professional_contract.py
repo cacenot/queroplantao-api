@@ -216,22 +216,16 @@ class ProfessionalContract(
     )
 
     # Relationships
-    organization_professional: "OrganizationProfessional" = Relationship(
-        back_populates="contracts"
-    )
+    organization_professional: "OrganizationProfessional" = Relationship()
     client_contract: Optional["ClientContract"] = Relationship(
         back_populates="professional_contracts"
     )
-    company: Optional["Company"] = Relationship(back_populates="professional_contracts")
-    bank_account: Optional["BankAccount"] = Relationship(
-        back_populates="professional_contracts"
-    )
+    company: Optional["Company"] = Relationship()
+    bank_account: Optional["BankAccount"] = Relationship()
     unit: Optional["Unit"] = Relationship(back_populates="professional_contracts")
     amendments: list["ContractAmendment"] = Relationship(back_populates="contract")
     documents: list["ContractDocument"] = Relationship(back_populates="contract")
-    screening_processes: list["ScreeningProcess"] = Relationship(
-        back_populates="professional_contract"
-    )
+    # Note: screening_processes relationship is defined on ScreeningProcess to avoid circular imports
 
     @property
     def is_pending_signatures(self) -> bool:
