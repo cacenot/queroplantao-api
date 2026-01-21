@@ -28,6 +28,7 @@ from src.shared.domain.models.mixins import (
     VerificationMixin,
     VersionMixin,
 )
+from src.shared.domain.models.specialty import Specialty, SpecialtyBase
 
 __all__ = [
     # Base models
@@ -41,6 +42,8 @@ __all__ = [
     "BankAccountBase",
     "Company",
     "CompanyBase",
+    "Specialty",
+    "SpecialtyBase",
     # Shared enums
     "AccountType",
     "PixKeyType",

@@ -8,10 +8,17 @@ from src.shared.domain.schemas.common import (
     ErrorResponse,
     HealthResponse,
 )
+from src.shared.domain.schemas.specialty import (
+    SpecialtyListResponse,
+    SpecialtyResponse,
+)
 
 __all__ = [
     "ErrorResponse",
     "HealthResponse",
     "PaginatedResponse",
     "PaginationParams",
+    # Specialty
+    "SpecialtyListResponse",
+    "SpecialtyResponse",
 ]

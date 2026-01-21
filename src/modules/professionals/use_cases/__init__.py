@@ -57,7 +57,7 @@ from src.modules.professionals.use_cases.professional_specialty import (
 )
 
 # Specialty use cases (read-only for tenants)
-from src.modules.professionals.use_cases.specialty import (
+from src.shared.use_cases.specialty import (
     GetSpecialtyByCodeUseCase,
     GetSpecialtyUseCase,
     ListSpecialtiesUseCase,

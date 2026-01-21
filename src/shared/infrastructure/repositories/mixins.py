@@ -4,9 +4,9 @@ from datetime import datetime, timezone
 from typing import Generic, TypeVar
 from uuid import UUID
 
-from fastapi_restkit.filters import FilterSet
+from fastapi_restkit.filterset import FilterSet
 from fastapi_restkit.pagination import PaginatedResponse, PaginationParams
-from fastapi_restkit.sorting import SortingSet
+from fastapi_restkit.sortingset import SortingSet
 from sqlalchemy import Select, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import SQLModel

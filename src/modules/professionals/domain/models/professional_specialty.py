@@ -23,7 +23,7 @@ if TYPE_CHECKING:
     from src.modules.professionals.domain.models.professional_qualification import (
         ProfessionalQualification,
     )
-    from src.modules.professionals.domain.models.specialty import Specialty
+    from src.shared.domain.models.specialty import Specialty
 
 
 class ProfessionalSpecialtyBase(BaseModel):

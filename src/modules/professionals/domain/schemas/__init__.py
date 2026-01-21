@@ -34,7 +34,7 @@ from src.modules.professionals.domain.schemas.professional_specialty import (
     ProfessionalSpecialtyUpdate,
     SpecialtyInfo,
 )
-from src.modules.professionals.domain.schemas.specialty import (
+from src.shared.domain.schemas.specialty import (
     SpecialtyListResponse,
     SpecialtyResponse,
 )

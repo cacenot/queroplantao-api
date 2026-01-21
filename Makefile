@@ -48,15 +48,15 @@ worker:
 
 ## Start Docker services (PostgreSQL + LavinMQ)
 docker-up:
-	docker-compose up -d
+	docker compose up -d
 
 ## Stop Docker services
 docker-down:
-	docker-compose down
+	docker compose down
 
 ## View Docker logs
 docker-logs:
-	docker-compose logs -f
+	docker compose logs -f
 
 ## Clean up generated files
 clean:

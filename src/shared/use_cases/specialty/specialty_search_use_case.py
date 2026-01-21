@@ -3,8 +3,11 @@
 from fastapi_restkit.pagination import PaginatedResponse, PaginationParams
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.modules.professionals.domain.models import Specialty
-from src.modules.professionals.infrastructure.repositories import SpecialtyRepository
+from src.shared.domain.models.specialty import Specialty
+from src.shared.infrastructure.filters.specialty import SpecialtySorting
+from src.shared.infrastructure.repositories.specialty_repository import (
+    SpecialtyRepository,
+)
 
 
 class SearchSpecialtiesUseCase:
@@ -18,6 +21,8 @@ class SearchSpecialtiesUseCase:
         self,
         name: str,
         pagination: PaginationParams,
+        *,
+        sorting: SpecialtySorting | None = None,
     ) -> PaginatedResponse[Specialty]:
         """
         Search specialties by name (case-insensitive partial match).
@@ -25,8 +30,9 @@ class SearchSpecialtiesUseCase:
         Args:
             name: The search term.
             pagination: Pagination parameters.
+            sorting: Optional sorting.
 
         Returns:
             Paginated list of matching specialties.
         """
-        return await self.repository.search_by_name(name, pagination)
+        return await self.repository.search_by_name(name, pagination, sorting=sorting)

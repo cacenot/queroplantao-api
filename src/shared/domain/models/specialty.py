@@ -1,12 +1,12 @@
-"""Specialty model."""
+"""Specialty model - global reference data for medical specialties."""
 
 from typing import TYPE_CHECKING, Optional
 
 from sqlalchemy import Index, text
 from sqlmodel import Field, Relationship
 
-from src.shared.domain.models import (
-    BaseModel,
+from src.shared.domain.models.base import BaseModel
+from src.shared.domain.models.mixins import (
     PrimaryKeyMixin,
     SoftDeleteMixin,
     TimestampMixin,

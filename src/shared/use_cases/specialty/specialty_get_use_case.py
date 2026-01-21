@@ -5,8 +5,10 @@ from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.app.exceptions import NotFoundError
-from src.modules.professionals.domain.models import Specialty
-from src.modules.professionals.infrastructure.repositories import SpecialtyRepository
+from src.shared.domain.models.specialty import Specialty
+from src.shared.infrastructure.repositories.specialty_repository import (
+    SpecialtyRepository,
+)
 
 
 class GetSpecialtyUseCase:
@@ -29,7 +31,7 @@ class GetSpecialtyUseCase:
         Raises:
             NotFoundError: If specialty not found.
         """
-        specialty = await self.repository.get_by_id(specialty_id)
+        specialty = await self.repository.get(specialty_id)
         if specialty is None:
             raise NotFoundError(
                 resource="Specialty",

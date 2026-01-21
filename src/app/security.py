@@ -18,7 +18,7 @@ class JWTPayload(BaseModel):
     """JWT payload schema from BFF."""
 
     sub: UUID = Field(description="User ID")
-    roles: list[str] = Field(default_factory=list, description="User roles")
+    roles: list[str] = Field(default=[], description="User roles")
     exp: int = Field(description="Expiration timestamp")
     iat: int | None = Field(default=None, description="Issued at timestamp")
     iss: str | None = Field(default=None, description="Issuer")

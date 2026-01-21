@@ -5,8 +5,8 @@ Filters and sorting for ProfessionalQualification entity.
 from typing import Annotated
 
 from fastapi import Query
-from fastapi_restkit.filters import FilterSet
-from fastapi_restkit.sorting import SortingSet
+from fastapi_restkit.filterset import FilterSet
+from fastapi_restkit.sortingset import SortingSet
 
 from src.modules.professionals.domain.models import CouncilType, ProfessionalType
 

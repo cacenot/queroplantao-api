@@ -125,6 +125,70 @@ use_cases/
 - Each file has a single responsibility
 - Submodule `__init__.py` re-exports for clean imports
 
+### Presentation Layer (Routes)
+
+Routes are organized in a `routes/` submodule with one file per entity:
+
+```
+presentation/
+├── routes.py                          # Main router - aggregates all sub-routers
+├── dependencies/
+│   ├── __init__.py                    # Re-exports all dependencies
+│   ├── {entity}.py                    # Use case factories for entity
+│   └── ...
+└── routes/
+    ├── __init__.py                    # Re-exports all routers
+    ├── {entity}_routes.py             # Routes for entity
+    └── ...
+```
+
+**Naming Convention:**
+- Route file: `{entity}_routes.py` (e.g., `organization_professional_routes.py`)
+- Dependency file: `{entity}.py` (e.g., `organization_professional.py`)
+
+**Dependencies Pattern:**
+```python
+# Use case factory function
+def get_create_entity_use_case(session: SessionDep) -> CreateEntityUseCase:
+    return CreateEntityUseCase(session)
+
+# Type alias for cleaner route signatures
+CreateEntityUC = Annotated[CreateEntityUseCase, Depends(get_create_entity_use_case)]
+```
+
+**Route Handler Pattern:**
+```python
+@router.post("/", response_model=EntityResponse, status_code=status.HTTP_201_CREATED)
+async def create_entity(
+    data: EntityCreate,
+    ctx: OrganizationContext,  # Validated context with organization
+    use_case: CreateEntityUC,  # Use case injected via factory
+) -> EntityResponse:
+    result = await use_case.execute(
+        organization_id=ctx.organization,  # Active organization ID
+        data=data,
+        created_by=ctx.user,               # Current user ID
+    )
+    return EntityResponse.model_validate(result)
+```
+
+**Context Dependencies (from `src.app.dependencies`):**
+- `CurrentContext` - Validated request context (requires auth only)
+- `OrganizationContext` - Context with organization validation (requires auth + org header)
+
+**ValidatedContext Properties:**
+- `ctx.user` - Current user's UUID
+- `ctx.organization` - Active organization UUID (raises if not set)
+- All `RequestContext` methods: `has_role()`, `is_org_admin()`, etc.
+
+**Nested Routes:**
+Sub-resources use path parameters:
+- `/professionals/{professional_id}/documents`
+- `/professionals/{professional_id}/qualifications`
+
+**Global Routes:**
+Reference data not scoped by organization (e.g., specialties) use `CurrentContext` for auth only.
+
 ## Database Conventions
 
 - **UUID v7** primary keys (`uuid7` factory)

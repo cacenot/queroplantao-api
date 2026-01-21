@@ -20,7 +20,7 @@ from src.modules.professionals.infrastructure.repositories.professional_qualific
 from src.modules.professionals.infrastructure.repositories.professional_specialty_repository import (
     ProfessionalSpecialtyRepository,
 )
-from src.modules.professionals.infrastructure.repositories.specialty_repository import (
+from src.shared.infrastructure.repositories.specialty_repository import (
     SpecialtyRepository,
 )
 

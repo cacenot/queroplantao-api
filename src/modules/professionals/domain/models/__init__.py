@@ -11,6 +11,7 @@ from src.modules.professionals.domain.models.enums import (
     MaritalStatus,
     ProfessionalType,
     ResidencyStatus,
+    validate_council_for_professional_type,
 )
 from src.modules.professionals.domain.models.organization_professional import (
     OrganizationProfessional,
@@ -36,7 +37,7 @@ from src.modules.professionals.domain.models.professional_specialty import (
     ProfessionalSpecialty,
     ProfessionalSpecialtyBase,
 )
-from src.modules.professionals.domain.models.specialty import Specialty, SpecialtyBase
+from src.shared.domain.models.specialty import Specialty, SpecialtyBase
 
 __all__ = [
     # Enums
@@ -48,6 +49,8 @@ __all__ = [
     "MaritalStatus",
     "ProfessionalType",
     "ResidencyStatus",
+    # Validators
+    "validate_council_for_professional_type",
     # Base schemas
     "OrganizationProfessionalBase",
     "ProfessionalCompanyBase",

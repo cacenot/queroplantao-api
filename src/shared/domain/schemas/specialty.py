@@ -1,9 +1,9 @@
-"""Schemas for Specialty."""
+"""Schemas for Specialty - global reference data."""
 
 from typing import Optional
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict
 
 
 class SpecialtyResponse(BaseModel):

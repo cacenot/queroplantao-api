@@ -6,15 +6,13 @@ from fastapi_restkit.pagination import PaginatedResponse, PaginationParams
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.modules.professionals.domain.models import Specialty
-from src.modules.professionals.infrastructure.filters import (
+from src.shared.domain.models.specialty import Specialty
+from src.shared.infrastructure.filters.specialty import (
     SpecialtyFilter,
     SpecialtySorting,
 )
-from src.shared.infrastructure.repositories import (
-    BaseRepository,
-    SoftDeletePaginationMixin,
-)
+from src.shared.infrastructure.repositories.base import BaseRepository
+from src.shared.infrastructure.repositories.mixins import SoftDeletePaginationMixin
 
 
 class SpecialtyRepository(

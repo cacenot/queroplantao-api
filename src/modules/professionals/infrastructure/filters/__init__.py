@@ -28,7 +28,7 @@ from src.modules.professionals.infrastructure.filters.professional_company impor
     ProfessionalCompanyFilter,
     ProfessionalCompanySorting,
 )
-from src.modules.professionals.infrastructure.filters.specialty import (
+from src.shared.infrastructure.filters.specialty import (
     SpecialtyFilter,
     SpecialtySorting,
 )
