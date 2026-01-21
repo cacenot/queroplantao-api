@@ -101,6 +101,30 @@ class EntitySorting(SortingSet):
         default_sort = [("id", "asc")]
 ```
 
+### Use Case File Organization
+Use cases are organized in submodules per entity. Each use case lives in its own file with a descriptive name:
+
+```
+use_cases/
+├── __init__.py                    # Re-exports all use cases
+└── {entity}/                      # Submodule per entity
+    ├── __init__.py                # Re-exports entity's use cases
+    ├── {entity}_create_use_case.py
+    ├── {entity}_update_use_case.py
+    ├── {entity}_delete_use_case.py
+    ├── {entity}_get_use_case.py
+    └── {entity}_list_use_case.py
+```
+
+**Naming Convention:**
+- File: `{entity}_{action}_use_case.py` (e.g., `professional_document_create_use_case.py`)
+- Class: `{Action}{Entity}UseCase` (e.g., `CreateProfessionalDocumentUseCase`)
+
+**Why this structure:**
+- Easy to search files by entity or action
+- Each file has a single responsibility
+- Submodule `__init__.py` re-exports for clean imports
+
 ## Database Conventions
 
 - **UUID v7** primary keys (`uuid7` factory)

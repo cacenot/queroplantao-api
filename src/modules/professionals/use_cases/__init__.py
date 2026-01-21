@@ -3,24 +3,43 @@ Use cases for the professionals module.
 """
 
 # OrganizationProfessional use cases
-from src.modules.professionals.use_cases.create_organization_professional import (
+from src.modules.professionals.use_cases.organization_professional import (
     CreateOrganizationProfessionalUseCase,
-)
-from src.modules.professionals.use_cases.delete_organization_professional import (
     DeleteOrganizationProfessionalUseCase,
-)
-from src.modules.professionals.use_cases.get_organization_professional import (
     GetOrganizationProfessionalUseCase,
-)
-from src.modules.professionals.use_cases.list_organization_professionals import (
     ListOrganizationProfessionalsUseCase,
-)
-from src.modules.professionals.use_cases.update_organization_professional import (
     UpdateOrganizationProfessionalUseCase,
 )
 
+# ProfessionalCompany use cases
+from src.modules.professionals.use_cases.professional_company import (
+    CreateProfessionalCompanyUseCase,
+    DeleteProfessionalCompanyUseCase,
+    GetProfessionalCompanyUseCase,
+    ListProfessionalCompaniesUseCase,
+    UpdateProfessionalCompanyUseCase,
+)
+
+# ProfessionalDocument use cases
+from src.modules.professionals.use_cases.professional_document import (
+    CreateProfessionalDocumentUseCase,
+    DeleteProfessionalDocumentUseCase,
+    GetProfessionalDocumentUseCase,
+    ListProfessionalDocumentsUseCase,
+    UpdateProfessionalDocumentUseCase,
+)
+
+# ProfessionalEducation use cases
+from src.modules.professionals.use_cases.professional_education import (
+    CreateProfessionalEducationUseCase,
+    DeleteProfessionalEducationUseCase,
+    GetProfessionalEducationUseCase,
+    ListProfessionalEducationsUseCase,
+    UpdateProfessionalEducationUseCase,
+)
+
 # ProfessionalQualification use cases
-from src.modules.professionals.use_cases.professional_qualification_use_cases import (
+from src.modules.professionals.use_cases.professional_qualification import (
     CreateProfessionalQualificationUseCase,
     DeleteProfessionalQualificationUseCase,
     GetProfessionalQualificationUseCase,
@@ -29,7 +48,7 @@ from src.modules.professionals.use_cases.professional_qualification_use_cases im
 )
 
 # ProfessionalSpecialty use cases
-from src.modules.professionals.use_cases.professional_specialty_use_cases import (
+from src.modules.professionals.use_cases.professional_specialty import (
     CreateProfessionalSpecialtyUseCase,
     DeleteProfessionalSpecialtyUseCase,
     GetProfessionalSpecialtyUseCase,
@@ -37,35 +56,8 @@ from src.modules.professionals.use_cases.professional_specialty_use_cases import
     UpdateProfessionalSpecialtyUseCase,
 )
 
-# ProfessionalEducation use cases
-from src.modules.professionals.use_cases.professional_education_use_cases import (
-    CreateProfessionalEducationUseCase,
-    DeleteProfessionalEducationUseCase,
-    GetProfessionalEducationUseCase,
-    ListProfessionalEducationsUseCase,
-    UpdateProfessionalEducationUseCase,
-)
-
-# ProfessionalDocument use cases
-from src.modules.professionals.use_cases.professional_document_use_cases import (
-    CreateProfessionalDocumentUseCase,
-    DeleteProfessionalDocumentUseCase,
-    GetProfessionalDocumentUseCase,
-    ListProfessionalDocumentsUseCase,
-    UpdateProfessionalDocumentUseCase,
-)
-
-# ProfessionalCompany use cases
-from src.modules.professionals.use_cases.professional_company_use_cases import (
-    CreateProfessionalCompanyUseCase,
-    DeleteProfessionalCompanyUseCase,
-    GetProfessionalCompanyUseCase,
-    ListProfessionalCompaniesUseCase,
-    UpdateProfessionalCompanyUseCase,
-)
-
 # Specialty use cases (read-only for tenants)
-from src.modules.professionals.use_cases.specialty_use_cases import (
+from src.modules.professionals.use_cases.specialty import (
     GetSpecialtyByCodeUseCase,
     GetSpecialtyUseCase,
     ListSpecialtiesUseCase,
