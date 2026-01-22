@@ -1,0 +1,57 @@
+{
+    "version": "1",
+    "name": "Quero Plantão API",
+    "type": "collection",
+    "variables": [
+        {
+            "name": "baseUrl",
+            "value": "http://localhost:8000",
+            "type": "text"
+        },
+        {
+            "name": "bearerToken",
+            "value": "",
+            "type": "text"
+        },
+        {
+            "name": "organizationId",
+            "value": "",
+            "type": "text"
+        },
+        {
+            "name": "professionalId",
+            "value": "",
+            "type": "text"
+        },
+        {
+            "name": "companyLinkId",
+            "value": "",
+            "type": "text"
+        },
+        {
+            "name": "documentId",
+            "value": "",
+            "type": "text"
+        },
+        {
+            "name": "qualificationId",
+            "value": "",
+            "type": "text"
+        },
+        {
+            "name": "specialtyLinkId",
+            "value": "",
+            "type": "text"
+        },
+        {
+            "name": "educationId",
+            "value": "",
+            "type": "text"
+        },
+        {
+            "name": "specialtyId",
+            "value": "",
+            "type": "text"
+        }
+    ]
+}

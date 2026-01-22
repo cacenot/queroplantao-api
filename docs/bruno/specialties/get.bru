@@ -1,0 +1,21 @@
+meta {
+  name: Get Specialty
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/v1/specialties/:specialtyId
+  body: none
+  auth: inherit
+}
+
+params:path {
+  specialtyId: {{specialtyId}}
+}
+
+docs {
+  # Get Specialty by ID
+  
+  Retorna os detalhes de uma especialidade pelo seu UUID.
+}

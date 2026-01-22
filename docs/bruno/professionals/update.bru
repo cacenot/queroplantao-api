@@ -1,0 +1,35 @@
+meta {
+  name: Update Professional
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/professionals/:professionalId
+  body: json
+  auth: inherit
+}
+
+params:path {
+  professionalId: {{professionalId}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  "full_name": "Dr. João Silva Updated",
+  "is_active": true
+}
+
+docs {
+  # Update Professional (PATCH)
+  
+  Atualiza parcialmente um profissional. Apenas os campos enviados serão atualizados.
+  
+  ## Campos atualizáveis
+  
+  Todos os campos do Create, mais:
+  - `is_active`: boolean - Se o profissional está ativo
+}

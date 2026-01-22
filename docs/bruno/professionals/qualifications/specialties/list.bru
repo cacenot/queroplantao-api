@@ -1,0 +1,42 @@
+meta {
+  name: List Specialties
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/v1/professionals/:professionalId/specialties/
+  body: none
+  auth: inherit
+}
+
+params:path {
+  professionalId: {{professionalId}}
+}
+
+params:query {
+  page: 1
+  page_size: 20
+  ~search: 
+  ~is_verified: 
+  ~id: 
+  ~acquisition_date: 
+  ~created_at: 
+}
+
+docs {
+  # List Professional Specialties
+  
+  Lista todas as especialidades vinculadas a um profissional.
+  
+  ## Filtros disponíveis
+  
+  | Parâmetro | Tipo | Descrição |
+  |-----------|------|-----------|
+  | search | string | Busca textual |
+  | is_verified | boolean | Se está verificada |
+  
+  ## Ordenação
+  
+  Campos: `id`, `acquisition_date`, `created_at`
+}

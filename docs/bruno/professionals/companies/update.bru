@@ -1,0 +1,24 @@
+meta {
+  name: Update Company Link
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/professionals/:professionalId/companies/:companyLinkId
+  body: json
+  auth: inherit
+}
+
+params:path {
+  professionalId: {{professionalId}}
+  companyLinkId: {{companyLinkId}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  "left_at": "2024-12-31T23:59:59Z"
+}

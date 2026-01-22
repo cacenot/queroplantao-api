@@ -1,0 +1,50 @@
+meta {
+  name: List Qualifications
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/v1/professionals/:professionalId/qualifications/
+  body: none
+  auth: inherit
+}
+
+params:path {
+  professionalId: {{professionalId}}
+}
+
+params:query {
+  page: 1
+  page_size: 20
+  ~search: 
+  ~professional_type: 
+  ~council_type: 
+  ~council_state: 
+  ~is_primary: 
+  ~is_verified: 
+  ~id: 
+  ~graduation_year: 
+  ~created_at: 
+}
+
+docs {
+  # List Qualifications
+  
+  Lista todas as qualificações de um profissional.
+  
+  ## Filtros disponíveis
+  
+  | Parâmetro | Tipo | Descrição |
+  |-----------|------|-----------|
+  | search | string | Busca textual |
+  | professional_type | DOCTOR, NURSE, NURSING_TECH, PHARMACIST, DENTIST, PHYSIOTHERAPIST, PSYCHOLOGIST, NUTRITIONIST, BIOMEDIC, OTHER | Tipo de profissional |
+  | council_type | CRM, COREN, CRF, CRO, CREFITO, CRP, CRN, CRBM, OTHER | Tipo de conselho |
+  | council_state | string (2 chars) | Estado do conselho (ex: SP, RJ) |
+  | is_primary | boolean | Se é qualificação primária |
+  | is_verified | boolean | Se está verificada |
+  
+  ## Ordenação
+  
+  Campos: `id`, `graduation_year`, `created_at`
+}

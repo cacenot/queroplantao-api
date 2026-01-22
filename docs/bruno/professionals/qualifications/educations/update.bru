@@ -1,0 +1,25 @@
+meta {
+  name: Update Education
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/professionals/:professionalId/educations/:educationId
+  body: json
+  auth: inherit
+}
+
+params:path {
+  professionalId: {{professionalId}}
+  educationId: {{educationId}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  "is_completed": true,
+  "end_year": 2015
+}

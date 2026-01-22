@@ -1,0 +1,45 @@
+meta {
+  name: List Professionals
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/v1/professionals/
+  body: none
+  auth: inherit
+}
+
+params:query {
+  page: 1
+  page_size: 20
+  ~search: 
+  ~is_active: 
+  ~gender: 
+  ~marital_status: 
+  ~id: 
+  ~full_name: 
+  ~email: 
+  ~created_at: 
+}
+
+docs {
+  # List Professionals
+  
+  Lista todos os profissionais da organização com paginação, filtros e ordenação.
+  
+  ## Filtros disponíveis
+  
+  | Parâmetro | Tipo | Descrição |
+  |-----------|------|-----------|
+  | search | string | Busca textual por nome, email, etc. |
+  | is_active | boolean | Filtrar por status ativo/inativo |
+  | gender | MALE, FEMALE | Filtrar por gênero |
+  | marital_status | SINGLE, MARRIED, DIVORCED, WIDOWED, SEPARATED, CIVIL_UNION | Estado civil |
+  
+  ## Ordenação (sorting)
+  
+  Campos ordenáveis: `id`, `full_name`, `email`, `created_at`
+  
+  Formato: `campo:asc` ou `campo:desc`
+}

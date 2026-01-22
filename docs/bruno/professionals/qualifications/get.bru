@@ -1,0 +1,16 @@
+meta {
+  name: Get Qualification
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/v1/professionals/:professionalId/qualifications/:qualificationId
+  body: none
+  auth: inherit
+}
+
+params:path {
+  professionalId: {{professionalId}}
+  qualificationId: {{qualificationId}}
+}

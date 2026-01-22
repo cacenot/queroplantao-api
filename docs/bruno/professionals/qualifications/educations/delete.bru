@@ -1,0 +1,16 @@
+meta {
+  name: Delete Education
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{baseUrl}}/api/v1/professionals/:professionalId/educations/:educationId
+  body: none
+  auth: inherit
+}
+
+params:path {
+  professionalId: {{professionalId}}
+  educationId: {{educationId}}
+}

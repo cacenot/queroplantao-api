@@ -26,8 +26,9 @@ from src.modules.professionals.presentation.dependencies import (
 )
 
 
+# Nested under /professionals/{professional_id}
 router = APIRouter(
-    prefix="/professionals/{professional_id}/qualifications",
+    prefix="/{professional_id}/qualifications",
     tags=["Professional Qualifications"],
 )
 

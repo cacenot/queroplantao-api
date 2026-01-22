@@ -1,0 +1,21 @@
+meta {
+  name: Get Professional
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/v1/professionals/:professionalId
+  body: none
+  auth: inherit
+}
+
+params:path {
+  professionalId: {{professionalId}}
+}
+
+docs {
+  # Get Professional
+  
+  Retorna os detalhes de um profissional pelo seu UUID.
+}

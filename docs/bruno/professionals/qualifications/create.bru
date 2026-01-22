@@ -1,0 +1,46 @@
+meta {
+  name: Create Qualification
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/v1/professionals/:professionalId/qualifications/
+  body: json
+  auth: inherit
+}
+
+params:path {
+  professionalId: {{professionalId}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  "professional_type": "DOCTOR",
+  "is_primary": true,
+  "graduation_year": 2015,
+  "council_type": "CRM",
+  "council_number": "123456",
+  "council_state": "SP"
+}
+
+docs {
+  # Create Qualification
+  
+  Adiciona uma qualificação profissional (ex: CRM, COREN).
+  
+  ## Campos obrigatórios
+  
+  - `professional_type`: DOCTOR, NURSE, NURSING_TECH, PHARMACIST, DENTIST, PHYSIOTHERAPIST, PSYCHOLOGIST, NUTRITIONIST, BIOMEDIC, OTHER
+  - `council_type`: CRM, COREN, CRF, CRO, CREFITO, CRP, CRN, CRBM, OTHER
+  - `council_number`: Número do registro no conselho
+  - `council_state`: Estado do conselho (2 caracteres, ex: SP)
+  
+  ## Campos opcionais
+  
+  - `is_primary`: Se é a qualificação principal (default: false)
+  - `graduation_year`: Ano de graduação
+}

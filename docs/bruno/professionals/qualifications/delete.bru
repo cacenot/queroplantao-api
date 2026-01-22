@@ -1,0 +1,16 @@
+meta {
+  name: Delete Qualification
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{baseUrl}}/api/v1/professionals/:professionalId/qualifications/:qualificationId
+  body: none
+  auth: inherit
+}
+
+params:path {
+  professionalId: {{professionalId}}
+  qualificationId: {{qualificationId}}
+}

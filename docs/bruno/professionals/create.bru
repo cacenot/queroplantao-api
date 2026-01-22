@@ -1,0 +1,48 @@
+meta {
+  name: Create Professional
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/v1/professionals/
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  "full_name": "Dr. João Silva",
+  "email": "joao.silva@example.com",
+  "phone": "+5511999999999",
+  "cpf": "12345678901",
+  "birth_date": "1985-05-15",
+  "nationality": "Brasileiro",
+  "gender": "MALE",
+  "marital_status": "SINGLE"
+}
+
+docs {
+  # Create Professional
+  
+  Cria um novo profissional na organização.
+  
+  ## Campos obrigatórios
+  
+  - `full_name`: Nome completo do profissional
+  
+  ## Campos opcionais
+  
+  - `email`: Email (formato válido)
+  - `phone`: Telefone (formato E.164)
+  - `cpf`: CPF (11 dígitos, sem formatação)
+  - `birth_date`: Data de nascimento (YYYY-MM-DD)
+  - `nationality`: Nacionalidade
+  - `gender`: MALE ou FEMALE
+  - `marital_status`: SINGLE, MARRIED, DIVORCED, WIDOWED, SEPARATED, CIVIL_UNION
+  - `avatar_url`: URL da foto de perfil
+  - Endereço: `street`, `street_number`, `complement`, `neighborhood`, `city`, `state_code`, `state_name`, `postal_code`
+}

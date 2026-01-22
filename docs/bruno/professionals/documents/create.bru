@@ -1,0 +1,45 @@
+meta {
+  name: Create Document
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/v1/professionals/:professionalId/documents/
+  body: json
+  auth: inherit
+}
+
+params:path {
+  professionalId: {{professionalId}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  "document_type": "CRM_REGISTRATION_CERTIFICATE",
+  "document_category": "QUALIFICATION",
+  "file_url": "https://storage.example.com/documents/crm-cert.pdf",
+  "file_name": "crm-certificate.pdf",
+  "file_size": 1024000,
+  "mime_type": "application/pdf"
+}
+
+docs {
+  # Create Document
+  
+  Adiciona um documento a um profissional.
+  
+  ## Campos obrigatórios
+  
+  - `document_type`: Tipo do documento
+  - `document_category`: PROFILE, QUALIFICATION ou SPECIALTY
+  - `file_url`: URL do arquivo
+  - `file_name`: Nome do arquivo
+  
+  ## Tipos de documento (document_type)
+  
+  ID_DOCUMENT, PHOTO, CRIMINAL_RECORD, ADDRESS_PROOF, CV, DIPLOMA, CRM_REGISTRATION_CERTIFICATE, CRM_FINANCIAL_CERTIFICATE, CRM_ETHICS_CERTIFICATE, RESIDENCY_CERTIFICATE, SPECIALIST_TITLE, SBA_DIPLOMA, OTHER
+}

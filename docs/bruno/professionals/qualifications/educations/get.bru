@@ -1,0 +1,16 @@
+meta {
+  name: Get Education
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/v1/professionals/:professionalId/educations/:educationId
+  body: none
+  auth: inherit
+}
+
+params:path {
+  professionalId: {{professionalId}}
+  educationId: {{educationId}}
+}

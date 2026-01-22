@@ -8,14 +8,11 @@ from sqlmodel import Field, Relationship
 
 from src.modules.organizations.domain.models.enums import OrganizationType, SharingScope
 from src.shared.domain.models.base import BaseModel
-from src.shared.domain.models.fields import CNPJField, PhoneField
 from src.shared.domain.models.mixins import (
-    AddressMixin,
     PrimaryKeyMixin,
     SoftDeleteMixin,
     TimestampMixin,
     TrackingMixin,
-    VerificationMixin,
 )
 
 if TYPE_CHECKING:
@@ -33,46 +30,22 @@ if TYPE_CHECKING:
 
 
 class OrganizationBase(BaseModel):
-    """Base fields for Organization."""
+    """
+    Base fields for Organization.
+
+    Organization represents the operational/configurational entity.
+    Legal/fiscal data (CNPJ, addresses, etc.) is stored in the linked Company.
+    """
 
     name: str = Field(
         max_length=255,
-        description="Organization name",
-    )
-    trading_name: Optional[str] = Field(
-        default=None,
-        max_length=255,
-        description="Trading/commercial name (Nome Fantasia)",
+        description="Organization display name (can differ from legal name)",
     )
     organization_type: OrganizationType = Field(
         sa_type=SAEnum(
             OrganizationType, name="organization_type", create_constraint=True
         ),
         description="Type of organization",
-    )
-
-    # Optional CNPJ (if no linked Company)
-    cnpj: Optional[str] = CNPJField(
-        default=None,
-        nullable=True,
-        description="Brazilian CNPJ (if no linked Company)",
-    )
-
-    # Contact info
-    email: Optional[str] = Field(
-        default=None,
-        max_length=255,
-        description="Organization email address",
-    )
-    phone: Optional[str] = PhoneField(
-        default=None,
-        nullable=True,
-        description="Organization phone number (E.164 format)",
-    )
-    website: Optional[str] = Field(
-        default=None,
-        max_length=500,
-        description="Organization website URL",
     )
 
     # Sharing configuration for child organizations
@@ -91,8 +64,6 @@ class OrganizationBase(BaseModel):
 
 class Organization(
     OrganizationBase,
-    AddressMixin,
-    VerificationMixin,
     TrackingMixin,
     PrimaryKeyMixin,
     TimestampMixin,
@@ -108,17 +79,13 @@ class Organization(
 
     The hierarchy is used for outsourcing companies that manage multiple facilities.
     Data sharing between parent and children is controlled by `sharing_scope`.
+
+    All legal/fiscal data (CNPJ, addresses, legal names, etc.) is stored in the linked Company.
+    This allows organizations to change legal entities without losing operational history.
     """
 
     __tablename__ = "organizations"
     __table_args__ = (
-        # Ensure unique CNPJ when set
-        Index(
-            "uq_organizations_cnpj",
-            "cnpj",
-            unique=True,
-            postgresql_where="cnpj IS NOT NULL AND deleted_at IS NULL",
-        ),
         # Note: The constraint to ensure only 1 level of depth
         # (parent organizations cannot have a parent) is enforced at application level
         # because it requires a subquery that PostgreSQL CHECK doesn't support
@@ -132,12 +99,10 @@ class Organization(
         description="Parent organization ID (null = root organization)",
     )
 
-    # Legal entity (optional - can use own CNPJ instead)
-    company_id: Optional[UUID] = Field(
-        default=None,
+    # Legal entity (required - all legal/fiscal data is in Company)
+    company_id: UUID = Field(
         foreign_key="companies.id",
-        nullable=True,
-        description="Linked Company for legal/financial purposes",
+        description="Linked Company for legal/financial data (CNPJ, addresses, etc.)",
     )
 
     # Relationships
@@ -154,7 +119,7 @@ class Organization(
             "foreign_keys": "[Organization.parent_id]",
         },
     )
-    company: Optional["Company"] = Relationship(
+    company: "Company" = Relationship(
         sa_relationship_kwargs={
             "foreign_keys": "[Organization.company_id]",
             "lazy": "selectin",

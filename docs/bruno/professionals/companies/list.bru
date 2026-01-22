@@ -1,0 +1,33 @@
+meta {
+  name: List Companies
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/v1/professionals/:professionalId/companies/
+  body: none
+  auth: inherit
+}
+
+params:path {
+  professionalId: {{professionalId}}
+}
+
+params:query {
+  page: 1
+  page_size: 20
+  ~id: 
+  ~joined_at: 
+  ~created_at: 
+}
+
+docs {
+  # List Professional Companies
+  
+  Lista todas as empresas (PJ) vinculadas a um profissional.
+  
+  ## Ordenação
+  
+  Campos: `id`, `joined_at`, `created_at`
+}

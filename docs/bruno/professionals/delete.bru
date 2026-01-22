@@ -1,0 +1,21 @@
+meta {
+  name: Delete Professional
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{baseUrl}}/api/v1/professionals/:professionalId
+  body: none
+  auth: inherit
+}
+
+params:path {
+  professionalId: {{professionalId}}
+}
+
+docs {
+  # Delete Professional (Soft Delete)
+  
+  Remove um profissional (soft delete). O registro não é excluído fisicamente.
+}

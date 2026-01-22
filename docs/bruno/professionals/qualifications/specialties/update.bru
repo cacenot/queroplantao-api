@@ -1,0 +1,24 @@
+meta {
+  name: Update Specialty Link
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/professionals/:professionalId/specialties/:specialtyLinkId
+  body: json
+  auth: inherit
+}
+
+params:path {
+  professionalId: {{professionalId}}
+  specialtyLinkId: {{specialtyLinkId}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  "is_primary": true
+}

@@ -1,0 +1,60 @@
+meta {
+  name: Firebase Login
+  type: http
+  seq: 1
+}
+
+post {
+  url: https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={{firebaseApiKey}}
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "{{userEmail}}",
+    "password": "{{userPassword}}",
+    "returnSecureToken": true
+  }
+}
+
+docs {
+  # Firebase Login
+
+  Autentica com Firebase usando email/senha.
+
+  ## Como usar
+
+  1. Configure as variáveis de ambiente no arquivo `environments/dev.bru`:
+     - `firebaseApiKey`: Web API Key do Firebase (Firebase Console > Project Settings > General)
+     - `userEmail`: Email do usuário
+     - `userPassword`: Senha do usuário
+
+  2. Execute este request primeiro antes de usar os outros endpoints
+
+  3. O token será salvo automaticamente na variável `bearerToken`
+
+  ## Importante
+
+  - O token expira em 1 hora
+  - Execute novamente este request quando o token expirar
+}
+
+script:post-response {
+  const data = res.getBody()
+
+  if (data && data.idToken) {
+    bru.setEnvVar("bearerToken", data.idToken)
+
+    // Calcula expiração (Firebase tokens duram 3600 segundos = 1 hora)
+    const expiresIn = parseInt(data.expiresIn) || 3600
+    const exp = Math.floor(Date.now() / 1000) + expiresIn
+    bru.setEnvVar("bearerTokenExp", exp.toString())
+
+    console.log("✅ Token salvo com sucesso!")
+    console.log(`   Expira em: ${new Date(exp * 1000).toLocaleString()}`)
+  } else {
+    console.error("❌ Erro: resposta não contém idToken")
+    console.error("   Response:", JSON.stringify(data))
+  }
+}

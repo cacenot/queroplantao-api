@@ -69,7 +69,6 @@ class OrganizationRepository(BaseRepository[Organization]):
         Returns the membership only if:
         - Membership exists
         - Membership is active
-        - Membership is accepted (not pending)
         - Membership is not expired
 
         Args:
@@ -87,7 +86,6 @@ class OrganizationRepository(BaseRepository[Organization]):
                     OrganizationMembership.user_id == user_id,
                     OrganizationMembership.organization_id == organization_id,
                     OrganizationMembership.is_active.is_(True),
-                    OrganizationMembership.accepted_at.isnot(None),
                     or_(
                         OrganizationMembership.expires_at.is_(None),
                         OrganizationMembership.expires_at > now,

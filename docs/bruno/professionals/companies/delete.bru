@@ -1,0 +1,16 @@
+meta {
+  name: Delete Company Link
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{baseUrl}}/api/v1/professionals/:professionalId/companies/:companyLinkId
+  body: none
+  auth: inherit
+}
+
+params:path {
+  professionalId: {{professionalId}}
+  companyLinkId: {{companyLinkId}}
+}

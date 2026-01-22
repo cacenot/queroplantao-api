@@ -1,0 +1,47 @@
+meta {
+  name: List Documents
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/v1/professionals/:professionalId/documents/
+  body: none
+  auth: inherit
+}
+
+params:path {
+  professionalId: {{professionalId}}
+}
+
+params:query {
+  page: 1
+  page_size: 20
+  ~search: 
+  ~document_type: 
+  ~document_category: 
+  ~is_verified: 
+  ~id: 
+  ~file_name: 
+  ~expires_at: 
+  ~created_at: 
+}
+
+docs {
+  # List Documents
+  
+  Lista todos os documentos de um profissional.
+  
+  ## Filtros disponíveis
+  
+  | Parâmetro | Tipo | Descrição |
+  |-----------|------|-----------|
+  | search | string | Busca textual |
+  | document_type | string | ID_DOCUMENT, PHOTO, CRIMINAL_RECORD, ADDRESS_PROOF, CV, DIPLOMA, CRM_REGISTRATION_CERTIFICATE, etc. |
+  | document_category | PROFILE, QUALIFICATION, SPECIALTY | Categoria do documento |
+  | is_verified | boolean | Se está verificado |
+  
+  ## Ordenação
+  
+  Campos: `id`, `file_name`, `expires_at`, `created_at`
+}

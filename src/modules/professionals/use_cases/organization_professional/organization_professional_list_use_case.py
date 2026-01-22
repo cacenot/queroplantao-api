@@ -6,6 +6,10 @@ from fastapi_restkit.pagination import PaginatedResponse, PaginationParams
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.modules.professionals.domain.models import OrganizationProfessional
+from src.modules.professionals.infrastructure.filters import (
+    OrganizationProfessionalFilter,
+    OrganizationProfessionalSorting,
+)
 from src.modules.professionals.infrastructure.repositories import (
     OrganizationProfessionalRepository,
 )
@@ -25,7 +29,8 @@ class ListOrganizationProfessionalsUseCase:
         organization_id: UUID,
         pagination: PaginationParams,
         *,
-        is_active: bool | None = None,
+        filters: OrganizationProfessionalFilter | None = None,
+        sorting: OrganizationProfessionalSorting | None = None,
     ) -> PaginatedResponse[OrganizationProfessional]:
         """
         List professionals for an organization.
@@ -33,7 +38,8 @@ class ListOrganizationProfessionalsUseCase:
         Args:
             organization_id: The organization UUID.
             pagination: Pagination parameters.
-            is_active: Optional filter by active status.
+            filters: Optional filters (search, is_active, gender, marital_status).
+            sorting: Optional sorting (id, full_name, email, created_at).
 
         Returns:
             Paginated list of professionals.
@@ -41,5 +47,6 @@ class ListOrganizationProfessionalsUseCase:
         return await self.repository.list_for_organization(
             organization_id,
             pagination,
-            is_active=is_active,
+            filters=filters,
+            sorting=sorting,
         )

@@ -1,0 +1,53 @@
+headers {
+  X-Organization-ID: {{organizationId}}
+}
+
+auth {
+  mode: bearer
+}
+
+auth:bearer {
+  token: {{bearerToken}}
+}
+
+docs {
+  # Quero Plantão API Collection
+
+  ## Autenticação
+
+  Esta collection usa Firebase Authentication com Bearer Token.
+
+  ### Configuração Inicial
+
+  1. Abra `environments/dev.bru` e configure:
+     - `firebaseApiKey`: Web API Key do Firebase
+     - `userEmail`: seu email de usuário
+     - `userPassword`: sua senha
+     - `organizationId`: ID da organização (UUID)
+
+  2. Execute o request `auth/Firebase Login` para obter o token
+
+  3. O token será salvo automaticamente em `bearerToken` e usado em todas as requests
+
+  ### Renovação do Token
+
+  O token Firebase expira em 1 hora. Quando expirar, execute novamente o request de login.
+
+  ## Estrutura
+
+  - `auth/` - Requests de autenticação (Firebase Login)
+  - Endpoints organizados por entidade (professionals, documents, etc.)
+}
+
+script:pre-request {
+  // Verifica se há token configurado
+  const token = bru.getEnvVar("bearerToken")
+  const tokenExp = parseInt(bru.getEnvVar("bearerTokenExp") || "0")
+  const now = Math.floor(Date.now() / 1000)
+
+  if (!token) {
+    console.warn("⚠️  Token não configurado. Execute 'auth/Firebase Login' primeiro.")
+  } else if (tokenExp > 0 && tokenExp - now < 60) {
+    console.warn("⚠️  Token expirado ou prestes a expirar. Execute 'auth/Firebase Login' para renovar.")
+  }
+}

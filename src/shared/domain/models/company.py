@@ -16,13 +16,9 @@ from src.shared.domain.models.mixins import (
 )
 
 if TYPE_CHECKING:
-    from src.modules.contracts.domain.models.professional_contract import (
-        ProfessionalContract,
-    )
     from src.modules.professionals.domain.models.professional_company import (
         ProfessionalCompany,
     )
-    from src.modules.units.domain.models.unit import Unit
     from src.shared.domain.models.bank_account import BankAccount
 
 

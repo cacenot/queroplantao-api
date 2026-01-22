@@ -1,0 +1,31 @@
+meta {
+  name: Create Specialty Link
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/v1/professionals/:professionalId/specialties/
+  body: json
+  auth: inherit
+}
+
+params:path {
+  professionalId: {{professionalId}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  "specialty_id": "specialty-uuid-here",
+  "is_primary": true,
+  "residency_status": "COMPLETED"
+}
+
+docs {
+  Link a specialty to a professional.
+  
+  Residency status values: IN_PROGRESS, COMPLETED, NOT_APPLICABLE
+}

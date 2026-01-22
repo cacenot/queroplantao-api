@@ -109,21 +109,20 @@ def create_app() -> FastAPI:
         allow_headers=settings.CORS_ALLOW_HEADERS,
     )
 
-    # Add logging middleware (after CORS, before routes)
-    app.add_middleware(LoggingMiddleware)
+    # NOTE: Middleware order is REVERSED in Starlette/FastAPI
+    # Last added middleware runs FIRST in the request chain
+    # So we add them in reverse order of desired execution:
+    #   1. OrganizationIdentityMiddleware (added last, runs first in middleware chain
+    #      but needs FirebaseAuthMiddleware to have set context)
+    #   2. FirebaseAuthMiddleware (runs second, sets user context)
+    #   3. LoggingMiddleware (runs third, logs request/response)
+    #
+    # Actually, since OrganizationIdentityMiddleware depends on FirebaseAuthMiddleware,
+    # we need to add OrganizationIdentityMiddleware FIRST so it runs LAST
+    # (after FirebaseAuthMiddleware has set the context)
 
-    # Add Firebase authentication middleware
-    # Note: Middleware order is reversed - last added runs first
-    # So auth runs before logging for authenticated routes
-    app.add_middleware(
-        FirebaseAuthMiddleware,
-        exclude_prefixes=(
-            f"{settings.API_V1_PREFIX}/auth",  # Auth routes don't require auth
-        ),
-    )
-
-    # Add organization identity middleware
-    # Runs after FirebaseAuthMiddleware to have user context available
+    # Add organization identity middleware FIRST
+    # (runs LAST - after FirebaseAuthMiddleware has set user context)
     app.add_middleware(
         OrganizationIdentityMiddleware,
         exclude_prefixes=(
@@ -133,9 +132,24 @@ def create_app() -> FastAPI:
         require_organization=False,  # Organization header is optional by default
     )
 
+    # Add Firebase authentication middleware SECOND
+    # (runs SECOND - after logging, before organization identity)
+    app.add_middleware(
+        FirebaseAuthMiddleware,
+        exclude_prefixes=(
+            f"{settings.API_V1_PREFIX}/auth",  # Auth routes don't require auth
+        ),
+    )
+
+    # Add logging middleware LAST
+    # (runs FIRST - logs all requests/responses)
+    app.add_middleware(LoggingMiddleware)
+
     # Register exception handlers
     @app.exception_handler(AppException)
-    async def app_exception_handler(request: Request, exc: AppException) -> JSONResponse:
+    async def app_exception_handler(
+        request: Request, exc: AppException
+    ) -> JSONResponse:
         """Handle custom application exceptions."""
         return JSONResponse(
             status_code=exc.status_code,

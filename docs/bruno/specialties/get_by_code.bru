@@ -1,0 +1,29 @@
+meta {
+  name: Get Specialty by Code
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/api/v1/specialties/code/:code
+  body: none
+  auth: inherit
+}
+
+params:path {
+  code: CARDIOLOGY
+}
+
+docs {
+  # Get Specialty by Code
+  
+  Retorna os detalhes de uma especialidade pelo seu código único.
+  
+  ## Exemplos de códigos
+  
+  - CARDIOLOGY
+  - NEUROLOGY
+  - ORTHOPEDICS
+  - PEDIATRICS
+  - etc.
+}

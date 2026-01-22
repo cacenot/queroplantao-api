@@ -26,7 +26,8 @@ from src.modules.professionals.presentation.dependencies import (
 )
 
 
-router = APIRouter(prefix="/professionals", tags=["Professionals"])
+# No prefix here - it's defined in the parent router (/professionals)
+router = APIRouter(tags=["Professionals"])
 
 
 @router.post(

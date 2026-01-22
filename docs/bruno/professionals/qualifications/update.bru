@@ -1,0 +1,24 @@
+meta {
+  name: Update Qualification
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/professionals/:professionalId/qualifications/:qualificationId
+  body: json
+  auth: inherit
+}
+
+params:path {
+  professionalId: {{professionalId}}
+  qualificationId: {{qualificationId}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  "is_primary": true
+}

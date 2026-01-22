@@ -1,0 +1,38 @@
+meta {
+  name: List Specialties
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/v1/specialties/
+  body: none
+  auth: inherit
+}
+
+params:query {
+  page: 1
+  page_size: 20
+  ~search: 
+  ~id: 
+  ~code: 
+  ~name: 
+}
+
+docs {
+  # List Specialties (Catalog)
+  
+  Lista todas as especialidades médicas (catálogo global).
+  
+  ## Filtros disponíveis
+  
+  | Parâmetro | Tipo | Descrição |
+  |-----------|------|-----------|
+  | search | string | Busca textual por nome ou código |
+  | code | string | Código da especialidade (ex: CARDIOLOGY) |
+  | name | string | Nome da especialidade |
+  
+  ## Ordenação
+  
+  Campos: `id`, `code`, `name`
+}

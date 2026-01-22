@@ -1,0 +1,28 @@
+meta {
+  name: Create Company Link
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/v1/professionals/:professionalId/companies/
+  body: json
+  auth: inherit
+}
+
+params:path {
+  professionalId: {{professionalId}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  "company_id": "company-uuid-here",
+  "joined_at": "2024-01-01T00:00:00Z"
+}
+
+docs {
+  Link a company to a professional.
+}

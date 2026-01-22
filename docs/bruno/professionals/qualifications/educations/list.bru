@@ -1,0 +1,46 @@
+meta {
+  name: List Educations
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/v1/professionals/:professionalId/educations/
+  body: none
+  auth: inherit
+}
+
+params:path {
+  professionalId: {{professionalId}}
+}
+
+params:query {
+  page: 1
+  page_size: 20
+  ~search: 
+  ~level: 
+  ~is_completed: 
+  ~is_verified: 
+  ~id: 
+  ~end_year: 
+  ~created_at: 
+}
+
+docs {
+  # List Educations
+  
+  Lista todas as formações de um profissional.
+  
+  ## Filtros disponíveis
+  
+  | Parâmetro | Tipo | Descrição |
+  |-----------|------|-----------|
+  | search | string | Busca textual |
+  | level | TECHNICAL, UNDERGRADUATE, SPECIALIZATION, MASTERS, DOCTORATE, POSTDOC, COURSE, FELLOWSHIP | Nível de formação |
+  | is_completed | boolean | Se está completa |
+  | is_verified | boolean | Se está verificada |
+  
+  ## Ordenação
+  
+  Campos: `id`, `end_year`, `created_at`
+}

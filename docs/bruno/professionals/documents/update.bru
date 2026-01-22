@@ -1,0 +1,24 @@
+meta {
+  name: Update Document
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/professionals/:professionalId/documents/:documentId
+  body: json
+  auth: inherit
+}
+
+params:path {
+  professionalId: {{professionalId}}
+  documentId: {{documentId}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  "notes": "Documento verificado"
+}
