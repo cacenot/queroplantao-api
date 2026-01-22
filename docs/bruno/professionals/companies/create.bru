@@ -24,5 +24,20 @@ body:json {
 }
 
 docs {
-  Link a company to a professional.
+  # Create Company Link
+  
+  Vincula uma empresa (PJ) ao profissional.
+  
+  ## Campos obrigatórios
+  
+  - `company_id`: UUID da empresa previamente cadastrada
+  - `joined_at`: Data/hora de entrada na empresa (ISO 8601 com timezone)
+  
+  ## Campos opcionais
+  
+  - `left_at`: Data/hora de saída da empresa (se já saiu)
+  
+  ## Observação
+  
+  A empresa deve ser criada previamente através do endpoint de empresas.
 }

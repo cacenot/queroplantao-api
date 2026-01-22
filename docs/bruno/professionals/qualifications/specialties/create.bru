@@ -21,11 +21,32 @@ headers {
 body:json {
   "specialty_id": "specialty-uuid-here",
   "is_primary": true,
-  "residency_status": "COMPLETED"
+  "residency_status": "COMPLETED",
+  "rqe_number": "12345",
+  "rqe_state": "SP",
+  "residency_institution": "Hospital das Clínicas - FMUSP",
+  "certificate_url": "https://storage.example.com/certificates/specialty.pdf"
 }
 
 docs {
-  Link a specialty to a professional.
+  # Create Specialty
   
-  Residency status values: IN_PROGRESS, COMPLETED, NOT_APPLICABLE
+  Vincula uma especialidade à qualificação do profissional.
+  
+  ## Campos obrigatórios
+  
+  - `specialty_id`: UUID da especialidade (ver endpoint /specialties)
+  
+  ## Campos opcionais
+  
+  - `is_primary`: Se é a especialidade principal (default: false)
+  - `rqe_number`: Número do RQE (Registro de Qualificação de Especialista)
+  - `rqe_state`: Estado do RQE (2 caracteres, ex: SP)
+  - `residency_status`: Status da residência/formação
+    - `COMPLETED`: Concluída
+    - `IN_PROGRESS`: Em andamento
+    - `NOT_APPLICABLE`: Não se aplica
+  - `residency_institution`: Instituição da residência
+  - `residency_expected_completion`: Data prevista de conclusão (YYYY-MM-DD)
+  - `certificate_url`: URL do certificado de especialista
 }

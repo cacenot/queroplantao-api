@@ -20,5 +20,23 @@ headers {
 }
 
 body:json {
-  "notes": "Documento verificado"
+  "notes": "Documento verificado",
+  "expires_at": "2026-12-31T23:59:59Z"
+}
+
+docs {
+  # Update Document (PATCH)
+  
+  Atualiza parcialmente um documento. Apenas os campos enviados serão atualizados.
+  
+  ## Campos atualizáveis
+  
+  - `file_url`: Nova URL do arquivo
+  - `file_name`: Novo nome do arquivo
+  - `file_size`: Novo tamanho em bytes
+  - `mime_type`: Novo tipo MIME
+  - `expires_at`: Nova data de expiração (ISO 8601)
+  - `notes`: Observações
+  
+  **Nota:** Não é possível alterar `document_type`, `document_category`, `qualification_id` ou `specialty_id` após criação.
 }

@@ -24,11 +24,39 @@ body:json {
   "institution": "Universidade Federal de São Paulo",
   "start_year": 2010,
   "end_year": 2015,
-  "is_completed": true
+  "is_completed": true,
+  "workload_hours": 8000,
+  "certificate_url": "https://storage.example.com/diplomas/medicina.pdf",
+  "notes": "Formação com ênfase em emergência"
 }
 
 docs {
-  Create a new education record for a professional.
+  # Create Education
   
-  Level values: TECHNICAL, UNDERGRADUATE, POSTGRADUATE, MASTERS, DOCTORATE
+  Adiciona um registro de formação complementar à qualificação do profissional.
+  
+  ## Campos obrigatórios
+  
+  - `level`: Nível da formação (ver tabela abaixo)
+  - `course_name`: Nome do curso/formação
+  - `institution`: Nome da instituição de ensino
+  
+  ## Campos opcionais
+  
+  - `start_year`: Ano de início (1900-2100)
+  - `end_year`: Ano de conclusão (null se em andamento)
+  - `is_completed`: Se a formação foi concluída (default: false)
+  - `workload_hours`: Carga horária total
+  - `certificate_url`: URL do certificado/diploma
+  - `notes`: Observações adicionais
+  
+  ## Níveis de formação (level)
+  
+  | Valor | Descrição |
+  |-------|----------|
+  | TECHNICAL | Técnico |
+  | UNDERGRADUATE | Graduação |
+  | POSTGRADUATE | Pós-graduação |
+  | MASTERS | Mestrado |
+  | DOCTORATE | Doutorado |
 }

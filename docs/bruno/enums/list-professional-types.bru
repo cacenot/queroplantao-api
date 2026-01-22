@@ -1,0 +1,44 @@
+meta {
+  name: List Professional Types
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/v1/enums/professional-types
+  body: none
+  auth: inherit
+}
+
+docs {
+  # List Professional Types
+  
+  Lista todos os tipos de profissionais de saúde com labels em PT-BR e o conselho associado.
+  
+  ## Response
+  
+  Array de objetos com:
+  
+  | Campo | Tipo | Descrição |
+  |-------|------|-----------|
+  | value | string | Valor do enum (ex: "DOCTOR") |
+  | label | string | Nome em português (ex: "Médico") |
+  | council | string | Conselho associado (ex: "CRM") |
+  
+  ## Exemplo de Response
+  
+  ```json
+  [
+    {
+      "value": "DOCTOR",
+      "label": "Médico",
+      "council": "CRM"
+    },
+    {
+      "value": "NURSE",
+      "label": "Enfermeiro(a)",
+      "council": "COREN"
+    }
+  ]
+  ```
+}

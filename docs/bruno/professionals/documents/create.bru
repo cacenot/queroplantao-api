@@ -24,7 +24,8 @@ body:json {
   "file_url": "https://storage.example.com/documents/crm-cert.pdf",
   "file_name": "crm-certificate.pdf",
   "file_size": 1024000,
-  "mime_type": "application/pdf"
+  "mime_type": "application/pdf",
+  "qualification_id": "qualification-uuid-here"
 }
 
 docs {
@@ -34,12 +35,38 @@ docs {
   
   ## Campos obrigatórios
   
-  - `document_type`: Tipo do documento
-  - `document_category`: PROFILE, QUALIFICATION ou SPECIALTY
+  - `document_type`: Tipo do documento (ver lista abaixo)
+  - `document_category`: Categoria do documento
+    - `PROFILE`: Documentos pessoais (RG, foto, etc.)
+    - `QUALIFICATION`: Documentos da qualificação (diploma, registro CRM, etc.)
+    - `SPECIALTY`: Documentos da especialidade (título de especialista, etc.)
   - `file_url`: URL do arquivo
   - `file_name`: Nome do arquivo
   
+  ## Campos opcionais
+  
+  - `file_size`: Tamanho do arquivo em bytes
+  - `mime_type`: Tipo MIME (ex: application/pdf, image/jpeg)
+  - `expires_at`: Data de expiração do documento (ISO 8601)
+  - `notes`: Observações adicionais
+  - `qualification_id`: UUID da qualificação (obrigatório para category=QUALIFICATION)
+  - `specialty_id`: UUID da especialidade (obrigatório para category=SPECIALTY)
+  
   ## Tipos de documento (document_type)
   
-  ID_DOCUMENT, PHOTO, CRIMINAL_RECORD, ADDRESS_PROOF, CV, DIPLOMA, CRM_REGISTRATION_CERTIFICATE, CRM_FINANCIAL_CERTIFICATE, CRM_ETHICS_CERTIFICATE, RESIDENCY_CERTIFICATE, SPECIALIST_TITLE, SBA_DIPLOMA, OTHER
+  | Tipo | Descrição |
+  |------|-----------|
+  | ID_DOCUMENT | Documento de identidade (RG, CNH) |
+  | PHOTO | Foto do profissional |
+  | CRIMINAL_RECORD | Certidão de antecedentes criminais |
+  | ADDRESS_PROOF | Comprovante de endereço |
+  | CV | Currículo |
+  | DIPLOMA | Diploma de graduação |
+  | CRM_REGISTRATION_CERTIFICATE | Carteira do CRM |
+  | CRM_FINANCIAL_CERTIFICATE | Certidão de regularidade financeira CRM |
+  | CRM_ETHICS_CERTIFICATE | Certidão ético-profissional CRM |
+  | RESIDENCY_CERTIFICATE | Certificado de residência médica |
+  | SPECIALIST_TITLE | Título de especialista |
+  | SBA_DIPLOMA | Diploma SBA (anestesiologia) |
+  | OTHER | Outro tipo de documento |
 }

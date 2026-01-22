@@ -20,9 +20,6 @@ from src.shared.domain.models import (
 )
 
 if TYPE_CHECKING:
-    from src.modules.contracts.domain.models.professional_contract import (
-        ProfessionalContract,
-    )
     from src.modules.organizations.domain.models.organization import Organization
     from src.modules.professionals.domain.models.professional_company import (
         ProfessionalCompany,
@@ -33,7 +30,6 @@ if TYPE_CHECKING:
     from src.modules.professionals.domain.models.professional_qualification import (
         ProfessionalQualification,
     )
-    from src.modules.screening.domain.models.screening_process import ScreeningProcess
     from src.shared.domain.models.bank_account import BankAccount
 
 

@@ -212,3 +212,43 @@ def get_expected_council_for_professional_type(
         The expected council type for this professional.
     """
     return PROFESSIONAL_TYPE_TO_COUNCIL.get(professional_type, CouncilType.OTHER)
+
+
+# ============================================================================
+# PT-BR LABELS FOR FRONTEND
+# ============================================================================
+
+# Human-readable PT-BR labels for ProfessionalType
+PROFESSIONAL_TYPE_LABELS: dict[ProfessionalType, str] = {
+    ProfessionalType.DOCTOR: "Médico",
+    ProfessionalType.NURSE: "Enfermeiro(a)",
+    ProfessionalType.NURSING_TECH: "Técnico(a) de Enfermagem",
+    ProfessionalType.PHARMACIST: "Farmacêutico(a)",
+    ProfessionalType.DENTIST: "Dentista",
+    ProfessionalType.PHYSIOTHERAPIST: "Fisioterapeuta",
+    ProfessionalType.PSYCHOLOGIST: "Psicólogo(a)",
+    ProfessionalType.NUTRITIONIST: "Nutricionista",
+    ProfessionalType.BIOMEDIC: "Biomédico(a)",
+    ProfessionalType.OTHER: "Outro",
+}
+
+# Human-readable PT-BR labels for DocumentType
+DOCUMENT_TYPE_LABELS: dict[DocumentType, str] = {
+    # Profile documents
+    DocumentType.ID_DOCUMENT: "Documento de Identidade (RG ou CNH)",
+    DocumentType.PHOTO: "Foto 3x4",
+    DocumentType.CRIMINAL_RECORD: "Certidão de Antecedentes Criminais",
+    DocumentType.ADDRESS_PROOF: "Comprovante de Endereço",
+    DocumentType.CV: "Currículo",
+    # Qualification documents
+    DocumentType.DIPLOMA: "Diploma de Graduação",
+    DocumentType.CRM_REGISTRATION_CERTIFICATE: "Certidão de Regularidade de Inscrição",
+    DocumentType.CRM_FINANCIAL_CERTIFICATE: "Certidão de Regularidade Financeira",
+    DocumentType.CRM_ETHICS_CERTIFICATE: "Certidão Ética",
+    # Specialty documents
+    DocumentType.RESIDENCY_CERTIFICATE: "Certificado de Conclusão de Residência",
+    DocumentType.SPECIALIST_TITLE: "Título de Especialista",
+    DocumentType.SBA_DIPLOMA: "Diploma da SBA (Anestesiologia)",
+    # Generic
+    DocumentType.OTHER: "Outro Documento",
+}

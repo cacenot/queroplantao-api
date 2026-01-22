@@ -9,7 +9,7 @@ from src.modules.organizations.presentation.routes import router as organization
 from src.modules.professionals.presentation.routes import router as professionals_router
 from src.modules.schedules.presentation.routes import router as schedules_router
 from src.modules.shifts.presentation.routes import router as shifts_router
-from src.shared.presentation import specialty_router
+from src.shared.presentation import enum_router, specialty_router
 
 
 # Create main v1 router
@@ -24,4 +24,5 @@ router.include_router(shifts_router)
 router.include_router(job_postings_router)
 
 # Include shared routers (global reference data)
+router.include_router(enum_router)
 router.include_router(specialty_router)

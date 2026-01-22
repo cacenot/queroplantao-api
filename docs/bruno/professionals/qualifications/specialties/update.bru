@@ -20,5 +20,25 @@ headers {
 }
 
 body:json {
-  "is_primary": true
+  "is_primary": true,
+  "rqe_number": "12345",
+  "rqe_state": "SP"
+}
+
+docs {
+  # Update Specialty (PATCH)
+  
+  Atualiza parcialmente o vínculo com a especialidade. Apenas os campos enviados serão atualizados.
+  
+  ## Campos atualizáveis
+  
+  - `is_primary`: Se é a especialidade principal
+  - `rqe_number`: Número do RQE
+  - `rqe_state`: Estado do RQE
+  - `residency_status`: Status da residência
+  - `residency_institution`: Instituição da residência
+  - `residency_expected_completion`: Data prevista de conclusão
+  - `certificate_url`: URL do certificado
+  
+  **Nota:** Não é possível alterar o `specialty_id` após criação.
 }

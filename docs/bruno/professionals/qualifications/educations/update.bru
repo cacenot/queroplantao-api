@@ -21,5 +21,24 @@ headers {
 
 body:json {
   "is_completed": true,
-  "end_year": 2015
+  "end_year": 2015,
+  "certificate_url": "https://storage.example.com/diplomas/medicina.pdf"
+}
+
+docs {
+  # Update Education (PATCH)
+  
+  Atualiza parcialmente um registro de formação. Apenas os campos enviados serão atualizados.
+  
+  ## Campos atualizáveis
+  
+  - `level`: Nível da formação
+  - `course_name`: Nome do curso
+  - `institution`: Instituição
+  - `start_year`: Ano de início
+  - `end_year`: Ano de conclusão
+  - `is_completed`: Status de conclusão
+  - `workload_hours`: Carga horária
+  - `certificate_url`: URL do certificado
+  - `notes`: Observações
 }

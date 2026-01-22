@@ -22,7 +22,15 @@ body:json {
   "birth_date": "1985-05-15",
   "nationality": "Brasileiro",
   "gender": "MALE",
-  "marital_status": "SINGLE"
+  "marital_status": "SINGLE",
+  "city": "São Paulo",
+  "state_code": "SP",
+  "state_name": "São Paulo",
+  "postal_code": "01310-100",
+  "address": "Avenida Paulista",
+  "number": "1000",
+  "complement": "Sala 101",
+  "neighborhood": "Bela Vista"
 }
 
 docs {
@@ -33,16 +41,26 @@ docs {
   ## Campos obrigatórios
   
   - `full_name`: Nome completo do profissional
+  - `city`: Cidade
+  - `state_code`: UF (2 caracteres, ex: SP)
+  - `state_name`: Nome do estado
+  - `postal_code`: CEP
   
   ## Campos opcionais
   
+  ### Dados pessoais
   - `email`: Email (formato válido)
-  - `phone`: Telefone (formato E.164)
+  - `phone`: Telefone (formato E.164, ex: +5511999999999)
   - `cpf`: CPF (11 dígitos, sem formatação)
   - `birth_date`: Data de nascimento (YYYY-MM-DD)
   - `nationality`: Nacionalidade
   - `gender`: MALE ou FEMALE
   - `marital_status`: SINGLE, MARRIED, DIVORCED, WIDOWED, SEPARATED, CIVIL_UNION
   - `avatar_url`: URL da foto de perfil
-  - Endereço: `street`, `street_number`, `complement`, `neighborhood`, `city`, `state_code`, `state_name`, `postal_code`
+  
+  ### Endereço (opcionais)
+  - `address`: Logradouro (rua, avenida, etc.)
+  - `number`: Número
+  - `complement`: Complemento (apto, sala, etc.)
+  - `neighborhood`: Bairro
 }

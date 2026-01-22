@@ -20,5 +20,23 @@ headers {
 }
 
 body:json {
-  "is_primary": true
+  "is_primary": true,
+  "graduation_year": 2015,
+  "council_number": "654321",
+  "council_state": "RJ"
+}
+
+docs {
+  # Update Qualification (PATCH)
+  
+  Atualiza parcialmente uma qualificação. Apenas os campos enviados serão atualizados.
+  
+  ## Campos atualizáveis
+  
+  - `is_primary`: Se é a qualificação principal
+  - `graduation_year`: Ano de graduação (1900-2100)
+  - `council_number`: Número do registro no conselho
+  - `council_state`: Estado do conselho (2 caracteres)
+  
+  **Nota:** Não é possível alterar `professional_type` ou `council_type` após criação.
 }
