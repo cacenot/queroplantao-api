@@ -9,6 +9,9 @@ from src.modules.professionals.use_cases.organization_professional.organization_
 from src.modules.professionals.use_cases.organization_professional.organization_professional_get_use_case import (
     GetOrganizationProfessionalUseCase,
 )
+from src.modules.professionals.use_cases.organization_professional.organization_professional_list_summary_use_case import (
+    ListOrganizationProfessionalsSummaryUseCase,
+)
 from src.modules.professionals.use_cases.organization_professional.organization_professional_list_use_case import (
     ListOrganizationProfessionalsUseCase,
 )
@@ -21,5 +24,6 @@ __all__ = [
     "DeleteOrganizationProfessionalUseCase",
     "GetOrganizationProfessionalUseCase",
     "ListOrganizationProfessionalsUseCase",
+    "ListOrganizationProfessionalsSummaryUseCase",
     "UpdateOrganizationProfessionalUseCase",
 ]

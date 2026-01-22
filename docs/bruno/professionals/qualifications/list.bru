@@ -10,10 +10,6 @@ get {
   auth: inherit
 }
 
-params:path {
-  professionalId: {{professionalId}}
-}
-
 params:query {
   page: 1
   page_size: 20
@@ -26,6 +22,14 @@ params:query {
   ~id: 
   ~graduation_year: 
   ~created_at: 
+}
+
+params:path {
+  professionalId: {{professionalId}}
+}
+
+vars:pre-request {
+  professionalId: 019be659-2371-7737-8419-a36c8cea62b7
 }
 
 docs {

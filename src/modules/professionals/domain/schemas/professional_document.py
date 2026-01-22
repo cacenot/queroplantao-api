@@ -1,5 +1,6 @@
 """Schemas for ProfessionalDocument."""
 
+from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
@@ -114,5 +115,5 @@ class ProfessionalDocumentResponse(BaseModel):
     is_verified: bool = False
 
     # Timestamps
-    created_at: Optional[str] = None
-    updated_at: Optional[str] = None
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None

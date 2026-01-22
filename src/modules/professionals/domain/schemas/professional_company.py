@@ -1,5 +1,6 @@
 """Schemas for ProfessionalCompany."""
 
+from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
@@ -64,5 +65,5 @@ class ProfessionalCompanyResponse(BaseModel):
     company: Optional[CompanyInfo] = None
 
     # Timestamps
-    created_at: Optional[str] = None
-    updated_at: Optional[str] = None
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None

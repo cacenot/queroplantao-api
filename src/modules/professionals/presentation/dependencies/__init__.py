@@ -12,6 +12,7 @@ from src.modules.professionals.presentation.dependencies.organization_profession
     DeleteOrganizationProfessionalUC,
     GetOrganizationProfessionalUC,
     ListOrganizationProfessionalsUC,
+    ListOrganizationProfessionalsSummaryUC,
     UpdateOrganizationProfessionalUC,
 )
 
@@ -71,6 +72,7 @@ __all__ = [
     "DeleteOrganizationProfessionalUC",
     "GetOrganizationProfessionalUC",
     "ListOrganizationProfessionalsUC",
+    "ListOrganizationProfessionalsSummaryUC",
     # ProfessionalCompany
     "CreateProfessionalCompanyUC",
     "UpdateProfessionalCompanyUC",

@@ -9,6 +9,7 @@ from fastapi_restkit.sortingset import sorting_as_query
 
 from src.modules.professionals.domain.schemas import (
     OrganizationProfessionalCreate,
+    OrganizationProfessionalListItem,
     OrganizationProfessionalResponse,
     OrganizationProfessionalUpdate,
 )
@@ -21,6 +22,7 @@ from src.modules.professionals.presentation.dependencies import (
     DeleteOrganizationProfessionalUC,
     GetOrganizationProfessionalUC,
     ListOrganizationProfessionalsUC,
+    ListOrganizationProfessionalsSummaryUC,
     OrganizationContext,
     UpdateOrganizationProfessionalUC,
 )
@@ -76,6 +78,32 @@ async def list_professionals(
         sorting=sorting,
     )
     return result
+
+
+@router.get(
+    "/summary",
+    response_model=PaginatedResponse[OrganizationProfessionalListItem],
+    summary="List professionals (summary)",
+    description="List professionals with simplified data: basic info, primary qualification, and specialties.",
+)
+async def list_professionals_summary(
+    ctx: OrganizationContext,
+    use_case: ListOrganizationProfessionalsSummaryUC,
+    pagination: PaginationParams = Depends(),
+    filters: OrganizationProfessionalFilter = Depends(
+        filter_as_query(OrganizationProfessionalFilter)
+    ),
+    sorting: OrganizationProfessionalSorting = Depends(
+        sorting_as_query(OrganizationProfessionalSorting)
+    ),
+) -> PaginatedResponse[OrganizationProfessionalListItem]:
+    """List professionals with summary data."""
+    return await use_case.execute(
+        organization_id=ctx.organization,
+        pagination=pagination,
+        filters=filters,
+        sorting=sorting,
+    )
 
 
 @router.get(

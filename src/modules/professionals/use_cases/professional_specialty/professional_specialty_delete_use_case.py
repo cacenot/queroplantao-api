@@ -21,8 +21,20 @@ class DeleteProfessionalSpecialtyUseCase:
         self,
         professional_specialty_id: UUID,
         qualification_id: UUID,
+        organization_id: UUID | None = None,
+        professional_id: UUID | None = None,
+        deleted_by: UUID | None = None,
     ) -> None:
-        """Soft delete a professional specialty."""
+        """
+        Soft delete a professional specialty.
+
+        Args:
+            professional_specialty_id: The specialty link UUID to delete.
+            qualification_id: The qualification UUID.
+            organization_id: The organization UUID (unused, for API consistency).
+            professional_id: The professional UUID (unused, for API consistency).
+            deleted_by: UUID of the user deleting this record (unused, for future audit).
+        """
         professional_specialty = await self.repository.get_by_id_for_qualification(
             professional_specialty_id, qualification_id
         )

@@ -1,5 +1,6 @@
 """Schemas for OrganizationProfessional."""
 
+from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
@@ -55,15 +56,17 @@ class OrganizationProfessionalCreate(BaseModel):
         description="Profile picture URL",
     )
 
-    # Address fields
+    # Address fields (required)
+    city: str = Field(max_length=100, description="City name")
+    state_code: str = Field(max_length=2, description="State code (e.g., SP, RJ)")
+    state_name: str = Field(max_length=50, description="State name")
+    postal_code: str = Field(max_length=10, description="Postal code (CEP)")
+
+    # Address fields (optional)
     street: Optional[str] = Field(default=None, max_length=255)
     street_number: Optional[str] = Field(default=None, max_length=20)
     complement: Optional[str] = Field(default=None, max_length=100)
     neighborhood: Optional[str] = Field(default=None, max_length=100)
-    city: Optional[str] = Field(default=None, max_length=100)
-    state_code: Optional[str] = Field(default=None, max_length=2)
-    state_name: Optional[str] = Field(default=None, max_length=50)
-    postal_code: Optional[str] = Field(default=None, max_length=10)
 
 
 class OrganizationProfessionalUpdate(BaseModel):
@@ -161,5 +164,46 @@ class OrganizationProfessionalResponse(BaseModel):
     is_verified: bool = False
 
     # Timestamps
-    created_at: Optional[str] = None
-    updated_at: Optional[str] = None
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+
+
+class QualificationSummary(BaseModel):
+    """Summary of the primary professional qualification."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    professional_type: str
+    council_type: str
+    council_number: str
+    council_state: str
+
+
+class SpecialtySummary(BaseModel):
+    """Summary of a specialty for list responses."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    name: str
+
+
+class OrganizationProfessionalListItem(BaseModel):
+    """Simplified schema for professional list responses."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    avatar_url: Optional[str] = None
+    full_name: str
+    city: Optional[str] = None
+    state_code: Optional[str] = None
+    cpf: Optional[str] = None
+    phone: Optional[str] = None
+    email: Optional[str] = None
+
+    # Primary qualification summary
+    qualification: Optional[QualificationSummary] = None
+
+    # List of specialties
+    specialties: list[SpecialtySummary] = []

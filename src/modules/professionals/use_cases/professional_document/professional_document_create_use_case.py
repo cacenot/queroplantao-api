@@ -14,6 +14,7 @@ from src.modules.professionals.infrastructure.repositories import (
     OrganizationProfessionalRepository,
     ProfessionalDocumentRepository,
     ProfessionalQualificationRepository,
+    ProfessionalSpecialtyRepository,
 )
 
 
@@ -25,6 +26,7 @@ class CreateProfessionalDocumentUseCase:
         self.repository = ProfessionalDocumentRepository(session)
         self.professional_repository = OrganizationProfessionalRepository(session)
         self.qualification_repository = ProfessionalQualificationRepository(session)
+        self.specialty_repository = ProfessionalSpecialtyRepository(session)
 
     async def execute(
         self,
@@ -72,6 +74,14 @@ class CreateProfessionalDocumentUseCase:
         # Validate specialty if provided
         if data.specialty_id:
             # Note: specialty_id here refers to professional_specialty, not the specialty table
+            professional_specialty = await self.specialty_repository.get_by_id(
+                data.specialty_id
+            )
+            if professional_specialty is None:
+                raise NotFoundError(
+                    resource="ProfessionalSpecialty",
+                    identifier=str(data.specialty_id),
+                )
             if data.document_category != DocumentCategory.SPECIALTY:
                 raise ValidationError(
                     message="Documents linked to a specialty must have SPECIALTY category",

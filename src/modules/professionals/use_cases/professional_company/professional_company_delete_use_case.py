@@ -21,8 +21,18 @@ class DeleteProfessionalCompanyUseCase:
         self,
         professional_company_id: UUID,
         professional_id: UUID,
+        organization_id: UUID | None = None,
+        deleted_by: UUID | None = None,
     ) -> None:
-        """Soft delete a company link."""
+        """
+        Soft delete a company link.
+
+        Args:
+            professional_company_id: The company link UUID to delete.
+            professional_id: The professional UUID.
+            organization_id: The organization UUID (unused, for API consistency).
+            deleted_by: UUID of the user deleting this record (unused, for future audit).
+        """
         professional_company = await self.repository.get_by_id_for_professional(
             professional_company_id, professional_id
         )

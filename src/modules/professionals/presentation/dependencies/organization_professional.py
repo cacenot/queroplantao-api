@@ -10,6 +10,7 @@ from src.modules.professionals.use_cases import (
     DeleteOrganizationProfessionalUseCase,
     GetOrganizationProfessionalUseCase,
     ListOrganizationProfessionalsUseCase,
+    ListOrganizationProfessionalsSummaryUseCase,
     UpdateOrganizationProfessionalUseCase,
 )
 
@@ -49,6 +50,13 @@ def get_list_organization_professionals_use_case(
     return ListOrganizationProfessionalsUseCase(session)
 
 
+def get_list_organization_professionals_summary_use_case(
+    session: SessionDep,
+) -> ListOrganizationProfessionalsSummaryUseCase:
+    """Factory for ListOrganizationProfessionalsSummaryUseCase."""
+    return ListOrganizationProfessionalsSummaryUseCase(session)
+
+
 # Type aliases for cleaner route signatures
 CreateOrganizationProfessionalUC = Annotated[
     CreateOrganizationProfessionalUseCase,
@@ -69,4 +77,8 @@ GetOrganizationProfessionalUC = Annotated[
 ListOrganizationProfessionalsUC = Annotated[
     ListOrganizationProfessionalsUseCase,
     Depends(get_list_organization_professionals_use_case),
+]
+ListOrganizationProfessionalsSummaryUC = Annotated[
+    ListOrganizationProfessionalsSummaryUseCase,
+    Depends(get_list_organization_professionals_summary_use_case),
 ]

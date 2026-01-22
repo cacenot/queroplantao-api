@@ -5,13 +5,20 @@ from uuid import UUID
 from fastapi_restkit.pagination import PaginatedResponse, PaginationParams
 from sqlalchemy import Select, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import load_only, selectinload
 
 from src.modules.professionals.domain.models import OrganizationProfessional
+from src.modules.professionals.domain.models.professional_qualification import (
+    ProfessionalQualification,
+)
+from src.modules.professionals.domain.models.professional_specialty import (
+    ProfessionalSpecialty,
+)
 from src.modules.professionals.infrastructure.filters import (
     OrganizationProfessionalFilter,
     OrganizationProfessionalSorting,
 )
+from src.shared.domain.models.specialty import Specialty
 from src.shared.infrastructure.repositories import (
     BaseRepository,
     SoftDeletePaginationMixin,
@@ -164,6 +171,76 @@ class OrganizationProfessionalRepository(
             Paginated list of professionals.
         """
         query = self._base_query_for_organization(organization_id)
+
+        return await self.list_paginated(
+            pagination,
+            filters=filters,
+            sorting=sorting,
+            base_query=query,
+        )
+
+    async def list_for_organization_with_summary(
+        self,
+        organization_id: UUID,
+        pagination: PaginationParams,
+        *,
+        filters: OrganizationProfessionalFilter | None = None,
+        sorting: OrganizationProfessionalSorting | None = None,
+    ) -> PaginatedResponse[OrganizationProfessional]:
+        """
+        List professionals with primary qualification and specialties loaded.
+
+        Eagerly loads only the columns needed for summary response:
+        - Professional: id, avatar_url, full_name, city, state_code, cpf, phone, email
+        - Qualification: professional_type, council_type, council_number, council_state
+        - Specialty: id, name
+
+        Only loads primary qualification (is_primary=True) and filters deleted records.
+
+        Args:
+            organization_id: The organization UUID.
+            pagination: Pagination parameters.
+            filters: Optional filters.
+            sorting: Optional sorting.
+
+        Returns:
+            Paginated list of professionals with minimal data loaded.
+        """
+        query = self._base_query_for_organization(organization_id).options(
+            # Load only needed columns from OrganizationProfessional
+            load_only(
+                OrganizationProfessional.id,
+                OrganizationProfessional.avatar_url,
+                OrganizationProfessional.full_name,
+                OrganizationProfessional.city,
+                OrganizationProfessional.state_code,
+                OrganizationProfessional.cpf,
+                OrganizationProfessional.phone,
+                OrganizationProfessional.email,
+            ),
+            # Load primary qualification with only needed columns
+            selectinload(
+                OrganizationProfessional.qualifications.and_(
+                    ProfessionalQualification.deleted_at.is_(None),
+                    ProfessionalQualification.is_primary.is_(True),
+                )
+            )
+            .load_only(
+                ProfessionalQualification.id,
+                ProfessionalQualification.professional_type,
+                ProfessionalQualification.council_type,
+                ProfessionalQualification.council_number,
+                ProfessionalQualification.council_state,
+            )
+            .selectinload(
+                ProfessionalQualification.specialties.and_(
+                    ProfessionalSpecialty.deleted_at.is_(None)
+                )
+            )
+            .load_only(ProfessionalSpecialty.id, ProfessionalSpecialty.specialty_id)
+            .selectinload(ProfessionalSpecialty.specialty)
+            .load_only(Specialty.id, Specialty.name),
+        )
 
         return await self.list_paginated(
             pagination,

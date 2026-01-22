@@ -8,6 +8,7 @@ from src.modules.professionals.use_cases.organization_professional import (
     DeleteOrganizationProfessionalUseCase,
     GetOrganizationProfessionalUseCase,
     ListOrganizationProfessionalsUseCase,
+    ListOrganizationProfessionalsSummaryUseCase,
     UpdateOrganizationProfessionalUseCase,
 )
 
@@ -71,6 +72,7 @@ __all__ = [
     "DeleteOrganizationProfessionalUseCase",
     "GetOrganizationProfessionalUseCase",
     "ListOrganizationProfessionalsUseCase",
+    "ListOrganizationProfessionalsSummaryUseCase",
     # ProfessionalQualification
     "CreateProfessionalQualificationUseCase",
     "UpdateProfessionalQualificationUseCase",

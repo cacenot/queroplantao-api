@@ -24,8 +24,19 @@ class UpdateProfessionalQualificationUseCase:
         qualification_id: UUID,
         organization_id: UUID,
         data: ProfessionalQualificationUpdate,
+        professional_id: UUID | None = None,
+        updated_by: UUID | None = None,
     ) -> ProfessionalQualification:
-        """Update an existing qualification (PATCH semantics)."""
+        """
+        Update an existing qualification (PATCH semantics).
+
+        Args:
+            qualification_id: The qualification UUID to update.
+            organization_id: The organization UUID.
+            data: The partial update data.
+            professional_id: The professional UUID (unused, for API consistency).
+            updated_by: UUID of the user updating this record.
+        """
         qualification = await self.repository.get_by_id_for_organization(
             qualification_id, organization_id
         )

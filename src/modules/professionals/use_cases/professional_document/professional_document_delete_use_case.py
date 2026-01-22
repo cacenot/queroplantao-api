@@ -21,8 +21,18 @@ class DeleteProfessionalDocumentUseCase:
         self,
         document_id: UUID,
         professional_id: UUID,
+        organization_id: UUID | None = None,
+        deleted_by: UUID | None = None,
     ) -> None:
-        """Soft delete a document."""
+        """
+        Soft delete a document.
+
+        Args:
+            document_id: The document UUID to delete.
+            professional_id: The professional UUID.
+            organization_id: The organization UUID (unused, for API consistency).
+            deleted_by: UUID of the user deleting this record (unused, for future audit).
+        """
         document = await self.repository.get_by_id_for_professional(
             document_id, professional_id
         )

@@ -4,8 +4,11 @@ Schemas for the professionals module.
 
 from src.modules.professionals.domain.schemas.organization_professional import (
     OrganizationProfessionalCreate,
+    OrganizationProfessionalListItem,
     OrganizationProfessionalResponse,
     OrganizationProfessionalUpdate,
+    QualificationSummary,
+    SpecialtySummary,
 )
 from src.modules.professionals.domain.schemas.professional_company import (
     CompanyInfo,
@@ -44,6 +47,9 @@ __all__ = [
     "OrganizationProfessionalCreate",
     "OrganizationProfessionalUpdate",
     "OrganizationProfessionalResponse",
+    "OrganizationProfessionalListItem",
+    "QualificationSummary",
+    "SpecialtySummary",
     # ProfessionalQualification
     "ProfessionalQualificationCreate",
     "ProfessionalQualificationUpdate",

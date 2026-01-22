@@ -1,0 +1,65 @@
+meta {
+  name: List Professionals (Summary)
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/v1/professionals/summary
+  body: none
+  auth: inherit
+}
+
+params:query {
+  page: 1
+  page_size: 20
+  ~search: 
+  ~is_active: 
+  ~gender: 
+  ~marital_status: 
+  ~id: 
+  ~full_name: 
+  ~email: 
+  ~created_at: 
+}
+
+docs {
+  # List Professionals (Summary)
+  
+  Lista profissionais com dados simplificados, ideal para listagens e tabelas.
+  
+  ## Response
+  
+  Cada item retorna:
+  - **id**: UUID do profissional
+  - **avatar_url**: URL da foto de perfil
+  - **full_name**: Nome completo
+  - **city**: Cidade
+  - **state_code**: UF (2 caracteres)
+  - **cpf**: CPF (11 dígitos)
+  - **phone**: Telefone
+  - **email**: Email
+  - **qualification**: Qualificação principal
+    - professional_type: Tipo (DOCTOR, NURSE, etc.)
+    - council_type: Conselho (CRM, COREN, etc.)
+    - council_number: Número do registro
+    - council_state: Estado do registro
+  - **specialties**: Lista de especialidades
+    - id: UUID da especialidade
+    - name: Nome da especialidade
+  
+  ## Filtros disponíveis
+  
+  | Parâmetro | Tipo | Descrição |
+  |-----------|------|-----------|
+  | search | string | Busca textual por nome, email, etc. |
+  | is_active | boolean | Filtrar por status ativo/inativo |
+  | gender | MALE, FEMALE | Filtrar por gênero |
+  | marital_status | SINGLE, MARRIED, DIVORCED, WIDOWED, SEPARATED, CIVIL_UNION | Estado civil |
+  
+  ## Ordenação (sorting)
+  
+  Campos ordenáveis: `id`, `full_name`, `email`, `created_at`
+  
+  Formato: `campo:asc` ou `campo:desc`
+}

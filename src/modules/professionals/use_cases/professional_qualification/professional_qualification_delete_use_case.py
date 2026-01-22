@@ -21,8 +21,18 @@ class DeleteProfessionalQualificationUseCase:
         self,
         qualification_id: UUID,
         organization_id: UUID,
+        professional_id: UUID | None = None,
+        deleted_by: UUID | None = None,
     ) -> None:
-        """Soft delete a qualification."""
+        """
+        Soft delete a qualification.
+
+        Args:
+            qualification_id: The qualification UUID to delete.
+            organization_id: The organization UUID.
+            professional_id: The professional UUID (unused, for API consistency).
+            deleted_by: UUID of the user deleting this record (unused, for future audit).
+        """
         qualification = await self.repository.get_by_id_for_organization(
             qualification_id, organization_id
         )

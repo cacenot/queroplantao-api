@@ -24,8 +24,19 @@ class UpdateProfessionalDocumentUseCase:
         document_id: UUID,
         professional_id: UUID,
         data: ProfessionalDocumentUpdate,
+        organization_id: UUID | None = None,
+        updated_by: UUID | None = None,
     ) -> ProfessionalDocument:
-        """Update an existing document (PATCH semantics)."""
+        """
+        Update an existing document (PATCH semantics).
+
+        Args:
+            document_id: The document UUID to update.
+            professional_id: The professional UUID.
+            data: The partial update data.
+            organization_id: The organization UUID (unused, for API consistency).
+            updated_by: UUID of the user updating this record (unused, for future audit).
+        """
         document = await self.repository.get_by_id_for_professional(
             document_id, professional_id
         )
