@@ -30,9 +30,6 @@ if TYPE_CHECKING:
     from src.modules.professionals.domain.models.professional_specialty import (
         ProfessionalSpecialty,
     )
-    from src.modules.screening.domain.models.screening_document_review import (
-        ScreeningDocumentReview,
-    )
 
 
 class ProfessionalDocumentBase(BaseModel):

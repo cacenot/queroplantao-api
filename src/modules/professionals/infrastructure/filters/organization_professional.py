@@ -9,7 +9,11 @@ from fastapi_restkit.filters import BooleanFilter, ListFilter, SearchFilter
 from fastapi_restkit.filterset import FilterSet
 from fastapi_restkit.sortingset import SortableField, SortingSet
 
-from src.modules.professionals.domain.models import Gender, MaritalStatus
+from src.modules.professionals.domain.models import (
+    Gender,
+    MaritalStatus,
+    ProfessionalType,
+)
 
 
 class OrganizationProfessionalFilter(FilterSet):
@@ -21,6 +25,7 @@ class OrganizationProfessionalFilter(FilterSet):
     - is_active: Filter by active status
     - gender: Filter by gender
     - marital_status: Filter by marital status
+    - professional_type: Filter by professional type (DOCTOR, NURSE, etc.)
     """
 
     search: Optional[SearchFilter] = Field(
@@ -41,6 +46,11 @@ class OrganizationProfessionalFilter(FilterSet):
     marital_status: Optional[ListFilter[MaritalStatus]] = Field(
         default=None,
         description="Filter by marital status",
+    )
+
+    professional_type: Optional[ListFilter[ProfessionalType]] = Field(
+        default=None,
+        description="Filter by professional type (DOCTOR, NURSE, NURSING_TECH, etc.)",
     )
 
     class Config:

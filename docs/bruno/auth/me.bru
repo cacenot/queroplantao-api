@@ -1,0 +1,52 @@
+meta {
+  name: Get Current User
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/v1/auth/me
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{bearerToken}}
+}
+
+docs {
+  # Get Current User
+  
+  Retorna os dados completos do usuário autenticado.
+  
+  ## Response
+  
+  - **id**: UUID do usuário
+  - **email**: Email
+  - **full_name**: Nome completo
+  - **phone**: Telefone
+  - **cpf**: CPF
+  - **avatar_url**: URL da foto
+  - **is_active**: Status ativo
+  - **email_verified_at**: Data de verificação do email
+  - **created_at**: Data de criação
+  - **updated_at**: Data de atualização
+  
+  ### Roles (globais)
+  Lista de roles globais do usuário:
+  - id, code, name
+  
+  ### Permissions (diretas)
+  Lista de permissions atribuídas diretamente ao usuário:
+  - id, code, name, module
+  
+  ### Organizations
+  Lista de organizações que o usuário é membro, com roles agrupadas por org:
+  - **organization_id**: UUID da organização
+  - **organization_name**: Nome da organização
+  - **is_active**: Se o membership está ativo
+  - **roles**: Lista de roles nesta organização
+    - id, code, name
+  - **parent**: Organização pai (se for filha)
+    - id, name
+}

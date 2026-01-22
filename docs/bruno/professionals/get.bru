@@ -14,8 +14,96 @@ params:path {
   professionalId: {{professionalId}}
 }
 
+vars:pre-request {
+  professionalId: 019be659-2371-7737-8419-a36c8cea62b7
+}
+
 docs {
-  # Get Professional
+  # Get Professional (Detail)
   
-  Retorna os detalhes de um profissional pelo seu UUID.
+  Retorna os detalhes completos de um profissional pelo seu UUID, incluindo todos os dados relacionados.
+  
+  ## Response Structure
+  
+  O endpoint retorna o profissional com todos os dados aninhados:
+  
+  ### Campos Principais
+  - `id`, `organization_id`, `full_name`, `email`, `phone`, `cpf`
+  - `birth_date`, `nationality`, `gender`, `marital_status`
+  - `avatar_url`, `is_active`, `is_verified`
+  - Campos de endereço: `street`, `street_number`, `complement`, `neighborhood`, `city`, `state_code`, `state_name`, `postal_code`
+  
+  ### Qualifications (qualifications)
+  Lista de qualificações profissionais (ex: Médico, Enfermeiro):
+  - `id`, `professional_type`, `is_primary`, `graduation_year`
+  - `council_type`, `council_number`, `council_state`
+  - `specialties[]` - Especialidades com documentos aninhados
+  - `educations[]` - Formações complementares
+  - `documents[]` - Documentos da qualificação (diploma, etc.)
+  
+  ### Specialties (dentro de qualifications)
+  Cada especialidade inclui:
+  - `id`, `specialty_id`, `is_primary`
+  - `rqe_number`, `rqe_state`, `residency_status`
+  - `specialty` - Dados de referência (code, name)
+  - `documents[]` - Documentos da especialidade (certificado RQE, etc.)
+  
+  ### Documents (profile-level)
+  Documentos do perfil (não vinculados a qualification/specialty):
+  - `document_type`, `document_category`
+  - `file_url`, `file_name`, `file_size`, `mime_type`
+  - `expires_at`, `is_verified`
+  
+  ### Companies (companies)
+  Empresas associadas ao profissional:
+  - `id`, `company_id`, `joined_at`, `left_at`
+  - `company` - Dados da empresa com `bank_accounts[]`
+  
+  ### Bank Accounts (bank_accounts)
+  Contas bancárias diretas do profissional:
+  - `agency`, `account_number`, `account_type`
+  - `holder_name`, `holder_document`
+  - `pix_key_type`, `pix_key`
+  - `bank` - Dados do banco (code, name)
+  
+  ## Exemplo de Response
+  
+  ```json
+  {
+    "id": "019...",
+    "organization_id": "019...",
+    "full_name": "Dr. João Silva",
+    "email": "joao@example.com",
+    "qualifications": [
+      {
+        "id": "019...",
+        "professional_type": "DOCTOR",
+        "council_type": "CRM",
+        "council_number": "123456",
+        "council_state": "SP",
+        "specialties": [
+          {
+            "id": "019...",
+            "specialty": { "code": "CARD", "name": "Cardiologia" },
+            "rqe_number": "12345",
+            "documents": [...]
+          }
+        ],
+        "educations": [...],
+        "documents": [...]
+      }
+    ],
+    "documents": [...],
+    "companies": [
+      {
+        "company": {
+          "cnpj": "12345678000199",
+          "legal_name": "Clínica Silva LTDA",
+          "bank_accounts": [...]
+        }
+      }
+    ],
+    "bank_accounts": [...]
+  }
+  ```
 }

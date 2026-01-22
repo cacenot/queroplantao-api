@@ -9,6 +9,7 @@ from fastapi_restkit.sortingset import sorting_as_query
 
 from src.modules.professionals.domain.schemas import (
     OrganizationProfessionalCreate,
+    OrganizationProfessionalDetailResponse,
     OrganizationProfessionalListItem,
     OrganizationProfessionalResponse,
     OrganizationProfessionalUpdate,
@@ -108,21 +109,22 @@ async def list_professionals_summary(
 
 @router.get(
     "/{professional_id}",
-    response_model=OrganizationProfessionalResponse,
+    response_model=OrganizationProfessionalDetailResponse,
     summary="Get a professional",
-    description="Get a professional by ID.",
+    description="Get a professional by ID with all related data: qualifications, specialties, educations, documents, companies, and bank accounts.",
 )
 async def get_professional(
     professional_id: UUID,
     ctx: OrganizationContext,
     use_case: GetOrganizationProfessionalUC,
-) -> OrganizationProfessionalResponse:
-    """Get a professional by ID."""
+) -> OrganizationProfessionalDetailResponse:
+    """Get a professional by ID with all nested data."""
     result = await use_case.execute(
         organization_id=ctx.organization,
         professional_id=professional_id,
+        include_relations=True,
     )
-    return OrganizationProfessionalResponse.model_validate(result)
+    return OrganizationProfessionalDetailResponse.from_model(result)
 
 
 @router.patch(

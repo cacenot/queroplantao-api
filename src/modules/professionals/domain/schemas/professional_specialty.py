@@ -1,12 +1,17 @@
 """Schemas for ProfessionalSpecialty."""
 
 from datetime import datetime
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
 from src.modules.professionals.domain.models import ResidencyStatus
+
+if TYPE_CHECKING:
+    from src.modules.professionals.domain.schemas.professional_document import (
+        ProfessionalDocumentResponse,
+    )
 
 
 class ProfessionalSpecialtyCreate(BaseModel):
@@ -128,3 +133,41 @@ class ProfessionalSpecialtyResponse(BaseModel):
     # Timestamps
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
+
+
+class ProfessionalSpecialtyDetailResponse(BaseModel):
+    """Schema for professional specialty with nested documents."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    qualification_id: UUID
+    specialty_id: UUID
+    is_primary: bool
+    rqe_number: Optional[str] = None
+    rqe_state: Optional[str] = None
+    residency_status: ResidencyStatus
+    residency_institution: Optional[str] = None
+    residency_expected_completion: Optional[str] = None
+    certificate_url: Optional[str] = None
+
+    # Embedded specialty info
+    specialty: Optional[SpecialtyInfo] = None
+
+    # Nested documents for this specialty
+    documents: list["ProfessionalDocumentResponse"] = []
+
+    # Verification
+    is_verified: bool = False
+
+    # Timestamps
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+
+
+# Deferred import to avoid circular imports
+from src.modules.professionals.domain.schemas.professional_document import (  # noqa: E402
+    ProfessionalDocumentResponse,
+)
+
+ProfessionalSpecialtyDetailResponse.model_rebuild()

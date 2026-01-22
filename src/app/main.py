@@ -134,12 +134,9 @@ def create_app() -> FastAPI:
 
     # Add Firebase authentication middleware SECOND
     # (runs SECOND - after logging, before organization identity)
-    app.add_middleware(
-        FirebaseAuthMiddleware,
-        exclude_prefixes=(
-            f"{settings.API_V1_PREFIX}/auth",  # Auth routes don't require auth
-        ),
-    )
+    # Note: No exclude_prefixes needed - /auth/me requires authentication
+    # Future public endpoints (login, register) should use exclude_paths
+    app.add_middleware(FirebaseAuthMiddleware)
 
     # Add logging middleware LAST
     # (runs FIRST - logs all requests/responses)

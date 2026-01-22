@@ -8,6 +8,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import load_only, selectinload
 
 from src.modules.professionals.domain.models import OrganizationProfessional
+from src.modules.professionals.domain.models.professional_company import (
+    ProfessionalCompany,
+)
 from src.modules.professionals.domain.models.professional_qualification import (
     ProfessionalQualification,
 )
@@ -18,6 +21,8 @@ from src.modules.professionals.infrastructure.filters import (
     OrganizationProfessionalFilter,
     OrganizationProfessionalSorting,
 )
+from src.shared.domain.models.bank_account import BankAccount
+from src.shared.domain.models.company import Company
 from src.shared.domain.models.specialty import Specialty
 from src.shared.infrastructure.repositories import (
     BaseRepository,
@@ -87,21 +92,49 @@ class OrganizationProfessionalRepository(
         """
         Get professional by ID with all related data loaded.
 
+        Loads the full nested graph:
+        - qualifications → specialties → specialty (reference data)
+        - qualifications → specialties → documents
+        - qualifications → educations
+        - qualifications → documents
+        - professional_companies → company → bank_accounts
+        - bank_accounts → bank
+        - documents (profile-level, filtered in response schema)
+
         Args:
             id: The professional UUID.
             organization_id: The organization UUID.
 
         Returns:
-            Professional with qualifications, documents, etc. loaded.
+            Professional with all nested data loaded.
         """
         result = await self.session.execute(
             self._base_query_for_organization(organization_id)
             .where(OrganizationProfessional.id == id)
             .options(
-                selectinload(OrganizationProfessional.qualifications),
+                # Qualifications with nested specialties, educations, and documents
+                selectinload(OrganizationProfessional.qualifications).options(
+                    selectinload(ProfessionalQualification.specialties).options(
+                        selectinload(ProfessionalSpecialty.specialty),  # Specialty name
+                        selectinload(ProfessionalSpecialty.documents),  # Specialty docs
+                    ),
+                    selectinload(ProfessionalQualification.educations),
+                    selectinload(
+                        ProfessionalQualification.documents
+                    ),  # Qualification docs
+                ),
+                # All documents (will filter profile-level in response schema)
                 selectinload(OrganizationProfessional.documents),
-                selectinload(OrganizationProfessional.professional_companies),
-                selectinload(OrganizationProfessional.bank_accounts),
+                # Professional companies with company and bank accounts
+                selectinload(OrganizationProfessional.professional_companies).options(
+                    selectinload(ProfessionalCompany.company).options(
+                        selectinload(Company.bank_accounts),
+                    ),
+                ),
+                # Professional's direct bank accounts with bank info
+                selectinload(OrganizationProfessional.bank_accounts).options(
+                    selectinload(BankAccount.bank),
+                ),
             )
         )
         return result.scalar_one_or_none()
@@ -164,13 +197,30 @@ class OrganizationProfessionalRepository(
         Args:
             organization_id: The organization UUID.
             pagination: Pagination parameters.
-            filters: Optional filters (search, is_active, gender, marital_status).
+            filters: Optional filters (search, is_active, gender, marital_status, professional_type).
             sorting: Optional sorting (id, full_name, email, created_at).
 
         Returns:
             Paginated list of professionals.
         """
         query = self._base_query_for_organization(organization_id)
+
+        # Apply professional_type filter via subquery (field is in ProfessionalQualification)
+        if (
+            filters
+            and filters.professional_type
+            and filters.professional_type.is_active()
+        ):
+            subquery = (
+                select(ProfessionalQualification.organization_professional_id)
+                .where(ProfessionalQualification.deleted_at.is_(None))
+                .where(
+                    ProfessionalQualification.professional_type.in_(
+                        filters.professional_type.values
+                    )
+                )
+            )
+            query = query.where(OrganizationProfessional.id.in_(subquery))
 
         return await self.list_paginated(
             pagination,
@@ -200,13 +250,32 @@ class OrganizationProfessionalRepository(
         Args:
             organization_id: The organization UUID.
             pagination: Pagination parameters.
-            filters: Optional filters.
+            filters: Optional filters (including professional_type).
             sorting: Optional sorting.
 
         Returns:
             Paginated list of professionals with minimal data loaded.
         """
-        query = self._base_query_for_organization(organization_id).options(
+        query = self._base_query_for_organization(organization_id)
+
+        # Apply professional_type filter via subquery (field is in ProfessionalQualification)
+        if (
+            filters
+            and filters.professional_type
+            and filters.professional_type.is_active()
+        ):
+            subquery = (
+                select(ProfessionalQualification.organization_professional_id)
+                .where(ProfessionalQualification.deleted_at.is_(None))
+                .where(
+                    ProfessionalQualification.professional_type.in_(
+                        filters.professional_type.values
+                    )
+                )
+            )
+            query = query.where(OrganizationProfessional.id.in_(subquery))
+
+        query = query.options(
             # Load only needed columns from OrganizationProfessional
             load_only(
                 OrganizationProfessional.id,
