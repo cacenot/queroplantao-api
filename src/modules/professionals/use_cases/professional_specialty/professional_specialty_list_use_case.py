@@ -5,7 +5,7 @@ from uuid import UUID
 from fastapi_restkit.pagination import PaginatedResponse, PaginationParams
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.app.exceptions import NotFoundError
+from src.app.exceptions import ProfessionalNotFoundError, QualificationNotFoundError
 from src.modules.professionals.domain.models import ProfessionalSpecialty
 from src.modules.professionals.infrastructure.filters import (
     ProfessionalSpecialtyFilter,
@@ -54,20 +54,14 @@ class ListProfessionalSpecialtiesUseCase:
             professional_id, organization_id
         )
         if professional is None:
-            raise NotFoundError(
-                resource="OrganizationProfessional",
-                identifier=str(professional_id),
-            )
+            raise ProfessionalNotFoundError()
 
         # Get primary qualification
         qualification = await self.qualification_repository.get_primary_qualification(
             professional_id
         )
         if qualification is None:
-            raise NotFoundError(
-                resource="ProfessionalQualification",
-                identifier=f"primary for professional {professional_id}",
-            )
+            raise QualificationNotFoundError()
 
         return await self.repository.list_for_qualification(
             qualification.id,

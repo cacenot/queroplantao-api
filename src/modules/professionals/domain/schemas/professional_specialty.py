@@ -7,6 +7,7 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field
 
 from src.modules.professionals.domain.models import ResidencyStatus
+from src.shared.domain.value_objects import StateUF
 
 if TYPE_CHECKING:
     from src.modules.professionals.domain.schemas.professional_document import (
@@ -31,11 +32,9 @@ class ProfessionalSpecialtyCreate(BaseModel):
         max_length=20,
         description="RQE number (for doctors)",
     )
-    rqe_state: Optional[str] = Field(
+    rqe_state: Optional[StateUF] = Field(
         default=None,
-        min_length=2,
-        max_length=2,
-        description="State where RQE is registered",
+        description="State where RQE is registered (e.g., SP, RJ)",
     )
     residency_status: ResidencyStatus = Field(
         default=ResidencyStatus.COMPLETED,
@@ -71,11 +70,9 @@ class ProfessionalSpecialtyUpdate(BaseModel):
         max_length=20,
         description="RQE number (for doctors)",
     )
-    rqe_state: Optional[str] = Field(
+    rqe_state: Optional[StateUF] = Field(
         default=None,
-        min_length=2,
-        max_length=2,
-        description="State where RQE is registered",
+        description="State where RQE is registered (e.g., SP, RJ)",
     )
     residency_status: Optional[ResidencyStatus] = Field(
         default=None,

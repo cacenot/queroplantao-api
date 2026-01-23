@@ -7,6 +7,7 @@ from fastapi_restkit.filterset import filter_as_query
 from fastapi_restkit.pagination import PaginatedResponse, PaginationParams
 from fastapi_restkit.sortingset import sorting_as_query
 
+from src.app.constants.error_codes import ProfessionalErrorCodes
 from src.modules.professionals.domain.schemas import (
     OrganizationProfessionalCompositeCreate,
     OrganizationProfessionalCompositeUpdate,
@@ -31,6 +32,7 @@ from src.modules.professionals.presentation.dependencies import (
     UpdateOrganizationProfessionalCompositeUC,
     UpdateOrganizationProfessionalUC,
 )
+from src.shared.domain.schemas.common import ErrorResponse
 
 
 # No prefix here - it's defined in the parent router (/professionals)
@@ -43,6 +45,32 @@ router = APIRouter(tags=["Professionals"])
     status_code=status.HTTP_201_CREATED,
     summary="Create a professional",
     description="Create a new professional in the organization.",
+    responses={
+        409: {
+            "model": ErrorResponse,
+            "description": "Conflict - CPF or email already exists",
+            "content": {
+                "application/json": {
+                    "examples": {
+                        "cpf_exists": {
+                            "summary": "CPF already exists",
+                            "value": {
+                                "code": ProfessionalErrorCodes.CPF_ALREADY_EXISTS,
+                                "message": "Já existe um profissional com este CPF na organização",
+                            },
+                        },
+                        "email_exists": {
+                            "summary": "Email already exists",
+                            "value": {
+                                "code": ProfessionalErrorCodes.EMAIL_ALREADY_EXISTS,
+                                "message": "Já existe um profissional com este email na organização",
+                            },
+                        },
+                    }
+                }
+            },
+        },
+    },
 )
 async def create_professional(
     data: OrganizationProfessionalCreate,
@@ -116,6 +144,20 @@ async def list_professionals_summary(
     response_model=OrganizationProfessionalDetailResponse,
     summary="Get a professional",
     description="Get a professional by ID with all related data: qualifications, specialties, educations, documents, companies, and bank accounts.",
+    responses={
+        404: {
+            "model": ErrorResponse,
+            "description": "Professional not found",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "code": ProfessionalErrorCodes.PROFESSIONAL_NOT_FOUND,
+                        "message": "Profissional não encontrado",
+                    }
+                }
+            },
+        },
+    },
 )
 async def get_professional(
     professional_id: UUID,
@@ -136,6 +178,44 @@ async def get_professional(
     response_model=OrganizationProfessionalResponse,
     summary="Update a professional",
     description="Partially update a professional. Only provided fields will be updated.",
+    responses={
+        404: {
+            "model": ErrorResponse,
+            "description": "Professional not found",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "code": ProfessionalErrorCodes.PROFESSIONAL_NOT_FOUND,
+                        "message": "Profissional não encontrado",
+                    }
+                }
+            },
+        },
+        409: {
+            "model": ErrorResponse,
+            "description": "Conflict - CPF or email already exists",
+            "content": {
+                "application/json": {
+                    "examples": {
+                        "cpf_exists": {
+                            "summary": "CPF already exists",
+                            "value": {
+                                "code": ProfessionalErrorCodes.CPF_ALREADY_EXISTS,
+                                "message": "Já existe um profissional com este CPF na organização",
+                            },
+                        },
+                        "email_exists": {
+                            "summary": "Email already exists",
+                            "value": {
+                                "code": ProfessionalErrorCodes.EMAIL_ALREADY_EXISTS,
+                                "message": "Já existe um profissional com este email na organização",
+                            },
+                        },
+                    }
+                }
+            },
+        },
+    },
 )
 async def update_professional(
     professional_id: UUID,
@@ -158,6 +238,20 @@ async def update_professional(
     status_code=status.HTTP_204_NO_CONTENT,
     summary="Delete a professional",
     description="Soft delete a professional. The professional will be marked as deleted but not removed from the database.",
+    responses={
+        404: {
+            "model": ErrorResponse,
+            "description": "Professional not found",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "code": ProfessionalErrorCodes.PROFESSIONAL_NOT_FOUND,
+                        "message": "Profissional não encontrado",
+                    }
+                }
+            },
+        },
+    },
 )
 async def delete_professional(
     professional_id: UUID,
@@ -200,6 +294,64 @@ All entities are created atomically - if any validation fails, nothing is persis
 - All specialty_ids must exist in the global specialties table
 - No duplicate specialty_ids in the request
 """,
+    responses={
+        404: {
+            "model": ErrorResponse,
+            "description": "Specialty not found",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "code": ProfessionalErrorCodes.GLOBAL_SPECIALTY_NOT_FOUND,
+                        "message": "Especialidade não encontrada",
+                        "details": {"specialty_id": "019..."},
+                    }
+                }
+            },
+        },
+        409: {
+            "model": ErrorResponse,
+            "description": "Conflict - CPF, email, or council registration already exists",
+            "content": {
+                "application/json": {
+                    "examples": {
+                        "cpf_exists": {
+                            "summary": "CPF already exists",
+                            "value": {
+                                "code": ProfessionalErrorCodes.CPF_ALREADY_EXISTS,
+                                "message": "Já existe um profissional com este CPF na organização",
+                            },
+                        },
+                        "email_exists": {
+                            "summary": "Email already exists",
+                            "value": {
+                                "code": ProfessionalErrorCodes.EMAIL_ALREADY_EXISTS,
+                                "message": "Já existe um profissional com este email na organização",
+                            },
+                        },
+                        "council_exists": {
+                            "summary": "Council registration already exists",
+                            "value": {
+                                "code": ProfessionalErrorCodes.COUNCIL_REGISTRATION_EXISTS,
+                                "message": "Já existe um profissional com este registro de conselho na organização",
+                            },
+                        },
+                    }
+                }
+            },
+        },
+        422: {
+            "model": ErrorResponse,
+            "description": "Validation error",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "code": ProfessionalErrorCodes.DUPLICATE_SPECIALTY_IDS,
+                        "message": "IDs de especialidade duplicados na requisição",
+                    }
+                }
+            },
+        },
+    },
 )
 async def create_professional_composite(
     data: OrganizationProfessionalCompositeCreate,
@@ -239,6 +391,95 @@ Partially update a professional with qualification and nested entities.
 - Council registration uniqueness (if updating)
 - Specialty_id existence and no duplicates
 """,
+    responses={
+        404: {
+            "model": ErrorResponse,
+            "description": "Resource not found",
+            "content": {
+                "application/json": {
+                    "examples": {
+                        "professional_not_found": {
+                            "summary": "Professional not found",
+                            "value": {
+                                "code": ProfessionalErrorCodes.PROFESSIONAL_NOT_FOUND,
+                                "message": "Profissional não encontrado",
+                            },
+                        },
+                        "specialty_not_found": {
+                            "summary": "Specialty not found",
+                            "value": {
+                                "code": ProfessionalErrorCodes.GLOBAL_SPECIALTY_NOT_FOUND,
+                                "message": "Especialidade não encontrada",
+                                "details": {"specialty_id": "019..."},
+                            },
+                        },
+                    }
+                }
+            },
+        },
+        409: {
+            "model": ErrorResponse,
+            "description": "Conflict - CPF, email, council registration, or specialty already exists",
+            "content": {
+                "application/json": {
+                    "examples": {
+                        "cpf_exists": {
+                            "summary": "CPF already exists",
+                            "value": {
+                                "code": ProfessionalErrorCodes.CPF_ALREADY_EXISTS,
+                                "message": "Já existe um profissional com este CPF na organização",
+                            },
+                        },
+                        "email_exists": {
+                            "summary": "Email already exists",
+                            "value": {
+                                "code": ProfessionalErrorCodes.EMAIL_ALREADY_EXISTS,
+                                "message": "Já existe um profissional com este email na organização",
+                            },
+                        },
+                        "council_exists": {
+                            "summary": "Council registration already exists",
+                            "value": {
+                                "code": ProfessionalErrorCodes.COUNCIL_REGISTRATION_EXISTS,
+                                "message": "Já existe um profissional com este registro de conselho na organização",
+                            },
+                        },
+                        "specialty_assigned": {
+                            "summary": "Specialty already assigned",
+                            "value": {
+                                "code": ProfessionalErrorCodes.SPECIALTY_ALREADY_ASSIGNED,
+                                "message": "Esta especialidade já está atribuída à qualificação",
+                            },
+                        },
+                    }
+                }
+            },
+        },
+        422: {
+            "model": ErrorResponse,
+            "description": "Validation error",
+            "content": {
+                "application/json": {
+                    "examples": {
+                        "duplicate_specialty_ids": {
+                            "summary": "Duplicate specialty IDs",
+                            "value": {
+                                "code": ProfessionalErrorCodes.DUPLICATE_SPECIALTY_IDS,
+                                "message": "IDs de especialidade duplicados na requisição",
+                            },
+                        },
+                        "qualification_id_required": {
+                            "summary": "Qualification ID required",
+                            "value": {
+                                "code": ProfessionalErrorCodes.QUALIFICATION_ID_REQUIRED,
+                                "message": "ID da qualificação é obrigatório",
+                            },
+                        },
+                    }
+                }
+            },
+        },
+    },
 )
 async def update_professional_composite(
     professional_id: UUID,

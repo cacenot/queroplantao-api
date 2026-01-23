@@ -13,6 +13,7 @@ from src.shared.domain.models import (
     PhoneField,
     PrimaryKeyMixin,
     TimestampMixin,
+    TrackingMixin,
 )
 
 if TYPE_CHECKING:
@@ -61,7 +62,7 @@ class UserBase(BaseModel):
     )
 
 
-class User(UserBase, PrimaryKeyMixin, TimestampMixin, table=True):
+class User(UserBase, PrimaryKeyMixin, TimestampMixin, TrackingMixin, table=True):
     """
     User table model.
 

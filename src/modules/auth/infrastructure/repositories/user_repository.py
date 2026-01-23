@@ -1,5 +1,7 @@
 """User repository for database operations."""
 
+from uuid import UUID
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -83,3 +85,40 @@ class UserRepository(BaseRepository[User]):
             for user_perm in user.permissions
             if user_perm.permission
         ]
+
+    async def get_by_id_with_relations(self, user_id: UUID) -> User | None:
+        """
+        Get user by ID with eager loading of roles and permissions.
+
+        Args:
+            user_id: The user's UUID.
+
+        Returns:
+            User with roles and permissions loaded, or None if not found.
+        """
+        result = await self.session.execute(
+            select(User)
+            .where(User.id == user_id)
+            .options(
+                selectinload(User.roles).selectinload(UserRole.role),
+                selectinload(User.permissions).selectinload(UserPermission.permission),
+            )
+        )
+        return result.scalar_one_or_none()
+
+    async def exists_by_cpf(self, cpf: str, *, exclude_id: UUID | None = None) -> bool:
+        """
+        Check if a user with the given CPF exists.
+
+        Args:
+            cpf: The CPF to check for.
+            exclude_id: Optional user ID to exclude (for updates).
+
+        Returns:
+            True if a user with this CPF exists, False otherwise.
+        """
+        query = select(User.id).where(User.cpf == cpf)
+        if exclude_id is not None:
+            query = query.where(User.id != exclude_id)
+        result = await self.session.execute(query)
+        return result.scalar_one_or_none() is not None

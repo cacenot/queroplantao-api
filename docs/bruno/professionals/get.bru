@@ -37,6 +37,7 @@ docs {
   Lista de qualificações profissionais (ex: Médico, Enfermeiro):
   - `id`, `professional_type`, `is_primary`, `graduation_year`
   - `council_type`, `council_number`, `council_state`
+  - `is_generalist` - True se for médico sem especialidades (clínico geral)
   - `specialties[]` - Especialidades com documentos aninhados
   - `educations[]` - Formações complementares
   - `documents[]` - Documentos da qualificação (diploma, etc.)
@@ -81,6 +82,7 @@ docs {
         "council_type": "CRM",
         "council_number": "123456",
         "council_state": "SP",
+        "is_generalist": false,
         "specialties": [
           {
             "id": "019...",
@@ -106,4 +108,10 @@ docs {
     "bank_accounts": [...]
   }
   ```
+  
+  ## Error Codes
+  
+  | Status | Code | Descrição |
+  |--------|------|-----------|
+  | 404 | `PROF_NOT_FOUND` | Profissional não encontrado |
 }

@@ -4,7 +4,7 @@ from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.app.exceptions import NotFoundError
+from src.app.exceptions import EducationNotFoundError
 from src.modules.professionals.domain.models import ProfessionalEducation
 from src.modules.professionals.domain.schemas import ProfessionalEducationUpdate
 from src.modules.professionals.infrastructure.repositories import (
@@ -43,10 +43,7 @@ class UpdateProfessionalEducationUseCase:
             education_id, qualification_id
         )
         if education is None:
-            raise NotFoundError(
-                resource="ProfessionalEducation",
-                identifier=str(education_id),
-            )
+            raise EducationNotFoundError()
 
         update_data = data.model_dump(exclude_unset=True)
 

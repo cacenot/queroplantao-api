@@ -13,7 +13,7 @@ from src.modules.professionals.domain.models import (
     ProfessionalType,
     ResidencyStatus,
 )
-from src.shared.domain.value_objects import CPF, Phone
+from src.shared.domain.value_objects import CPF, Phone, StateUF
 
 
 # =============================================================================
@@ -38,11 +38,9 @@ class SpecialtyNestedCreate(BaseModel):
         max_length=20,
         description="RQE number (for doctors)",
     )
-    rqe_state: Optional[str] = Field(
+    rqe_state: Optional[StateUF] = Field(
         default=None,
-        min_length=2,
-        max_length=2,
-        description="State where RQE is registered",
+        description="State where RQE is registered (e.g., SP, RJ)",
     )
     residency_status: ResidencyStatus = Field(
         default=ResidencyStatus.COMPLETED,
@@ -85,11 +83,9 @@ class SpecialtyNestedUpdate(BaseModel):
         max_length=20,
         description="RQE number (for doctors)",
     )
-    rqe_state: Optional[str] = Field(
+    rqe_state: Optional[StateUF] = Field(
         default=None,
-        min_length=2,
-        max_length=2,
-        description="State where RQE is registered",
+        description="State where RQE is registered (e.g., SP, RJ)",
     )
     residency_status: Optional[ResidencyStatus] = Field(
         default=None,
@@ -246,10 +242,8 @@ class QualificationNestedCreate(BaseModel):
         max_length=20,
         description="Council registration number",
     )
-    council_state: str = Field(
-        min_length=2,
-        max_length=2,
-        description="State where the council registration is valid (2 chars)",
+    council_state: StateUF = Field(
+        description="State where the council registration is valid (e.g., SP, RJ)",
     )
 
     # Nested entities
@@ -295,11 +289,9 @@ class QualificationNestedUpdate(BaseModel):
         max_length=20,
         description="Council registration number",
     )
-    council_state: Optional[str] = Field(
+    council_state: Optional[StateUF] = Field(
         default=None,
-        min_length=2,
-        max_length=2,
-        description="State where the council registration is valid",
+        description="State where the council registration is valid (e.g., SP, RJ)",
     )
 
     # Nested entities (partial update: update existing, create new, delete missing)
@@ -372,7 +364,7 @@ class OrganizationProfessionalCompositeCreate(BaseModel):
 
     # Address fields (required)
     city: str = Field(max_length=100, description="City name")
-    state_code: str = Field(max_length=2, description="State code (e.g., SP, RJ)")
+    state_code: StateUF = Field(description="State code (e.g., SP, RJ)")
     postal_code: str = Field(max_length=10, description="Postal code (CEP)")
 
     # Address fields (optional)
@@ -449,7 +441,9 @@ class OrganizationProfessionalCompositeUpdate(BaseModel):
     complement: Optional[str] = Field(default=None, max_length=100)
     neighborhood: Optional[str] = Field(default=None, max_length=100)
     city: Optional[str] = Field(default=None, max_length=100)
-    state_code: Optional[str] = Field(default=None, max_length=2)
+    state_code: Optional[StateUF] = Field(
+        default=None, description="State code (e.g., SP, RJ)"
+    )
     postal_code: Optional[str] = Field(default=None, max_length=10)
 
     # Nested qualification (optional - None means no changes)

@@ -4,7 +4,7 @@ from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.app.exceptions import NotFoundError
+from src.app.exceptions import CompanyNotFoundError
 from src.modules.professionals.domain.models import ProfessionalCompany
 from src.modules.professionals.infrastructure.repositories import (
     ProfessionalCompanyRepository,
@@ -28,9 +28,6 @@ class GetProfessionalCompanyUseCase:
             professional_company_id, professional_id
         )
         if professional_company is None:
-            raise NotFoundError(
-                resource="ProfessionalCompany",
-                identifier=str(professional_company_id),
-            )
+            raise CompanyNotFoundError()
 
         return professional_company

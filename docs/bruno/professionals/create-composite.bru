@@ -111,8 +111,8 @@ docs {
   ## Campos da Qualificação
   
   ### Obrigatórios
-  - `professional_type`: DOCTOR, NURSE, NURSING_TECH, PHARMACIST, DENTIST, PHYSIOTHERAPIST, PSYCHOLOGIST, NUTRITIONIST, BIOMEDIC, OTHER
-  - `council_type`: CRM, COREN, CRF, CRO, CREFITO, CRP, CRN, CRBM, OTHER
+  - `professional_type`: DOCTOR, NURSE, NURSING_TECH, PHARMACIST, DENTIST, PHYSIOTHERAPIST, PSYCHOLOGIST, NUTRITIONIST, BIOMEDIC
+  - `council_type`: CRM, COREN, CRF, CRO, CREFITO, CRP, CRN, CRBM
   - `council_number`: Número do registro (único por organização + estado)
   - `council_state`: Estado do conselho (2 caracteres)
   
@@ -156,6 +156,16 @@ docs {
   - Registro do conselho (número + estado) único por organização
   - Todos os specialty_id devem existir na tabela de especialidades
   - Não pode haver specialty_id duplicados no mesmo request
+  
+  ## Error Codes
+  
+  | Status | Code | Descrição |
+  |--------|------|-----------|
+  | 404 | `PROF_GLOBAL_SPECIALTY_NOT_FOUND` | Especialidade não encontrada |
+  | 409 | `PROF_CPF_ALREADY_EXISTS` | Já existe profissional com este CPF |
+  | 409 | `PROF_EMAIL_ALREADY_EXISTS` | Já existe profissional com este email |
+  | 409 | `PROF_COUNCIL_REGISTRATION_EXISTS` | Registro de conselho já existe |
+  | 422 | `PROF_DUPLICATE_SPECIALTY_IDS` | IDs de especialidade duplicados |
   
   ## Response
   

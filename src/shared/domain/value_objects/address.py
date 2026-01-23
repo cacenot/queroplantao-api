@@ -6,6 +6,8 @@ from typing import Any
 from pydantic import GetJsonSchemaHandler
 from pydantic_core import core_schema
 
+from src.app.i18n import ValidationMessages, get_message
+
 
 class PostalCode(str):
     """
@@ -42,18 +44,20 @@ class PostalCode(str):
     def _validate(cls, value: str) -> "PostalCode":
         """Validate and normalize postal code (CEP)."""
         if not isinstance(value, str):
-            raise ValueError("Postal code must be a string")
+            raise ValueError(get_message(ValidationMessages.CEP_MUST_BE_STRING))
 
         # Remove all non-digit characters
         digits = re.sub(r"\D", "", value)
 
         # Validate length (CEP has 8 digits)
         if len(digits) != 8:
-            raise ValueError(f"CEP must have 8 digits, got {len(digits)}")
+            raise ValueError(
+                get_message(ValidationMessages.CEP_INVALID_LENGTH, length=len(digits))
+            )
 
         # Basic sanity check: not all zeros
         if digits == "00000000":
-            raise ValueError("Invalid CEP: cannot be all zeros")
+            raise ValueError(get_message(ValidationMessages.CEP_ALL_ZEROS))
 
         return str.__new__(cls, digits)  # Avoid recursion
 

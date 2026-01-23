@@ -39,4 +39,11 @@ docs {
   - `council_state`: Estado do conselho (2 caracteres)
   
   **Nota:** Não é possível alterar `professional_type` ou `council_type` após criação.
+  
+  ## Error Codes
+  
+  | Status | Code | Descrição |
+  |--------|------|-----------|
+  | 404 | `PROF_QUALIFICATION_NOT_FOUND` | Qualificação não encontrada |
+  | 409 | `PROF_COUNCIL_REGISTRATION_EXISTS` | Registro de conselho já existe para outro profissional |
 }

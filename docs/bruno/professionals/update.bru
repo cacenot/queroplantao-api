@@ -50,4 +50,12 @@ docs {
   - `city`: Cidade
   - `state_code`: UF (2 caracteres)
   - `postal_code`: CEP
+  
+  ## Error Codes
+  
+  | Status | Code | Descrição |
+  |--------|------|-----------|
+  | 404 | `PROF_NOT_FOUND` | Profissional não encontrado |
+  | 409 | `PROF_CPF_ALREADY_EXISTS` | Já existe outro profissional com este CPF na organização |
+  | 409 | `PROF_EMAIL_ALREADY_EXISTS` | Já existe outro profissional com este email na organização |
 }

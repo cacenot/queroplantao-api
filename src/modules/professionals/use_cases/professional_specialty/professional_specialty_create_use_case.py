@@ -4,7 +4,11 @@ from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.app.exceptions import ConflictError, NotFoundError
+from src.app.exceptions import (
+    GlobalSpecialtyNotFoundError,
+    QualificationNotFoundError,
+    SpecialtyAlreadyAssignedError,
+)
 from src.modules.professionals.domain.models import ProfessionalSpecialty
 from src.modules.professionals.domain.schemas import ProfessionalSpecialtyCreate
 from src.modules.professionals.infrastructure.repositories import (
@@ -42,29 +46,18 @@ class CreateProfessionalSpecialtyUseCase:
             qualification_id, organization_id
         )
         if qualification is None:
-            raise NotFoundError(
-                resource="ProfessionalQualification",
-                identifier=str(qualification_id),
-            )
+            raise QualificationNotFoundError()
 
         # Verify specialty exists
         specialty = await self.specialty_repository.get_by_id(data.specialty_id)
         if specialty is None:
-            raise NotFoundError(
-                resource="Specialty",
-                identifier=str(data.specialty_id),
-            )
+            raise GlobalSpecialtyNotFoundError(specialty_id=str(data.specialty_id))
 
         # Check specialty not already assigned
         if await self.repository.specialty_exists_for_qualification(
             qualification_id, data.specialty_id
         ):
-            raise ConflictError(
-                resource="ProfessionalSpecialty",
-                field="specialty_id",
-                value=str(data.specialty_id),
-                message="This specialty is already assigned to this qualification",
-            )
+            raise SpecialtyAlreadyAssignedError()
 
         professional_specialty = ProfessionalSpecialty(
             qualification_id=qualification_id,

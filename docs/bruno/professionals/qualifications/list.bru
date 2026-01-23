@@ -37,13 +37,20 @@ docs {
   
   Lista todas as qualificações de um profissional.
   
+  ## Campos do Response
+  
+  - `id`, `professional_type`, `is_primary`, `graduation_year`
+  - `council_type`, `council_number`, `council_state`
+  - `is_generalist` - True se for médico (DOCTOR) sem especialidades (clínico geral)
+  - `is_verified`, `created_at`, `updated_at`
+  
   ## Filtros disponíveis
   
   | Parâmetro | Tipo | Descrição |
   |-----------|------|-----------|
   | search | string | Busca textual |
-  | professional_type | DOCTOR, NURSE, NURSING_TECH, PHARMACIST, DENTIST, PHYSIOTHERAPIST, PSYCHOLOGIST, NUTRITIONIST, BIOMEDIC, OTHER | Tipo de profissional |
-  | council_type | CRM, COREN, CRF, CRO, CREFITO, CRP, CRN, CRBM, OTHER | Tipo de conselho |
+  | professional_type | DOCTOR, NURSE, NURSING_TECH, PHARMACIST, DENTIST, PHYSIOTHERAPIST, PSYCHOLOGIST, NUTRITIONIST, BIOMEDIC | Tipo de profissional |
+  | council_type | CRM, COREN, CRF, CRO, CREFITO, CRP, CRN, CRBM | Tipo de conselho |
   | council_state | string (2 chars) | Estado do conselho (ex: SP, RJ) |
   | is_primary | boolean | Se é qualificação primária |
   | is_verified | boolean | Se está verificada |

@@ -166,3 +166,17 @@ class ProfessionalQualification(
     documents: list["ProfessionalDocument"] = Relationship(
         back_populates="qualification"
     )
+
+    @property
+    def is_generalist(self) -> bool:
+        """
+        Returns True if the professional is a generalist (clínico geral).
+
+        A professional is considered a generalist if:
+        - The professional type is DOCTOR (médico)
+        - They have no registered specialties
+        """
+        return (
+            self.professional_type == ProfessionalType.DOCTOR
+            and len(self.specialties) == 0
+        )

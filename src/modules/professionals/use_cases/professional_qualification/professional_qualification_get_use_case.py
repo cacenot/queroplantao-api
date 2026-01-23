@@ -4,7 +4,7 @@ from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.app.exceptions import NotFoundError
+from src.app.exceptions import QualificationNotFoundError
 from src.modules.professionals.domain.models import ProfessionalQualification
 from src.modules.professionals.infrastructure.repositories import (
     ProfessionalQualificationRepository,
@@ -36,9 +36,6 @@ class GetProfessionalQualificationUseCase:
             )
 
         if qualification is None:
-            raise NotFoundError(
-                resource="ProfessionalQualification",
-                identifier=str(qualification_id),
-            )
+            raise QualificationNotFoundError()
 
         return qualification

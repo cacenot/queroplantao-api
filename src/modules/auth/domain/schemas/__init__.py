@@ -6,6 +6,7 @@ from src.modules.auth.domain.schemas.user import (
     PermissionInfo,
     RoleInfo,
     UserMeResponse,
+    UserMeUpdate,
 )
 
 __all__ = [
@@ -14,4 +15,5 @@ __all__ = [
     "ParentOrganizationInfo",
     "OrganizationMembershipInfo",
     "UserMeResponse",
+    "UserMeUpdate",
 ]

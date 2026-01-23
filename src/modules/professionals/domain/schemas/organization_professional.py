@@ -7,6 +7,7 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 from src.modules.professionals.domain.models import Gender, MaritalStatus
+from src.shared.domain.value_objects import StateUF
 
 if TYPE_CHECKING:
     from src.modules.professionals.domain.schemas.professional_company import (
@@ -70,7 +71,7 @@ class OrganizationProfessionalCreate(BaseModel):
 
     # Address fields (required)
     city: str = Field(max_length=100, description="City name")
-    state_code: str = Field(max_length=2, description="State code (e.g., SP, RJ)")
+    state_code: StateUF = Field(description="State code (e.g., SP, RJ)")
     postal_code: str = Field(max_length=10, description="Postal code (CEP)")
 
     # Address fields (optional)
@@ -134,7 +135,7 @@ class OrganizationProfessionalUpdate(BaseModel):
     complement: Optional[str] = Field(default=None, max_length=100)
     neighborhood: Optional[str] = Field(default=None, max_length=100)
     city: Optional[str] = Field(default=None, max_length=100)
-    state_code: Optional[str] = Field(default=None, max_length=2)
+    state_code: Optional[StateUF] = Field(default=None)
     postal_code: Optional[str] = Field(default=None, max_length=10)
 
 
@@ -315,6 +316,10 @@ class QualificationSummary(BaseModel):
     council_type: str
     council_number: str
     council_state: str
+    is_generalist: bool = Field(
+        default=False,
+        description="True if professional is a doctor with no specialties (clínico geral)",
+    )
 
 
 class SpecialtySummary(BaseModel):

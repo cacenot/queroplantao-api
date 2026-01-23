@@ -2,6 +2,8 @@
 
 from typing import Any
 
+from src.app.i18n import AuthMessages, ResourceMessages, get_message, translate_resource
+
 
 class AppException(Exception):
     """Base application exception."""
@@ -25,11 +27,11 @@ class AuthenticationError(AppException):
 
     def __init__(
         self,
-        message: str = "Authentication failed",
+        message: str | None = None,
         details: dict[str, Any] | None = None,
     ) -> None:
         super().__init__(
-            message=message,
+            message=message or get_message(AuthMessages.AUTHENTICATION_FAILED),
             code="AUTHENTICATION_ERROR",
             status_code=401,
             details=details,
@@ -41,11 +43,11 @@ class AuthorizationError(AppException):
 
     def __init__(
         self,
-        message: str = "Insufficient permissions",
+        message: str | None = None,
         details: dict[str, Any] | None = None,
     ) -> None:
         super().__init__(
-            message=message,
+            message=message or get_message(AuthMessages.INSUFFICIENT_PERMISSIONS),
             code="AUTHORIZATION_ERROR",
             status_code=403,
             details=details,
@@ -61,9 +63,19 @@ class NotFoundError(AppException):
         identifier: str | None = None,
         details: dict[str, Any] | None = None,
     ) -> None:
-        message = f"{resource} not found"
+        # Translate the resource name to the current locale
+        translated_resource = translate_resource(resource)
+
         if identifier:
-            message = f"{resource} with id '{identifier}' not found"
+            message = get_message(
+                ResourceMessages.NOT_FOUND_WITH_ID,
+                resource=translated_resource,
+                identifier=identifier,
+            )
+        else:
+            message = get_message(
+                ResourceMessages.NOT_FOUND, resource=translated_resource
+            )
         super().__init__(
             message=message,
             code="NOT_FOUND",
@@ -77,11 +89,11 @@ class ConflictError(AppException):
 
     def __init__(
         self,
-        message: str = "Resource conflict",
+        message: str | None = None,
         details: dict[str, Any] | None = None,
     ) -> None:
         super().__init__(
-            message=message,
+            message=message or get_message(ResourceMessages.CONFLICT),
             code="CONFLICT",
             status_code=409,
             details=details,
@@ -93,11 +105,11 @@ class ValidationError(AppException):
 
     def __init__(
         self,
-        message: str = "Validation error",
+        message: str | None = None,
         details: dict[str, Any] | None = None,
     ) -> None:
         super().__init__(
-            message=message,
+            message=message or get_message(ResourceMessages.VALIDATION_ERROR),
             code="VALIDATION_ERROR",
             status_code=422,
             details=details,

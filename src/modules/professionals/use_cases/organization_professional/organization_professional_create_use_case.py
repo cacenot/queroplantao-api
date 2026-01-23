@@ -4,7 +4,7 @@ from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.app.exceptions import ConflictError
+from src.app.exceptions import ProfessionalCpfExistsError, ProfessionalEmailExistsError
 from src.modules.professionals.domain.models import OrganizationProfessional
 from src.modules.professionals.domain.schemas import OrganizationProfessionalCreate
 from src.modules.professionals.infrastructure.repositories import (
@@ -48,22 +48,12 @@ class CreateOrganizationProfessionalUseCase:
         # Validate CPF uniqueness
         if data.cpf:
             if await self.repository.exists_by_cpf(data.cpf, organization_id):
-                raise ConflictError(
-                    resource="OrganizationProfessional",
-                    field="cpf",
-                    value=data.cpf,
-                    message="A professional with this CPF already exists in the organization",
-                )
+                raise ProfessionalCpfExistsError()
 
         # Validate email uniqueness
         if data.email:
             if await self.repository.exists_by_email(data.email, organization_id):
-                raise ConflictError(
-                    resource="OrganizationProfessional",
-                    field="email",
-                    value=data.email,
-                    message="A professional with this email already exists in the organization",
-                )
+                raise ProfessionalEmailExistsError()
 
         # Create the professional entity
         professional = OrganizationProfessional(

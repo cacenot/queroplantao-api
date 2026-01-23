@@ -19,7 +19,6 @@ class CouncilType(str, Enum):
     CRP = "CRP"  # Conselho Regional de Psicologia
     CRN = "CRN"  # Conselho Regional de Nutricionistas
     CRBM = "CRBM"  # Conselho Regional de Biomedicina
-    OTHER = "OTHER"  # Outros conselhos
 
 
 class ProfessionalType(str, Enum):
@@ -38,7 +37,6 @@ class ProfessionalType(str, Enum):
     PSYCHOLOGIST = "PSYCHOLOGIST"  # Psicólogo
     NUTRITIONIST = "NUTRITIONIST"  # Nutricionista
     BIOMEDIC = "BIOMEDIC"  # Biomédico
-    OTHER = "OTHER"  # Outros
 
 
 class ResidencyStatus(str, Enum):
@@ -157,7 +155,6 @@ COUNCIL_TO_PROFESSIONAL_TYPES: dict[CouncilType, frozenset[ProfessionalType]] = 
     CouncilType.CRP: frozenset({ProfessionalType.PSYCHOLOGIST}),
     CouncilType.CRN: frozenset({ProfessionalType.NUTRITIONIST}),
     CouncilType.CRBM: frozenset({ProfessionalType.BIOMEDIC}),
-    CouncilType.OTHER: frozenset({ProfessionalType.OTHER}),
 }
 
 # Reverse mapping: which council corresponds to each professional type
@@ -171,7 +168,6 @@ PROFESSIONAL_TYPE_TO_COUNCIL: dict[ProfessionalType, CouncilType] = {
     ProfessionalType.PSYCHOLOGIST: CouncilType.CRP,
     ProfessionalType.NUTRITIONIST: CouncilType.CRN,
     ProfessionalType.BIOMEDIC: CouncilType.CRBM,
-    ProfessionalType.OTHER: CouncilType.OTHER,
 }
 
 
@@ -191,10 +187,6 @@ def validate_council_for_professional_type(
     Returns:
         True if the council is valid for the professional type, False otherwise.
     """
-    # Allow OTHER for flexibility (unknown/new professional types or councils)
-    if council_type == CouncilType.OTHER or professional_type == ProfessionalType.OTHER:
-        return True
-
     valid_types = COUNCIL_TO_PROFESSIONAL_TYPES.get(council_type, frozenset())
     return professional_type in valid_types
 
@@ -210,8 +202,11 @@ def get_expected_council_for_professional_type(
 
     Returns:
         The expected council type for this professional.
+
+    Raises:
+        KeyError: If no council mapping exists for the professional type.
     """
-    return PROFESSIONAL_TYPE_TO_COUNCIL.get(professional_type, CouncilType.OTHER)
+    return PROFESSIONAL_TYPE_TO_COUNCIL[professional_type]
 
 
 # ============================================================================
@@ -229,7 +224,6 @@ PROFESSIONAL_TYPE_LABELS: dict[ProfessionalType, str] = {
     ProfessionalType.PSYCHOLOGIST: "Psicólogo(a)",
     ProfessionalType.NUTRITIONIST: "Nutricionista",
     ProfessionalType.BIOMEDIC: "Biomédico(a)",
-    ProfessionalType.OTHER: "Outro",
 }
 
 # Human-readable PT-BR labels for DocumentType

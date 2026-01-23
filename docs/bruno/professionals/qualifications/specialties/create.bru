@@ -49,4 +49,12 @@ docs {
   - `residency_institution`: Instituição da residência
   - `residency_expected_completion`: Data prevista de conclusão (YYYY-MM-DD)
   - `certificate_url`: URL do certificado de especialista
+  
+  ## Error Codes
+  
+  | Status | Code | Descrição |
+  |--------|------|-----------|
+  | 404 | `PROF_QUALIFICATION_NOT_FOUND` | Qualificação não encontrada |
+  | 404 | `PROF_GLOBAL_SPECIALTY_NOT_FOUND` | Especialidade de referência não encontrada |
+  | 409 | `PROF_SPECIALTY_ALREADY_LINKED` | Especialidade já está vinculada à qualificação |
 }

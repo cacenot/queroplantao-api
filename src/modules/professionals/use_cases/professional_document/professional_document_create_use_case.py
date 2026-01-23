@@ -4,7 +4,13 @@ from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.app.exceptions import NotFoundError, ValidationError
+from src.app.exceptions import (
+    DocumentQualificationCategoryError,
+    DocumentSpecialtyCategoryError,
+    ProfessionalNotFoundError,
+    QualificationNotFoundError,
+    SpecialtyNotFoundError,
+)
 from src.modules.professionals.domain.models import (
     DocumentCategory,
     ProfessionalDocument,
@@ -48,10 +54,7 @@ class CreateProfessionalDocumentUseCase:
             professional_id, organization_id
         )
         if professional is None:
-            raise NotFoundError(
-                resource="OrganizationProfessional",
-                identifier=str(professional_id),
-            )
+            raise ProfessionalNotFoundError()
 
         # Validate qualification if provided
         if data.qualification_id:
@@ -61,15 +64,9 @@ class CreateProfessionalDocumentUseCase:
                 )
             )
             if qualification is None:
-                raise NotFoundError(
-                    resource="ProfessionalQualification",
-                    identifier=str(data.qualification_id),
-                )
+                raise QualificationNotFoundError()
             if data.document_category != DocumentCategory.QUALIFICATION:
-                raise ValidationError(
-                    message="Documents linked to a qualification must have QUALIFICATION category",
-                    field="document_category",
-                )
+                raise DocumentQualificationCategoryError()
 
         # Validate specialty if provided
         if data.specialty_id:
@@ -78,15 +75,9 @@ class CreateProfessionalDocumentUseCase:
                 data.specialty_id
             )
             if professional_specialty is None:
-                raise NotFoundError(
-                    resource="ProfessionalSpecialty",
-                    identifier=str(data.specialty_id),
-                )
+                raise SpecialtyNotFoundError()
             if data.document_category != DocumentCategory.SPECIALTY:
-                raise ValidationError(
-                    message="Documents linked to a specialty must have SPECIALTY category",
-                    field="document_category",
-                )
+                raise DocumentSpecialtyCategoryError()
 
         document = ProfessionalDocument(
             organization_professional_id=professional_id,

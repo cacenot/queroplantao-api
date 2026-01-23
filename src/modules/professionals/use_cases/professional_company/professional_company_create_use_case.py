@@ -4,7 +4,7 @@ from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.app.exceptions import ConflictError, NotFoundError
+from src.app.exceptions import CompanyAlreadyLinkedError, ProfessionalNotFoundError
 from src.modules.professionals.domain.models import ProfessionalCompany
 from src.modules.professionals.domain.schemas import ProfessionalCompanyCreate
 from src.modules.professionals.infrastructure.repositories import (
@@ -40,19 +40,11 @@ class CreateProfessionalCompanyUseCase:
             professional_id, organization_id
         )
         if professional is None:
-            raise NotFoundError(
-                resource="OrganizationProfessional",
-                identifier=str(professional_id),
-            )
+            raise ProfessionalNotFoundError()
 
         # Check link doesn't already exist
         if await self.repository.company_link_exists(professional_id, data.company_id):
-            raise ConflictError(
-                resource="ProfessionalCompany",
-                field="company_id",
-                value=str(data.company_id),
-                message="This professional is already linked to this company",
-            )
+            raise CompanyAlreadyLinkedError()
 
         professional_company = ProfessionalCompany(
             organization_professional_id=professional_id,

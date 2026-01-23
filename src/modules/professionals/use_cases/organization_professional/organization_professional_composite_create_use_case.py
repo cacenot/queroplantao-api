@@ -4,7 +4,13 @@ from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.app.exceptions import ConflictError, NotFoundError, ValidationError
+from src.app.exceptions import (
+    CouncilRegistrationExistsError,
+    DuplicateSpecialtyIdsError,
+    GlobalSpecialtyNotFoundError,
+    ProfessionalCpfExistsError,
+    ProfessionalEmailExistsError,
+)
 from src.modules.professionals.domain.models import (
     OrganizationProfessional,
     ProfessionalEducation,
@@ -67,9 +73,11 @@ class CreateOrganizationProfessionalCompositeUseCase:
             The created professional with all nested relations loaded.
 
         Raises:
-            ConflictError: If CPF, email, or council registration already exists.
-            NotFoundError: If any specialty_id does not exist.
-            ValidationError: If duplicate specialty_ids in request.
+            ProfessionalCpfExistsError: If CPF already exists.
+            ProfessionalEmailExistsError: If email already exists.
+            CouncilRegistrationExistsError: If council registration already exists.
+            GlobalSpecialtyNotFoundError: If any specialty_id does not exist.
+            DuplicateSpecialtyIdsError: If duplicate specialty_ids in request.
         """
         # 1. Validate professional uniqueness
         await self._validate_professional_uniqueness(organization_id, data)
@@ -114,23 +122,13 @@ class CreateOrganizationProfessionalCompositeUseCase:
             if await self.professional_repository.exists_by_cpf(
                 data.cpf, organization_id
             ):
-                raise ConflictError(
-                    resource="OrganizationProfessional",
-                    field="cpf",
-                    value=data.cpf,
-                    message="A professional with this CPF already exists in the organization",
-                )
+                raise ProfessionalCpfExistsError()
 
         if data.email:
             if await self.professional_repository.exists_by_email(
                 data.email, organization_id
             ):
-                raise ConflictError(
-                    resource="OrganizationProfessional",
-                    field="email",
-                    value=data.email,
-                    message="A professional with this email already exists in the organization",
-                )
+                raise ProfessionalEmailExistsError()
 
     async def _validate_qualification_uniqueness(
         self,
@@ -145,12 +143,7 @@ class CreateOrganizationProfessionalCompositeUseCase:
             council_state=qualification_data.council_state,
             organization_id=organization_id,
         ):
-            raise ConflictError(
-                resource="ProfessionalQualification",
-                field="council_number",
-                value=f"{qualification_data.council_number}/{qualification_data.council_state}",
-                message="A qualification with this council registration already exists",
-            )
+            raise CouncilRegistrationExistsError()
 
     async def _validate_specialties(
         self,
@@ -161,18 +154,13 @@ class CreateOrganizationProfessionalCompositeUseCase:
 
         # Check for duplicates in request
         if len(specialty_ids) != len(set(specialty_ids)):
-            raise ValidationError(
-                message="Duplicate specialty_ids in request",
-            )
+            raise DuplicateSpecialtyIdsError()
 
         # Validate each specialty exists
         for specialty_id in specialty_ids:
             specialty = await self.global_specialty_repository.get_by_id(specialty_id)
             if specialty is None:
-                raise NotFoundError(
-                    resource="Specialty",
-                    identifier=str(specialty_id),
-                )
+                raise GlobalSpecialtyNotFoundError(specialty_id=str(specialty_id))
 
     async def _create_professional(
         self,

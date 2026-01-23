@@ -5,7 +5,23 @@ from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.app.exceptions import ConflictError, NotFoundError, ValidationError
+from src.app.exceptions import (
+    CouncilRegistrationExistsError,
+    CourseNameRequiredError,
+    DuplicateSpecialtyIdsError,
+    EducationNotFoundError,
+    GlobalSpecialtyNotFoundError,
+    InstitutionRequiredError,
+    LevelRequiredError,
+    ProfessionalCpfExistsError,
+    ProfessionalEmailExistsError,
+    ProfessionalNotFoundError,
+    QualificationIdRequiredError,
+    QualificationNotBelongsError,
+    QualificationNotFoundError,
+    SpecialtyAlreadyAssignedError,
+    SpecialtyNotFoundError,
+)
 from src.modules.professionals.domain.models import (
     OrganizationProfessional,
     ProfessionalEducation,
@@ -78,10 +94,7 @@ class UpdateOrganizationProfessionalCompositeUseCase:
             professional_id, organization_id
         )
         if professional is None:
-            raise NotFoundError(
-                resource="OrganizationProfessional",
-                identifier=str(professional_id),
-            )
+            raise ProfessionalNotFoundError()
 
         # 2. Validate professional uniqueness (if updating cpf/email)
         await self._validate_professional_uniqueness(
@@ -116,24 +129,14 @@ class UpdateOrganizationProfessionalCompositeUseCase:
                 data.cpf, organization_id
             )
             if existing and existing.id != professional_id:
-                raise ConflictError(
-                    resource="OrganizationProfessional",
-                    field="cpf",
-                    value=data.cpf,
-                    message="A professional with this CPF already exists in the organization",
-                )
+                raise ProfessionalCpfExistsError()
 
         if data.email:
             existing = await self.professional_repository.get_by_email(
                 data.email, organization_id
             )
             if existing and existing.id != professional_id:
-                raise ConflictError(
-                    resource="OrganizationProfessional",
-                    field="email",
-                    value=data.email,
-                    message="A professional with this email already exists in the organization",
-                )
+                raise ProfessionalEmailExistsError()
 
     async def _update_professional(
         self,
@@ -163,26 +166,18 @@ class UpdateOrganizationProfessionalCompositeUseCase:
         qualification_id = qualification_data.id
 
         if qualification_id is None:
-            raise ValidationError(
-                message="Qualification ID is required for update. "
-                "Use the composite create endpoint to create a new professional with qualification.",
-            )
+            raise QualificationIdRequiredError()
 
         # Get existing qualification
         qualification = await self.qualification_repository.get_by_id_with_relations(
             qualification_id, organization_id
         )
         if qualification is None:
-            raise NotFoundError(
-                resource="ProfessionalQualification",
-                identifier=str(qualification_id),
-            )
+            raise QualificationNotFoundError()
 
         # Verify qualification belongs to this professional
         if qualification.organization_professional_id != professional_id:
-            raise ValidationError(
-                message="Qualification does not belong to this professional",
-            )
+            raise QualificationNotBelongsError()
 
         # Validate council uniqueness if updating
         await self._validate_council_uniqueness(
@@ -223,12 +218,7 @@ class UpdateOrganizationProfessionalCompositeUseCase:
                 organization_id=organization_id,
                 exclude_id=qualification_id,
             ):
-                raise ConflictError(
-                    resource="ProfessionalQualification",
-                    field="council_number",
-                    value=f"{council_number}/{council_state}",
-                    message="A qualification with this council registration already exists",
-                )
+                raise CouncilRegistrationExistsError()
 
     async def _update_qualification(
         self,
@@ -293,9 +283,7 @@ class UpdateOrganizationProfessionalCompositeUseCase:
             else:
                 # Create new specialty
                 if specialty_data.specialty_id is None:
-                    raise ValidationError(
-                        message="specialty_id is required when creating a new specialty",
-                    )
+                    raise SpecialtyNotFoundError()
                 specialty_ids_to_create.append(specialty_data.specialty_id)
 
         # Validate no duplicate specialty_ids in creates
@@ -305,30 +293,20 @@ class UpdateOrganizationProfessionalCompositeUseCase:
                 all_specialty_ids.append(s.specialty_id)
 
         if len(all_specialty_ids) != len(set(all_specialty_ids)):
-            raise ValidationError(
-                message="Duplicate specialty_ids in request",
-            )
+            raise DuplicateSpecialtyIdsError()
 
         # Validate new specialty_ids exist
         for specialty_id in specialty_ids_to_create:
             specialty = await self.global_specialty_repository.get_by_id(specialty_id)
             if specialty is None:
-                raise NotFoundError(
-                    resource="Specialty",
-                    identifier=str(specialty_id),
-                )
+                raise GlobalSpecialtyNotFoundError(specialty_id=str(specialty_id))
 
         # Check for specialty_id conflicts with existing
         for specialty_id in specialty_ids_to_create:
             if await self.specialty_repository.specialty_exists_for_qualification(
                 qualification_id, specialty_id
             ):
-                raise ConflictError(
-                    resource="ProfessionalSpecialty",
-                    field="specialty_id",
-                    value=str(specialty_id),
-                    message="This specialty is already assigned to this qualification",
-                )
+                raise SpecialtyAlreadyAssignedError()
 
         # Create new specialties
         for specialty_data in specialties_data:
@@ -363,10 +341,7 @@ class UpdateOrganizationProfessionalCompositeUseCase:
             specialty_id, qualification_id
         )
         if specialty is None:
-            raise NotFoundError(
-                resource="ProfessionalSpecialty",
-                identifier=str(specialty_id),
-            )
+            raise SpecialtyNotFoundError()
 
         update_data = data.model_dump(
             exclude_unset=True, exclude={"id", "specialty_id"}
@@ -439,17 +414,11 @@ class UpdateOrganizationProfessionalCompositeUseCase:
             else:
                 # Create new education (validate required fields)
                 if education_data.level is None:
-                    raise ValidationError(
-                        message="level is required when creating a new education",
-                    )
+                    raise LevelRequiredError()
                 if education_data.course_name is None:
-                    raise ValidationError(
-                        message="course_name is required when creating a new education",
-                    )
+                    raise CourseNameRequiredError()
                 if education_data.institution is None:
-                    raise ValidationError(
-                        message="institution is required when creating a new education",
-                    )
+                    raise InstitutionRequiredError()
 
                 await self._create_education(qualification_id, education_data)
 
@@ -481,10 +450,7 @@ class UpdateOrganizationProfessionalCompositeUseCase:
             education_id, qualification_id
         )
         if education is None:
-            raise NotFoundError(
-                resource="ProfessionalEducation",
-                identifier=str(education_id),
-            )
+            raise EducationNotFoundError()
 
         update_data = data.model_dump(exclude_unset=True, exclude={"id"})
 

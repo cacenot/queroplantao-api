@@ -6,6 +6,8 @@ import phonenumbers
 from pydantic import GetJsonSchemaHandler
 from pydantic_core import core_schema
 
+from src.app.i18n import ValidationMessages, get_message
+
 
 class Phone(str):
     """
@@ -42,18 +44,20 @@ class Phone(str):
     def _validate(cls, value: str) -> "Phone":
         """Validate and normalize phone number."""
         if not isinstance(value, str):
-            raise ValueError("Phone number must be a string")
+            raise ValueError(get_message(ValidationMessages.PHONE_MUST_BE_STRING))
 
         try:
             parsed = phonenumbers.parse(value, None)  # Auto-detect region
             if not phonenumbers.is_valid_number(parsed):
-                raise ValueError("Invalid phone number")
+                raise ValueError(get_message(ValidationMessages.PHONE_INVALID))
             normalized = phonenumbers.format_number(
                 parsed, phonenumbers.PhoneNumberFormat.E164
             )
             return str.__new__(cls, normalized)  # Avoid recursion
         except phonenumbers.NumberParseException as e:
-            raise ValueError(f"Invalid phone number format: {e}")
+            raise ValueError(
+                get_message(ValidationMessages.PHONE_INVALID_FORMAT, error=str(e))
+            )
 
     @classmethod
     def __get_pydantic_json_schema__(
@@ -86,7 +90,9 @@ class Phone(str):
             parsed = phonenumbers.parse(self, None)
             return str(parsed.country_code)
         except phonenumbers.NumberParseException:
-            raise ValueError(f"Unable to extract DDI from phone number: {self}")
+            raise ValueError(
+                get_message(ValidationMessages.PHONE_UNABLE_TO_EXTRACT_DDI, phone=self)
+            )
 
     @property
     def ddd(self) -> Optional[str]:
@@ -113,7 +119,9 @@ class Phone(str):
                 # Add similar logic for other countries as needed
             return None
         except phonenumbers.NumberParseException:
-            raise ValueError(f"Unable to extract DDD from phone number: {self}")
+            raise ValueError(
+                get_message(ValidationMessages.PHONE_UNABLE_TO_EXTRACT_DDD, phone=self)
+            )
 
     @property
     def formatted_national(self) -> str:
@@ -132,4 +140,6 @@ class Phone(str):
                 parsed, phonenumbers.PhoneNumberFormat.NATIONAL
             )
         except phonenumbers.NumberParseException:
-            raise ValueError(f"Unable to format phone number: {self}")
+            raise ValueError(
+                get_message(ValidationMessages.PHONE_UNABLE_TO_FORMAT, phone=self)
+            )

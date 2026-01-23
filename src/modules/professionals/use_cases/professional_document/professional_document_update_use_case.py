@@ -4,7 +4,7 @@ from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.app.exceptions import NotFoundError
+from src.app.exceptions import DocumentNotFoundError
 from src.modules.professionals.domain.models import ProfessionalDocument
 from src.modules.professionals.domain.schemas import ProfessionalDocumentUpdate
 from src.modules.professionals.infrastructure.repositories import (
@@ -41,10 +41,7 @@ class UpdateProfessionalDocumentUseCase:
             document_id, professional_id
         )
         if document is None:
-            raise NotFoundError(
-                resource="ProfessionalDocument",
-                identifier=str(document_id),
-            )
+            raise DocumentNotFoundError()
 
         update_data = data.model_dump(exclude_unset=True)
 

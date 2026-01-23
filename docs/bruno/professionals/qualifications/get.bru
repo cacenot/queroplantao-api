@@ -14,3 +14,25 @@ params:path {
   professionalId: {{professionalId}}
   qualificationId: {{qualificationId}}
 }
+
+docs {
+  # Get Qualification
+  
+  Retorna os detalhes de uma qualificação específica.
+  
+  ## Campos do Response
+  
+  - `id`, `professional_type`, `is_primary`, `graduation_year`
+  - `council_type`, `council_number`, `council_state`
+  - `is_generalist` - True se for médico (DOCTOR) sem especialidades (clínico geral)
+  - `specialties[]` - Especialidades com dados de referência
+  - `educations[]` - Formações complementares
+  - `documents[]` - Documentos da qualificação
+  - `is_verified`, `created_at`, `updated_at`
+  
+  ## Error Codes
+  
+  | Status | Code | Descrição |
+  |--------|------|-----------|
+  | 404 | `PROF_QUALIFICATION_NOT_FOUND` | Qualificação não encontrada |
+}

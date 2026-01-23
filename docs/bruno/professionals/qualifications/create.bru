@@ -36,8 +36,8 @@ docs {
   
   ## Campos obrigatórios
   
-  - `professional_type`: DOCTOR, NURSE, NURSING_TECH, PHARMACIST, DENTIST, PHYSIOTHERAPIST, PSYCHOLOGIST, NUTRITIONIST, BIOMEDIC, OTHER
-  - `council_type`: CRM, COREN, CRF, CRO, CREFITO, CRP, CRN, CRBM, OTHER
+  - `professional_type`: DOCTOR, NURSE, NURSING_TECH, PHARMACIST, DENTIST, PHYSIOTHERAPIST, PSYCHOLOGIST, NUTRITIONIST, BIOMEDIC
+  - `council_type`: CRM, COREN, CRF, CRO, CREFITO, CRP, CRN, CRBM
   - `council_number`: Número do registro no conselho
   - `council_state`: Estado do conselho (2 caracteres, ex: SP)
   
@@ -45,4 +45,12 @@ docs {
   
   - `is_primary`: Se é a qualificação principal (default: false)
   - `graduation_year`: Ano de graduação
+  
+  ## Error Codes
+  
+  | Status | Code | Descrição |
+  |--------|------|-----------|
+  | 404 | `PROF_NOT_FOUND` | Profissional não encontrado |
+  | 409 | `PROF_COUNCIL_REGISTRATION_EXISTS` | Registro de conselho já existe para outro profissional |
+  | 422 | `PROF_INVALID_COUNCIL_TYPE` | Tipo de conselho inválido para o tipo de profissional |
 }

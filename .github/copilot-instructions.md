@@ -196,11 +196,152 @@ Reference data not scoped by organization (e.g., specialties) use `CurrentContex
 - **GIN trigram indexes** for search: `postgresql_using="gin"`, requires `pg_trgm` + `f_unaccent` function
 - Denormalize `organization_id` when needed for unique constraints
 
-## Exceptions
-Use typed exceptions from `src.app.exceptions`:
-- `NotFoundError(resource="Entity", identifier=str(id))`
-- `ConflictError(message="Entity already exists")`
-- `ValidationError(message="Invalid data")`
+## Exceptions & Error Codes
+
+### Domain-Specific Exceptions (REQUIRED)
+Always use domain-specific exceptions instead of generic ones. Each module has its own exception classes with unique error codes.
+
+#### Exception Structure
+```
+src/app/
+├── constants/
+│   └── error_codes.py           # Error code enums (AuthErrorCodes, ProfessionalErrorCodes, etc.)
+└── exceptions/
+    ├── __init__.py              # Re-exports all exceptions
+    ├── base.py                  # AppException base class
+    ├── auth_exceptions.py       # Auth-specific exceptions
+    ├── organization_exceptions.py
+    └── professional_exceptions.py
+```
+
+#### Error Code Convention
+- Prefix with module abbreviation: `AUTH_`, `ORG_`, `PROF_`
+- Descriptive name: `PROF_CPF_ALREADY_EXISTS`, `PROF_QUALIFICATION_NOT_FOUND`
+- Add to `{Module}ErrorCodes` enum in `error_codes.py`
+
+#### Creating Domain-Specific Exceptions
+```python
+# In error_codes.py
+class ProfessionalErrorCodes(str, Enum):
+    PROF_CPF_ALREADY_EXISTS = "PROF_CPF_ALREADY_EXISTS"
+    PROF_NOT_FOUND = "PROF_NOT_FOUND"
+
+# In professional_exceptions.py
+class ProfessionalCpfExistsError(AppException):
+    def __init__(self) -> None:
+        super().__init__(
+            message=get_message(ProfessionalMessages.CPF_ALREADY_EXISTS),
+            code=ProfessionalErrorCodes.PROF_CPF_ALREADY_EXISTS,
+            status_code=status.HTTP_409_CONFLICT,
+        )
+```
+
+#### Using Domain Exceptions in Use Cases
+```python
+# ❌ DON'T use generic exceptions
+raise ConflictError(message="CPF already exists")
+raise NotFoundError(resource="Professional", identifier=str(id))
+
+# ✅ DO use domain-specific exceptions
+raise ProfessionalCpfExistsError()
+raise ProfessionalNotFoundError(professional_id=str(id))
+```
+
+### OpenAPI Error Documentation (REQUIRED)
+Document error responses in route handlers using FastAPI's `responses` parameter:
+
+```python
+from src.app.constants.error_codes import ProfessionalErrorCodes
+from src.shared.presentation.schemas import ErrorResponse
+
+@router.post(
+    "/",
+    response_model=EntityResponse,
+    status_code=status.HTTP_201_CREATED,
+    responses={
+        409: {
+            "model": ErrorResponse,
+            "description": "Conflict",
+            "content": {
+                "application/json": {
+                    "examples": {
+                        "cpf_exists": {
+                            "summary": "CPF already exists",
+                            "value": {"code": ProfessionalErrorCodes.PROF_CPF_ALREADY_EXISTS, "message": "..."},
+                        },
+                        "email_exists": {
+                            "summary": "Email already exists",
+                            "value": {"code": ProfessionalErrorCodes.PROF_EMAIL_ALREADY_EXISTS, "message": "..."},
+                        },
+                    }
+                }
+            },
+        },
+    },
+)
+```
+
+### Bruno Documentation (REQUIRED)
+Add error codes table to all `.bru` files in the `docs {}` block:
+
+```
+docs {
+  # Endpoint Description
+  
+  ...existing docs...
+  
+  ## Error Codes
+  
+  | Status | Code | Descrição |
+  |--------|------|-----------|
+  | 404 | `PROF_NOT_FOUND` | Profissional não encontrado |
+  | 409 | `PROF_CPF_ALREADY_EXISTS` | Já existe profissional com este CPF |
+}
+```
+
+## Internationalization (i18n)
+
+All error messages are centralized and translated to Brazilian Portuguese (pt-BR). Use the i18n system from `src.app.i18n`:
+
+### Message Keys
+Message keys are organized in enums by domain:
+- `AuthMessages` - Authentication/authorization errors
+- `OrganizationMessages` - Organization-related errors
+- `ResourceMessages` - Generic resource errors (not found, conflict, validation)
+- `ProfessionalMessages` - Professional module business errors
+- `ValidationMessages` - Value object validation errors (CPF, CNPJ, Phone, CEP)
+
+### Usage Pattern
+```python
+from src.app.i18n import get_message, ProfessionalMessages
+
+# Simple message
+raise ConflictError(message=get_message(ProfessionalMessages.CPF_ALREADY_EXISTS))
+
+# Message with interpolation
+raise ValidationError(
+    message=get_message(
+        ProfessionalMessages.INVALID_COUNCIL_TYPE,
+        council_type=data.council_type.value,
+        professional_type=data.professional_type.value,
+    )
+)
+```
+
+### Adding New Messages
+1. Add key to appropriate enum in `src/app/i18n/messages.py`
+2. Add pt-BR translation in `src/app/i18n/locales/pt_br.py`
+3. Use `{variable}` placeholders for interpolation
+
+### Structure
+```
+src/app/i18n/
+├── __init__.py          # get_message() function + exports
+├── messages.py          # Message key enums (AuthMessages, etc.)
+└── locales/
+    ├── __init__.py
+    └── pt_br.py         # Brazilian Portuguese translations
+```
 
 ## Code Style
 - Line length: 120 chars
@@ -212,16 +353,34 @@ Use typed exceptions from `src.app.exceptions`:
 Use typed value objects for data validation in schemas:
 - **CPF**: Use `CPF` from `src.shared.domain.value_objects` (auto-validates and normalizes to 11 digits)
 - **Phone**: Use `Phone` from `src.shared.domain.value_objects` (auto-validates and normalizes to E.164 format)
+- **StateUF**: Use `StateUF` from `src.shared.domain.value_objects` (validates Brazilian state codes, normalizes to uppercase)
+- **PostalCode**: Use `PostalCode` from `src.shared.domain.value_objects` (validates CEP with 8 digits)
 - **URLs**: Use `HttpUrl` from `pydantic` (validates http/https URLs)
 - **Email**: Use `EmailStr` from `pydantic`
 
 ```python
 from pydantic import BaseModel, EmailStr, HttpUrl
-from src.shared.domain.value_objects import CPF, Phone
+from src.shared.domain.value_objects import CPF, Phone, StateUF
 
 class ExampleCreate(BaseModel):
     email: Optional[EmailStr] = None
     phone: Optional[Phone] = None
     cpf: Optional[CPF] = None
+    state_code: Optional[StateUF] = None  # e.g., "SP", "RJ"
     avatar_url: Optional[HttpUrl] = None
+```
+
+### StateUF Features
+```python
+from src.shared.domain.value_objects import StateUF, BRAZILIAN_STATES
+
+uf = StateUF("sp")  # Normalizes to "SP"
+print(uf.full_name)  # "São Paulo"
+print(uf.region)     # "Sudeste"
+
+# Get all states
+print(BRAZILIAN_STATES)  # {"AC": "Acre", "AL": "Alagoas", ...}
+
+# Get states by region
+sudeste = StateUF.get_states_by_region("Sudeste")  # [SP, RJ, MG, ES]
 ```

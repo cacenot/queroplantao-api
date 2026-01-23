@@ -4,7 +4,7 @@ from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.app.exceptions import NotFoundError
+from src.app.exceptions import SpecialtyNotFoundError
 from src.modules.professionals.infrastructure.repositories import (
     ProfessionalSpecialtyRepository,
 )
@@ -39,9 +39,6 @@ class DeleteProfessionalSpecialtyUseCase:
             professional_specialty_id, qualification_id
         )
         if professional_specialty is None:
-            raise NotFoundError(
-                resource="ProfessionalSpecialty",
-                identifier=str(professional_specialty_id),
-            )
+            raise SpecialtyNotFoundError()
 
         await self.repository.soft_delete(professional_specialty_id)

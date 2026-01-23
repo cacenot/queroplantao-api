@@ -16,6 +16,7 @@ from src.app.exceptions import (
     UserInactiveError,
     UserNotFoundError,
 )
+from src.app.i18n import AuthMessages, get_message
 from src.app.logging import get_logger
 from src.app.middlewares.constants import DEFAULT_EXCLUDE_PATHS
 from src.modules.auth.infrastructure.repositories import UserRepository
@@ -98,7 +99,7 @@ class FirebaseAuthMiddleware(BaseHTTPMiddleware):
                 return self._error_response(
                     status_code=500,
                     code="SERVICE_ERROR",
-                    message="Authentication service not available",
+                    message=get_message(AuthMessages.FIREBASE_SERVICE_UNAVAILABLE),
                 )
 
             # Verify token (with cache)
@@ -156,7 +157,7 @@ class FirebaseAuthMiddleware(BaseHTTPMiddleware):
             return self._error_response(
                 status_code=500,
                 code="INTERNAL_ERROR",
-                message="Authentication failed due to internal error",
+                message=get_message(AuthMessages.FIREBASE_INTERNAL_ERROR),
             )
         finally:
             # Always clear context after request
@@ -286,13 +287,11 @@ class FirebaseAuthMiddleware(BaseHTTPMiddleware):
 
             if not user:
                 raise UserNotFoundError(
-                    message="User not found for this Firebase account",
                     details={"firebase_uid": firebase_uid},
                 )
 
             if not user.is_active:
                 raise UserInactiveError(
-                    message="User account is deactivated",
                     details={"user_id": str(user.id)},
                 )
 

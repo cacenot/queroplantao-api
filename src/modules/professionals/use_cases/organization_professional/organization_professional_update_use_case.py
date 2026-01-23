@@ -4,7 +4,11 @@ from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.app.exceptions import ConflictError, NotFoundError
+from src.app.exceptions import (
+    ProfessionalCpfExistsError,
+    ProfessionalEmailExistsError,
+    ProfessionalNotFoundError,
+)
 from src.modules.professionals.domain.models import OrganizationProfessional
 from src.modules.professionals.domain.schemas import OrganizationProfessionalUpdate
 from src.modules.professionals.infrastructure.repositories import (
@@ -55,10 +59,7 @@ class UpdateOrganizationProfessionalUseCase:
             professional_id, organization_id
         )
         if professional is None:
-            raise NotFoundError(
-                resource="OrganizationProfessional",
-                identifier=str(professional_id),
-            )
+            raise ProfessionalNotFoundError()
 
         # Get update data (only fields that were explicitly set)
         update_data = data.model_dump(exclude_unset=True)
@@ -69,12 +70,7 @@ class UpdateOrganizationProfessionalUseCase:
             if cpf and await self.repository.exists_by_cpf(
                 cpf, organization_id, exclude_id=professional_id
             ):
-                raise ConflictError(
-                    resource="OrganizationProfessional",
-                    field="cpf",
-                    value=cpf,
-                    message="A professional with this CPF already exists in the organization",
-                )
+                raise ProfessionalCpfExistsError()
 
         # Validate email uniqueness if being changed
         if "email" in update_data and update_data["email"] != professional.email:
@@ -82,12 +78,7 @@ class UpdateOrganizationProfessionalUseCase:
             if email and await self.repository.exists_by_email(
                 email, organization_id, exclude_id=professional_id
             ):
-                raise ConflictError(
-                    resource="OrganizationProfessional",
-                    field="email",
-                    value=email,
-                    message="A professional with this email already exists in the organization",
-                )
+                raise ProfessionalEmailExistsError()
 
         # Apply updates
         for field, value in update_data.items():

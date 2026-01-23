@@ -1,0 +1,77 @@
+meta {
+  name: Update Current User
+  type: http
+  seq: 2
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/auth/me
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{bearerToken}}
+}
+
+body:json {
+  {
+    "full_name": "Nome Atualizado",
+    "phone": "+5511999999999",
+    "cpf": "12345678909",
+    "avatar_url": "https://example.com/avatar.jpg"
+  }
+}
+
+docs {
+  # Update Current User
+  
+  Atualiza os dados do perfil do usuário autenticado.
+  
+  Utiliza semântica **PATCH**: apenas os campos enviados são atualizados.
+  O email **não pode** ser alterado por este endpoint (requer sincronização com Firebase).
+  
+  ## Request Body
+  
+  Todos os campos são opcionais:
+  
+  | Campo | Tipo | Descrição |
+  |-------|------|-----------|
+  | full_name | string | Nome completo (max 255 chars) |
+  | phone | string | Telefone em formato E.164 (ex: +5511999999999) |
+  | cpf | string | CPF com 11 dígitos (será validado) |
+  | avatar_url | string | URL da foto de perfil (http/https) |
+  
+  ## Validações
+  
+  - **CPF**: Validação completa do algoritmo de CPF brasileiro
+  - **Phone**: Formato E.164 internacional
+  - **CPF único**: Retorna erro 409 se o CPF já estiver em uso por outro usuário
+  
+  ## Response
+  
+  Retorna o `UserMeResponse` completo com os dados atualizados:
+  
+  - **id**: UUID do usuário
+  - **email**: Email
+  - **full_name**: Nome completo
+  - **phone**: Telefone
+  - **cpf**: CPF
+  - **avatar_url**: URL da foto
+  - **is_active**: Status ativo
+  - **email_verified_at**: Data de verificação do email
+  - **created_at**: Data de criação
+  - **updated_at**: Data de atualização
+  - **roles**: Roles globais
+  - **permissions**: Permissions diretas
+  - **organizations**: Memberships com roles agrupadas
+  
+  ## Erros
+  
+  | Status | Mensagem | Descrição |
+  |--------|----------|-----------|
+  | 401 | Token inválido | Token de autenticação inválido ou expirado |
+  | 404 | Usuário não encontrado | Usuário autenticado não existe no banco |
+  | 409 | CPF já em uso | CPF informado já está cadastrado para outro usuário |
+  | 422 | Erro de validação | CPF ou telefone com formato inválido |
+}

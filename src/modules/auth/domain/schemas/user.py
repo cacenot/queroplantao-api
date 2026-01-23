@@ -4,7 +4,9 @@ from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field, HttpUrl
+
+from src.shared.domain.value_objects import CPF, Phone
 
 
 class RoleInfo(BaseModel):
@@ -81,3 +83,17 @@ class UserMeResponse(BaseModel):
 
     # Organization memberships (roles grouped by organization)
     organizations: list[OrganizationMembershipInfo] = []
+
+
+class UserMeUpdate(BaseModel):
+    """Schema for updating current user's profile (PATCH - partial update).
+
+    Email is not editable through this endpoint as it requires Firebase sync.
+    """
+
+    model_config = ConfigDict(from_attributes=True)
+
+    full_name: Optional[str] = Field(default=None, max_length=255)
+    phone: Optional[Phone] = Field(default=None)
+    cpf: Optional[CPF] = Field(default=None)
+    avatar_url: Optional[HttpUrl] = Field(default=None)

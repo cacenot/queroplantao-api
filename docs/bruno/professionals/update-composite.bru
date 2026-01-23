@@ -197,4 +197,21 @@ docs {
   ## Response
   
   Retorna o profissional completo com todas as relações carregadas (OrganizationProfessionalDetailResponse).
+  
+  ## Error Codes
+  
+  | Status | Code | Descrição |
+  |--------|------|-----------|
+  | 404 | `PROF_NOT_FOUND` | Profissional não encontrado |
+  | 404 | `PROF_QUALIFICATION_NOT_FOUND` | Qualificação não encontrada |
+  | 404 | `PROF_SPECIALTY_NOT_FOUND` | Especialidade do profissional não encontrada |
+  | 404 | `PROF_GLOBAL_SPECIALTY_NOT_FOUND` | Especialidade de referência não encontrada |
+  | 404 | `PROF_EDUCATION_NOT_FOUND` | Formação não encontrada |
+  | 409 | `PROF_CPF_ALREADY_EXISTS` | Já existe outro profissional com este CPF na organização |
+  | 409 | `PROF_EMAIL_ALREADY_EXISTS` | Já existe outro profissional com este email na organização |
+  | 409 | `PROF_COUNCIL_REGISTRATION_EXISTS` | Registro de conselho já existe para outro profissional |
+  | 422 | `PROF_DUPLICATE_SPECIALTY_IDS` | IDs de especialidade duplicados na lista |
+  | 422 | `PROF_QUALIFICATION_MISMATCH` | Qualificação não pertence ao profissional |
+  | 422 | `PROF_SPECIALTY_MISMATCH` | Especialidade não pertence à qualificação |
+  | 422 | `PROF_EDUCATION_MISMATCH` | Formação não pertence à qualificação |
 }

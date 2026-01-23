@@ -7,6 +7,7 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field
 
 from src.modules.professionals.domain.models import CouncilType, ProfessionalType
+from src.shared.domain.value_objects import StateUF
 
 if TYPE_CHECKING:
     from src.modules.professionals.domain.schemas.professional_document import (
@@ -45,10 +46,8 @@ class ProfessionalQualificationCreate(BaseModel):
         max_length=20,
         description="Council registration number",
     )
-    council_state: str = Field(
-        min_length=2,
-        max_length=2,
-        description="State where the council registration is valid (2 chars)",
+    council_state: StateUF = Field(
+        description="State where the council registration is valid (2 chars, e.g., SP, RJ)",
     )
 
 
@@ -72,11 +71,9 @@ class ProfessionalQualificationUpdate(BaseModel):
         max_length=20,
         description="Council registration number",
     )
-    council_state: Optional[str] = Field(
+    council_state: Optional[StateUF] = Field(
         default=None,
-        min_length=2,
-        max_length=2,
-        description="State where the council registration is valid",
+        description="State where the council registration is valid (2 chars, e.g., SP, RJ)",
     )
 
 
@@ -94,6 +91,12 @@ class ProfessionalQualificationResponse(BaseModel):
     council_type: CouncilType
     council_number: str
     council_state: str
+
+    # Computed properties
+    is_generalist: bool = Field(
+        default=False,
+        description="True if professional is a doctor with no specialties (clínico geral)",
+    )
 
     # Verification
     is_verified: bool = False
@@ -122,6 +125,12 @@ class ProfessionalQualificationDetailResponse(BaseModel):
     specialties: list["ProfessionalSpecialtyDetailResponse"] = []
     educations: list["ProfessionalEducationResponse"] = []
     documents: list["ProfessionalDocumentResponse"] = []
+
+    # Computed properties
+    is_generalist: bool = Field(
+        default=False,
+        description="True if professional is a doctor with no specialties (clínico geral)",
+    )
 
     # Verification
     is_verified: bool = False

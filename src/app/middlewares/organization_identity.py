@@ -27,6 +27,7 @@ from src.app.exceptions.organization_exceptions import (
     OrganizationNotFoundError,
     UserNotMemberError,
 )
+from src.app.i18n import OrganizationMessages, get_message
 from src.app.logging import get_logger
 from src.app.middlewares.constants import (
     CHILD_ORGANIZATION_ID_HEADER,
@@ -228,7 +229,7 @@ class OrganizationIdentityMiddleware(BaseHTTPMiddleware):
             return self._error_response(
                 status_code=500,
                 code="INTERNAL_ERROR",
-                message="Organization identification failed due to internal error",
+                message=get_message(OrganizationMessages.INTERNAL_ERROR),
             )
 
     def _should_skip(self, path: str) -> bool:

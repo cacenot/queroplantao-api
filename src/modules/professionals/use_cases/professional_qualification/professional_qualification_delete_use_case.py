@@ -4,7 +4,7 @@ from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.app.exceptions import NotFoundError
+from src.app.exceptions import QualificationNotFoundError
 from src.modules.professionals.infrastructure.repositories import (
     ProfessionalQualificationRepository,
 )
@@ -37,9 +37,6 @@ class DeleteProfessionalQualificationUseCase:
             qualification_id, organization_id
         )
         if qualification is None:
-            raise NotFoundError(
-                resource="ProfessionalQualification",
-                identifier=str(qualification_id),
-            )
+            raise QualificationNotFoundError()
 
         await self.repository.soft_delete(qualification_id)

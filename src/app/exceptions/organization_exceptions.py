@@ -4,6 +4,7 @@ from typing import Any
 
 from src.app.constants.error_codes import OrganizationErrorCodes
 from src.app.exceptions import AppException
+from src.app.i18n import OrganizationMessages, get_message
 
 
 class OrganizationException(AppException):
@@ -29,11 +30,11 @@ class MissingOrganizationIdError(OrganizationException):
 
     def __init__(
         self,
-        message: str = "Organization ID is required",
+        message: str | None = None,
         details: dict[str, Any] | None = None,
     ) -> None:
         super().__init__(
-            message=message,
+            message=message or get_message(OrganizationMessages.MISSING_ID),
             code=OrganizationErrorCodes.MISSING_ORGANIZATION_ID,
             status_code=400,
             details=details,
@@ -45,11 +46,11 @@ class InvalidOrganizationIdError(OrganizationException):
 
     def __init__(
         self,
-        message: str = "Organization ID must be a valid UUID",
+        message: str | None = None,
         details: dict[str, Any] | None = None,
     ) -> None:
         super().__init__(
-            message=message,
+            message=message or get_message(OrganizationMessages.INVALID_ID),
             code=OrganizationErrorCodes.INVALID_ORGANIZATION_ID,
             status_code=400,
             details=details,
@@ -61,11 +62,11 @@ class OrganizationNotFoundError(OrganizationException):
 
     def __init__(
         self,
-        message: str = "Organization not found",
+        message: str | None = None,
         details: dict[str, Any] | None = None,
     ) -> None:
         super().__init__(
-            message=message,
+            message=message or get_message(OrganizationMessages.NOT_FOUND),
             code=OrganizationErrorCodes.ORGANIZATION_NOT_FOUND,
             status_code=404,
             details=details,
@@ -77,11 +78,11 @@ class OrganizationInactiveError(OrganizationException):
 
     def __init__(
         self,
-        message: str = "Organization is inactive",
+        message: str | None = None,
         details: dict[str, Any] | None = None,
     ) -> None:
         super().__init__(
-            message=message,
+            message=message or get_message(OrganizationMessages.INACTIVE),
             code=OrganizationErrorCodes.ORGANIZATION_INACTIVE,
             status_code=403,
             details=details,
@@ -93,11 +94,11 @@ class UserNotMemberError(OrganizationException):
 
     def __init__(
         self,
-        message: str = "User is not a member of this organization",
+        message: str | None = None,
         details: dict[str, Any] | None = None,
     ) -> None:
         super().__init__(
-            message=message,
+            message=message or get_message(OrganizationMessages.USER_NOT_MEMBER),
             code=OrganizationErrorCodes.USER_NOT_MEMBER,
             status_code=403,
             details=details,
@@ -109,11 +110,11 @@ class MembershipInactiveError(OrganizationException):
 
     def __init__(
         self,
-        message: str = "Membership in this organization is inactive",
+        message: str | None = None,
         details: dict[str, Any] | None = None,
     ) -> None:
         super().__init__(
-            message=message,
+            message=message or get_message(OrganizationMessages.MEMBERSHIP_INACTIVE),
             code=OrganizationErrorCodes.MEMBERSHIP_INACTIVE,
             status_code=403,
             details=details,
@@ -125,11 +126,11 @@ class MembershipPendingError(OrganizationException):
 
     def __init__(
         self,
-        message: str = "Membership invitation is pending acceptance",
+        message: str | None = None,
         details: dict[str, Any] | None = None,
     ) -> None:
         super().__init__(
-            message=message,
+            message=message or get_message(OrganizationMessages.MEMBERSHIP_PENDING),
             code=OrganizationErrorCodes.MEMBERSHIP_PENDING,
             status_code=403,
             details=details,
@@ -141,11 +142,11 @@ class MembershipExpiredError(OrganizationException):
 
     def __init__(
         self,
-        message: str = "Membership has expired",
+        message: str | None = None,
         details: dict[str, Any] | None = None,
     ) -> None:
         super().__init__(
-            message=message,
+            message=message or get_message(OrganizationMessages.MEMBERSHIP_EXPIRED),
             code=OrganizationErrorCodes.MEMBERSHIP_EXPIRED,
             status_code=403,
             details=details,
@@ -157,11 +158,11 @@ class InvalidChildOrganizationIdError(OrganizationException):
 
     def __init__(
         self,
-        message: str = "Child organization ID must be a valid UUID",
+        message: str | None = None,
         details: dict[str, Any] | None = None,
     ) -> None:
         super().__init__(
-            message=message,
+            message=message or get_message(OrganizationMessages.INVALID_CHILD_ID),
             code=OrganizationErrorCodes.INVALID_CHILD_ORGANIZATION_ID,
             status_code=400,
             details=details,
@@ -173,11 +174,11 @@ class ChildOrganizationNotFoundError(OrganizationException):
 
     def __init__(
         self,
-        message: str = "Child organization not found",
+        message: str | None = None,
         details: dict[str, Any] | None = None,
     ) -> None:
         super().__init__(
-            message=message,
+            message=message or get_message(OrganizationMessages.CHILD_NOT_FOUND),
             code=OrganizationErrorCodes.CHILD_ORGANIZATION_NOT_FOUND,
             status_code=404,
             details=details,
@@ -189,11 +190,11 @@ class ChildOrganizationInactiveError(OrganizationException):
 
     def __init__(
         self,
-        message: str = "Child organization is inactive",
+        message: str | None = None,
         details: dict[str, Any] | None = None,
     ) -> None:
         super().__init__(
-            message=message,
+            message=message or get_message(OrganizationMessages.CHILD_INACTIVE),
             code=OrganizationErrorCodes.CHILD_ORGANIZATION_INACTIVE,
             status_code=403,
             details=details,
@@ -205,11 +206,11 @@ class ChildNotAllowedError(OrganizationException):
 
     def __init__(
         self,
-        message: str = "This organization does not support child organizations",
+        message: str | None = None,
         details: dict[str, Any] | None = None,
     ) -> None:
         super().__init__(
-            message=message,
+            message=message or get_message(OrganizationMessages.CHILD_NOT_ALLOWED),
             code=OrganizationErrorCodes.CHILD_NOT_ALLOWED,
             status_code=400,
             details=details,
@@ -221,11 +222,11 @@ class NotChildOfParentError(OrganizationException):
 
     def __init__(
         self,
-        message: str = "The specified organization is not a child of the parent organization",
+        message: str | None = None,
         details: dict[str, Any] | None = None,
     ) -> None:
         super().__init__(
-            message=message,
+            message=message or get_message(OrganizationMessages.NOT_CHILD_OF_PARENT),
             code=OrganizationErrorCodes.NOT_CHILD_OF_PARENT,
             status_code=400,
             details=details,

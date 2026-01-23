@@ -4,7 +4,11 @@ from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.app.exceptions import ConflictError, NotFoundError, ValidationError
+from src.app.exceptions import (
+    CouncilRegistrationExistsError,
+    InvalidCouncilTypeError,
+    ProfessionalNotFoundError,
+)
 from src.modules.professionals.domain.models import (
     ProfessionalQualification,
     validate_council_for_professional_type,
@@ -43,31 +47,24 @@ class CreateProfessionalQualificationUseCase:
             professional_id, organization_id
         )
         if professional is None:
-            raise NotFoundError(
-                resource="OrganizationProfessional",
-                identifier=str(professional_id),
-            )
+            raise ProfessionalNotFoundError()
 
         # Validate council matches professional type
         if not validate_council_for_professional_type(
             data.council_type, data.professional_type
         ):
-            raise ValidationError(
-                message=f"Council type {data.council_type.value} is not valid for "
-                f"professional type {data.professional_type.value}",
-                field="council_type",
+            raise InvalidCouncilTypeError(
+                details={
+                    "council_type": data.council_type.value,
+                    "professional_type": data.professional_type.value,
+                }
             )
 
         # Validate council uniqueness in organization
         if await self.repository.council_exists_in_organization(
             data.council_number, data.council_state, organization_id
         ):
-            raise ConflictError(
-                resource="ProfessionalQualification",
-                field="council_number",
-                value=f"{data.council_number}/{data.council_state}",
-                message="This council registration already exists in the organization",
-            )
+            raise CouncilRegistrationExistsError()
 
         qualification = ProfessionalQualification(
             organization_id=organization_id,

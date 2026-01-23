@@ -4,7 +4,7 @@ from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.app.exceptions import NotFoundError
+from src.app.exceptions import SpecialtyNotFoundError
 from src.modules.professionals.domain.models import ProfessionalSpecialty
 from src.modules.professionals.domain.schemas import ProfessionalSpecialtyUpdate
 from src.modules.professionals.infrastructure.repositories import (
@@ -43,10 +43,7 @@ class UpdateProfessionalSpecialtyUseCase:
             professional_specialty_id, qualification_id
         )
         if professional_specialty is None:
-            raise NotFoundError(
-                resource="ProfessionalSpecialty",
-                identifier=str(professional_specialty_id),
-            )
+            raise SpecialtyNotFoundError()
 
         update_data = data.model_dump(exclude_unset=True)
 

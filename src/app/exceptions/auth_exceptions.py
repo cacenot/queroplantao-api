@@ -4,6 +4,7 @@ from typing import Any
 
 from src.app.constants.error_codes import AuthErrorCodes
 from src.app.exceptions import AppException
+from src.app.i18n import AuthMessages, get_message
 
 
 class AuthException(AppException):
@@ -29,11 +30,11 @@ class MissingTokenError(AuthException):
 
     def __init__(
         self,
-        message: str = "Authorization token is required",
+        message: str | None = None,
         details: dict[str, Any] | None = None,
     ) -> None:
         super().__init__(
-            message=message,
+            message=message or get_message(AuthMessages.MISSING_TOKEN),
             code=AuthErrorCodes.MISSING_TOKEN,
             status_code=401,
             details=details,
@@ -45,11 +46,11 @@ class InvalidTokenError(AuthException):
 
     def __init__(
         self,
-        message: str = "Invalid authentication token",
+        message: str | None = None,
         details: dict[str, Any] | None = None,
     ) -> None:
         super().__init__(
-            message=message,
+            message=message or get_message(AuthMessages.INVALID_TOKEN),
             code=AuthErrorCodes.INVALID_TOKEN,
             status_code=401,
             details=details,
@@ -61,11 +62,11 @@ class ExpiredTokenError(AuthException):
 
     def __init__(
         self,
-        message: str = "Authentication token has expired",
+        message: str | None = None,
         details: dict[str, Any] | None = None,
     ) -> None:
         super().__init__(
-            message=message,
+            message=message or get_message(AuthMessages.EXPIRED_TOKEN),
             code=AuthErrorCodes.EXPIRED_TOKEN,
             status_code=401,
             details=details,
@@ -77,11 +78,11 @@ class RevokedTokenError(AuthException):
 
     def __init__(
         self,
-        message: str = "Authentication token has been revoked",
+        message: str | None = None,
         details: dict[str, Any] | None = None,
     ) -> None:
         super().__init__(
-            message=message,
+            message=message or get_message(AuthMessages.REVOKED_TOKEN),
             code=AuthErrorCodes.REVOKED_TOKEN,
             status_code=401,
             details=details,
@@ -93,11 +94,11 @@ class FirebaseAuthError(AuthException):
 
     def __init__(
         self,
-        message: str = "Firebase authentication failed",
+        message: str | None = None,
         details: dict[str, Any] | None = None,
     ) -> None:
         super().__init__(
-            message=message,
+            message=message or get_message(AuthMessages.FIREBASE_ERROR),
             code=AuthErrorCodes.FIREBASE_ERROR,
             status_code=401,
             details=details,
@@ -109,11 +110,11 @@ class FirebaseInitError(AuthException):
 
     def __init__(
         self,
-        message: str = "Firebase service initialization failed",
+        message: str | None = None,
         details: dict[str, Any] | None = None,
     ) -> None:
         super().__init__(
-            message=message,
+            message=message or get_message(AuthMessages.FIREBASE_INIT_ERROR),
             code=AuthErrorCodes.FIREBASE_INIT_ERROR,
             status_code=500,
             details=details,
@@ -125,11 +126,11 @@ class UserNotFoundError(AuthException):
 
     def __init__(
         self,
-        message: str = "User not found",
+        message: str | None = None,
         details: dict[str, Any] | None = None,
     ) -> None:
         super().__init__(
-            message=message,
+            message=message or get_message(AuthMessages.USER_NOT_FOUND),
             code=AuthErrorCodes.USER_NOT_FOUND,
             status_code=401,
             details=details,
@@ -141,11 +142,11 @@ class UserInactiveError(AuthException):
 
     def __init__(
         self,
-        message: str = "User account is inactive",
+        message: str | None = None,
         details: dict[str, Any] | None = None,
     ) -> None:
         super().__init__(
-            message=message,
+            message=message or get_message(AuthMessages.USER_INACTIVE),
             code=AuthErrorCodes.USER_INACTIVE,
             status_code=403,
             details=details,
@@ -157,11 +158,11 @@ class CacheError(AuthException):
 
     def __init__(
         self,
-        message: str = "Cache operation failed",
+        message: str | None = None,
         details: dict[str, Any] | None = None,
     ) -> None:
         super().__init__(
-            message=message,
+            message=message or get_message(AuthMessages.CACHE_ERROR),
             code=AuthErrorCodes.CACHE_ERROR,
             status_code=500,
             details=details,

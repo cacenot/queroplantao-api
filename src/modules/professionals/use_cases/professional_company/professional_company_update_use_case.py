@@ -4,7 +4,7 @@ from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.app.exceptions import NotFoundError
+from src.app.exceptions import CompanyNotFoundError
 from src.modules.professionals.domain.models import ProfessionalCompany
 from src.modules.professionals.domain.schemas import ProfessionalCompanyUpdate
 from src.modules.professionals.infrastructure.repositories import (
@@ -31,10 +31,7 @@ class UpdateProfessionalCompanyUseCase:
             professional_company_id, professional_id
         )
         if professional_company is None:
-            raise NotFoundError(
-                resource="ProfessionalCompany",
-                identifier=str(professional_company_id),
-            )
+            raise CompanyNotFoundError()
 
         update_data = data.model_dump(exclude_unset=True)
 

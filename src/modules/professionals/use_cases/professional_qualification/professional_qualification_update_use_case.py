@@ -4,7 +4,10 @@ from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.app.exceptions import ConflictError, NotFoundError
+from src.app.exceptions import (
+    CouncilRegistrationExistsError,
+    QualificationNotFoundError,
+)
 from src.modules.professionals.domain.models import ProfessionalQualification
 from src.modules.professionals.domain.schemas import ProfessionalQualificationUpdate
 from src.modules.professionals.infrastructure.repositories import (
@@ -41,10 +44,7 @@ class UpdateProfessionalQualificationUseCase:
             qualification_id, organization_id
         )
         if qualification is None:
-            raise NotFoundError(
-                resource="ProfessionalQualification",
-                identifier=str(qualification_id),
-            )
+            raise QualificationNotFoundError()
 
         update_data = data.model_dump(exclude_unset=True)
 
@@ -59,12 +59,7 @@ class UpdateProfessionalQualificationUseCase:
                 organization_id,
                 exclude_id=qualification_id,
             ):
-                raise ConflictError(
-                    resource="ProfessionalQualification",
-                    field="council_number",
-                    value=f"{council_number}/{council_state}",
-                    message="This council registration already exists in the organization",
-                )
+                raise CouncilRegistrationExistsError()
 
         for field, value in update_data.items():
             setattr(qualification, field, value)

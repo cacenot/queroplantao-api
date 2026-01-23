@@ -2,6 +2,8 @@
 
 import re
 
+from src.app.i18n import ValidationMessages, get_message
+
 
 def normalize_cnpj(cnpj: str) -> str:
     """
@@ -42,11 +44,13 @@ def validate_cnpj(cnpj: str) -> str:
 
     # Check if has 14 digits
     if len(cnpj_digits) != 14:
-        raise ValueError(f"CNPJ must have 14 digits, got {len(cnpj_digits)}")
+        raise ValueError(
+            get_message(ValidationMessages.CNPJ_INVALID_LENGTH, length=len(cnpj_digits))
+        )
 
     # Check if all digits are the same (invalid CNPJs like 11.111.111/1111-11)
     if cnpj_digits == cnpj_digits[0] * 14:
-        raise ValueError("CNPJ cannot have all digits the same")
+        raise ValueError(get_message(ValidationMessages.CNPJ_ALL_SAME_DIGITS))
 
     # Validate check digits
     def calculate_digit(cnpj_partial: str, weights: list[int]) -> int:
@@ -59,12 +63,12 @@ def validate_cnpj(cnpj: str) -> str:
     first_weights = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]
     first_digit = calculate_digit(cnpj_digits[:12], first_weights)
     if int(cnpj_digits[12]) != first_digit:
-        raise ValueError("Invalid CNPJ check digit")
+        raise ValueError(get_message(ValidationMessages.CNPJ_INVALID_CHECK_DIGIT))
 
     # Second verification digit
     second_weights = [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]
     second_digit = calculate_digit(cnpj_digits[:13], second_weights)
     if int(cnpj_digits[13]) != second_digit:
-        raise ValueError("Invalid CNPJ check digit")
+        raise ValueError(get_message(ValidationMessages.CNPJ_INVALID_CHECK_DIGIT))
 
     return cnpj_digits

@@ -5,6 +5,7 @@ from typing import Any
 from pydantic import GetJsonSchemaHandler
 from pydantic_core import core_schema
 
+from src.app.i18n import ValidationMessages, get_message
 from src.app.utils.cnpj import normalize_cnpj, validate_cnpj
 from src.app.utils.cpf import normalize_cpf, validate_cpf
 
@@ -38,7 +39,7 @@ class CPF(str):
     def _validate(cls, value: str) -> "CPF":
         """Validate and normalize CPF."""
         if not isinstance(value, str):
-            raise ValueError("CPF must be a string")
+            raise ValueError(get_message(ValidationMessages.CPF_MUST_BE_STRING))
         normalized = validate_cpf(value)  # Raises ValueError if invalid
         return cls(normalized)
 
@@ -88,7 +89,7 @@ class CNPJ(str):
     def _validate(cls, value: str) -> "CNPJ":
         """Validate and normalize CNPJ."""
         if not isinstance(value, str):
-            raise ValueError("CNPJ must be a string")
+            raise ValueError(get_message(ValidationMessages.CNPJ_MUST_BE_STRING))
         normalized = validate_cnpj(value)  # Raises ValueError if invalid
         return cls(normalized)
 
@@ -139,7 +140,7 @@ class CPFOrCNPJ(str):
     def _validate(cls, value: str) -> "CPFOrCNPJ":
         """Validate and normalize CPF or CNPJ based on length."""
         if not isinstance(value, str):
-            raise ValueError("CPF/CNPJ must be a string")
+            raise ValueError(get_message(ValidationMessages.CPF_CNPJ_MUST_BE_STRING))
 
         # Try to normalize to see the digit count
         digits = (
@@ -155,9 +156,7 @@ class CPFOrCNPJ(str):
             # CNPJ validation
             normalized = validate_cnpj(value)
         else:
-            raise ValueError(
-                "Document must be a valid CPF (11 digits) or CNPJ (14 digits)"
-            )
+            raise ValueError(get_message(ValidationMessages.CPF_CNPJ_INVALID))
 
         return cls(normalized)
 

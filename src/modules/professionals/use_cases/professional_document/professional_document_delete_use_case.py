@@ -4,7 +4,7 @@ from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.app.exceptions import NotFoundError
+from src.app.exceptions import DocumentNotFoundError
 from src.modules.professionals.infrastructure.repositories import (
     ProfessionalDocumentRepository,
 )
@@ -37,9 +37,6 @@ class DeleteProfessionalDocumentUseCase:
             document_id, professional_id
         )
         if document is None:
-            raise NotFoundError(
-                resource="ProfessionalDocument",
-                identifier=str(document_id),
-            )
+            raise DocumentNotFoundError()
 
         await self.repository.soft_delete(document_id)

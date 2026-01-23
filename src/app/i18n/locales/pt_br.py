@@ -1,0 +1,135 @@
+"""Brazilian Portuguese (pt-BR) translations."""
+
+from src.app.i18n.messages import (
+    AuthMessages,
+    OrganizationMessages,
+    ProfessionalMessages,
+    ResourceMessages,
+    ValidationMessages,
+)
+
+MESSAGES: dict[str, str] = {
+    # ==========================================================================
+    # Authentication messages
+    # ==========================================================================
+    AuthMessages.MISSING_TOKEN: "Token de autorização é obrigatório",
+    AuthMessages.INVALID_TOKEN: "Token de autenticação inválido",
+    AuthMessages.EXPIRED_TOKEN: "Token de autenticação expirado",
+    AuthMessages.REVOKED_TOKEN: "Token de autenticação foi revogado",
+    AuthMessages.FIREBASE_ERROR: "Falha na autenticação com Firebase",
+    AuthMessages.FIREBASE_INIT_ERROR: "Falha na inicialização do serviço Firebase",
+    AuthMessages.FIREBASE_SERVICE_UNAVAILABLE: "Serviço de autenticação indisponível",
+    AuthMessages.FIREBASE_INTERNAL_ERROR: "Falha na autenticação devido a erro interno",
+    AuthMessages.USER_NOT_FOUND: "Usuário não encontrado",
+    AuthMessages.USER_INACTIVE: "Conta de usuário está inativa",
+    AuthMessages.CPF_ALREADY_IN_USE: "Este CPF já está em uso por outro usuário",
+    AuthMessages.CACHE_ERROR: "Falha na operação de cache",
+    AuthMessages.AUTHENTICATION_FAILED: "Falha na autenticação",
+    AuthMessages.INSUFFICIENT_PERMISSIONS: "Permissões insuficientes",
+    # ==========================================================================
+    # Organization messages
+    # ==========================================================================
+    OrganizationMessages.MISSING_ID: "ID da organização é obrigatório",
+    OrganizationMessages.INVALID_ID: "ID da organização deve ser um UUID válido",
+    OrganizationMessages.NOT_FOUND: "Organização não encontrada",
+    OrganizationMessages.INACTIVE: "Organização está inativa",
+    OrganizationMessages.INTERNAL_ERROR: "Falha na identificação da organização devido a erro interno",
+    OrganizationMessages.USER_NOT_MEMBER: "Usuário não é membro desta organização",
+    OrganizationMessages.MEMBERSHIP_INACTIVE: "Associação nesta organização está inativa",
+    OrganizationMessages.MEMBERSHIP_PENDING: "Convite de associação aguardando aceitação",
+    OrganizationMessages.MEMBERSHIP_EXPIRED: "Associação expirou",
+    OrganizationMessages.INVALID_CHILD_ID: "ID da organização filha deve ser um UUID válido",
+    OrganizationMessages.CHILD_NOT_FOUND: "Organização filha não encontrada",
+    OrganizationMessages.CHILD_INACTIVE: "Organização filha está inativa",
+    OrganizationMessages.CHILD_NOT_ALLOWED: "Esta organização não suporta organizações filhas",
+    OrganizationMessages.NOT_CHILD_OF_PARENT: "A organização especificada não é filha da organização pai",
+    # ==========================================================================
+    # Resource messages
+    # ==========================================================================
+    ResourceMessages.NOT_FOUND: "{resource} não encontrado(a)",
+    ResourceMessages.NOT_FOUND_WITH_ID: "{resource} com id '{identifier}' não encontrado(a)",
+    ResourceMessages.CONFLICT: "Conflito de recurso",
+    ResourceMessages.VALIDATION_ERROR: "Erro de validação",
+    # ==========================================================================
+    # Professional messages
+    # ==========================================================================
+    ProfessionalMessages.CPF_ALREADY_EXISTS: "Já existe um profissional com este CPF na organização",
+    ProfessionalMessages.EMAIL_ALREADY_EXISTS: "Já existe um profissional com este e-mail na organização",
+    ProfessionalMessages.COUNCIL_REGISTRATION_EXISTS: "Este registro de conselho já existe na organização",
+    ProfessionalMessages.COMPANY_ALREADY_LINKED: "Este profissional já está vinculado a esta empresa",
+    ProfessionalMessages.SPECIALTY_ALREADY_ASSIGNED: "Esta especialidade já está atribuída a esta qualificação",
+    ProfessionalMessages.DUPLICATE_SPECIALTY_IDS: "IDs de especialidade duplicados na requisição",
+    ProfessionalMessages.INVALID_COUNCIL_TYPE: "Tipo de conselho {council_type} não é válido para o tipo profissional {professional_type}",
+    ProfessionalMessages.QUALIFICATION_ID_REQUIRED: (
+        "ID da qualificação é obrigatório para atualização. "
+        "Para criar uma nova qualificação, use o endpoint específico de criação."
+    ),
+    ProfessionalMessages.QUALIFICATION_NOT_BELONGS: "Qualificação não pertence a este profissional",
+    ProfessionalMessages.SPECIALTY_ID_REQUIRED: "specialty_id é obrigatório ao criar uma nova especialidade",
+    ProfessionalMessages.LEVEL_REQUIRED: "level é obrigatório ao criar uma nova formação",
+    ProfessionalMessages.COURSE_NAME_REQUIRED: "course_name é obrigatório ao criar uma nova formação",
+    ProfessionalMessages.INSTITUTION_REQUIRED: "institution é obrigatório ao criar uma nova formação",
+    ProfessionalMessages.DOCUMENT_QUALIFICATION_CATEGORY: "Documentos vinculados a uma qualificação devem ter categoria QUALIFICATION",
+    ProfessionalMessages.DOCUMENT_SPECIALTY_CATEGORY: "Documentos vinculados a uma especialidade devem ter categoria SPECIALTY",
+    ProfessionalMessages.PROFESSIONAL_NOT_FOUND: "Profissional não encontrado",
+    ProfessionalMessages.QUALIFICATION_NOT_FOUND: "Qualificação não encontrada",
+    ProfessionalMessages.DOCUMENT_NOT_FOUND: "Documento não encontrado",
+    ProfessionalMessages.SPECIALTY_NOT_FOUND: "Especialidade não encontrada",
+    ProfessionalMessages.COMPANY_NOT_FOUND: "Empresa não encontrada",
+    ProfessionalMessages.EDUCATION_NOT_FOUND: "Formação não encontrada",
+    # ==========================================================================
+    # Validation messages
+    # ==========================================================================
+    ValidationMessages.CPF_MUST_BE_STRING: "CPF deve ser uma string",
+    ValidationMessages.CPF_INVALID_LENGTH: "CPF deve ter 11 dígitos, encontrado {length}",
+    ValidationMessages.CPF_ALL_SAME_DIGITS: "CPF não pode ter todos os dígitos iguais",
+    ValidationMessages.CPF_INVALID_CHECK_DIGIT: "Dígito verificador do CPF inválido",
+    ValidationMessages.CNPJ_MUST_BE_STRING: "CNPJ deve ser uma string",
+    ValidationMessages.CNPJ_INVALID_LENGTH: "CNPJ deve ter 14 dígitos, encontrado {length}",
+    ValidationMessages.CNPJ_ALL_SAME_DIGITS: "CNPJ não pode ter todos os dígitos iguais",
+    ValidationMessages.CNPJ_INVALID_CHECK_DIGIT: "Dígito verificador do CNPJ inválido",
+    ValidationMessages.CPF_CNPJ_MUST_BE_STRING: "CPF/CNPJ deve ser uma string",
+    ValidationMessages.CPF_CNPJ_INVALID: "Documento deve ser um CPF válido (11 dígitos) ou CNPJ válido (14 dígitos)",
+    ValidationMessages.PHONE_MUST_BE_STRING: "Número de telefone deve ser uma string",
+    ValidationMessages.PHONE_INVALID: "Número de telefone inválido",
+    ValidationMessages.PHONE_INVALID_FORMAT: "Formato de número de telefone inválido: {error}",
+    ValidationMessages.PHONE_UNABLE_TO_EXTRACT_DDI: "Não foi possível extrair o DDI do número de telefone: {phone}",
+    ValidationMessages.PHONE_UNABLE_TO_EXTRACT_DDD: "Não foi possível extrair o DDD do número de telefone: {phone}",
+    ValidationMessages.PHONE_UNABLE_TO_FORMAT: "Não foi possível formatar o número de telefone: {phone}",
+    ValidationMessages.CEP_MUST_BE_STRING: "CEP deve ser uma string",
+    ValidationMessages.CEP_INVALID_LENGTH: "CEP deve ter 8 dígitos, encontrado {length}",
+    ValidationMessages.CEP_ALL_ZEROS: "CEP inválido: não pode ser todos zeros",
+    ValidationMessages.UF_MUST_BE_STRING: "UF deve ser uma string",
+    ValidationMessages.UF_INVALID_LENGTH: "UF deve ter 2 letras, encontrado {length}",
+    ValidationMessages.UF_INVALID_CODE: "UF inválida: '{code}' não é um estado brasileiro válido",
+}
+
+# =============================================================================
+# Resource name translations (for NotFoundError)
+# =============================================================================
+RESOURCE_NAMES: dict[str, str] = {
+    # Auth module
+    "User": "Usuário",
+    # Organizations module
+    "Organization": "Organização",
+    "OrganizationMembership": "Associação à organização",
+    # Professionals module
+    "OrganizationProfessional": "Profissional",
+    "ProfessionalQualification": "Qualificação",
+    "ProfessionalSpecialty": "Especialidade do profissional",
+    "ProfessionalDocument": "Documento",
+    "ProfessionalEducation": "Formação",
+    "ProfessionalCompany": "Vínculo com empresa",
+    "Specialty": "Especialidade",
+    # Contracts module
+    "ProfessionalContract": "Contrato de profissional",
+    "ClientContract": "Contrato de cliente",
+    # Units module
+    "Unit": "Unidade",
+    # Screening module
+    "ScreeningProcess": "Processo de triagem",
+    "ScreeningTemplate": "Modelo de triagem",
+    # Shared
+    "Company": "Empresa",
+    "BankAccount": "Conta bancária",
+}
