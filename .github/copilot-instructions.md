@@ -207,3 +207,21 @@ Use typed exceptions from `src.app.exceptions`:
 - Double quotes for strings
 - Type everything (strict MyPy)
 - Async-first: all DB operations use `await`
+
+## Value Objects & Validation
+Use typed value objects for data validation in schemas:
+- **CPF**: Use `CPF` from `src.shared.domain.value_objects` (auto-validates and normalizes to 11 digits)
+- **Phone**: Use `Phone` from `src.shared.domain.value_objects` (auto-validates and normalizes to E.164 format)
+- **URLs**: Use `HttpUrl` from `pydantic` (validates http/https URLs)
+- **Email**: Use `EmailStr` from `pydantic`
+
+```python
+from pydantic import BaseModel, EmailStr, HttpUrl
+from src.shared.domain.value_objects import CPF, Phone
+
+class ExampleCreate(BaseModel):
+    email: Optional[EmailStr] = None
+    phone: Optional[Phone] = None
+    cpf: Optional[CPF] = None
+    avatar_url: Optional[HttpUrl] = None
+```

@@ -81,12 +81,6 @@ class OrganizationProfessionalBase(BaseModel):
         description="Profile picture URL",
     )
 
-    # Status
-    is_active: bool = Field(
-        default=True,
-        description="Whether this professional is active in the organization",
-    )
-
 
 class OrganizationProfessional(
     OrganizationProfessionalBase,
@@ -147,19 +141,6 @@ class OrganizationProfessional(
             text("f_unaccent(lower(full_name))"),
             postgresql_using="gin",
             postgresql_ops={"": "gin_trgm_ops"},
-            postgresql_where=text("deleted_at IS NULL"),
-        ),
-        # B-tree index for active status filtering
-        Index(
-            "idx_organization_professionals_is_active",
-            "is_active",
-            postgresql_where=text("deleted_at IS NULL"),
-        ),
-        # B-tree composite index for org + active filtering
-        Index(
-            "idx_organization_professionals_org_active",
-            "organization_id",
-            "is_active",
             postgresql_where=text("deleted_at IS NULL"),
         ),
         # B-tree index for created_at sorting

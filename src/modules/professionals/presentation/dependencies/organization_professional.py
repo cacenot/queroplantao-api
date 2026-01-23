@@ -6,11 +6,13 @@ from fastapi import Depends
 
 from src.app.dependencies import SessionDep
 from src.modules.professionals.use_cases import (
+    CreateOrganizationProfessionalCompositeUseCase,
     CreateOrganizationProfessionalUseCase,
     DeleteOrganizationProfessionalUseCase,
     GetOrganizationProfessionalUseCase,
     ListOrganizationProfessionalsUseCase,
     ListOrganizationProfessionalsSummaryUseCase,
+    UpdateOrganizationProfessionalCompositeUseCase,
     UpdateOrganizationProfessionalUseCase,
 )
 
@@ -81,4 +83,28 @@ ListOrganizationProfessionalsUC = Annotated[
 ListOrganizationProfessionalsSummaryUC = Annotated[
     ListOrganizationProfessionalsSummaryUseCase,
     Depends(get_list_organization_professionals_summary_use_case),
+]
+
+
+def get_create_organization_professional_composite_use_case(
+    session: SessionDep,
+) -> CreateOrganizationProfessionalCompositeUseCase:
+    """Factory for CreateOrganizationProfessionalCompositeUseCase."""
+    return CreateOrganizationProfessionalCompositeUseCase(session)
+
+
+def get_update_organization_professional_composite_use_case(
+    session: SessionDep,
+) -> UpdateOrganizationProfessionalCompositeUseCase:
+    """Factory for UpdateOrganizationProfessionalCompositeUseCase."""
+    return UpdateOrganizationProfessionalCompositeUseCase(session)
+
+
+CreateOrganizationProfessionalCompositeUC = Annotated[
+    CreateOrganizationProfessionalCompositeUseCase,
+    Depends(get_create_organization_professional_composite_use_case),
+]
+UpdateOrganizationProfessionalCompositeUC = Annotated[
+    UpdateOrganizationProfessionalCompositeUseCase,
+    Depends(get_update_organization_professional_composite_use_case),
 ]

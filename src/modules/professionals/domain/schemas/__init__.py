@@ -11,6 +11,16 @@ from src.modules.professionals.domain.schemas.organization_professional import (
     QualificationSummary,
     SpecialtySummary,
 )
+from src.modules.professionals.domain.schemas.organization_professional_composite import (
+    EducationNestedCreate,
+    EducationNestedUpdate,
+    OrganizationProfessionalCompositeCreate,
+    OrganizationProfessionalCompositeUpdate,
+    QualificationNestedCreate,
+    QualificationNestedUpdate,
+    SpecialtyNestedCreate,
+    SpecialtyNestedUpdate,
+)
 from src.modules.professionals.domain.schemas.professional_company import (
     CompanyDetailInfo,
     CompanyInfo,
@@ -60,6 +70,15 @@ __all__ = [
     "OrganizationProfessionalListItem",
     "QualificationSummary",
     "SpecialtySummary",
+    # OrganizationProfessional Composite
+    "OrganizationProfessionalCompositeCreate",
+    "OrganizationProfessionalCompositeUpdate",
+    "QualificationNestedCreate",
+    "QualificationNestedUpdate",
+    "SpecialtyNestedCreate",
+    "SpecialtyNestedUpdate",
+    "EducationNestedCreate",
+    "EducationNestedUpdate",
     # ProfessionalQualification
     "ProfessionalQualificationCreate",
     "ProfessionalQualificationUpdate",

@@ -181,11 +181,6 @@ class AddressMixin(SQLModel):
         max_length=2,
         description="State abbreviation (UF - 2 chars)",
     )
-    state_name: Optional[str] = Field(
-        default=None,
-        max_length=100,
-        description="State full name",
-    )
     postal_code: Optional[str] = Field(
         default=None,
         max_length=10,

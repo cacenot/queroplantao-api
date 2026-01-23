@@ -1,0 +1,200 @@
+meta {
+  name: Update Professional (Composite)
+  type: http
+  seq: 7
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/professionals/:professionalId/composite
+  body: json
+  auth: inherit
+}
+
+params:path {
+  professionalId: {{professionalId}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "full_name": "Dr. João Silva Atualizado",
+    "phone": "+5511888888888",
+    "qualification": {
+      "id": "{{qualificationId}}",
+      "graduation_year": 2014,
+      "specialties": [
+        {
+          "id": "{{existingSpecialtyLinkId}}",
+          "is_primary": true
+        },
+        {
+          "specialty_id": "{{newSpecialtyId}}",
+          "is_primary": false,
+          "residency_status": "COMPLETED"
+        }
+      ],
+      "educations": [
+        {
+          "id": "{{existingEducationId}}"
+        },
+        {
+          "level": "MBA",
+          "course_name": "Gestão em Saúde",
+          "institution": "FGV",
+          "start_year": 2020,
+          "end_year": 2022,
+          "is_completed": true
+        }
+      ]
+    }
+  }
+}
+
+docs {
+  # Update Professional (Composite) - PATCH
+  
+  Atualiza parcialmente um profissional com qualificação e entidades aninhadas usando estratégia de partial update.
+  
+  ## Estratégia de Atualização
+  
+  ### Campos do Profissional
+  - **PATCH semantics**: Apenas os campos enviados são atualizados
+  
+  ### Qualificação
+  - Deve enviar o `id` da qualificação existente
+  - Apenas os campos enviados são atualizados
+  
+  ### Especialidades e Formações (Partial Update)
+  
+  | Situação | Ação |
+  |----------|------|
+  | `{ "id": "uuid", "campo": "valor" }` | Atualiza a entidade existente |
+  | `{ "id": "uuid" }` (só ID) | Mantém a entidade inalterada |
+  | `{ "specialty_id": "uuid", ... }` (sem ID) | Cria nova entidade |
+  | IDs existentes não enviados na lista | Soft delete |
+  | `null` (não enviar a lista) | Nenhuma mudança |
+  | `[]` (lista vazia) | Remove todas as entidades |
+  
+  ## Exemplos de Uso
+  
+  ### 1. Atualizar apenas dados do profissional
+  
+  ```json
+  {
+    "full_name": "Novo Nome",
+    "phone": "+5511999999999"
+  }
+  ```
+  
+  ### 2. Atualizar qualificação sem mexer nas especialidades
+  
+  ```json
+  {
+    "qualification": {
+      "id": "qualification-uuid",
+      "graduation_year": 2014
+    }
+  }
+  ```
+  
+  ### 3. Adicionar nova especialidade mantendo existentes
+  
+  ```json
+  {
+    "qualification": {
+      "id": "qualification-uuid",
+      "specialties": [
+        { "id": "existing-specialty-1-id" },
+        { "id": "existing-specialty-2-id" },
+        {
+          "specialty_id": "new-specialty-uuid",
+          "is_primary": false
+        }
+      ]
+    }
+  }
+  ```
+  
+  ### 4. Remover uma especialidade
+  
+  Se tinha specialty-1, specialty-2, specialty-3 e quer remover specialty-2:
+  
+  ```json
+  {
+    "qualification": {
+      "id": "qualification-uuid",
+      "specialties": [
+        { "id": "specialty-1-id" },
+        { "id": "specialty-3-id" }
+      ]
+    }
+  }
+  ```
+  
+  ### 5. Atualizar dados de uma especialidade
+  
+  ```json
+  {
+    "qualification": {
+      "id": "qualification-uuid",
+      "specialties": [
+        { "id": "specialty-1-id" },
+        {
+          "id": "specialty-2-id",
+          "rqe_number": "12345",
+          "rqe_state": "SP"
+        }
+      ]
+    }
+  }
+  ```
+  
+  ### 6. Remover todas as formações
+  
+  ```json
+  {
+    "qualification": {
+      "id": "qualification-uuid",
+      "educations": []
+    }
+  }
+  ```
+  
+  ## Campos Atualizáveis
+  
+  ### Profissional
+  - `full_name`, `email`, `phone`, `cpf`, `birth_date`, `nationality`
+  - `gender`, `marital_status`, `avatar_url`
+  - `address`, `number`, `complement`, `neighborhood`
+  - `city`, `state_code`, `postal_code`
+  
+  ### Qualificação (dentro de `qualification`)
+  - `is_primary`, `graduation_year`
+  - `council_number`, `council_state`
+  - ⚠️ `professional_type` e `council_type` são imutáveis
+  
+  ### Especialidade (dentro de `qualification.specialties[]`)
+  - Para criar: `specialty_id` (obrigatório)
+  - Para atualizar: `id` (obrigatório)
+  - Campos: `is_primary`, `rqe_number`, `rqe_state`, `residency_status`, `residency_institution`, `residency_expected_completion`, `certificate_url`
+  
+  ### Formação (dentro de `qualification.educations[]`)
+  - Para criar: `level`, `course_name`, `institution` (obrigatórios)
+  - Para atualizar: `id` (obrigatório)
+  - Campos: `level`, `course_name`, `institution`, `start_year`, `end_year`, `is_completed`, `workload_hours`, `certificate_url`, `notes`
+  
+  ## Validações
+  
+  - CPF/email únicos (excluindo o profissional atual)
+  - Council registration único (se atualizado)
+  - Qualificação deve pertencer ao profissional
+  - specialty_id deve existir e não pode haver duplicatas
+  - Para criar education: `level`, `course_name`, `institution` são obrigatórios
+  
+  ## Response
+  
+  Retorna o profissional completo com todas as relações carregadas (OrganizationProfessionalDetailResponse).
+}

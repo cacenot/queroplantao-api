@@ -74,7 +74,6 @@ class CompanyDetailInfo(BaseModel):
     neighborhood: Optional[str] = None
     city: Optional[str] = None
     state_code: Optional[str] = None
-    state_name: Optional[str] = None
     postal_code: Optional[str] = None
 
     # Nested bank accounts

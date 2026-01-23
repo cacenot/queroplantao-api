@@ -95,7 +95,7 @@ Unidades/locais de trabalho onde profissionais atuam.
 | geofence_radius_meters | INTEGER | ✅ | Raio do geofence em metros (0-10000) |
 | is_active | BOOLEAN | ❌ | Status ativo/inativo |
 | **Endereço (AddressMixin)** | | | |
-| address, number, complement, neighborhood, city, state_code, state_name, postal_code, latitude, longitude | | ✅ | |
+| address, number, complement, neighborhood, city, state_code, postal_code, latitude, longitude | | ✅ | |
 | **Verificação (VerificationMixin)** | | | |
 | verified_at | TIMESTAMP | ✅ | Quando foi verificado |
 | verified_by | UUID | ✅ | FK para users |

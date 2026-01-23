@@ -5,7 +5,7 @@ Filters and sorting for OrganizationProfessional entity.
 from typing import Optional
 
 from pydantic import Field
-from fastapi_restkit.filters import BooleanFilter, ListFilter, SearchFilter
+from fastapi_restkit.filters import ListFilter, SearchFilter
 from fastapi_restkit.filterset import FilterSet
 from fastapi_restkit.sortingset import SortableField, SortingSet
 
@@ -22,7 +22,6 @@ class OrganizationProfessionalFilter(FilterSet):
 
     Supports:
     - search: Full-text search across full_name, email, cpf (using pg_trgm)
-    - is_active: Filter by active status
     - gender: Filter by gender
     - marital_status: Filter by marital status
     - professional_type: Filter by professional type (DOCTOR, NURSE, etc.)
@@ -31,11 +30,6 @@ class OrganizationProfessionalFilter(FilterSet):
     search: Optional[SearchFilter] = Field(
         default=None,
         description="Search by name, email or CPF (partial, case-insensitive)",
-    )
-
-    is_active: Optional[BooleanFilter] = Field(
-        default=None,
-        description="Filter by active status",
     )
 
     gender: Optional[ListFilter[Gender]] = Field(

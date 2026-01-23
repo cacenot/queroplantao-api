@@ -109,7 +109,7 @@ Organizações de saúde (hospitais, clínicas, terceirizadoras).
 | sharing_scope | SharingScope | ❌ | O que compartilhar com filhas |
 | is_active | BOOLEAN | ❌ | Status ativo/inativo |
 | **Endereço (AddressMixin)** | | | |
-| address, number, complement, neighborhood, city, state_code, state_name, postal_code, latitude, longitude | | ✅ | |
+| address, number, complement, neighborhood, city, state_code, postal_code, latitude, longitude | | ✅ | |
 | **Verificação (VerificationMixin)** | | | |
 | verified_at | TIMESTAMP | ✅ | Quando foi verificado |
 | verified_by | UUID | ✅ | FK para users |

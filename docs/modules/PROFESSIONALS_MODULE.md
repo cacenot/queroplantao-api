@@ -210,7 +210,6 @@ Profissionais vinculados a uma organização específica (multi-tenant).
 | gender | Gender | ✅ | Gênero |
 | marital_status | MaritalStatus | ✅ | Estado civil |
 | avatar_url | VARCHAR(2048) | ✅ | URL do avatar |
-| is_active | BOOLEAN | ❌ | Status ativo/inativo |
 | **Endereço (AddressMixin)** | | | |
 | address | VARCHAR(255) | ✅ | Logradouro |
 | number | VARCHAR(20) | ✅ | Número |
@@ -218,7 +217,6 @@ Profissionais vinculados a uma organização específica (multi-tenant).
 | neighborhood | VARCHAR(100) | ✅ | Bairro |
 | city | VARCHAR(100) | ✅ | Cidade |
 | state_code | VARCHAR(2) | ✅ | UF (2 chars) |
-| state_name | VARCHAR(100) | ✅ | Nome do estado |
 | postal_code | VARCHAR(10) | ✅ | CEP |
 | latitude | FLOAT | ✅ | Latitude |
 | longitude | FLOAT | ✅ | Longitude |
@@ -365,7 +363,6 @@ Empresas (PJ) utilizadas pelos profissionais para contratação.
 | municipal_registration | VARCHAR(30) | ✅ | Inscrição Municipal |
 | email | VARCHAR(255) | ✅ | Email da empresa |
 | phone | VARCHAR(20) | ✅ | Telefone (E.164) |
-| is_active | BOOLEAN | ❌ | Status ativo/inativo |
 | **Endereço (AddressMixin)** | | | |
 | address | VARCHAR(255) | ✅ | Logradouro |
 | number | VARCHAR(20) | ✅ | Número |
@@ -373,7 +370,6 @@ Empresas (PJ) utilizadas pelos profissionais para contratação.
 | neighborhood | VARCHAR(100) | ✅ | Bairro |
 | city | VARCHAR(100) | ✅ | Cidade |
 | state_code | VARCHAR(2) | ✅ | UF (2 chars) |
-| state_name | VARCHAR(100) | ✅ | Nome do estado |
 | postal_code | VARCHAR(10) | ✅ | CEP |
 | latitude | FLOAT | ✅ | Latitude |
 | longitude | FLOAT | ✅ | Longitude |
@@ -523,7 +519,7 @@ Contas bancárias para pagamentos.
 2. A relação ProfessionalCompany rastreia entrada/saída via `joined_at` e `left_at`
 3. Contas bancárias podem pertencer diretamente ao profissional OU a uma empresa (nunca ambos)
 4. Apenas **uma conta principal** (`is_primary=true`) por owner (constraint via partial unique index)
-5. Os campos `is_active` permitem desativar empresas/contas sem removê-las
+5. O campo `is_active` em bank_accounts permite desativar contas sem removê-las
 6. A tabela `banks` é compartilhada e será populada via migration com os bancos do BACEN
 
 ### Verificação
@@ -562,5 +558,5 @@ src/shared/domain/models/
 | TimestampMixin | created_at, updated_at | Todas as tabelas |
 | SoftDeleteMixin | deleted_at | OrganizationProfessional |
 | TrackingMixin | created_by, updated_by | OrganizationProfessional, Company, ProfessionalCompany, BankAccount |
-| AddressMixin | address, number, complement, neighborhood, city, state_code, state_name, postal_code, latitude, longitude | OrganizationProfessional, Company |
+| AddressMixin | address, number, complement, neighborhood, city, state_code, postal_code, latitude, longitude | OrganizationProfessional, Company |
 | VerificationMixin | verified_at, verified_by | OrganizationProfessional, ProfessionalQualification, ProfessionalSpecialty, ProfessionalEducation, ProfessionalDocument, Company, BankAccount |

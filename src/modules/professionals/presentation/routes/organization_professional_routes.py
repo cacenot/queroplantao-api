@@ -8,6 +8,8 @@ from fastapi_restkit.pagination import PaginatedResponse, PaginationParams
 from fastapi_restkit.sortingset import sorting_as_query
 
 from src.modules.professionals.domain.schemas import (
+    OrganizationProfessionalCompositeCreate,
+    OrganizationProfessionalCompositeUpdate,
     OrganizationProfessionalCreate,
     OrganizationProfessionalDetailResponse,
     OrganizationProfessionalListItem,
@@ -19,12 +21,14 @@ from src.modules.professionals.infrastructure.filters import (
     OrganizationProfessionalSorting,
 )
 from src.modules.professionals.presentation.dependencies import (
+    CreateOrganizationProfessionalCompositeUC,
     CreateOrganizationProfessionalUC,
     DeleteOrganizationProfessionalUC,
     GetOrganizationProfessionalUC,
     ListOrganizationProfessionalsUC,
     ListOrganizationProfessionalsSummaryUC,
     OrganizationContext,
+    UpdateOrganizationProfessionalCompositeUC,
     UpdateOrganizationProfessionalUC,
 )
 
@@ -166,3 +170,87 @@ async def delete_professional(
         professional_id=professional_id,
         deleted_by=ctx.user,
     )
+
+
+# =============================================================================
+# Composite endpoints (professional + qualification + specialties + educations)
+# =============================================================================
+
+
+@router.post(
+    "/composite",
+    response_model=OrganizationProfessionalDetailResponse,
+    status_code=status.HTTP_201_CREATED,
+    summary="Create a professional with qualification",
+    description="""
+Create a professional with one qualification and nested specialties and educations in a single transaction.
+
+This endpoint creates:
+- The professional (basic info + address)
+- One qualification (council registration)
+- Specialties for the qualification (optional)
+- Educations for the qualification (optional)
+
+All entities are created atomically - if any validation fails, nothing is persisted.
+
+**Validations:**
+- CPF uniqueness within the organization
+- Email uniqueness within the organization  
+- Council registration uniqueness within the organization
+- All specialty_ids must exist in the global specialties table
+- No duplicate specialty_ids in the request
+""",
+)
+async def create_professional_composite(
+    data: OrganizationProfessionalCompositeCreate,
+    ctx: OrganizationContext,
+    use_case: CreateOrganizationProfessionalCompositeUC,
+) -> OrganizationProfessionalDetailResponse:
+    """Create a professional with qualification, specialties, and educations."""
+    result = await use_case.execute(
+        organization_id=ctx.organization,
+        data=data,
+        created_by=ctx.user,
+    )
+    return OrganizationProfessionalDetailResponse.from_model(result)
+
+
+@router.patch(
+    "/{professional_id}/composite",
+    response_model=OrganizationProfessionalDetailResponse,
+    summary="Update a professional with qualification",
+    description="""
+Partially update a professional with qualification and nested entities.
+
+**Professional fields:** PATCH semantics - only update provided fields.
+
+**Qualification:** Must provide the qualification ID. Updates only provided fields.
+
+**Specialties/Educations partial update strategy:**
+- **With ID + other fields:** Update existing entity
+- **With ID only:** Keep unchanged (no fields to update)
+- **Without ID:** Create new entity (specialty_id required for specialties)
+- **Existing IDs not in list:** Soft delete
+- **null list:** No changes to that entity type
+- **Empty list []:** Remove all entities of that type
+
+**Validations:**
+- CPF/email uniqueness (excluding current professional)
+- Council registration uniqueness (if updating)
+- Specialty_id existence and no duplicates
+""",
+)
+async def update_professional_composite(
+    professional_id: UUID,
+    data: OrganizationProfessionalCompositeUpdate,
+    ctx: OrganizationContext,
+    use_case: UpdateOrganizationProfessionalCompositeUC,
+) -> OrganizationProfessionalDetailResponse:
+    """Update a professional with qualification, specialties, and educations."""
+    result = await use_case.execute(
+        organization_id=ctx.organization,
+        professional_id=professional_id,
+        data=data,
+        updated_by=ctx.user,
+    )
+    return OrganizationProfessionalDetailResponse.from_model(result)

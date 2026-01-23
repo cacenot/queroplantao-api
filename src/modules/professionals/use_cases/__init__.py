@@ -4,11 +4,13 @@ Use cases for the professionals module.
 
 # OrganizationProfessional use cases
 from src.modules.professionals.use_cases.organization_professional import (
+    CreateOrganizationProfessionalCompositeUseCase,
     CreateOrganizationProfessionalUseCase,
     DeleteOrganizationProfessionalUseCase,
     GetOrganizationProfessionalUseCase,
     ListOrganizationProfessionalsUseCase,
     ListOrganizationProfessionalsSummaryUseCase,
+    UpdateOrganizationProfessionalCompositeUseCase,
     UpdateOrganizationProfessionalUseCase,
 )
 
@@ -67,7 +69,9 @@ from src.shared.use_cases.specialty import (
 
 __all__ = [
     # OrganizationProfessional
+    "CreateOrganizationProfessionalCompositeUseCase",
     "CreateOrganizationProfessionalUseCase",
+    "UpdateOrganizationProfessionalCompositeUseCase",
     "UpdateOrganizationProfessionalUseCase",
     "DeleteOrganizationProfessionalUseCase",
     "GetOrganizationProfessionalUseCase",

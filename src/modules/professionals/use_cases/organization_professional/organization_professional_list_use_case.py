@@ -38,7 +38,7 @@ class ListOrganizationProfessionalsUseCase:
         Args:
             organization_id: The organization UUID.
             pagination: Pagination parameters.
-            filters: Optional filters (search, is_active, gender, marital_status).
+            filters: Optional filters (search, gender, marital_status, professional_type).
             sorting: Optional sorting (id, full_name, email, created_at).
 
         Returns:

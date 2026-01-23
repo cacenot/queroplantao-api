@@ -1,5 +1,11 @@
 """Use cases for OrganizationProfessional."""
 
+from src.modules.professionals.use_cases.organization_professional.organization_professional_composite_create_use_case import (
+    CreateOrganizationProfessionalCompositeUseCase,
+)
+from src.modules.professionals.use_cases.organization_professional.organization_professional_composite_update_use_case import (
+    UpdateOrganizationProfessionalCompositeUseCase,
+)
 from src.modules.professionals.use_cases.organization_professional.organization_professional_create_use_case import (
     CreateOrganizationProfessionalUseCase,
 )
@@ -20,10 +26,12 @@ from src.modules.professionals.use_cases.organization_professional.organization_
 )
 
 __all__ = [
+    "CreateOrganizationProfessionalCompositeUseCase",
     "CreateOrganizationProfessionalUseCase",
     "DeleteOrganizationProfessionalUseCase",
     "GetOrganizationProfessionalUseCase",
     "ListOrganizationProfessionalsUseCase",
     "ListOrganizationProfessionalsSummaryUseCase",
+    "UpdateOrganizationProfessionalCompositeUseCase",
     "UpdateOrganizationProfessionalUseCase",
 ]

@@ -8,11 +8,13 @@ from src.app.dependencies import (
 
 # OrganizationProfessional use case dependencies
 from src.modules.professionals.presentation.dependencies.organization_professional import (
+    CreateOrganizationProfessionalCompositeUC,
     CreateOrganizationProfessionalUC,
     DeleteOrganizationProfessionalUC,
     GetOrganizationProfessionalUC,
     ListOrganizationProfessionalsUC,
     ListOrganizationProfessionalsSummaryUC,
+    UpdateOrganizationProfessionalCompositeUC,
     UpdateOrganizationProfessionalUC,
 )
 
@@ -67,7 +69,9 @@ __all__ = [
     "CurrentContext",
     "OrganizationContext",
     # OrganizationProfessional
+    "CreateOrganizationProfessionalCompositeUC",
     "CreateOrganizationProfessionalUC",
+    "UpdateOrganizationProfessionalCompositeUC",
     "UpdateOrganizationProfessionalUC",
     "DeleteOrganizationProfessionalUC",
     "GetOrganizationProfessionalUC",

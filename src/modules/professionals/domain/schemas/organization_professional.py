@@ -71,7 +71,6 @@ class OrganizationProfessionalCreate(BaseModel):
     # Address fields (required)
     city: str = Field(max_length=100, description="City name")
     state_code: str = Field(max_length=2, description="State code (e.g., SP, RJ)")
-    state_name: str = Field(max_length=50, description="State name")
     postal_code: str = Field(max_length=10, description="Postal code (CEP)")
 
     # Address fields (optional)
@@ -128,10 +127,6 @@ class OrganizationProfessionalUpdate(BaseModel):
         max_length=2048,
         description="Profile picture URL",
     )
-    is_active: Optional[bool] = Field(
-        default=None,
-        description="Whether this professional is active",
-    )
 
     # Address fields
     address: Optional[str] = Field(default=None, max_length=255)
@@ -140,7 +135,6 @@ class OrganizationProfessionalUpdate(BaseModel):
     neighborhood: Optional[str] = Field(default=None, max_length=100)
     city: Optional[str] = Field(default=None, max_length=100)
     state_code: Optional[str] = Field(default=None, max_length=2)
-    state_name: Optional[str] = Field(default=None, max_length=50)
     postal_code: Optional[str] = Field(default=None, max_length=10)
 
 
@@ -160,7 +154,6 @@ class OrganizationProfessionalResponse(BaseModel):
     gender: Optional[Gender] = None
     marital_status: Optional[MaritalStatus] = None
     avatar_url: Optional[str] = None
-    is_active: bool
 
     # Address fields
     address: Optional[str] = None
@@ -169,7 +162,6 @@ class OrganizationProfessionalResponse(BaseModel):
     neighborhood: Optional[str] = None
     city: Optional[str] = None
     state_code: Optional[str] = None
-    state_name: Optional[str] = None
     postal_code: Optional[str] = None
 
     # Verification
@@ -204,7 +196,6 @@ class OrganizationProfessionalDetailResponse(BaseModel):
     gender: Optional[Gender] = None
     marital_status: Optional[MaritalStatus] = None
     avatar_url: Optional[str] = None
-    is_active: bool
 
     # Address fields
     address: Optional[str] = None
@@ -213,7 +204,6 @@ class OrganizationProfessionalDetailResponse(BaseModel):
     neighborhood: Optional[str] = None
     city: Optional[str] = None
     state_code: Optional[str] = None
-    state_name: Optional[str] = None
     postal_code: Optional[str] = None
 
     # Nested relations
@@ -270,14 +260,12 @@ class OrganizationProfessionalDetailResponse(BaseModel):
             gender=professional.gender,
             marital_status=professional.marital_status,
             avatar_url=professional.avatar_url,
-            is_active=professional.is_active,
             address=professional.address,
             number=professional.number,
             complement=professional.complement,
             neighborhood=professional.neighborhood,
             city=professional.city,
             state_code=professional.state_code,
-            state_name=professional.state_name,
             postal_code=professional.postal_code,
             qualifications=[
                 ProfessionalQualificationDetailResponse.model_validate(q)
