@@ -82,6 +82,7 @@ async def create_professional(
         organization_id=ctx.organization,
         data=data,
         created_by=ctx.user,
+        family_org_ids=ctx.family_org_ids,
     )
     return OrganizationProfessionalResponse.model_validate(result)
 
@@ -109,6 +110,7 @@ async def list_professionals(
         pagination=pagination,
         filters=filters,
         sorting=sorting,
+        family_org_ids=ctx.family_org_ids,
     )
     return result
 
@@ -136,6 +138,7 @@ async def list_professionals_summary(
         pagination=pagination,
         filters=filters,
         sorting=sorting,
+        family_org_ids=ctx.family_org_ids,
     )
 
 
@@ -169,6 +172,7 @@ async def get_professional(
         organization_id=ctx.organization,
         professional_id=professional_id,
         include_relations=True,
+        family_org_ids=ctx.family_org_ids,
     )
     return OrganizationProfessionalDetailResponse.from_model(result)
 
@@ -229,6 +233,7 @@ async def update_professional(
         professional_id=professional_id,
         data=data,
         updated_by=ctx.user,
+        family_org_ids=ctx.family_org_ids,
     )
     return OrganizationProfessionalResponse.model_validate(result)
 
@@ -263,6 +268,7 @@ async def delete_professional(
         organization_id=ctx.organization,
         professional_id=professional_id,
         deleted_by=ctx.user,
+        family_org_ids=ctx.family_org_ids,
     )
 
 
@@ -363,6 +369,7 @@ async def create_professional_composite(
         organization_id=ctx.organization,
         data=data,
         created_by=ctx.user,
+        family_org_ids=ctx.family_org_ids,
     )
     return OrganizationProfessionalDetailResponse.from_model(result)
 
@@ -493,5 +500,6 @@ async def update_professional_composite(
         professional_id=professional_id,
         data=data,
         updated_by=ctx.user,
+        family_org_ids=ctx.family_org_ids,
     )
     return OrganizationProfessionalDetailResponse.from_model(result)

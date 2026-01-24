@@ -20,14 +20,18 @@ class OrganizationType(str, Enum):
     OTHER = "OTHER"  # Outros
 
 
-class SharingScope(str, Enum):
+class DataScopePolicy(str, Enum):
     """
-    Defines what data a parent organization shares with child organizations.
+    Policy for data scope in queries.
 
-    Used to control visibility between organizations in a hierarchy.
+    Controls whether queries should return data only from the current
+    organization or from the entire family (parent + children/siblings).
+
+    Used at runtime to determine query scope for shared resources.
     """
 
-    NONE = "NONE"  # Nenhum compartilhamento
-    PROFESSIONALS = "PROFESSIONALS"  # Compartilha apenas profissionais
-    SCHEDULES = "SCHEDULES"  # Compartilha profissionais + escalas
-    FULL = "FULL"  # Compartilhamento total
+    # Only the current organization
+    ORGANIZATION_ONLY = "ORGANIZATION_ONLY"
+
+    # Entire family: parent + all children (if parent) or parent + siblings (if child)
+    FAMILY = "FAMILY"

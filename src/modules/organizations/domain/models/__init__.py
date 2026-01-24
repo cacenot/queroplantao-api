@@ -3,8 +3,8 @@ Organizations module models.
 """
 
 from src.modules.organizations.domain.models.enums import (
+    DataScopePolicy,
     OrganizationType,
-    SharingScope,
 )
 from src.modules.organizations.domain.models.organization import (
     Organization,
@@ -17,8 +17,8 @@ from src.modules.organizations.domain.models.organization_membership import (
 
 __all__ = [
     # Enums
+    "DataScopePolicy",
     "OrganizationType",
-    "SharingScope",
     # Base schemas
     "OrganizationBase",
     "OrganizationMembershipBase",

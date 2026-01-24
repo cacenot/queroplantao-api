@@ -12,7 +12,7 @@ from src.modules.professionals.infrastructure.repositories import (
 
 class DeleteOrganizationProfessionalUseCase:
     """
-    Use case for soft-deleting a professional from an organization.
+    Use case for soft-deleting a professional from an organization family.
 
     The professional is not physically deleted but marked with a deleted_at timestamp.
     """
@@ -25,6 +25,7 @@ class DeleteOrganizationProfessionalUseCase:
         self,
         professional_id: UUID,
         organization_id: UUID,
+        family_org_ids: list[UUID] | tuple[UUID, ...],
     ) -> None:
         """
         Soft delete a professional.
@@ -32,13 +33,16 @@ class DeleteOrganizationProfessionalUseCase:
         Args:
             professional_id: The professional UUID to delete.
             organization_id: The organization UUID.
+            family_org_ids: List of all organization IDs in the family.
 
         Raises:
-            NotFoundError: If professional not found in organization.
+            ProfessionalNotFoundError: If professional not found in organization family.
         """
-        # Verify professional exists in organization
+        # Verify professional exists in organization family
         professional = await self.repository.get_by_id_for_organization(
-            professional_id, organization_id
+            id=professional_id,
+            organization_id=organization_id,
+            family_org_ids=family_org_ids,
         )
         if professional is None:
             raise ProfessionalNotFoundError()

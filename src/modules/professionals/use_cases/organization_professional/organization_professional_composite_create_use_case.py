@@ -40,9 +40,9 @@ class CreateOrganizationProfessionalCompositeUseCase:
     - Educations for the qualification
 
     Validates:
-    - CPF uniqueness within the organization
-    - Email uniqueness within the organization
-    - Council registration uniqueness within the organization
+    - CPF uniqueness within the organization family
+    - Email uniqueness within the organization family
+    - Council registration uniqueness within the organization family
     - All specialty_ids exist in global specialties table
     - No duplicate specialty_ids in the request
     """
@@ -59,6 +59,7 @@ class CreateOrganizationProfessionalCompositeUseCase:
         self,
         organization_id: UUID,
         data: OrganizationProfessionalCompositeCreate,
+        family_org_ids: list[UUID] | tuple[UUID, ...],
         created_by: UUID | None = None,
     ) -> OrganizationProfessional:
         """
@@ -67,23 +68,24 @@ class CreateOrganizationProfessionalCompositeUseCase:
         Args:
             organization_id: The organization UUID.
             data: The composite creation data.
+            family_org_ids: List of all organization IDs in the family.
             created_by: UUID of the user creating this record.
 
         Returns:
             The created professional with all nested relations loaded.
 
         Raises:
-            ProfessionalCpfExistsError: If CPF already exists.
-            ProfessionalEmailExistsError: If email already exists.
-            CouncilRegistrationExistsError: If council registration already exists.
+            ProfessionalCpfExistsError: If CPF already exists in the family.
+            ProfessionalEmailExistsError: If email already exists in the family.
+            CouncilRegistrationExistsError: If council registration already exists in the family.
             GlobalSpecialtyNotFoundError: If any specialty_id does not exist.
             DuplicateSpecialtyIdsError: If duplicate specialty_ids in request.
         """
-        # 1. Validate professional uniqueness
-        await self._validate_professional_uniqueness(organization_id, data)
+        # 1. Validate professional uniqueness within family
+        await self._validate_professional_uniqueness(family_org_ids, data)
 
-        # 2. Validate qualification uniqueness
-        await self._validate_qualification_uniqueness(organization_id, data)
+        # 2. Validate qualification uniqueness within family
+        await self._validate_qualification_uniqueness(family_org_ids, data)
 
         # 3. Validate specialties exist and no duplicates
         await self._validate_specialties(data)
@@ -109,39 +111,43 @@ class CreateOrganizationProfessionalCompositeUseCase:
 
         # Reload with relations
         return await self.professional_repository.get_by_id_with_relations(
-            professional.id, organization_id
+            id=professional.id,
+            organization_id=organization_id,
+            family_org_ids=family_org_ids,
         )  # type: ignore
 
     async def _validate_professional_uniqueness(
         self,
-        organization_id: UUID,
+        family_org_ids: list[UUID] | tuple[UUID, ...],
         data: OrganizationProfessionalCompositeCreate,
     ) -> None:
-        """Validate CPF and email uniqueness within organization."""
+        """Validate CPF and email uniqueness within organization family."""
         if data.cpf:
-            if await self.professional_repository.exists_by_cpf(
-                data.cpf, organization_id
+            if await self.professional_repository.exists_by_cpf_in_family(
+                cpf=data.cpf,
+                family_org_ids=family_org_ids,
             ):
                 raise ProfessionalCpfExistsError()
 
         if data.email:
-            if await self.professional_repository.exists_by_email(
-                data.email, organization_id
+            if await self.professional_repository.exists_by_email_in_family(
+                email=data.email,
+                family_org_ids=family_org_ids,
             ):
                 raise ProfessionalEmailExistsError()
 
     async def _validate_qualification_uniqueness(
         self,
-        organization_id: UUID,
+        family_org_ids: list[UUID] | tuple[UUID, ...],
         data: OrganizationProfessionalCompositeCreate,
     ) -> None:
-        """Validate council registration uniqueness within organization."""
+        """Validate council registration uniqueness within organization family."""
         qualification_data = data.qualification
 
-        if await self.qualification_repository.council_exists_in_organization(
+        if await self.qualification_repository.council_exists_in_family(
             council_number=qualification_data.council_number,
             council_state=qualification_data.council_state,
-            organization_id=organization_id,
+            family_org_ids=family_org_ids,
         ):
             raise CouncilRegistrationExistsError()
 

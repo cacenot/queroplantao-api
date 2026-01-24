@@ -214,16 +214,17 @@ Os demais módulos (Shifts, Job Postings, etc.) serão documentados conforme for
 2. O score considera: horário, especialidade, localização, valor e tipo de profissional
 3. Matches são a principal fonte de monetização
 
-### 7.5 Profissionais e Multi-Tenancy
+### 7.5 Profissionais e Escopo de Família
 
-1. Profissionais são **isolados por organização** (multi-tenant)
-2. Cada organização mantém seus próprios registros de profissionais
-3. A mesma pessoa (CPF) pode existir em múltiplas organizações com dados diferentes
-4. Organizações **não podem** acessar profissionais de outras organizações
-5. Um profissional pode ter múltiplas qualificações (CRM em 2 estados, ou CRM + COREN)
-6. Especialidades podem ter status de residência para profissionais em formação
-7. O campo `is_generalist` na especialidade identifica profissionais sem especialização
-8. Documentos (diplomas, RQEs, contratos) são vinculados ao profissional, podendo ter associação opcional com qualificação ou especialidade
+1. Profissionais são **compartilhados dentro da família** de organizações (pai + filhas/irmãs)
+2. A mesma pessoa (CPF) **não pode** existir em múltiplas organizações da mesma família
+3. Organizações de **famílias diferentes** não podem acessar profissionais umas das outras
+4. A validação de unicidade (CPF, email, registro de conselho) é feita no **escopo da família**
+5. `family_org_ids` é cacheado em Redis para performance
+6. Um profissional pode ter múltiplas qualificações (CRM em 2 estados, ou CRM + COREN)
+7. Especialidades podem ter status de residência para profissionais em formação
+8. O campo `is_generalist` na especialidade identifica profissionais sem especialização
+9. Documentos (diplomas, RQEs, contratos) são vinculados ao profissional, podendo ter associação opcional com qualificação ou especialidade
 
 ---
 

@@ -26,11 +26,14 @@ from src.shared.domain.models.company import Company
 from src.shared.domain.models.specialty import Specialty
 from src.shared.infrastructure.repositories import (
     BaseRepository,
+    OrganizationScopeMixin,
+    ScopePolicy,
     SoftDeletePaginationMixin,
 )
 
 
 class OrganizationProfessionalRepository(
+    OrganizationScopeMixin[OrganizationProfessional],
     SoftDeletePaginationMixin[OrganizationProfessional],
     BaseRepository[OrganizationProfessional],
 ):
@@ -38,9 +41,12 @@ class OrganizationProfessionalRepository(
     Repository for OrganizationProfessional model.
 
     Provides CRUD operations with soft delete support and multi-tenancy filtering.
+    Supports hierarchical data scope (ORGANIZATION_ONLY or FAMILY).
     """
 
     model = OrganizationProfessional
+    # Professionals are shared across the family by default
+    default_scope_policy: ScopePolicy = "FAMILY"
 
     def __init__(self, session: AsyncSession) -> None:
         super().__init__(session)
@@ -48,17 +54,33 @@ class OrganizationProfessionalRepository(
     def _base_query_for_organization(
         self,
         organization_id: UUID,
+        family_org_ids: list[UUID] | tuple[UUID, ...] | None = None,
+        scope_policy: ScopePolicy | None = None,
     ) -> Select[tuple[OrganizationProfessional]]:
         """
-        Get base query filtered by organization (multi-tenancy).
+        Get base query filtered by organization with scope support.
 
         Args:
             organization_id: The organization UUID.
+            family_org_ids: List of family org IDs (required for FAMILY scope).
+            scope_policy: Scope policy to apply. Uses default if None.
 
         Returns:
-            Query filtered by organization and excluding soft-deleted.
+            Query filtered by organization scope and excluding soft-deleted.
         """
-        return self._exclude_deleted().where(
+        base_query = self._exclude_deleted()
+
+        # If family_org_ids provided, use scope-aware filtering
+        if family_org_ids is not None:
+            return self._base_query_for_scope(
+                organization_id=organization_id,
+                family_org_ids=family_org_ids,
+                scope_policy=scope_policy,
+                base_query=base_query,
+            )
+
+        # Fallback to single org filtering (backward compatibility)
+        return base_query.where(
             OrganizationProfessional.organization_id == organization_id
         )
 
@@ -66,21 +88,25 @@ class OrganizationProfessionalRepository(
         self,
         id: UUID,
         organization_id: UUID,
+        family_org_ids: list[UUID] | tuple[UUID, ...] | None = None,
+        scope_policy: DataScopePolicy | None = None,
     ) -> OrganizationProfessional | None:
         """
-        Get professional by ID for a specific organization.
+        Get professional by ID with scope support.
 
         Args:
             id: The professional UUID.
             organization_id: The organization UUID.
+            family_org_ids: List of family org IDs (required for FAMILY scope).
+            scope_policy: Scope policy to apply. Uses default if None.
 
         Returns:
-            Professional if found in organization, None otherwise.
+            Professional if found in scope, None otherwise.
         """
         result = await self.session.execute(
-            self._base_query_for_organization(organization_id).where(
-                OrganizationProfessional.id == id
-            )
+            self._base_query_for_organization(
+                organization_id, family_org_ids, scope_policy
+            ).where(OrganizationProfessional.id == id)
         )
         return result.scalar_one_or_none()
 
@@ -88,6 +114,8 @@ class OrganizationProfessionalRepository(
         self,
         id: UUID,
         organization_id: UUID,
+        family_org_ids: list[UUID] | tuple[UUID, ...] | None = None,
+        scope_policy: DataScopePolicy | None = None,
     ) -> OrganizationProfessional | None:
         """
         Get professional by ID with all related data loaded.
@@ -104,12 +132,16 @@ class OrganizationProfessionalRepository(
         Args:
             id: The professional UUID.
             organization_id: The organization UUID.
+            family_org_ids: List of family org IDs (required for FAMILY scope).
+            scope_policy: Scope policy to apply. Uses default if None.
 
         Returns:
             Professional with all nested data loaded.
         """
         result = await self.session.execute(
-            self._base_query_for_organization(organization_id)
+            self._base_query_for_organization(
+                organization_id, family_org_ids, scope_policy
+            )
             .where(OrganizationProfessional.id == id)
             .options(
                 # Qualifications with nested specialties, educations, and documents
@@ -143,21 +175,25 @@ class OrganizationProfessionalRepository(
         self,
         cpf: str,
         organization_id: UUID,
+        family_org_ids: list[UUID] | tuple[UUID, ...] | None = None,
+        scope_policy: DataScopePolicy | None = None,
     ) -> OrganizationProfessional | None:
         """
-        Get professional by CPF within an organization.
+        Get professional by CPF with scope support.
 
         Args:
             cpf: The CPF (11 digits, no formatting).
             organization_id: The organization UUID.
+            family_org_ids: List of family org IDs (required for FAMILY scope).
+            scope_policy: Scope policy to apply. Uses default if None.
 
         Returns:
             Professional if found, None otherwise.
         """
         result = await self.session.execute(
-            self._base_query_for_organization(organization_id).where(
-                OrganizationProfessional.cpf == cpf
-            )
+            self._base_query_for_organization(
+                organization_id, family_org_ids, scope_policy
+            ).where(OrganizationProfessional.cpf == cpf)
         )
         return result.scalar_one_or_none()
 
@@ -165,21 +201,25 @@ class OrganizationProfessionalRepository(
         self,
         email: str,
         organization_id: UUID,
+        family_org_ids: list[UUID] | tuple[UUID, ...] | None = None,
+        scope_policy: DataScopePolicy | None = None,
     ) -> OrganizationProfessional | None:
         """
-        Get professional by email within an organization.
+        Get professional by email with scope support.
 
         Args:
             email: The email address.
             organization_id: The organization UUID.
+            family_org_ids: List of family org IDs (required for FAMILY scope).
+            scope_policy: Scope policy to apply. Uses default if None.
 
         Returns:
             Professional if found, None otherwise.
         """
         result = await self.session.execute(
-            self._base_query_for_organization(organization_id).where(
-                OrganizationProfessional.email == email
-            )
+            self._base_query_for_organization(
+                organization_id, family_org_ids, scope_policy
+            ).where(OrganizationProfessional.email == email)
         )
         return result.scalar_one_or_none()
 
@@ -188,22 +228,28 @@ class OrganizationProfessionalRepository(
         organization_id: UUID,
         pagination: PaginationParams,
         *,
+        family_org_ids: list[UUID] | tuple[UUID, ...] | None = None,
+        scope_policy: DataScopePolicy | None = None,
         filters: OrganizationProfessionalFilter | None = None,
         sorting: OrganizationProfessionalSorting | None = None,
     ) -> PaginatedResponse[OrganizationProfessional]:
         """
-        List professionals for an organization with pagination, filtering, and sorting.
+        List professionals with pagination, filtering, sorting, and scope support.
 
         Args:
             organization_id: The organization UUID.
             pagination: Pagination parameters.
+            family_org_ids: List of family org IDs (required for FAMILY scope).
+            scope_policy: Scope policy to apply. Uses default if None.
             filters: Optional filters (search, gender, marital_status, professional_type).
             sorting: Optional sorting (id, full_name, email, created_at).
 
         Returns:
             Paginated list of professionals.
         """
-        query = self._base_query_for_organization(organization_id)
+        query = self._base_query_for_organization(
+            organization_id, family_org_ids, scope_policy
+        )
 
         # Apply professional_type filter via subquery (field is in ProfessionalQualification)
         if (
@@ -234,6 +280,8 @@ class OrganizationProfessionalRepository(
         organization_id: UUID,
         pagination: PaginationParams,
         *,
+        family_org_ids: list[UUID] | tuple[UUID, ...] | None = None,
+        scope_policy: DataScopePolicy | None = None,
         filters: OrganizationProfessionalFilter | None = None,
         sorting: OrganizationProfessionalSorting | None = None,
     ) -> PaginatedResponse[OrganizationProfessional]:
@@ -250,13 +298,17 @@ class OrganizationProfessionalRepository(
         Args:
             organization_id: The organization UUID.
             pagination: Pagination parameters.
+            family_org_ids: List of family org IDs (required for FAMILY scope).
+            scope_policy: Scope policy to apply. Uses default if None.
             filters: Optional filters (including professional_type).
             sorting: Optional sorting.
 
         Returns:
             Paginated list of professionals with minimal data loaded.
         """
-        query = self._base_query_for_organization(organization_id)
+        query = self._base_query_for_organization(
+            organization_id, family_org_ids, scope_policy
+        )
 
         # Apply professional_type filter via subquery (field is in ProfessionalQualification)
         if (
@@ -323,22 +375,26 @@ class OrganizationProfessionalRepository(
         cpf: str,
         organization_id: UUID,
         *,
+        family_org_ids: list[UUID] | tuple[UUID, ...] | None = None,
+        scope_policy: DataScopePolicy | None = None,
         exclude_id: UUID | None = None,
     ) -> bool:
         """
-        Check if a professional with the given CPF exists in the organization.
+        Check if a professional with the given CPF exists with scope support.
 
         Args:
             cpf: The CPF to check.
             organization_id: The organization UUID.
+            family_org_ids: List of family org IDs (required for FAMILY scope).
+            scope_policy: Scope policy to apply. Uses default if None.
             exclude_id: Optional ID to exclude (for updates).
 
         Returns:
             True if CPF exists, False otherwise.
         """
-        query = self._base_query_for_organization(organization_id).where(
-            OrganizationProfessional.cpf == cpf
-        )
+        query = self._base_query_for_organization(
+            organization_id, family_org_ids, scope_policy
+        ).where(OrganizationProfessional.cpf == cpf)
         if exclude_id:
             query = query.where(OrganizationProfessional.id != exclude_id)
 
@@ -350,24 +406,111 @@ class OrganizationProfessionalRepository(
         email: str,
         organization_id: UUID,
         *,
+        family_org_ids: list[UUID] | tuple[UUID, ...] | None = None,
+        scope_policy: DataScopePolicy | None = None,
         exclude_id: UUID | None = None,
     ) -> bool:
         """
-        Check if a professional with the given email exists in the organization.
+        Check if a professional with the given email exists with scope support.
 
         Args:
             email: The email to check.
             organization_id: The organization UUID.
+            family_org_ids: List of family org IDs (required for FAMILY scope).
+            scope_policy: Scope policy to apply. Uses default if None.
             exclude_id: Optional ID to exclude (for updates).
 
         Returns:
             True if email exists, False otherwise.
         """
-        query = self._base_query_for_organization(organization_id).where(
-            OrganizationProfessional.email == email
-        )
+        query = self._base_query_for_organization(
+            organization_id, family_org_ids, scope_policy
+        ).where(OrganizationProfessional.email == email)
         if exclude_id:
             query = query.where(OrganizationProfessional.id != exclude_id)
+
+        result = await self.session.execute(select(query.exists()))
+        return result.scalar_one()
+
+    async def exists_by_cpf_in_family(
+        self,
+        cpf: str,
+        family_org_ids: list[UUID] | tuple[UUID, ...],
+        *,
+        exclude_id: UUID | None = None,
+    ) -> bool:
+        """
+        Check if a professional with the given CPF exists in any family organization.
+
+        Args:
+            cpf: The CPF to check.
+            family_org_ids: List of all organization IDs in the family.
+            exclude_id: Optional ID to exclude (for updates).
+
+        Returns:
+            True if CPF exists in the family, False otherwise.
+        """
+        return await self.exists_in_family(
+            family_org_ids=family_org_ids,
+            cpf=cpf,
+        ) if exclude_id is None else await self._exists_in_family_with_exclude(
+            family_org_ids=family_org_ids,
+            exclude_id=exclude_id,
+            cpf=cpf,
+        )
+
+    async def exists_by_email_in_family(
+        self,
+        email: str,
+        family_org_ids: list[UUID] | tuple[UUID, ...],
+        *,
+        exclude_id: UUID | None = None,
+    ) -> bool:
+        """
+        Check if a professional with the given email exists in any family organization.
+
+        Args:
+            email: The email to check.
+            family_org_ids: List of all organization IDs in the family.
+            exclude_id: Optional ID to exclude (for updates).
+
+        Returns:
+            True if email exists in the family, False otherwise.
+        """
+        return await self.exists_in_family(
+            family_org_ids=family_org_ids,
+            email=email,
+        ) if exclude_id is None else await self._exists_in_family_with_exclude(
+            family_org_ids=family_org_ids,
+            exclude_id=exclude_id,
+            email=email,
+        )
+
+    async def _exists_in_family_with_exclude(
+        self,
+        family_org_ids: list[UUID] | tuple[UUID, ...],
+        exclude_id: UUID,
+        **filters,
+    ) -> bool:
+        """
+        Check if a record exists in family organizations, excluding a specific ID.
+
+        Args:
+            family_org_ids: List of all organization IDs in the family.
+            exclude_id: ID to exclude from the check.
+            **filters: Field filters to apply.
+
+        Returns:
+            True if a matching record exists, False otherwise.
+        """
+        query = self._exclude_deleted().where(
+            OrganizationProfessional.organization_id.in_(list(family_org_ids)),
+            OrganizationProfessional.id != exclude_id,
+        )
+
+        for field, value in filters.items():
+            if hasattr(OrganizationProfessional, field) and value is not None:
+                query = query.where(getattr(OrganizationProfessional, field) == value)
 
         result = await self.session.execute(select(query.exists()))
         return result.scalar_one()

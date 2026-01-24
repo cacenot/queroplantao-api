@@ -151,6 +151,13 @@ class OrganizationIdentityMiddleware(BaseHTTPMiddleware):
                 settings=settings,
             )
 
+            # Get family organization IDs (with cache)
+            family_org_ids = await self._get_family_org_ids_with_cache(
+                organization_id=organization_id,
+                cache=cache,
+                settings=settings,
+            )
+
             # Initialize child organization data
             child_org_data: dict | None = None
 
@@ -197,6 +204,7 @@ class OrganizationIdentityMiddleware(BaseHTTPMiddleware):
                 child_organization_name=(
                     child_org_data["name"] if child_org_data else None
                 ),
+                family_org_ids=tuple(family_org_ids),
             )
             set_request_context(updated_context)
 
@@ -414,6 +422,61 @@ class OrganizationIdentityMiddleware(BaseHTTPMiddleware):
             )
 
         return membership_data
+
+    async def _get_family_org_ids_with_cache(
+        self,
+        organization_id: UUID,
+        cache: RedisCache | None,
+        settings: Settings,
+    ) -> list[UUID]:
+        """
+        Get family organization IDs with caching.
+
+        Returns all organization IDs in the family (parent + children/siblings).
+        This is used for hierarchical data scope queries.
+
+        Args:
+            organization_id: Organization UUID.
+            cache: Redis cache instance (optional).
+            settings: Application settings.
+
+        Returns:
+            List of UUIDs for all organizations in the family.
+        """
+        org_id_str = str(organization_id)
+        cache_key = f"org:family:{org_id_str}"
+
+        # Try cache first
+        if cache:
+            cached = await cache.get(cache_key)
+            if cached:
+                logger.debug(
+                    "family_org_ids_cache_hit",
+                    organization_id=org_id_str,
+                )
+                # Convert cached strings back to UUIDs
+                return [UUID(id_str) for id_str in cached]
+
+        # Query database
+        async with async_session_factory() as session:
+            repo = OrganizationRepository(session)
+            family_ids = await repo.get_family_ids(organization_id)
+
+        # Cache the result (store as strings for JSON serialization)
+        if cache:
+            await cache.set(
+                key=cache_key,
+                value=[str(id) for id in family_ids],
+                ttl=settings.REDIS_ORG_CACHE_TTL,
+            )
+            logger.debug(
+                "family_org_ids_cached",
+                organization_id=org_id_str,
+                family_size=len(family_ids),
+                ttl=settings.REDIS_ORG_CACHE_TTL,
+            )
+
+        return family_ids
 
     async def _validate_child_relationship(
         self,

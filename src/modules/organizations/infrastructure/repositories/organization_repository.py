@@ -119,3 +119,51 @@ class OrganizationRepository(BaseRepository[Organization]):
             )
         )
         return result.scalar_one_or_none() is not None
+
+    async def get_family_ids(self, organization_id: UUID) -> list[UUID]:
+        """
+        Get all organization IDs in the family (parent + children/siblings).
+
+        For a parent organization: returns [parent_id, child1_id, child2_id, ...]
+        For a child organization: returns [parent_id, self_id, sibling1_id, sibling2_id, ...]
+
+        The hierarchy is limited to 1 level: parent → children (no grandchildren).
+
+        Args:
+            organization_id: The organization UUID to get family for.
+
+        Returns:
+            List of all family organization UUIDs including the given organization.
+        """
+        # First, get the organization to determine if it's a parent or child
+        result = await self.session.execute(
+            select(Organization).where(
+                Organization.id == organization_id,
+                Organization.deleted_at.is_(None),
+            )
+        )
+        org = result.scalar_one_or_none()
+
+        if not org:
+            # Organization not found, return just the requested ID as fallback
+            return [organization_id]
+
+        # Determine the root (parent) ID
+        if org.parent_id is None:
+            # This is a parent organization
+            root_id = org.id
+        else:
+            # This is a child organization, use its parent as root
+            root_id = org.parent_id
+
+        # Get all organizations in the family: parent + all children
+        family_result = await self.session.execute(
+            select(Organization.id).where(
+                Organization.deleted_at.is_(None),
+                or_(
+                    Organization.id == root_id,  # The parent
+                    Organization.parent_id == root_id,  # All children
+                ),
+            )
+        )
+        return list(family_result.scalars().all())

@@ -89,25 +89,28 @@ class ListOrganizationProfessionalsSummaryUseCase:
         self,
         organization_id: UUID,
         pagination: PaginationParams,
+        family_org_ids: list[UUID] | tuple[UUID, ...],
         *,
         filters: OrganizationProfessionalFilter | None = None,
         sorting: OrganizationProfessionalSorting | None = None,
     ) -> PaginatedResponse[OrganizationProfessionalListItem]:
         """
-        List professionals with summary data for an organization.
+        List professionals with summary data for an organization family.
 
         Args:
             organization_id: The organization UUID.
             pagination: Pagination parameters.
+            family_org_ids: List of all organization IDs in the family.
             filters: Optional filters (search, gender, marital_status, professional_type).
             sorting: Optional sorting (id, full_name, email, created_at).
 
         Returns:
-            Paginated list of professional summaries.
+            Paginated list of professional summaries from the entire family.
         """
         result = await self.repository.list_for_organization_with_summary(
-            organization_id,
-            pagination,
+            organization_id=organization_id,
+            pagination=pagination,
+            family_org_ids=family_org_ids,
             filters=filters,
             sorting=sorting,
         )

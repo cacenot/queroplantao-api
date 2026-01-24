@@ -56,6 +56,7 @@ class ValidatedContext(RequestContext):
             organization_role=ctx.organization_role,
             child_organization_id=ctx.child_organization_id,
             child_organization_name=ctx.child_organization_name,
+            family_org_ids=ctx.family_org_ids,
         )
 
 

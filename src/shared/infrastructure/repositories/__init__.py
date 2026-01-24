@@ -8,6 +8,10 @@ from src.shared.infrastructure.repositories.mixins import (
     SoftDeleteMixin,
     SoftDeletePaginationMixin,
 )
+from src.shared.infrastructure.repositories.organization_scope_mixin import (
+    OrganizationScopeMixin,
+    ScopePolicy,
+)
 from src.shared.infrastructure.repositories.specialty_repository import (
     SpecialtyRepository,
 )
@@ -17,6 +21,8 @@ __all__ = [
     "PaginationMixin",
     "SoftDeleteMixin",
     "SoftDeletePaginationMixin",
+    "OrganizationScopeMixin",
+    "ScopePolicy",
     # Entity repositories
     "SpecialtyRepository",
 ]

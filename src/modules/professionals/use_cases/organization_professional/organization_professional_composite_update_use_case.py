@@ -70,6 +70,7 @@ class UpdateOrganizationProfessionalCompositeUseCase:
         organization_id: UUID,
         professional_id: UUID,
         data: OrganizationProfessionalCompositeUpdate,
+        family_org_ids: list[UUID] | tuple[UUID, ...],
         updated_by: UUID | None = None,
     ) -> OrganizationProfessional:
         """
@@ -79,26 +80,31 @@ class UpdateOrganizationProfessionalCompositeUseCase:
             organization_id: The organization UUID.
             professional_id: The professional UUID to update.
             data: The composite update data.
+            family_org_ids: List of all organization IDs in the family.
             updated_by: UUID of the user performing the update.
 
         Returns:
             The updated professional with all nested relations loaded.
 
         Raises:
-            NotFoundError: If professional, qualification, or specialty doesn't exist.
-            ConflictError: If CPF, email, or council registration conflicts.
-            ValidationError: If duplicate specialty_ids in request.
+            ProfessionalNotFoundError: If professional doesn't exist in the family.
+            ProfessionalCpfExistsError: If CPF conflicts in the family.
+            ProfessionalEmailExistsError: If email conflicts in the family.
+            CouncilRegistrationExistsError: If council registration conflicts in the family.
+            DuplicateSpecialtyIdsError: If duplicate specialty_ids in request.
         """
-        # 1. Get existing professional
+        # 1. Get existing professional (with family scope)
         professional = await self.professional_repository.get_by_id_for_organization(
-            professional_id, organization_id
+            id=professional_id,
+            organization_id=organization_id,
+            family_org_ids=family_org_ids,
         )
         if professional is None:
             raise ProfessionalNotFoundError()
 
-        # 2. Validate professional uniqueness (if updating cpf/email)
+        # 2. Validate professional uniqueness within family (if updating cpf/email)
         await self._validate_professional_uniqueness(
-            organization_id, professional_id, data
+            family_org_ids, professional_id, data
         )
 
         # 3. Update professional fields
@@ -107,35 +113,39 @@ class UpdateOrganizationProfessionalCompositeUseCase:
         # 4. Handle qualification updates (if provided)
         if data.qualification is not None:
             await self._handle_qualification_update(
-                organization_id, professional_id, data.qualification
+                organization_id, professional_id, data.qualification, family_org_ids
             )
 
         # 5. Commit and return with relations
         await self.session.commit()
 
         return await self.professional_repository.get_by_id_with_relations(
-            professional_id, organization_id
+            id=professional_id,
+            organization_id=organization_id,
+            family_org_ids=family_org_ids,
         )  # type: ignore
 
     async def _validate_professional_uniqueness(
         self,
-        organization_id: UUID,
+        family_org_ids: list[UUID] | tuple[UUID, ...],
         professional_id: UUID,
         data: OrganizationProfessionalCompositeUpdate,
     ) -> None:
-        """Validate CPF and email uniqueness (excluding current professional)."""
+        """Validate CPF and email uniqueness within family (excluding current professional)."""
         if data.cpf:
-            existing = await self.professional_repository.get_by_cpf(
-                data.cpf, organization_id
-            )
-            if existing and existing.id != professional_id:
+            if await self.professional_repository.exists_by_cpf_in_family(
+                cpf=data.cpf,
+                family_org_ids=family_org_ids,
+                exclude_id=professional_id,
+            ):
                 raise ProfessionalCpfExistsError()
 
         if data.email:
-            existing = await self.professional_repository.get_by_email(
-                data.email, organization_id
-            )
-            if existing and existing.id != professional_id:
+            if await self.professional_repository.exists_by_email_in_family(
+                email=data.email,
+                family_org_ids=family_org_ids,
+                exclude_id=professional_id,
+            ):
                 raise ProfessionalEmailExistsError()
 
     async def _update_professional(
@@ -161,6 +171,7 @@ class UpdateOrganizationProfessionalCompositeUseCase:
         organization_id: UUID,
         professional_id: UUID,
         qualification_data: QualificationNestedUpdate,
+        family_org_ids: list[UUID] | tuple[UUID, ...],
     ) -> None:
         """Handle qualification update with nested specialties and educations."""
         qualification_id = qualification_data.id
@@ -179,9 +190,9 @@ class UpdateOrganizationProfessionalCompositeUseCase:
         if qualification.organization_professional_id != professional_id:
             raise QualificationNotBelongsError()
 
-        # Validate council uniqueness if updating
+        # Validate council uniqueness within family if updating
         await self._validate_council_uniqueness(
-            organization_id, qualification_id, qualification_data, qualification
+            family_org_ids, qualification_id, qualification_data, qualification
         )
 
         # Update qualification fields
@@ -201,21 +212,21 @@ class UpdateOrganizationProfessionalCompositeUseCase:
 
     async def _validate_council_uniqueness(
         self,
-        organization_id: UUID,
+        family_org_ids: list[UUID] | tuple[UUID, ...],
         qualification_id: UUID,
         data: QualificationNestedUpdate,
         current: ProfessionalQualification,
     ) -> None:
-        """Validate council registration uniqueness if updating."""
+        """Validate council registration uniqueness within family if updating."""
         council_number = data.council_number or current.council_number
         council_state = data.council_state or current.council_state
 
         # Only validate if council info is being changed
         if data.council_number is not None or data.council_state is not None:
-            if await self.qualification_repository.council_exists_in_organization(
+            if await self.qualification_repository.council_exists_in_family(
                 council_number=council_number,
                 council_state=council_state,
-                organization_id=organization_id,
+                family_org_ids=family_org_ids,
                 exclude_id=qualification_id,
             ):
                 raise CouncilRegistrationExistsError()

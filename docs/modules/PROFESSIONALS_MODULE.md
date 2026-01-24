@@ -489,13 +489,15 @@ Contas bancárias para pagamentos.
 
 ## Regras de Negócio
 
-### Multi-Tenancy (Isolamento por Organização)
+### Multi-Tenancy (Escopo de Família)
 
-1. Profissionais são **isolados por organização** - cada organização mantém seus próprios registros
-2. A mesma pessoa (CPF) pode existir em múltiplas organizações com dados diferentes
-3. `organization_id` é obrigatório e define o tenant
-4. Unique constraints são por organização: `(organization_id, cpf)` e `(organization_id, email)`
-5. Organizações **não podem** acessar profissionais de outras organizações
+1. Profissionais são **compartilhados dentro da família** de organizações (pai + filhas/irmãs)
+2. A mesma pessoa (CPF) **não pode** existir em múltiplas organizações da mesma família
+3. `organization_id` indica qual organização criou o profissional
+4. Unique constraints são validados no **escopo da família**: CPF, email e registro de conselho
+5. Organizações de **famílias diferentes** não podem acessar profissionais umas das outras
+6. Consultas usam `family_org_ids` do contexto de requisição para filtrar profissionais
+7. Os `family_org_ids` são cacheados em Redis junto com os dados de organização
 
 ### Qualificações e Conselhos
 

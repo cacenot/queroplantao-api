@@ -3,10 +3,10 @@
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID
 
-from sqlalchemy import Enum as SAEnum, Index
+from sqlalchemy import Enum as SAEnum
 from sqlmodel import Field, Relationship
 
-from src.modules.organizations.domain.models.enums import OrganizationType, SharingScope
+from src.modules.organizations.domain.models.enums import OrganizationType
 from src.shared.domain.models.base import BaseModel
 from src.shared.domain.models.mixins import (
     PrimaryKeyMixin,
@@ -16,16 +16,12 @@ from src.shared.domain.models.mixins import (
 )
 
 if TYPE_CHECKING:
-    from src.modules.contracts.domain.models.client_contract import ClientContract
     from src.modules.organizations.domain.models.organization_membership import (
         OrganizationMembership,
     )
     from src.modules.professionals.domain.models.organization_professional import (
         OrganizationProfessional,
     )
-    from src.modules.screening.domain.models.screening_process import ScreeningProcess
-    from src.modules.screening.domain.models.screening_template import ScreeningTemplate
-    from src.modules.units.domain.models.unit import Unit
     from src.shared.domain.models.company import Company
 
 
@@ -46,13 +42,6 @@ class OrganizationBase(BaseModel):
             OrganizationType, name="organization_type", create_constraint=True
         ),
         description="Type of organization",
-    )
-
-    # Sharing configuration for child organizations
-    sharing_scope: SharingScope = Field(
-        default=SharingScope.NONE,
-        sa_type=SAEnum(SharingScope, name="sharing_scope", create_constraint=True),
-        description="What data to share with child organizations",
     )
 
     # Status
@@ -78,7 +67,7 @@ class Organization(
     but a child organization cannot have children of its own.
 
     The hierarchy is used for outsourcing companies that manage multiple facilities.
-    Data sharing between parent and children is controlled by `sharing_scope`.
+    Data sharing between parent and children is controlled by DataScopePolicy at query time.
 
     All legal/fiscal data (CNPJ, addresses, legal names, etc.) is stored in the linked Company.
     This allows organizations to change legal entities without losing operational history.

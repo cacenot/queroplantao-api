@@ -17,8 +17,8 @@ class CreateOrganizationProfessionalUseCase:
     Use case for creating a new professional in an organization.
 
     Validates:
-    - CPF uniqueness within the organization
-    - Email uniqueness within the organization
+    - CPF uniqueness within the organization family (parent + children/siblings)
+    - Email uniqueness within the organization family
     """
 
     def __init__(self, session: AsyncSession) -> None:
@@ -29,6 +29,7 @@ class CreateOrganizationProfessionalUseCase:
         self,
         organization_id: UUID,
         data: OrganizationProfessionalCreate,
+        family_org_ids: list[UUID] | tuple[UUID, ...],
         created_by: UUID | None = None,
     ) -> OrganizationProfessional:
         """
@@ -37,22 +38,30 @@ class CreateOrganizationProfessionalUseCase:
         Args:
             organization_id: The organization UUID.
             data: The professional data.
+            family_org_ids: List of all organization IDs in the family.
             created_by: UUID of the user creating this record.
 
         Returns:
             The created professional.
 
         Raises:
-            ConflictError: If CPF or email already exists in the organization.
+            ProfessionalCpfExistsError: If CPF already exists in the family.
+            ProfessionalEmailExistsError: If email already exists in the family.
         """
-        # Validate CPF uniqueness
+        # Validate CPF uniqueness within the family
         if data.cpf:
-            if await self.repository.exists_by_cpf(data.cpf, organization_id):
+            if await self.repository.exists_by_cpf_in_family(
+                cpf=data.cpf,
+                family_org_ids=family_org_ids,
+            ):
                 raise ProfessionalCpfExistsError()
 
-        # Validate email uniqueness
+        # Validate email uniqueness within the family
         if data.email:
-            if await self.repository.exists_by_email(data.email, organization_id):
+            if await self.repository.exists_by_email_in_family(
+                email=data.email,
+                family_org_ids=family_org_ids,
+            ):
                 raise ProfessionalEmailExistsError()
 
         # Create the professional entity

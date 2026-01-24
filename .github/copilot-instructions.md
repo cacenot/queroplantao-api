@@ -35,16 +35,36 @@ use_cases/            # Business logic orchestration
 ### Key Base Classes
 - `BaseRepository[ModelT]` - CRUD operations with pagination ([base.py](src/shared/infrastructure/repositories/base.py))
 - `SoftDeletePaginationMixin` - Soft delete + filtering/sorting support ([mixins.py](src/shared/infrastructure/repositories/mixins.py))
+- `OrganizationScopeMixin` - Family scope support for hierarchical organizations ([organization_scope_mixin.py](src/shared/infrastructure/repositories/organization_scope_mixin.py))
 - Model mixins: `PrimaryKeyMixin`, `TimestampMixin`, `SoftDeleteMixin`, `TrackingMixin`, `VerificationMixin`
 
 ## Core Patterns
 
-### Multi-Tenancy (CRITICAL)
-All professional/contract data is scoped by `organization_id`. Always filter:
+### Multi-Tenancy with Family Scope (CRITICAL)
+Professionals are shared within an organization family (parent + children). Use `family_org_ids` for queries:
+
 ```python
+# Single organization scope (default for most entities)
 def _base_query_for_organization(self, organization_id: UUID):
     return self._exclude_deleted().where(Model.organization_id == organization_id)
+
+# Family scope (for professionals - shared across family)
+def _base_query_for_organization(
+    self,
+    organization_id: UUID,
+    family_org_ids: list[UUID] | tuple[UUID, ...] | None = None,
+) -> Select[tuple[Model]]:
+    base = self._exclude_deleted()
+    if family_org_ids:
+        return base.where(Model.organization_id.in_(list(family_org_ids)))
+    return base.where(Model.organization_id == organization_id)
 ```
+
+**Family Scope Validation:**
+- CPF uniqueness is validated at family level (not just organization)
+- Email uniqueness is validated at family level
+- Council registration uniqueness is validated at family level
+- Use `exists_by_cpf_in_family()`, `exists_by_email_in_family()`, `council_exists_in_family()`
 
 ### Soft Delete
 Models with `SoftDeleteMixin` use `deleted_at` column. Repositories must:
@@ -168,6 +188,7 @@ async def create_entity(
         organization_id=ctx.organization,  # Active organization ID
         data=data,
         created_by=ctx.user,               # Current user ID
+        family_org_ids=ctx.family_org_ids, # For family scope validation
     )
     return EntityResponse.model_validate(result)
 ```
@@ -179,6 +200,7 @@ async def create_entity(
 **ValidatedContext Properties:**
 - `ctx.user` - Current user's UUID
 - `ctx.organization` - Active organization UUID (raises if not set)
+- `ctx.family_org_ids` - Tuple of all organization IDs in the family (cached in Redis)
 - All `RequestContext` methods: `has_role()`, `is_org_admin()`, etc.
 
 **Nested Routes:**

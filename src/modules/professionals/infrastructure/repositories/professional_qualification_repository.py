@@ -219,6 +219,37 @@ class ProfessionalQualificationRepository(
         result = await self.session.execute(select(query.exists()))
         return result.scalar_one()
 
+    async def council_exists_in_family(
+        self,
+        council_number: str,
+        council_state: str,
+        family_org_ids: list[UUID] | tuple[UUID, ...],
+        *,
+        exclude_id: UUID | None = None,
+    ) -> bool:
+        """
+        Check if a council registration already exists in the organization family.
+
+        Args:
+            council_number: The council registration number.
+            council_state: The council state (2 chars).
+            family_org_ids: List of all organization IDs in the family.
+            exclude_id: Optional ID to exclude (for updates).
+
+        Returns:
+            True if council exists in the family, False otherwise.
+        """
+        query = self._exclude_deleted().where(
+            ProfessionalQualification.organization_id.in_(list(family_org_ids)),
+            ProfessionalQualification.council_number == council_number,
+            ProfessionalQualification.council_state == council_state,
+        )
+        if exclude_id:
+            query = query.where(ProfessionalQualification.id != exclude_id)
+
+        result = await self.session.execute(select(query.exists()))
+        return result.scalar_one()
+
     async def get_by_council(
         self,
         council_number: str,

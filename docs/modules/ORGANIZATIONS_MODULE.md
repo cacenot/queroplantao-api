@@ -78,15 +78,15 @@ Papéis para membros da organização.
 | SCHEDULER | Escalista | Cria/edita escalas |
 | VIEWER | Visualizador | Apenas leitura |
 
-### SharingScope
-Define o que uma organização pai compartilha com as filhas.
+### DataScopePolicy (Runtime)
+Define o escopo de busca de dados entre organizações da mesma família. Este enum é usado no nível de aplicação (não armazenado em banco).
 
 | Valor | Descrição |
 |-------|-----------|
-| NONE | Nenhum compartilhamento |
-| PROFESSIONALS | Compartilha apenas profissionais cadastrados |
-| SCHEDULES | Compartilha profissionais + escalas |
-| FULL | Compartilhamento total |
+| ORGANIZATION_ONLY | Dados apenas da organização atual |
+| FAMILY | Dados de todas as organizações da família (pai + filhas/irmãs) |
+
+> **Nota:** O escopo padrão para profissionais é `FAMILY` - profissionais são compartilhados entre todas as organizações da família. A validação de unicidade (CPF, email, registro de conselho) também é feita no escopo da família.
 
 ## Tabelas
 
@@ -106,7 +106,6 @@ Organizações de saúde (hospitais, clínicas, terceirizadoras).
 | email | VARCHAR(255) | ✅ | Email |
 | phone | VARCHAR(20) | ✅ | Telefone (E.164) |
 | website | VARCHAR(500) | ✅ | Website |
-| sharing_scope | SharingScope | ❌ | O que compartilhar com filhas |
 | is_active | BOOLEAN | ❌ | Status ativo/inativo |
 | **Endereço (AddressMixin)** | | | |
 | address, number, complement, neighborhood, city, state_code, postal_code, latitude, longitude | | ✅ | |
@@ -162,15 +161,18 @@ Membros (usuários) vinculados a organizações.
 
 1. Uma organização pode ser **raiz** (sem parent_id) ou **filha** (com parent_id)
 2. **Máximo 1 nível de profundidade**: organizações filhas não podem ter filhas
-3. O `sharing_scope` da organização pai define o que as filhas podem acessar
-4. Organizações filhas herdam profissionais e/ou escalas conforme configurado
+3. Profissionais são **compartilhados automaticamente** entre todas as organizações da família
+4. A validação de unicidade (CPF, email, registro de conselho) é feita no **escopo da família**
+5. Todas as organizações da família podem visualizar e editar os mesmos profissionais
+6. Os `family_org_ids` são cacheados em Redis para performance
 
 ### Multi-Tenancy de Profissionais
 
-1. Cada organização mantém seus próprios registros de profissionais
-2. Profissionais são isolados por `organization_id`
-3. A mesma pessoa (CPF) pode existir em múltiplas organizações
-4. Organizações **não podem** acessar profissionais de outras organizações
+1. Profissionais são **compartilhados dentro da família** de organizações (pai + filhas)
+2. A mesma pessoa (CPF) **não pode** existir em múltiplas organizações da mesma família
+3. Organizações de **famílias diferentes** não podem acessar profissionais umas das outras
+4. O campo `organization_id` indica qual organização criou o profissional
+5. Consultas usam `family_org_ids` do contexto para filtrar profissionais da família
 
 ### Membros e Permissões
 
@@ -222,8 +224,9 @@ src/modules/organizations/domain/models/
 
 ```
 1. Empresa terceirizadora cria Organization (tipo: OUTSOURCING_COMPANY)
-2. Define sharing_scope (PROFESSIONALS, SCHEDULES, ou FULL)
-3. Hospital cria Organization filha (parent_id = terceirizadora)
-4. Hospital herda profissionais/escalas conforme sharing_scope
+2. Hospital cria Organization filha (parent_id = terceirizadora)
+3. Profissionais cadastrados em qualquer organização da família são visíveis em todas
+4. Todas as organizações podem editar os profissionais da família
 5. Cada organização gerencia seus próprios membros
+6. Unicidade de CPF/email/conselho é validada no escopo da família
 ```

@@ -26,6 +26,11 @@ class RequestContext:
     child_organization_id: UUID | None = None
     child_organization_name: str | None = None
 
+    # Family organization IDs for hierarchical data scope
+    # Contains all org IDs in the family (parent + children/siblings)
+    # Used for queries with DataScopePolicy.FAMILY
+    family_org_ids: tuple[UUID, ...] = field(default_factory=tuple)
+
     def has_role(self, role: str) -> bool:
         """Check if user has a specific role."""
         return role in self.roles
