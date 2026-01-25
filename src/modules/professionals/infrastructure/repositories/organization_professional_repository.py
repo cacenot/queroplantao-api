@@ -450,13 +450,17 @@ class OrganizationProfessionalRepository(
         Returns:
             True if CPF exists in the family, False otherwise.
         """
-        return await self.exists_in_family(
-            family_org_ids=family_org_ids,
-            cpf=cpf,
-        ) if exclude_id is None else await self._exists_in_family_with_exclude(
-            family_org_ids=family_org_ids,
-            exclude_id=exclude_id,
-            cpf=cpf,
+        return (
+            await self.exists_in_family(
+                family_org_ids=family_org_ids,
+                cpf=cpf,
+            )
+            if exclude_id is None
+            else await self._exists_in_family_with_exclude(
+                family_org_ids=family_org_ids,
+                exclude_id=exclude_id,
+                cpf=cpf,
+            )
         )
 
     async def exists_by_email_in_family(
@@ -477,13 +481,17 @@ class OrganizationProfessionalRepository(
         Returns:
             True if email exists in the family, False otherwise.
         """
-        return await self.exists_in_family(
-            family_org_ids=family_org_ids,
-            email=email,
-        ) if exclude_id is None else await self._exists_in_family_with_exclude(
-            family_org_ids=family_org_ids,
-            exclude_id=exclude_id,
-            email=email,
+        return (
+            await self.exists_in_family(
+                family_org_ids=family_org_ids,
+                email=email,
+            )
+            if exclude_id is None
+            else await self._exists_in_family_with_exclude(
+                family_org_ids=family_org_ids,
+                exclude_id=exclude_id,
+                email=email,
+            )
         )
 
     async def _exists_in_family_with_exclude(

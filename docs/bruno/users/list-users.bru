@@ -1,0 +1,64 @@
+meta {
+  name: List Users
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/v1/users/
+  body: none
+  auth: inherit
+}
+
+params:query {
+  page: 1
+  page_size: 20
+  ~search: 
+  ~role_id: 
+  ~is_active: 
+  ~is_pending: 
+  ~id: 
+  ~created_at: 
+  ~granted_at: 
+}
+
+docs {
+  # List Users
+  
+  Lista todos os membros (usuários) da organização com paginação, filtros e ordenação.
+  
+  **Requer header:** `X-Organization-ID`
+  
+  ## Response
+  
+  Retorna lista paginada de membros com informações completas:
+  
+  - **id**: UUID do membership
+  - **user**: Dados do usuário
+    - id, email, full_name, avatar_url, is_active
+  - **role**: Role atribuída
+    - id, code, name
+  - **organization_id**: UUID da organização
+  - **is_active**: Se o membership está ativo
+  - **is_pending**: Se o convite está pendente de aceite
+  - **invited_at**: Data do convite (se aplicável)
+  - **accepted_at**: Data de aceite (se aplicável)
+  - **granted_at**: Data de concessão da role
+  - **expires_at**: Data de expiração (se aplicável)
+  - **created_at**: Data de criação
+  
+  ## Filtros disponíveis
+  
+  | Parâmetro | Tipo | Descrição |
+  |-----------|------|-----------|
+  | search | string | Busca textual por nome ou email |
+  | role_id | UUID | Filtrar por role específica |
+  | is_active | boolean | Filtrar por status ativo/inativo |
+  | is_pending | boolean | Filtrar convites pendentes |
+  
+  ## Ordenação (sorting)
+  
+  Campos ordenáveis: `id`, `created_at`, `granted_at`
+  
+  Formato: `campo:asc` ou `campo:desc`
+}

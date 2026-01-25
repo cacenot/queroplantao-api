@@ -19,7 +19,7 @@ from src.app.exceptions import (
 from src.app.i18n import AuthMessages, get_message
 from src.app.logging import get_logger
 from src.app.middlewares.constants import DEFAULT_EXCLUDE_PATHS
-from src.modules.auth.infrastructure.repositories import UserRepository
+from src.modules.users.infrastructure.repositories import UserRepository
 from src.shared.infrastructure.cache import RedisCache, get_redis_cache
 from src.shared.infrastructure.database.connection import async_session_factory
 from src.shared.infrastructure.firebase import (

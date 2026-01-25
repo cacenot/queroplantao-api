@@ -97,6 +97,35 @@ class ProfessionalMessages(StrEnum):
     EDUCATION_NOT_FOUND = "professional.education_not_found"
 
 
+class UserMessages(StrEnum):
+    """User management message keys."""
+
+    # User errors
+    USER_NOT_FOUND = "user.not_found"
+    USER_ALREADY_MEMBER = "user.already_member"
+    USER_NOT_MEMBER = "user.not_member"
+
+    # Invitation errors
+    INVITATION_SENT = "user.invitation_sent"
+    INVITATION_ALREADY_SENT = "user.invitation_already_sent"
+    INVITATION_NOT_FOUND = "user.invitation_not_found"
+    INVITATION_EXPIRED = "user.invitation_expired"
+    INVITATION_ALREADY_ACCEPTED = "user.invitation_already_accepted"
+    INVITATION_INVALID_TOKEN = "user.invitation_invalid_token"
+    INVITATION_ACCEPTED = "user.invitation_accepted"
+
+    # Membership errors
+    MEMBERSHIP_NOT_FOUND = "user.membership_not_found"
+    MEMBERSHIP_UPDATED = "user.membership_updated"
+    MEMBERSHIP_REMOVED = "user.membership_removed"
+    CANNOT_REMOVE_OWNER = "user.cannot_remove_owner"
+    CANNOT_REMOVE_SELF = "user.cannot_remove_self"
+
+    # Role errors
+    ROLE_NOT_FOUND = "user.role_not_found"
+    INVALID_ROLE = "user.invalid_role"
+
+
 class ValidationMessages(StrEnum):
     """Value object validation message keys."""
 

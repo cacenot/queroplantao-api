@@ -44,6 +44,21 @@ from src.app.exceptions.professional_exceptions import (
     SpecialtyAlreadyAssignedError,
     SpecialtyNotFoundError,
 )
+from src.app.exceptions.user_exceptions import (
+    CannotRemoveOwnerError,
+    CannotRemoveSelfError,
+    InvitationAlreadyAcceptedError,
+    InvitationAlreadySentError,
+    InvitationExpiredError,
+    InvitationInvalidTokenError,
+    InvitationNotFoundError,
+    InvalidRoleError,
+    MembershipNotFoundError,
+    RoleNotFoundError,
+    UserAlreadyMemberError,
+    UserException,
+    UserNotMemberError,
+)
 
 __all__ = [
     # Base exceptions
@@ -87,4 +102,18 @@ __all__ = [
     "QualificationNotFoundError",
     "SpecialtyAlreadyAssignedError",
     "SpecialtyNotFoundError",
+    # User exceptions
+    "CannotRemoveOwnerError",
+    "CannotRemoveSelfError",
+    "InvitationAlreadyAcceptedError",
+    "InvitationAlreadySentError",
+    "InvitationExpiredError",
+    "InvitationInvalidTokenError",
+    "InvitationNotFoundError",
+    "InvalidRoleError",
+    "MembershipNotFoundError",
+    "RoleNotFoundError",
+    "UserAlreadyMemberError",
+    "UserException",
+    "UserNotMemberError",
 ]

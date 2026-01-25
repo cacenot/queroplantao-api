@@ -1,0 +1,71 @@
+meta {
+  name: Accept Invitation
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/v1/invitations/accept
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+
+docs {
+  # Accept Invitation
+  
+  Aceita um convite para participar de uma organização.
+  
+  **Endpoint público** - não requer autenticação.
+  
+  ## Request Body
+  
+  | Campo | Tipo | Obrigatório | Descrição |
+  |-------|------|-------------|-----------|
+  | token | string | ✅ | Token JWT do convite (do link no email) |
+  
+  ## Fluxo
+  
+  1. Sistema valida o token JWT
+  2. Verifica se o convite não expirou
+  3. Verifica se não foi aceito anteriormente
+  4. Marca `accepted_at=now()` e `is_pending=false`
+  5. Se usuário não existe, pode ser criado (implementação futura)
+  
+  ## Response
+  
+  ```json
+  {
+    "message": "Convite aceito com sucesso",
+    "organization_id": "...",
+    "organization_name": "Hospital XYZ",
+    "role_name": "Médico"
+  }
+  ```
+  
+  ## Token JWT
+  
+  O token contém:
+  - `email`: email do convidado
+  - `organization_id`: organização destino
+  - `role_id`: role a ser atribuída
+  - `invited_by`: quem enviou o convite
+  - `membership_id`: ID do membership pendente
+  - `exp`: timestamp de expiração
+  
+  ## Error Codes
+  
+  | Status | Code | Descrição |
+  |--------|------|-----------|
+  | 400 | `USER_INVITATION_INVALID_TOKEN` | Token inválido ou malformado |
+  | 404 | `USER_MEMBERSHIP_NOT_FOUND` | Membership não encontrado |
+  | 409 | `USER_INVITATION_ALREADY_ACCEPTED` | Convite já foi aceito |
+  | 410 | `USER_INVITATION_EXPIRED` | Convite expirado |
+}

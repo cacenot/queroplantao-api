@@ -5,6 +5,7 @@ from src.app.i18n.messages import (
     OrganizationMessages,
     ProfessionalMessages,
     ResourceMessages,
+    UserMessages,
     ValidationMessages,
 )
 
@@ -77,6 +78,26 @@ MESSAGES: dict[str, str] = {
     ProfessionalMessages.SPECIALTY_NOT_FOUND: "Especialidade não encontrada",
     ProfessionalMessages.COMPANY_NOT_FOUND: "Empresa não encontrada",
     ProfessionalMessages.EDUCATION_NOT_FOUND: "Formação não encontrada",
+    # ==========================================================================
+    # User messages
+    # ==========================================================================
+    UserMessages.USER_NOT_FOUND: "Usuário não encontrado",
+    UserMessages.USER_ALREADY_MEMBER: "Usuário já é membro desta organização",
+    UserMessages.USER_NOT_MEMBER: "Usuário não é membro desta organização",
+    UserMessages.INVITATION_SENT: "Convite enviado com sucesso",
+    UserMessages.INVITATION_ALREADY_SENT: "Já existe um convite pendente para este e-mail",
+    UserMessages.INVITATION_NOT_FOUND: "Convite não encontrado",
+    UserMessages.INVITATION_EXPIRED: "O convite expirou",
+    UserMessages.INVITATION_ALREADY_ACCEPTED: "Este convite já foi aceito",
+    UserMessages.INVITATION_INVALID_TOKEN: "Token de convite inválido",
+    UserMessages.INVITATION_ACCEPTED: "Convite aceito com sucesso! Bem-vindo(a) à {organization_name}",
+    UserMessages.MEMBERSHIP_NOT_FOUND: "Associação não encontrada",
+    UserMessages.MEMBERSHIP_UPDATED: "Associação atualizada com sucesso",
+    UserMessages.MEMBERSHIP_REMOVED: "Usuário removido da organização",
+    UserMessages.CANNOT_REMOVE_OWNER: "Não é possível remover o dono da organização",
+    UserMessages.CANNOT_REMOVE_SELF: "Não é possível remover a si mesmo da organização",
+    UserMessages.ROLE_NOT_FOUND: "Função não encontrada",
+    UserMessages.INVALID_ROLE: "Função inválida para esta operação",
     # ==========================================================================
     # Validation messages
     # ==========================================================================

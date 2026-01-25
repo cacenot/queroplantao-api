@@ -1,0 +1,43 @@
+meta {
+  name: Remove User
+  type: http
+  seq: 8
+}
+
+delete {
+  url: {{baseUrl}}/api/v1/users/{{membershipId}}
+  body: none
+  auth: inherit
+}
+
+docs {
+  # Remove User
+  
+  Remove um membro da organização (soft delete).
+  
+  **Requer header:** `X-Organization-ID`
+  
+  ## Path Parameters
+  
+  | Parâmetro | Tipo | Descrição |
+  |-----------|------|-----------|
+  | membershipId | UUID | ID do membership |
+  
+  ## Response
+  
+  Status 204 (No Content) em caso de sucesso.
+  
+  ## Regras de Negócio
+  
+  - Não é possível remover a si mesmo
+  - Não é possível remover o owner da organização
+  - A remoção é soft delete (preserva histórico)
+  
+  ## Error Codes
+  
+  | Status | Code | Descrição |
+  |--------|------|-----------|
+  | 403 | `USER_CANNOT_REMOVE_SELF` | Não é possível remover a si mesmo |
+  | 403 | `USER_CANNOT_REMOVE_OWNER` | Não é possível remover o dono da organização |
+  | 404 | `USER_MEMBERSHIP_NOT_FOUND` | Membership não encontrado |
+}

@@ -1,0 +1,50 @@
+meta {
+  name: List Users (Summary)
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/api/v1/users/summary
+  body: none
+  auth: inherit
+}
+
+params:query {
+  page: 1
+  page_size: 20
+  ~search: 
+  ~role_id: 
+  ~is_active: 
+  ~is_pending: 
+  ~id: 
+  ~created_at: 
+  ~granted_at: 
+}
+
+docs {
+  # List Users (Summary)
+  
+  Lista membros da organização com dados simplificados.
+  
+  **Requer header:** `X-Organization-ID`
+  
+  ## Response
+  
+  Retorna lista paginada com dados resumidos:
+  
+  - **id**: UUID do membership
+  - **user_id**: UUID do usuário
+  - **full_name**: Nome completo
+  - **email**: Email
+  - **avatar_url**: URL do avatar
+  - **role_code**: Código da role
+  - **role_name**: Nome da role
+  - **is_active**: Status do membership
+  - **is_pending**: Se convite está pendente
+  - **created_at**: Data de criação
+  
+  ## Filtros
+  
+  Os mesmos filtros de `List Users`.
+}

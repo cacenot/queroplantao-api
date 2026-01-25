@@ -1,0 +1,54 @@
+meta {
+  name: Update User
+  type: http
+  seq: 7
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/users/{{membershipId}}
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  "role_id": "{{newRoleId}}",
+  "is_active": true
+}
+
+docs {
+  # Update User
+  
+  Atualiza a role ou status de um membro da organização.
+  
+  **Requer header:** `X-Organization-ID`
+  
+  ## Path Parameters
+  
+  | Parâmetro | Tipo | Descrição |
+  |-----------|------|-----------|
+  | membershipId | UUID | ID do membership |
+  
+  ## Request Body
+  
+  Todos os campos são opcionais (PATCH semantics):
+  
+  | Campo | Tipo | Descrição |
+  |-------|------|-----------|
+  | role_id | UUID | Nova role a ser atribuída |
+  | is_active | boolean | Ativar/desativar membership |
+  
+  ## Response
+  
+  Retorna `OrganizationUserResponse` com dados atualizados.
+  
+  ## Error Codes
+  
+  | Status | Code | Descrição |
+  |--------|------|-----------|
+  | 404 | `USER_MEMBERSHIP_NOT_FOUND` | Membership não encontrado |
+  | 404 | `USER_ROLE_NOT_FOUND` | Role não encontrada |
+}

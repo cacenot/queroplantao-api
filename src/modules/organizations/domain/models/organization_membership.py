@@ -16,8 +16,8 @@ from src.shared.domain.models.mixins import (
 )
 
 if TYPE_CHECKING:
-    from src.modules.auth.domain.models.role import Role
-    from src.modules.auth.domain.models.user import User
+    from src.modules.users.domain.models.role import Role
+    from src.modules.users.domain.models.user import User
     from src.modules.organizations.domain.models.organization import Organization
 
 

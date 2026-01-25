@@ -29,6 +29,7 @@ from src.app.i18n.messages import (
     OrganizationMessages,
     ProfessionalMessages,
     ResourceMessages,
+    UserMessages,
     ValidationMessages,
 )
 
@@ -114,5 +115,6 @@ __all__ = [
     "OrganizationMessages",
     "ProfessionalMessages",
     "ResourceMessages",
+    "UserMessages",
     "ValidationMessages",
 ]

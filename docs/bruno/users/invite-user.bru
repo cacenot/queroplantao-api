@@ -1,0 +1,57 @@
+meta {
+  name: Invite User
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/api/v1/users/invite
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  "email": "novo.usuario@example.com",
+  "role_id": "{{roleId}}",
+  "full_name": "Novo Usuário"
+}
+
+docs {
+  # Invite User
+  
+  Envia um convite para um usuário participar da organização.
+  
+  **Requer header:** `X-Organization-ID`
+  
+  ## Request Body
+  
+  | Campo | Tipo | Obrigatório | Descrição |
+  |-------|------|-------------|-----------|
+  | email | string | ✅ | Email do convidado |
+  | role_id | UUID | ✅ | Role a ser atribuída |
+  | full_name | string | ❌ | Nome do convidado (para novos usuários) |
+  
+  ## Fluxo
+  
+  1. Sistema verifica se usuário já é membro
+  2. Sistema verifica se já existe convite pendente
+  3. Cria membership com `is_pending=true`
+  4. Envia email com link de convite (token JWT)
+  5. Retorna dados do membership criado
+  
+  ## Response
+  
+  Retorna `OrganizationUserResponse` com dados do membership criado.
+  
+  ## Error Codes
+  
+  | Status | Code | Descrição |
+  |--------|------|-----------|
+  | 404 | `USER_ROLE_NOT_FOUND` | Role não encontrada |
+  | 409 | `USER_ALREADY_MEMBER` | Usuário já é membro da organização |
+  | 409 | `USER_INVITATION_ALREADY_SENT` | Já existe convite pendente para este email |
+}

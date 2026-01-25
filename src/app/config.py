@@ -130,6 +130,30 @@ class Settings(BaseSettings):
         default="json", description="Formato do log"
     )
 
+    # Email (Resend)
+    RESEND_API_KEY: str = Field(
+        default="",
+        description="Resend API key for email sending",
+    )
+    RESEND_FROM_EMAIL: str = Field(
+        default="noreply@queroplantao.com.br",
+        description="Default from email address",
+    )
+    RESEND_FROM_NAME: str = Field(
+        default="Quero Plantão",
+        description="Default from name",
+    )
+
+    # Invitation
+    INVITATION_TOKEN_EXPIRE_DAYS: int = Field(
+        default=7,
+        description="Dias de validade do token de convite",
+    )
+    FRONTEND_URL: str = Field(
+        default="http://localhost:3000",
+        description="URL do frontend para links de convite",
+    )
+
     @property
     def is_development(self) -> bool:
         """Check if running in development mode."""

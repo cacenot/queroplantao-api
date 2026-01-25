@@ -28,7 +28,7 @@ config.set_main_option("sqlalchemy.url", settings.database_url_sync)
 # Import models for autogenerate support
 # Order matters! Import modules with dependencies after their dependents
 
-from src.modules.auth.domain import models as auth_models  # noqa: E402, F401
+from src.modules.users.domain import models as users_models  # noqa: E402, F401
 from src.modules.professionals.domain import models as professionals_models  # noqa: E402, F401
 from src.modules.organizations.domain import models as organizations_models  # noqa: E402, F401
 from src.modules.units.domain import models as units_models  # noqa: E402, F401

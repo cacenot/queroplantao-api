@@ -1,0 +1,35 @@
+meta {
+  name: Get User
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/api/v1/users/{{membershipId}}
+  body: none
+  auth: inherit
+}
+
+docs {
+  # Get User
+  
+  Retorna detalhes de um membro específico da organização.
+  
+  **Requer header:** `X-Organization-ID`
+  
+  ## Path Parameters
+  
+  | Parâmetro | Tipo | Descrição |
+  |-----------|------|-----------|
+  | membershipId | UUID | ID do membership |
+  
+  ## Response
+  
+  Retorna `OrganizationUserResponse` com dados completos do membro.
+  
+  ## Error Codes
+  
+  | Status | Code | Descrição |
+  |--------|------|-----------|
+  | 404 | `USER_MEMBERSHIP_NOT_FOUND` | Membership não encontrado |
+}

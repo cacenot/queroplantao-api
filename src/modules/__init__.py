@@ -4,7 +4,7 @@ Cada módulo é independente e contém sua própria estrutura de camadas.
 """
 
 from src.modules import (
-    auth,
+    users,
     job_postings,
     organizations,
     professionals,
@@ -13,7 +13,7 @@ from src.modules import (
 )
 
 __all__ = [
-    "auth",
+    "users",
     "job_postings",
     "organizations",
     "professionals",
