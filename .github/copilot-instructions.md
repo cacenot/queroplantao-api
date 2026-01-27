@@ -6,6 +6,18 @@ REST API for medical shift management (HR Tech). Multi-tenant architecture with 
 
 **IMPORTANT: This API is in active development with no production deployment yet. Deprecated code should be immediately removed instead of being marked as `deprecated=True`.**
 
+## Terminal Commands
+
+**ALWAYS use `uv run` to execute any Python command in this project.** This project uses `uv` as the package manager and virtual environment tool.
+
+Examples:
+- `uv run alembic upgrade head` (NOT `alembic upgrade head`)
+- `uv run pytest` (NOT `pytest`)
+- `uv run python script.py` (NOT `python script.py`)
+- `uv run ruff check .` (NOT `ruff check .`)
+
+The `make` commands already handle this internally, so you can use them directly.
+
 ## Essential Commands
 
 ```bash

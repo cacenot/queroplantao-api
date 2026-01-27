@@ -2,13 +2,14 @@
 
 ## Overview
 
-O módulo de Triagem implementa um workflow de 5 etapas para onboarding de profissionais de saúde:
+O módulo de Triagem implementa um workflow de etapas para onboarding de profissionais de saúde:
 
 1. **Conversa/Criação** - Identificação do profissional, atribuição, seleção de empresa contratante
-2. **Coleta de Documentos** - Profissional envia os documentos (com versionamento)
-3. **Verificação de Documentos** - Equipe analisa e aprova/rejeita documentos
-4. **Entrevista** (opcional) - Registro da entrevista e resultado
-5. **Validação do Cliente** (opcional) - Aprovação pela empresa contratante (controlado por `client_validation_required`)
+2. **Coleta de Dados** - Dados pessoais, formação, especialidades, educação, empresa, conta bancária
+3. **Coleta de Documentos** - Profissional envia os documentos (com versionamento)
+4. **Verificação de Documentos** - Equipe analisa e aprova/rejeita documentos
+5. **Revisão Superior** (opcional) - Para casos com alertas
+6. **Validação do Cliente** (opcional) - Aprovação pela empresa contratante
 
 ## API Endpoints
 
@@ -31,7 +32,6 @@ X-Organization-ID: {organization_id}
   "professional_phone": "+5511999999999",
   "expected_professional_type": "MEDICO",
   "expected_specialty_id": "uuid-of-specialty",
-  "client_validation_required": false,
   "client_company_id": "uuid-of-client-company",
   "selected_document_type_ids": ["uuid-doc-type-1", "uuid-doc-type-2"]
 }
@@ -114,7 +114,7 @@ POST /screenings/{screening_id}/documents/{document_id}/keep
 POST /screenings/{screening_id}/documents/{document_id}/review
 {
   "status": "APPROVED",  // APPROVED, NEEDS_CHANGES, REJECTED, ALERT
-  "review_notes": "Documento validado com sucesso"
+  "notes": "Documento validado com sucesso"
 }
 ```
 
@@ -177,17 +177,19 @@ POST /public/screening/{token}/documents/{document_id}/upload
 interface ScreeningProcessResponse {
   id: string;
   organization_id: string;
-  client_validation_required: boolean;
   professional_id: string;
   professional_cpf: string;
   professional_name: string;
   status: ScreeningStatus;
+  current_step_type?: StepType;
+  
+  // Assignment
+  owner_id?: string;           // Responsável geral
+  current_actor_id?: string;   // Responsável pela ação atual
   
   // Etapa 1 fields
   expected_professional_type?: string;
   expected_specialty_id?: string;
-  current_assignee_id?: string;
-  verifier_id?: string;
   client_company_id?: string;
   
   // Token access
@@ -208,13 +210,16 @@ interface ScreeningProcessResponse {
 ### ScreeningStatus
 ```typescript
 enum ScreeningStatus {
-  PENDING = "pending",
-  IN_PROGRESS = "in_progress",
-  AWAITING_APPROVAL = "awaiting_approval",
-  APPROVED = "approved",
-  REJECTED = "rejected",
-  CANCELLED = "cancelled"
+  DRAFT = "DRAFT",           // Criado, não iniciado
+  IN_PROGRESS = "IN_PROGRESS", // Em andamento (qualquer etapa)
+  APPROVED = "APPROVED",      // Aprovado e finalizado
+  REJECTED = "REJECTED",      // Rejeitado
+  EXPIRED = "EXPIRED",        // Expirado
+  CANCELLED = "CANCELLED"     // Cancelado
 }
+
+// Estado detalhado é determinado pela combinação:
+// status + current_step_type + step.status
 ```
 
 ### StepType

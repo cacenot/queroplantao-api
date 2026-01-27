@@ -126,9 +126,6 @@ class ScreeningMessages(StrEnum):
     DOCUMENTS_MISSING_REQUIRED = "screening.documents.missing_required"
     DOCUMENTS_PENDING_REVIEW = "screening.documents.pending_review"
 
-    # Client validation messages
-    CLIENT_VALIDATION_NOT_REQUIRED = "screening.client_validation.not_required"
-
 
 class UserMessages(StrEnum):
     """User management message keys."""

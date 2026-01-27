@@ -11,7 +11,6 @@ from src.app.exceptions import (
     ScreeningStepNotFoundError,
 )
 from src.modules.screening.domain.models.enums import (
-    ScreeningStatus,
     StepStatus,
     StepType,
 )
@@ -97,9 +96,8 @@ class GoBackToStepUseCase:
         target_step.status = StepStatus.IN_PROGRESS
         target_step.started_at = datetime.now(timezone.utc)
 
-        # 7. Update process status if needed
-        if process.status == ScreeningStatus.PENDING_REVIEW:
-            process.status = ScreeningStatus.IN_PROGRESS
+        # 7. Process status stays as IN_PROGRESS
+        # (status is already IN_PROGRESS for active screenings)
 
         await self.session.flush()
         await self.session.refresh(target_step)

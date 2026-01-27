@@ -132,10 +132,10 @@ class ScreeningProcessRepository(
             base_query=base_query,
         )
 
-    async def list_for_assignee(
+    async def list_for_actor(
         self,
         organization_id: UUID,
-        assignee_id: UUID,
+        actor_id: UUID,
         pagination: PaginationParams,
         *,
         filters: ScreeningProcessFilter | None = None,
@@ -148,7 +148,7 @@ class ScreeningProcessRepository(
 
         Args:
             organization_id: The organization UUID.
-            assignee_id: The current assignee user UUID.
+            actor_id: The current actor user UUID.
             pagination: Pagination parameters.
             filters: Optional additional filters.
             sorting: Optional sorting.
@@ -157,7 +157,7 @@ class ScreeningProcessRepository(
             Paginated list of screening processes.
         """
         base_query = self._base_query_for_organization(organization_id).where(
-            ScreeningProcess.current_assignee_id == assignee_id
+            ScreeningProcess.current_actor_id == actor_id
         )
         return await self.list_paginated(
             pagination,

@@ -76,11 +76,11 @@ class ScreeningDocumentReview(
     - ALERT: Document raises concerns requiring supervisor attention
 
     When any document is REJECTED:
-    - The screening returns to PENDING_CORRECTION status
+    - The step gets CORRECTION_NEEDED status
     - The professional/escalista must correct and re-upload
 
     When any document has ALERT:
-    - The screening moves to ESCALATED status
+    - The screening moves to SUPERVISOR_REVIEW step
     - A supervisor must review and make final decision
 
     Review process:

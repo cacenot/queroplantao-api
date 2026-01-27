@@ -95,7 +95,7 @@ async def list_my_screening_processes(
     """List screening processes assigned to the current user."""
     return await use_case.execute(
         organization_id=ctx.organization,
-        assignee_id=ctx.user,
+        actor_id=ctx.user,
         pagination=pagination,
         filters=filters,
         sorting=sorting,

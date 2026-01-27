@@ -70,10 +70,7 @@ class ApproveScreeningProcessUseCase:
             raise ScreeningProcessNotFoundError(screening_id=str(screening_id))
 
         # Validate screening status
-        if process.status not in [
-            ScreeningStatus.AWAITING_APPROVAL,
-            ScreeningStatus.IN_PROGRESS,
-        ]:
+        if process.status != ScreeningStatus.IN_PROGRESS:
             raise ScreeningProcessCannotApproveError(
                 current_status=process.status.value
             )

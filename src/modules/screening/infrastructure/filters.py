@@ -14,9 +14,8 @@ class ScreeningProcessFilter(FilterSet):
 
     search: Annotated[str | None, Query(default=None)] = None
     status: Annotated[ScreeningStatus | None, Query(default=None)] = None
-    assignee_id: Annotated[str | None, Query(default=None)] = None
+    actor_id: Annotated[str | None, Query(default=None)] = None
     client_company_id: Annotated[str | None, Query(default=None)] = None
-    client_validation_required: Annotated[bool | None, Query(default=None)] = None
     is_active: Annotated[bool | None, Query(default=None)] = None
 
     class Config:
@@ -25,9 +24,8 @@ class ScreeningProcessFilter(FilterSet):
         search_fields = ["professional_name", "professional_cpf"]
         field_columns = {
             "status": "status",
-            "assignee_id": "current_assignee_id",
+            "actor_id": "current_actor_id",
             "client_company_id": "client_company_id",
-            "client_validation_required": "client_validation_required",
         }
 
 

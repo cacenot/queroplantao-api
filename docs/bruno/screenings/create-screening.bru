@@ -25,7 +25,6 @@ body:json {
     "professional_phone": "+5511999999999",
     "expected_professional_type": "MEDICO",
     "expected_specialty_id": "{{specialtyId}}",
-    "client_validation_required": false,
     "client_company_id": null,
     "selected_document_type_ids": []
   }
@@ -45,7 +44,6 @@ docs {
   | professional_phone | string | Não | Telefone no formato E.164 |
   | expected_professional_type | enum | Não | Tipo esperado (MEDICO, ENFERMEIRO, etc.) |
   | expected_specialty_id | UUID | Não | ID da especialidade esperada |
-  | client_validation_required | bool | Não | Se requer validação do cliente (default: false) |
   | client_company_id | UUID | Não | ID da empresa contratante |
   | selected_document_type_ids | UUID[] | Não | IDs dos tipos de documento requeridos |
   
@@ -53,9 +51,9 @@ docs {
   
   - Se o profissional não existe, será criado com dados mínimos
   - Se já existe triagem ativa para o CPF, retorna erro 409
-  - As etapas são geradas automaticamente com base no fluxo fixo de 5 etapas
+  - As etapas são geradas automaticamente com base no fluxo fixo
   - Etapa de entrevista depende das configurações da organização
-  - Etapa de validação do cliente depende do campo `client_validation_required`
+  - Etapa de validação do cliente é opcional (controlado por `is_required` no step)
   - Um token de acesso público é gerado para o profissional
   
   ## Error Codes

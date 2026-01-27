@@ -251,23 +251,6 @@ async def complete_document_review_step(
     description="Finaliza a etapa de validação pelo cliente com step_id específico.",
     responses={
         404: {"model": ErrorResponse, "description": "Não encontrado"},
-        422: {
-            "model": ErrorResponse,
-            "description": "Validação falhou",
-            "content": {
-                "application/json": {
-                    "examples": {
-                        "not_required": {
-                            "summary": "Validação não necessária",
-                            "value": {
-                                "code": ScreeningErrorCodes.SCREENING_CLIENT_VALIDATION_NOT_REQUIRED,
-                                "message": "Validação do cliente não é necessária",
-                            },
-                        },
-                    }
-                }
-            },
-        },
     },
 )
 async def complete_client_validation_step(

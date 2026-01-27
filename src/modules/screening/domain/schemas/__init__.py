@@ -25,11 +25,9 @@ from src.modules.screening.domain.schemas.screening_process import (
     ScreeningProcessApprove,
     ScreeningProcessCreate,
     ScreeningProcessDetailResponse,
-    ScreeningProcessEscalate,
     ScreeningProcessListResponse,
     ScreeningProcessReject,
     ScreeningProcessResponse,
-    ScreeningProcessStatusUpdate,
     ScreeningProcessUpdate,
 )
 from src.modules.screening.domain.schemas.screening_process_step import (
@@ -79,11 +77,9 @@ __all__ = [
     "ScreeningProcessApprove",
     "ScreeningProcessCreate",
     "ScreeningProcessDetailResponse",
-    "ScreeningProcessEscalate",
     "ScreeningProcessListResponse",
     "ScreeningProcessReject",
     "ScreeningProcessResponse",
-    "ScreeningProcessStatusUpdate",
     "ScreeningProcessUpdate",
     # Screening Process Step
     "ClientValidationStepData",

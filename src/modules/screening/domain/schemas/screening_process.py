@@ -47,25 +47,15 @@ class ScreeningProcessCreate(BaseModel):
     )
 
     # Assignment
-    assigned_to: Optional[UUID] = Field(
+    owner_id: Optional[UUID] = Field(
         default=None,
-        description="User responsible for this screening",
-    )
-    verifier_id: Optional[UUID] = Field(
-        default=None,
-        description="User who will verify documents",
+        description="User responsible for this screening (owner)",
     )
 
     # Client company (for outsourcing scenarios)
     client_company_id: Optional[UUID] = Field(
         default=None,
         description="Client company (empresa contratante)",
-    )
-
-    # Client validation requirement
-    client_validation_required: bool = Field(
-        default=False,
-        description="Whether client validation step is required",
     )
 
     # Conversation notes
@@ -91,33 +81,12 @@ class ScreeningProcessUpdate(BaseModel):
         max_length=50,
     )
     expected_specialty_id: Optional[UUID] = None
-    assigned_to: Optional[UUID] = None
-    verifier_id: Optional[UUID] = None
-    current_assignee_id: Optional[UUID] = None
+    owner_id: Optional[UUID] = None
+    current_actor_id: Optional[UUID] = None
     client_company_id: Optional[UUID] = None
     notes: Optional[str] = Field(
         default=None,
         max_length=2000,
-    )
-
-
-class ScreeningProcessStatusUpdate(BaseModel):
-    """Schema for updating screening process status."""
-
-    model_config = ConfigDict(from_attributes=True)
-
-    status: ScreeningStatus = Field(
-        description="New status for the screening",
-    )
-    rejection_reason: Optional[str] = Field(
-        default=None,
-        max_length=2000,
-        description="Reason for rejection (required if rejecting)",
-    )
-    review_notes: Optional[str] = Field(
-        default=None,
-        max_length=2000,
-        description="Notes from the review",
     )
 
 
@@ -144,20 +113,6 @@ class ScreeningProcessReject(BaseModel):
     )
 
 
-class ScreeningProcessEscalate(BaseModel):
-    """Schema for escalating a screening process."""
-
-    model_config = ConfigDict(from_attributes=True)
-
-    escalated_to: UUID = Field(
-        description="User ID to escalate to (supervisor)",
-    )
-    escalation_reason: str = Field(
-        max_length=2000,
-        description="Reason for escalation",
-    )
-
-
 class ScreeningProcessListResponse(BaseModel):
     """Schema for screening process list (minimal fields)."""
 
@@ -171,9 +126,8 @@ class ScreeningProcessListResponse(BaseModel):
     professional_email: Optional[str]
     expected_professional_type: Optional[str]
     current_step_type: Optional[StepType]
-    assigned_to: Optional[UUID]
-    verifier_id: Optional[UUID]
-    current_assignee_id: Optional[UUID]
+    owner_id: Optional[UUID]
+    current_actor_id: Optional[UUID]
     organization_professional_id: Optional[UUID]
     client_company_id: Optional[UUID]
     created_at: datetime
@@ -189,7 +143,6 @@ class ScreeningProcessResponse(BaseModel):
     id: UUID
     organization_id: UUID
     status: ScreeningStatus
-    client_validation_required: bool
 
     # Professional data
     professional_cpf: Optional[str]
@@ -203,11 +156,8 @@ class ScreeningProcessResponse(BaseModel):
     expected_specialty_id: Optional[UUID]
 
     # Assignment
-    assigned_to: Optional[UUID]
-    verifier_id: Optional[UUID]
-    current_assignee_id: Optional[UUID]
-    escalated_to: Optional[UUID]
-    escalation_reason: Optional[str]
+    owner_id: Optional[UUID]
+    current_actor_id: Optional[UUID]
 
     # Client company
     client_company_id: Optional[UUID]
@@ -220,17 +170,11 @@ class ScreeningProcessResponse(BaseModel):
     current_step_type: Optional[StepType]
     rejection_reason: Optional[str]
     notes: Optional[str]
-    review_notes: Optional[str]
 
     # Timestamps
     created_at: datetime
     updated_at: datetime
     expires_at: Optional[datetime]
-    sent_at: Optional[datetime]
-    started_at: Optional[datetime]
-    submitted_at: Optional[datetime]
-    reviewed_at: Optional[datetime]
-    reviewed_by: Optional[UUID]
     completed_at: Optional[datetime]
 
     # Tracking

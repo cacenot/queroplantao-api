@@ -7,7 +7,6 @@ from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.app.exceptions import (
-    ScreeningClientValidationNotRequiredError,
     ScreeningStepInvalidTypeError,
 )
 from src.modules.screening.domain.models.enums import (
@@ -36,7 +35,7 @@ class CompleteClientValidationStepUseCase(
     """
     Complete the client validation step (Step 10 - Optional).
 
-    This step is only present when client_validation_required=True on the process.
+    This is an optional step for client company approval of the professional.
     Captures the client's decision to approve or reject the professional.
     """
 
@@ -59,10 +58,8 @@ class CompleteClientValidationStepUseCase(
                 received=step.step_type.value,
             )
 
-        # Validate client validation is required
+        # Get process for status update
         process = await self.process_repository.get_by_id(step.process_id)
-        if process and not process.client_validation_required:
-            raise ScreeningClientValidationNotRequiredError()
 
         # Save client validation data
         step.client_validation_outcome = data.outcome

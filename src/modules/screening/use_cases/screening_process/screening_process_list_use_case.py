@@ -61,7 +61,7 @@ class ListMyScreeningProcessesUseCase:
     async def execute(
         self,
         organization_id: UUID,
-        assignee_id: UUID,
+        actor_id: UUID,
         pagination: PaginationParams,
         filters: ScreeningProcessFilter | None = None,
         sorting: ScreeningProcessSorting | None = None,
@@ -71,7 +71,7 @@ class ListMyScreeningProcessesUseCase:
 
         Args:
             organization_id: The organization ID.
-            assignee_id: The assignee user ID.
+            actor_id: The actor user ID.
             pagination: Pagination parameters.
             filters: Optional filter parameters.
             sorting: Optional sorting parameters.
@@ -79,9 +79,9 @@ class ListMyScreeningProcessesUseCase:
         Returns:
             Paginated list of assigned screening processes.
         """
-        return await self.repository.list_for_assignee(
+        return await self.repository.list_for_actor(
             organization_id=organization_id,
-            assignee_id=assignee_id,
+            actor_id=actor_id,
             pagination=pagination,
             filters=filters,
             sorting=sorting,

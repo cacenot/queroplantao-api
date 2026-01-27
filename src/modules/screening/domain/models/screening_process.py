@@ -11,12 +11,10 @@ from src.modules.screening.domain.models.enums import ScreeningStatus, StepType
 from src.shared.domain.models.base import BaseModel
 from src.shared.domain.models.fields import AwareDatetimeField, CPFField, PhoneField
 from src.shared.domain.models.mixins import (
-    MetadataMixin,
     PrimaryKeyMixin,
     SoftDeleteMixin,
     TimestampMixin,
     TrackingMixin,
-    VersionMixin,
 )
 
 if TYPE_CHECKING:
@@ -98,20 +96,10 @@ class ScreeningProcessBase(BaseModel):
     )
 
     # Assignment
-    assigned_to: Optional[UUID] = Field(
+    owner_id: Optional[UUID] = Field(
         default=None,
         nullable=True,
-        description="User currently responsible for this screening",
-    )
-    escalated_to: Optional[UUID] = Field(
-        default=None,
-        nullable=True,
-        description="Supervisor assigned for escalated review",
-    )
-    escalation_reason: Optional[str] = Field(
-        default=None,
-        max_length=2000,
-        description="Reason for escalation to supervisor",
+        description="User responsible for this screening (owner)",
     )
 
     # Rejection
@@ -140,25 +128,16 @@ class ScreeningProcessBase(BaseModel):
         description="Expected specialty ID (for doctors)",
     )
 
-    # Current assignee tracking for "my pending screenings" filter
-    current_assignee_id: Optional[UUID] = Field(
+    # Current actor tracking for "my pending screenings" filter
+    current_actor_id: Optional[UUID] = Field(
         default=None,
         nullable=True,
-        description="User currently responsible for action (for filtering)",
-    )
-
-    # Verifier assignment (who will review documents)
-    verifier_id: Optional[UUID] = Field(
-        default=None,
-        nullable=True,
-        description="User assigned to verify documents and conduct review",
+        description="User currently responsible for the next action (for filtering)",
     )
 
 
 class ScreeningProcess(
     ScreeningProcessBase,
-    MetadataMixin,
-    VersionMixin,
     TrackingMixin,
     PrimaryKeyMixin,
     TimestampMixin,
@@ -176,11 +155,7 @@ class ScreeningProcess(
     - Internal users (gestores/escalistas) can also fill on behalf of professional
     - Can be linked to contracts for tracking which screening led to which contract
 
-    Workflow timestamps track progress:
-    - sent_at: When screening link was sent to professional
-    - started_at: When professional/user first accessed the screening
-    - submitted_at: When all required steps were completed
-    - reviewed_at: When internal user reviewed the submission
+    Workflow timestamps:
     - completed_at: When screening was approved/finalized
     """
 
@@ -210,14 +185,10 @@ class ScreeningProcess(
                 "AND deleted_at IS NULL AND professional_cpf IS NOT NULL"
             ),
         ),
-        # Index for assigned user
-        Index("ix_screening_processes_assigned_to", "assigned_to"),
-        # Index for escalated processes
-        Index("ix_screening_processes_escalated_to", "escalated_to"),
-        # Index for current assignee (for "my pending screenings" filter)
-        Index("ix_screening_processes_current_assignee", "current_assignee_id"),
-        # Index for verifier
-        Index("ix_screening_processes_verifier", "verifier_id"),
+        # Index for owner
+        Index("ix_screening_processes_owner", "owner_id"),
+        # Index for current actor (for "my pending screenings" filter)
+        Index("ix_screening_processes_current_actor", "current_actor_id"),
         # Index for client company
         Index("ix_screening_processes_client_company", "client_company_id"),
     )
@@ -227,13 +198,6 @@ class ScreeningProcess(
         foreign_key="organizations.id",
         nullable=False,
         description="Organization that owns this screening process",
-    )
-
-    # Whether client validation step is required for this screening
-    client_validation_required: bool = Field(
-        default=False,
-        nullable=False,
-        description="Whether this screening requires client validation (Step 6)",
     )
 
     # Professional reference (created during screening if doesn't exist)
@@ -266,43 +230,11 @@ class ScreeningProcess(
         description="Client company (empresa contratante) for outsourcing scenarios",
     )
 
-    # Workflow timestamps
-    sent_at: Optional[AwareDatetime] = AwareDatetimeField(
-        default=None,
-        nullable=True,
-        description="When screening link was sent to professional",
-    )
-    started_at: Optional[AwareDatetime] = AwareDatetimeField(
-        default=None,
-        nullable=True,
-        description="When screening was first accessed",
-    )
-    submitted_at: Optional[AwareDatetime] = AwareDatetimeField(
-        default=None,
-        nullable=True,
-        description="When all required steps were completed",
-    )
-    reviewed_at: Optional[AwareDatetime] = AwareDatetimeField(
-        default=None,
-        nullable=True,
-        description="When internal user reviewed the submission",
-    )
-    reviewed_by: Optional[UUID] = Field(
-        default=None,
-        nullable=True,
-        description="User who reviewed the screening",
-    )
+    # Workflow timestamp
     completed_at: Optional[AwareDatetime] = AwareDatetimeField(
         default=None,
         nullable=True,
         description="When screening was approved/finalized",
-    )
-
-    # Review notes (for rejection reason, etc.)
-    review_notes: Optional[str] = Field(
-        default=None,
-        max_length=2000,
-        description="Notes from the review (e.g., rejection reason)",
     )
 
     # Relationships
@@ -342,12 +274,7 @@ class ScreeningProcess(
         """Check if screening is in an active state."""
         return self.status in (
             ScreeningStatus.DRAFT,
-            ScreeningStatus.CONVERSATION,
             ScreeningStatus.IN_PROGRESS,
-            ScreeningStatus.PENDING_REVIEW,
-            ScreeningStatus.UNDER_REVIEW,
-            ScreeningStatus.PENDING_CORRECTION,
-            ScreeningStatus.ESCALATED,
         )
 
     @property
@@ -363,12 +290,4 @@ class ScreeningProcess(
     @property
     def can_be_filled(self) -> bool:
         """Check if screening can still accept input."""
-        return (
-            self.status
-            in (
-                ScreeningStatus.CONVERSATION,
-                ScreeningStatus.IN_PROGRESS,
-                ScreeningStatus.PENDING_CORRECTION,
-            )
-            and not self.is_expired
-        )
+        return self.status == ScreeningStatus.IN_PROGRESS and not self.is_expired

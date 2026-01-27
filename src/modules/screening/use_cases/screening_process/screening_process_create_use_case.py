@@ -184,16 +184,15 @@ class CreateScreeningProcessUseCase:
         # First step is always CONVERSATION
         process = ScreeningProcess(
             organization_id=organization_id,
-            client_validation_required=data.client_validation_required,
             professional_id=professional.id,
             professional_cpf=data.professional_cpf,
             professional_name=data.professional_name,
-            status=ScreeningStatus.CONVERSATION,
+            status=ScreeningStatus.IN_PROGRESS,
             current_step_type=StepType.CONVERSATION,
             expected_professional_type=data.expected_professional_type,
             expected_specialty_id=data.expected_specialty_id,
-            current_assignee_id=data.assigned_to or created_by,
-            verifier_id=data.verifier_id,
+            owner_id=data.owner_id or created_by,
+            current_actor_id=data.owner_id or created_by,
             client_company_id=data.client_company_id,
             access_token=access_token,
             token_expires_at=token_expires_at,
@@ -207,7 +206,6 @@ class CreateScreeningProcessUseCase:
         await self._create_steps(
             process=process,
             settings=settings,
-            client_validation_required=data.client_validation_required,
             created_by=created_by,
         )
 
@@ -260,7 +258,6 @@ class CreateScreeningProcessUseCase:
         self,
         process: ScreeningProcess,
         settings,
-        client_validation_required: bool,
         created_by: UUID,
     ) -> list[ScreeningProcessStep]:
         """Create process steps from fixed step definitions."""
@@ -269,15 +266,10 @@ class CreateScreeningProcessUseCase:
         for i, step_def in enumerate(self.STEP_DEFINITIONS):
             step_type = step_def["step_type"]
 
-            # Skip client validation step if not required
-            if step_type == StepType.CLIENT_VALIDATION:
-                if not client_validation_required:
-                    continue
-
             step = ScreeningProcessStep(
                 process_id=process.id,
                 step_type=step_type,
-                order=len(steps) + 1,  # Renumber after skips
+                order=len(steps) + 1,
                 status=StepStatus.PENDING if len(steps) > 0 else StepStatus.IN_PROGRESS,
                 is_required=step_def["is_required"],
             )

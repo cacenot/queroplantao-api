@@ -45,7 +45,6 @@ from src.app.exceptions.professional_exceptions import (
     SpecialtyNotFoundError,
 )
 from src.app.exceptions.screening_exceptions import (
-    ScreeningClientValidationNotRequiredError,
     ScreeningConversationRejectedError,
     ScreeningDocumentsMissingRequiredError,
     ScreeningDocumentsNotUploadedError,
@@ -123,7 +122,6 @@ __all__ = [
     "SpecialtyAlreadyAssignedError",
     "SpecialtyNotFoundError",
     # Screening exceptions
-    "ScreeningClientValidationNotRequiredError",
     "ScreeningConversationRejectedError",
     "ScreeningDocumentsMissingRequiredError",
     "ScreeningDocumentsNotUploadedError",

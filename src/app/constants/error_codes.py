@@ -126,11 +126,6 @@ class ScreeningErrorCodes(StrEnum):
     SCREENING_DOCUMENTS_PENDING_REVIEW = "SCREENING_DOCUMENTS_PENDING_REVIEW"
     SCREENING_DOCUMENTS_NOT_REVIEWED = "SCREENING_DOCUMENTS_NOT_REVIEWED"
 
-    # Client validation errors
-    SCREENING_CLIENT_VALIDATION_NOT_REQUIRED = (
-        "SCREENING_CLIENT_VALIDATION_NOT_REQUIRED"
-    )
-
 
 class UserErrorCodes(StrEnum):
     """User management error codes."""

@@ -16,7 +16,6 @@ from src.app.exceptions import (
     ScreeningStepSkippedError,
 )
 from src.modules.screening.domain.models.enums import (
-    ScreeningStatus,
     StepStatus,
     StepType,
 )
@@ -154,5 +153,5 @@ class BaseStepCompleteUseCase(ABC, Generic[TRequest]):
             next_step.status = StepStatus.IN_PROGRESS
             next_step.started_at = datetime.now(timezone.utc)
         else:
-            # All steps completed
-            process.status = ScreeningStatus.PENDING_REVIEW
+            # All steps completed - process complete
+            pass  # Status is updated by approve/reject use cases

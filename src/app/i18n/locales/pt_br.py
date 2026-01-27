@@ -149,8 +149,6 @@ MESSAGES: dict[str, str] = {
     ScreeningMessages.DOCUMENTS_NOT_UPLOADED: "Documentos obrigatórios pendentes de envio: {documents}",
     ScreeningMessages.DOCUMENTS_MISSING_REQUIRED: "Documentos obrigatórios não foram enviados: {missing}",
     ScreeningMessages.DOCUMENTS_PENDING_REVIEW: "Documentos pendentes de verificação: {documents}",
-    # Client Validation
-    ScreeningMessages.CLIENT_VALIDATION_NOT_REQUIRED: "Validação do cliente não é necessária para este processo",
 }
 
 # =============================================================================

@@ -35,16 +35,12 @@ class ScreeningStatus(str, Enum):
     """
     Status of a screening process throughout its lifecycle.
 
-    Tracks the overall state of the screening from creation to completion.
+    Tracks the overall macro state of the screening from creation to completion.
+    Detailed progress is tracked via current_step_type + StepStatus.
     """
 
     DRAFT = "DRAFT"  # Created but not started
-    CONVERSATION = "CONVERSATION"  # In initial conversation phase
-    IN_PROGRESS = "IN_PROGRESS"  # Collecting data
-    PENDING_REVIEW = "PENDING_REVIEW"  # Waiting for document review
-    UNDER_REVIEW = "UNDER_REVIEW"  # Documents being reviewed
-    PENDING_CORRECTION = "PENDING_CORRECTION"  # Waiting for data/document correction
-    ESCALATED = "ESCALATED"  # Escalated to supervisor for alert review
+    IN_PROGRESS = "IN_PROGRESS"  # Process is active (any step in progress)
     APPROVED = "APPROVED"  # Screening approved and completed
     REJECTED = "REJECTED"  # Screening rejected
     EXPIRED = "EXPIRED"  # Screening expired before completion

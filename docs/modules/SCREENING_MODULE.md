@@ -2,11 +2,11 @@
 
 ## Visão Geral
 
-O módulo de triagem gerencia o processo de coleta e validação de dados e documentos de profissionais de saúde. Implementa um fluxo de 10 etapas que pode ser personalizado por processo através de flags (como `client_validation_required`).
+O módulo de triagem gerencia o processo de coleta e validação de dados e documentos de profissionais de saúde. Implementa um fluxo de 10 etapas configuráveis.
 
 ### Principais Funcionalidades
 
-- **Fluxo de 10 etapas**: Conversa → Dados Pessoais → Formação → Especialidade → Educação → Empresa → Conta Bancária → Documentos → Revisão → Validação do Cliente (opcional)
+- **Fluxo de 10 etapas**: Conversa → Dados Pessoais → Formação → Especialidade → Educação → Empresa → Conta Bancária → Documentos → Revisão → Validação do Cliente
 - **Fluxo de conversa inicial**: Etapa de pré-triagem por telefone antes da coleta de dados
 - **Verificação individual de documentos**: Cada documento é revisado separadamente
 - **Escalação para supervisor**: Alertas podem ser escalados para revisão superior
@@ -61,36 +61,28 @@ O módulo de triagem gerencia o processo de coleta e validação de dados e docu
 │  DRAFT  │ ─── Triagem criada, não iniciada
 └────┬────┘
      │
-     ▼ (iniciar conversa)
-┌──────────────┐
-│ CONVERSATION │ ─── Escalista conversa por telefone, registra notas
-└──────┬───────┘
-       │
-       ├──(rejeitado)──► REJECTED
-       │
-       ▼ (aprovado na conversa)
+     ▼ (iniciar)
 ┌─────────────┐
-│ IN_PROGRESS │ ─── Coletando dados pessoais, formação, documentos
+│ IN_PROGRESS │ ─── Processo em andamento (etapa atual indicada por current_step_type)
 └──────┬──────┘
        │
-       ▼ (dados preenchidos)
-┌────────────────┐
-│ PENDING_REVIEW │ ─── Aguardando verificação de documentos
-└───────┬────────┘
-        │
-        ▼ (iniciar verificação)
-┌──────────────┐
-│ UNDER_REVIEW │ ─── Gestor verificando cada documento
-└──────┬───────┘
+       │  Etapas controladas por current_step_type + StepStatus:
+       │  - CONVERSATION: Conversa inicial
+       │  - PROFESSIONAL_DATA → BANK_ACCOUNT: Coleta de dados
+       │  - DOCUMENT_REVIEW: Verificação de documentos
+       │  - SUPERVISOR_REVIEW: Revisão superior (alertas)
+       │  - CLIENT_VALIDATION: Validação pelo cliente
        │
-       ├──(docs reprovados)──► PENDING_CORRECTION ──► IN_PROGRESS
+       ├──(rejeitado em qualquer etapa)──► REJECTED
        │
-       ├──(alerta)──► ESCALATED ──┬──(supervisor reprova)──► REJECTED
-       │                          │
-       │                          └──(supervisor aprova)──► APPROVED
+       ├──(expirado)──► EXPIRED
        │
-       └──(todos aprovados)──► APPROVED
+       ├──(cancelado)──► CANCELLED
+       │
+       └──(todas etapas aprovadas)──► APPROVED
 ```
+
+**Nota:** O status detalhado do processo é determinado pela combinação de `status` + `current_step_type` + status da etapa atual.
 
 ## Enums
 
@@ -113,24 +105,28 @@ Tipos fixos de etapas disponíveis no workflow de triagem.
 | DOCUMENT_REVIEW | Verificação de documentos pelo gestor |
 | SUPERVISOR_REVIEW | Revisão superior (para alertas) |
 | **Etapas Opcionais** | |
-| CLIENT_VALIDATION | Validação pelo cliente (controlado por `client_validation_required`) |
+| CLIENT_VALIDATION | Validação pelo cliente (opcional, controlado por `is_required` no step) |
 
 ### ScreeningStatus
-Status do processo de triagem.
+Status macro do processo de triagem. O estado detalhado é determinado por `current_step_type` + `StepStatus`.
 
 | Valor | Descrição |
 |-------|-----------|
 | DRAFT | Criado, não iniciado |
-| CONVERSATION | Em conversa inicial |
-| IN_PROGRESS | Coletando dados |
-| PENDING_REVIEW | Aguardando verificação de documentos |
-| UNDER_REVIEW | Em verificação |
-| PENDING_CORRECTION | Aguardando correção de dados/documentos |
-| ESCALATED | Escalado para supervisor |
+| IN_PROGRESS | Em andamento (qualquer etapa) |
 | APPROVED | Aprovado e finalizado |
 | REJECTED | Rejeitado |
 | EXPIRED | Expirado antes de conclusão |
 | CANCELLED | Cancelado pela organização |
+
+**Estados detalhados (derivados):**
+| Cenário | Como identificar |
+|---------|------------------|
+| Em conversa inicial | `status=IN_PROGRESS` + `current_step_type=CONVERSATION` |
+| Aguardando revisão | `status=IN_PROGRESS` + `current_step_type=DOCUMENT_REVIEW` + step `PENDING` |
+| Em revisão | `status=IN_PROGRESS` + `current_step_type=DOCUMENT_REVIEW` + step `IN_PROGRESS` |
+| Aguardando correção | `status=IN_PROGRESS` + step com `CORRECTION_NEEDED` |
+| Escalado | `status=IN_PROGRESS` + `current_step_type=SUPERVISOR_REVIEW` |
 
 ### StepStatus
 Status de uma etapa individual.
@@ -181,7 +177,6 @@ Instância de um processo de triagem para um profissional.
 |-------|------|----------|-----------|
 | id | UUID (v7) | ❌ | Primary key |
 | organization_id | UUID | ❌ | FK para organizations (tenant isolation) |
-| client_validation_required | BOOLEAN | ❌ | Se requer validação do cliente (default: false) |
 | organization_professional_id | UUID | ✅ | FK para organization_professionals |
 | professional_contract_id | UUID | ✅ | FK para professional_contracts |
 | client_contract_id | UUID | ✅ | FK para client_contracts |
@@ -203,26 +198,15 @@ Instância de um processo de triagem para um profissional.
 | token_expires_at | TIMESTAMP | ✅ | Alias para expiração do token |
 | expires_at | TIMESTAMP | ✅ | Expiração do processo |
 | **Atribuição** | | | |
-| assigned_to | UUID | ✅ | Usuário responsável atual |
-| current_assignee_id | UUID | ✅ | Usuário responsável pela ação atual |
-| verifier_id | UUID | ✅ | Usuário que irá verificar documentos |
-| escalated_to | UUID | ✅ | Supervisor (quando escalado) |
-| escalation_reason | VARCHAR(2000) | ✅ | Motivo da escalação |
+| owner_id | UUID | ✅ | Responsável geral pelo processo |
+| current_actor_id | UUID | ✅ | Responsável pela ação atual (para filtros "minhas pendências") |
 | **Rejeição** | | | |
 | rejection_reason | VARCHAR(2000) | ✅ | Motivo da rejeição |
 | **Notas** | | | |
 | notes | VARCHAR(2000) | ✅ | Notas gerais |
-| review_notes | VARCHAR(2000) | ✅ | Notas da revisão |
 | **Timestamps de Workflow** | | | |
-| sent_at | TIMESTAMP | ✅ | Quando link foi enviado |
-| started_at | TIMESTAMP | ✅ | Quando foi acessado |
-| submitted_at | TIMESTAMP | ✅ | Quando etapas foram concluídas |
-| reviewed_at | TIMESTAMP | ✅ | Quando foi revisado |
-| reviewed_by | UUID | ✅ | Quem revisou |
-| completed_at | TIMESTAMP | ✅ | Quando foi finalizado |
+| completed_at | TIMESTAMP | ✅ | Quando foi finalizado (aprovado/rejeitado/cancelado) |
 | **Mixins** | | | |
-| metadata | JSON | ✅ | Dados extras |
-| version | INTEGER | ❌ | Optimistic locking |
 | created_by | UUID | ✅ | Quem criou |
 | updated_by | UUID | ✅ | Quem atualizou |
 | created_at | TIMESTAMP | ❌ | Timestamp de criação |
@@ -372,16 +356,15 @@ Verificação individual de cada documento uploadado.
 2. **Durante DOCUMENT_REVIEW step**: Gestor verifica cada documento individualmente
 3. **Cada documento pode ter status:**
    - `APPROVED`: Documento válido
-   - `REJECTED`: Documento inválido, precisa re-upload → processo volta para `PENDING_CORRECTION`
-   - `ALERT`: Documento com pendência, requer supervisor → processo vai para `ESCALATED`
+   - `REJECTED`: Documento inválido, precisa re-upload → step volta para `CORRECTION_NEEDED`
+   - `ALERT`: Documento com pendência, requer revisão superior
 4. **Triagem só é aprovada quando todos os documentos obrigatórios estão APPROVED**
 
-### Escalação para Supervisor
+### Revisão Superior
 
-1. Quando um documento tem status `ALERT`, a triagem vai para status `ESCALATED`
-2. Campo `escalated_to` recebe o UUID do supervisor
-3. Campo `escalation_reason` registra o motivo
-4. Supervisor pode aprovar ou rejeitar, finalizando o fluxo
+1. Quando um documento tem status `ALERT`, a triagem vai para step `SUPERVISOR_REVIEW`
+2. O `current_step_type` passa a ser `SUPERVISOR_REVIEW`
+3. Supervisor pode aprovar ou rejeitar, finalizando o fluxo
 
 ### Documentos Obrigatórios
 

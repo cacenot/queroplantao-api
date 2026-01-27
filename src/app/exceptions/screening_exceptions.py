@@ -257,14 +257,3 @@ class ScreeningProcessHasRejectedDocumentsError(AppException):
 # =============================================================================
 # CLIENT VALIDATION EXCEPTIONS
 # =============================================================================
-
-
-class ScreeningClientValidationNotRequiredError(AppException):
-    """Raised when client validation is not required for this process."""
-
-    def __init__(self) -> None:
-        super().__init__(
-            message=get_message(ScreeningMessages.CLIENT_VALIDATION_NOT_REQUIRED),
-            code=ScreeningErrorCodes.SCREENING_CLIENT_VALIDATION_NOT_REQUIRED,
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-        )
