@@ -1,0 +1,65 @@
+meta {
+  name: Complete Client Validation
+  type: http
+  seq: 12
+}
+
+post {
+  url: {{baseUrl}}/screenings/{{screeningId}}/client-validation/complete
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  X-Organization-ID: {{organizationId}}
+}
+
+body:json {
+  {
+    "outcome": "APPROVED",
+    "notes": "Cliente aprovou o perfil do profissional para início imediato."
+  }
+}
+
+docs {
+  # Concluir Validação do Cliente (Etapa 6)
+  
+  Registra a decisão da empresa cliente sobre o profissional.
+  
+  ## Campos
+  
+  | Campo | Tipo | Obrigatório | Descrição |
+  |-------|------|-------------|-----------|
+  | outcome | enum | Sim | Decisão do cliente |
+  | notes | string | Não | Observações do cliente |
+  
+  ## Resultados Possíveis
+  
+  - `APPROVED`: Cliente aprovou o profissional
+  - `REJECTED`: Cliente rejeitou o profissional
+  - `PENDING_INFO`: Cliente solicitou mais informações
+  
+  ## Comportamento
+  
+  - Se `APPROVED`, conclui a triagem com sucesso
+  - Se `REJECTED`, encerra a triagem como rejeitada
+  - Se `PENDING_INFO`, mantém aguardando complementação
+  
+  ## Observações
+  
+  - Esta etapa é opcional (configurável por organização)
+  - O `client_company_id` deve estar definido na triagem
+  - Registra automaticamente quem validou e quando
+  
+  ## Error Codes
+  
+  | Status | Code | Descrição |
+  |--------|------|-----------|
+  | 404 | `SCREENING_NOT_FOUND` | Triagem não encontrada |
+  | 422 | `WRONG_STEP` | Triagem não está na etapa de validação |
+  | 422 | `CLIENT_COMPANY_NOT_SET` | Empresa cliente não definida |
+}

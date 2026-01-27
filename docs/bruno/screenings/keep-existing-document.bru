@@ -1,0 +1,58 @@
+meta {
+  name: Keep Existing Document
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{baseUrl}}/screenings/{{screeningId}}/documents/{{documentId}}/keep
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  X-Organization-ID: {{organizationId}}
+}
+
+body:json {
+  {
+    "professional_document_id": "{{existingDocumentId}}"
+  }
+}
+
+docs {
+  # Manter Documento Existente (Etapa 3)
+  
+  Vincula um documento existente do profissional a um documento requerido.
+  
+  ## Campos
+  
+  | Campo | Tipo | Obrigatório | Descrição |
+  |-------|------|-------------|-----------|
+  | professional_document_id | UUID | Sim | ID do documento existente |
+  
+  ## Comportamento
+  
+  - Marca o required document como `is_existing = true`
+  - Vincula ao `professional_document_id`
+  - Se configuração da organização permitir, aprova automaticamente
+  - Caso contrário, segue para verificação manual
+  
+  ## Validações
+  
+  - O documento deve pertencer ao profissional da triagem
+  - O documento deve ter o mesmo tipo configurado
+  
+  ## Error Codes
+  
+  | Status | Code | Descrição |
+  |--------|------|-----------|
+  | 404 | `SCREENING_NOT_FOUND` | Triagem não encontrada |
+  | 404 | `REQUIRED_DOCUMENT_NOT_FOUND` | Documento requerido não encontrado |
+  | 404 | `PROFESSIONAL_DOCUMENT_NOT_FOUND` | Documento do profissional não encontrado |
+  | 422 | `DOCUMENT_TYPE_MISMATCH` | Tipo de documento não corresponde |
+}

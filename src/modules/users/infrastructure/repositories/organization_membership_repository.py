@@ -12,7 +12,6 @@ from src.modules.organizations.domain.models.organization import Organization
 from src.modules.organizations.domain.models.organization_membership import (
     OrganizationMembership,
 )
-from src.modules.users.domain.models.role import Role
 from src.modules.users.domain.models.user import User
 from src.modules.users.infrastructure.filters import (
     OrganizationUserFilter,

@@ -1,5 +1,29 @@
 """Screening module repositories."""
 
-# TODO: Implement repositories for:
-# - ScreeningTemplateRepository
-# - ScreeningProcessRepository
+from src.modules.screening.infrastructure.repositories.document_type_config_repository import (
+    DocumentTypeConfigRepository,
+)
+from src.modules.screening.infrastructure.repositories.organization_screening_settings_repository import (
+    OrganizationScreeningSettingsRepository,
+)
+from src.modules.screening.infrastructure.repositories.screening_document_review_repository import (
+    ScreeningDocumentReviewRepository,
+)
+from src.modules.screening.infrastructure.repositories.screening_process_repository import (
+    ScreeningProcessRepository,
+)
+from src.modules.screening.infrastructure.repositories.screening_process_step_repository import (
+    ScreeningProcessStepRepository,
+)
+from src.modules.screening.infrastructure.repositories.screening_required_document_repository import (
+    ScreeningRequiredDocumentRepository,
+)
+
+__all__ = [
+    "DocumentTypeConfigRepository",
+    "OrganizationScreeningSettingsRepository",
+    "ScreeningDocumentReviewRepository",
+    "ScreeningProcessRepository",
+    "ScreeningProcessStepRepository",
+    "ScreeningRequiredDocumentRepository",
+]

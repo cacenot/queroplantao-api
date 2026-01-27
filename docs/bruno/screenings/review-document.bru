@@ -1,0 +1,58 @@
+meta {
+  name: Review Document
+  type: http
+  seq: 10
+}
+
+post {
+  url: {{baseUrl}}/screenings/{{screeningId}}/documents/{{documentId}}/review
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  X-Organization-ID: {{organizationId}}
+}
+
+body:json {
+  {
+    "status": "APPROVED",
+    "notes": "Documento válido e legível"
+  }
+}
+
+docs {
+  # Revisar Documento (Etapa 4)
+  
+  Aprova ou rejeita um documento durante a verificação.
+  
+  ## Campos
+  
+  | Campo | Tipo | Obrigatório | Descrição |
+  |-------|------|-------------|-----------|
+  | status | enum | Sim | `APPROVED` ou `REJECTED` |
+  | notes | string | Não | Observações sobre a revisão |
+  
+  ## Comportamento
+  
+  - Cria um registro de `ScreeningDocumentReview`
+  - Atualiza o status do documento requerido
+  - Se rejeitado, o profissional deve reenviar
+  
+  ## Status Possíveis
+  
+  - `APPROVED`: Documento aceito
+  - `REJECTED`: Documento rejeitado (precisa reenviar)
+  
+  ## Error Codes
+  
+  | Status | Code | Descrição |
+  |--------|------|-----------|
+  | 404 | `SCREENING_NOT_FOUND` | Triagem não encontrada |
+  | 404 | `REQUIRED_DOCUMENT_NOT_FOUND` | Documento requerido não encontrado |
+  | 422 | `DOCUMENT_NOT_UPLOADED` | Documento ainda não foi enviado |
+}

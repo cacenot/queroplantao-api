@@ -97,6 +97,39 @@ class ProfessionalMessages(StrEnum):
     EDUCATION_NOT_FOUND = "professional.education_not_found"
 
 
+class ScreeningMessages(StrEnum):
+    """Message keys for Screening module."""
+
+    # Process messages
+    PROCESS_NOT_FOUND = "screening.process.not_found"
+    PROCESS_INVALID_STATUS = "screening.process.invalid_status"
+    PROCESS_ALREADY_COMPLETED = "screening.process.already_completed"
+    PROCESS_CANNOT_APPROVE = "screening.process.cannot_approve"
+    PROCESS_CANNOT_REJECT = "screening.process.cannot_reject"
+    PROCESS_CANNOT_CANCEL = "screening.process.cannot_cancel"
+    PROCESS_HAS_REJECTED_DOCUMENTS = "screening.process.has_rejected_documents"
+    PROCESS_INCOMPLETE_STEPS = "screening.process.incomplete_steps"
+
+    # Step messages
+    STEP_NOT_FOUND = "screening.step.not_found"
+    STEP_ALREADY_COMPLETED = "screening.step.already_completed"
+    STEP_SKIPPED = "screening.step.skipped"
+    STEP_NOT_IN_PROGRESS = "screening.step.not_in_progress"
+    STEP_INVALID_TYPE = "screening.step.invalid_type"
+    STEP_CANNOT_GO_BACK = "screening.step.cannot_go_back"
+
+    # Conversation messages
+    CONVERSATION_REJECTED = "screening.conversation.rejected"
+
+    # Document messages
+    DOCUMENTS_NOT_UPLOADED = "screening.documents.not_uploaded"
+    DOCUMENTS_MISSING_REQUIRED = "screening.documents.missing_required"
+    DOCUMENTS_PENDING_REVIEW = "screening.documents.pending_review"
+
+    # Client validation messages
+    CLIENT_VALIDATION_NOT_REQUIRED = "screening.client_validation.not_required"
+
+
 class UserMessages(StrEnum):
     """User management message keys."""
 

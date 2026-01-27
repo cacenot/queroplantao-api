@@ -1,0 +1,57 @@
+meta {
+  name: Public Upload Document
+  type: http
+  seq: 16
+}
+
+post {
+  url: {{baseUrl}}/public/screening/{{accessToken}}/documents/{{documentId}}/upload
+  body: multipartForm
+  auth: none
+}
+
+body:multipart-form {
+  file: @file(./sample-document.pdf)
+  expiration_date: 2025-12-31
+}
+
+docs {
+  # Upload de Documento (Acesso Público)
+  
+  Permite que o profissional envie documentos via link público.
+  
+  ## Parâmetros de URL
+  
+  | Parâmetro | Tipo | Descrição |
+  |-----------|------|-----------|
+  | accessToken | string | Token único de acesso à triagem |
+  | documentId | UUID | ID do documento requerido |
+  
+  ## Campos do Form
+  
+  | Campo | Tipo | Obrigatório | Descrição |
+  |-------|------|-------------|-----------|
+  | file | file | Sim | Arquivo do documento |
+  | expiration_date | date | Condicional | Data de validade |
+  
+  ## Comportamento
+  
+  - Não requer autenticação
+  - Token deve estar válido e não expirado
+  - Triagem deve estar na etapa de upload (3)
+  
+  ## Formatos Aceitos
+  
+  - PDF, JPG, PNG, WEBP
+  - Tamanho máximo: 10MB
+  
+  ## Error Codes
+  
+  | Status | Code | Descrição |
+  |--------|------|-----------|
+  | 404 | `SCREENING_NOT_FOUND` | Token inválido |
+  | 404 | `REQUIRED_DOCUMENT_NOT_FOUND` | Documento não encontrado |
+  | 410 | `SCREENING_EXPIRED` | Triagem expirou |
+  | 422 | `WRONG_STEP` | Triagem não está na etapa de upload |
+  | 422 | `INVALID_FILE_TYPE` | Tipo de arquivo não suportado |
+}

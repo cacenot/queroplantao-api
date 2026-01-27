@@ -1,0 +1,56 @@
+meta {
+  name: Cancel Screening
+  type: http
+  seq: 13
+}
+
+post {
+  url: {{baseUrl}}/screenings/{{screeningId}}/cancel
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  X-Organization-ID: {{organizationId}}
+}
+
+body:json {
+  {
+    "reason": "Profissional desistiu do processo seletivo."
+  }
+}
+
+docs {
+  # Cancelar Triagem
+  
+  Cancela uma triagem em andamento.
+  
+  ## Campos
+  
+  | Campo | Tipo | Obrigatório | Descrição |
+  |-------|------|-------------|-----------|
+  | reason | string | Não | Motivo do cancelamento |
+  
+  ## Comportamento
+  
+  - Atualiza o status da triagem para `CANCELLED`
+  - Marca a etapa atual como `CANCELLED`
+  - Triagens canceladas não podem ser reativadas
+  
+  ## Permissões
+  
+  - Apenas usuários com permissão de gestão podem cancelar
+  - Triagens já concluídas não podem ser canceladas
+  
+  ## Error Codes
+  
+  | Status | Code | Descrição |
+  |--------|------|-----------|
+  | 404 | `SCREENING_NOT_FOUND` | Triagem não encontrada |
+  | 422 | `SCREENING_ALREADY_COMPLETED` | Triagem já foi concluída |
+  | 422 | `SCREENING_ALREADY_CANCELLED` | Triagem já está cancelada |
+}

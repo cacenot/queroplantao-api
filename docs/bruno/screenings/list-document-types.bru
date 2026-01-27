@@ -1,0 +1,66 @@
+meta {
+  name: List Document Types
+  type: http
+  seq: 17
+}
+
+get {
+  url: {{baseUrl}}/screenings/document-types
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  X-Organization-ID: {{organizationId}}
+}
+
+query {
+  ~search: RG
+  ~category: IDENTIFICATION
+  ~is_active: true
+  ~page: 1
+  ~per_page: 20
+}
+
+docs {
+  # Listar Tipos de Documento
+  
+  Lista os tipos de documento configurados para a organização.
+  
+  ## Query Parameters
+  
+  | Parâmetro | Tipo | Descrição |
+  |-----------|------|-----------|
+  | search | string | Busca por nome ou código |
+  | category | enum | Filtrar por categoria |
+  | is_active | boolean | Filtrar por status |
+  | page | integer | Página (default: 1) |
+  | per_page | integer | Itens por página (default: 20) |
+  
+  ## Categorias
+  
+  - `IDENTIFICATION`: Documentos de identificação
+  - `PROFESSIONAL`: Documentos profissionais
+  - `ACADEMIC`: Documentos acadêmicos
+  - `COMPLIANCE`: Documentos de compliance
+  - `OTHER`: Outros
+  
+  ## Resposta
+  
+  Retorna lista paginada de tipos de documento com:
+  - Código e nome
+  - Categoria
+  - Texto de ajuda e instruções
+  - URL de validação (se aplicável)
+  - Configuração de validade
+  
+  ## Error Codes
+  
+  | Status | Code | Descrição |
+  |--------|------|-----------|
+  | 401 | `AUTH_UNAUTHORIZED` | Não autenticado |
+}

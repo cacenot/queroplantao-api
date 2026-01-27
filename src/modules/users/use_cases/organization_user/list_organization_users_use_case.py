@@ -5,9 +5,6 @@ from uuid import UUID
 from fastapi_restkit.pagination import PaginatedResponse, PaginationParams
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.modules.organizations.domain.models.organization_membership import (
-    OrganizationMembership,
-)
 from src.modules.users.domain.schemas import (
     OrganizationUserListItem,
     OrganizationUserResponse,

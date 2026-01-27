@@ -1,0 +1,43 @@
+meta {
+  name: Public Get Screening
+  type: http
+  seq: 15
+}
+
+get {
+  url: {{baseUrl}}/public/screening/{{accessToken}}
+  body: none
+  auth: none
+}
+
+docs {
+  # Consultar Triagem (Acesso Público)
+  
+  Permite que o profissional visualize sua triagem via token de acesso.
+  
+  ## Parâmetros de URL
+  
+  | Parâmetro | Tipo | Descrição |
+  |-----------|------|-----------|
+  | accessToken | string | Token único de acesso à triagem |
+  
+  ## Comportamento
+  
+  - Não requer autenticação
+  - Token expira conforme configuração da organização
+  - Retorna dados limitados (sem informações sensíveis)
+  
+  ## Dados Retornados
+  
+  - Status atual da triagem
+  - Etapa atual
+  - Documentos pendentes
+  - Instruções para o profissional
+  
+  ## Error Codes
+  
+  | Status | Code | Descrição |
+  |--------|------|-----------|
+  | 404 | `SCREENING_NOT_FOUND` | Token inválido ou expirado |
+  | 410 | `SCREENING_EXPIRED` | Triagem expirou |
+}

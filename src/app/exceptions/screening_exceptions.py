@@ -1,0 +1,270 @@
+"""Domain-specific exceptions for Screening module."""
+
+from starlette import status
+
+from src.app.constants.error_codes import ScreeningErrorCodes
+from src.app.exceptions.base import AppException
+from src.app.i18n import ScreeningMessages, get_message
+
+
+# =============================================================================
+# PROCESS EXCEPTIONS
+# =============================================================================
+
+
+class ScreeningProcessNotFoundError(AppException):
+    """Raised when screening process is not found."""
+
+    def __init__(self, screening_id: str) -> None:
+        super().__init__(
+            message=get_message(ScreeningMessages.PROCESS_NOT_FOUND),
+            code=ScreeningErrorCodes.SCREENING_PROCESS_NOT_FOUND,
+            status_code=status.HTTP_404_NOT_FOUND,
+            details={"screening_id": screening_id},
+        )
+
+
+class ScreeningProcessInvalidStatusError(AppException):
+    """Raised when operation is invalid for current process status."""
+
+    def __init__(self, current_status: str) -> None:
+        super().__init__(
+            message=get_message(
+                ScreeningMessages.PROCESS_INVALID_STATUS, status=current_status
+            ),
+            code=ScreeningErrorCodes.SCREENING_PROCESS_INVALID_STATUS,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            details={"current_status": current_status},
+        )
+
+
+class ScreeningProcessCannotApproveError(AppException):
+    """Raised when screening cannot be approved in current status."""
+
+    def __init__(self, current_status: str) -> None:
+        super().__init__(
+            message=get_message(
+                ScreeningMessages.PROCESS_CANNOT_APPROVE, status=current_status
+            ),
+            code=ScreeningErrorCodes.SCREENING_PROCESS_CANNOT_APPROVE,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            details={"current_status": current_status},
+        )
+
+
+class ScreeningProcessCannotRejectError(AppException):
+    """Raised when screening cannot be rejected in current status."""
+
+    def __init__(self, current_status: str) -> None:
+        super().__init__(
+            message=get_message(
+                ScreeningMessages.PROCESS_CANNOT_REJECT, status=current_status
+            ),
+            code=ScreeningErrorCodes.SCREENING_PROCESS_CANNOT_REJECT,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            details={"current_status": current_status},
+        )
+
+
+class ScreeningProcessCannotCancelError(AppException):
+    """Raised when screening cannot be cancelled in current status."""
+
+    def __init__(self, current_status: str) -> None:
+        super().__init__(
+            message=get_message(
+                ScreeningMessages.PROCESS_CANNOT_CANCEL, status=current_status
+            ),
+            code=ScreeningErrorCodes.SCREENING_PROCESS_CANNOT_CANCEL,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            details={"current_status": current_status},
+        )
+
+
+class ScreeningProcessIncompleteStepsError(AppException):
+    """Raised when trying to complete screening with incomplete required steps."""
+
+    def __init__(self) -> None:
+        super().__init__(
+            message=get_message(ScreeningMessages.PROCESS_INCOMPLETE_STEPS),
+            code=ScreeningErrorCodes.SCREENING_PROCESS_INCOMPLETE_STEPS,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        )
+
+
+# =============================================================================
+# STEP EXCEPTIONS
+# =============================================================================
+
+
+class ScreeningStepNotFoundError(AppException):
+    """Raised when screening step is not found."""
+
+    def __init__(self, step_id: str) -> None:
+        super().__init__(
+            message=get_message(ScreeningMessages.STEP_NOT_FOUND),
+            code=ScreeningErrorCodes.SCREENING_STEP_NOT_FOUND,
+            status_code=status.HTTP_404_NOT_FOUND,
+            details={"step_id": step_id},
+        )
+
+
+class ScreeningStepAlreadyCompletedError(AppException):
+    """Raised when step is already completed."""
+
+    def __init__(self, step_id: str) -> None:
+        super().__init__(
+            message=get_message(ScreeningMessages.STEP_ALREADY_COMPLETED),
+            code=ScreeningErrorCodes.SCREENING_STEP_ALREADY_COMPLETED,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            details={"step_id": step_id},
+        )
+
+
+class ScreeningStepSkippedError(AppException):
+    """Raised when trying to modify a skipped step."""
+
+    def __init__(self, step_id: str) -> None:
+        super().__init__(
+            message=get_message(ScreeningMessages.STEP_SKIPPED),
+            code=ScreeningErrorCodes.SCREENING_STEP_SKIPPED,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            details={"step_id": step_id},
+        )
+
+
+class ScreeningStepNotInProgressError(AppException):
+    """Raised when step is not in progress."""
+
+    def __init__(self, step_id: str, current_status: str) -> None:
+        super().__init__(
+            message=get_message(ScreeningMessages.STEP_NOT_IN_PROGRESS),
+            code=ScreeningErrorCodes.SCREENING_STEP_NOT_IN_PROGRESS,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            details={"step_id": step_id, "current_status": current_status},
+        )
+
+
+class ScreeningStepInvalidTypeError(AppException):
+    """Raised when step type doesn't match expected type for operation."""
+
+    def __init__(self, expected: str, received: str) -> None:
+        super().__init__(
+            message=get_message(
+                ScreeningMessages.STEP_INVALID_TYPE,
+                expected=expected,
+                received=received,
+            ),
+            code=ScreeningErrorCodes.SCREENING_STEP_INVALID_TYPE,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            details={"expected": expected, "received": received},
+        )
+
+
+class ScreeningStepCannotGoBackError(AppException):
+    """Raised when cannot go back to a specific step."""
+
+    def __init__(self, step_type: str) -> None:
+        super().__init__(
+            message=get_message(
+                ScreeningMessages.STEP_CANNOT_GO_BACK, step_type=step_type
+            ),
+            code=ScreeningErrorCodes.SCREENING_STEP_CANNOT_GO_BACK,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            details={"step_type": step_type},
+        )
+
+
+# =============================================================================
+# CONVERSATION STEP EXCEPTIONS
+# =============================================================================
+
+
+class ScreeningConversationRejectedError(AppException):
+    """Raised when professional is rejected during conversation step."""
+
+    def __init__(self) -> None:
+        super().__init__(
+            message=get_message(ScreeningMessages.CONVERSATION_REJECTED),
+            code=ScreeningErrorCodes.SCREENING_CONVERSATION_REJECTED,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        )
+
+
+# =============================================================================
+# DOCUMENT STEP EXCEPTIONS
+# =============================================================================
+
+
+class ScreeningDocumentsNotUploadedError(AppException):
+    """Raised when required documents are still pending upload."""
+
+    def __init__(self, document_names: list[str] | None = None) -> None:
+        docs = (
+            ", ".join(document_names) if document_names else "Documentos obrigatórios"
+        )
+        super().__init__(
+            message=get_message(
+                ScreeningMessages.DOCUMENTS_NOT_UPLOADED, documents=docs
+            ),
+            code=ScreeningErrorCodes.SCREENING_DOCUMENTS_NOT_UPLOADED,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            details={"pending_documents": document_names} if document_names else None,
+        )
+
+
+class ScreeningDocumentsMissingRequiredError(AppException):
+    """Raised when required documents are missing."""
+
+    def __init__(self, missing_documents: list[str]) -> None:
+        super().__init__(
+            message=get_message(
+                ScreeningMessages.DOCUMENTS_MISSING_REQUIRED,
+                missing=", ".join(missing_documents),
+            ),
+            code=ScreeningErrorCodes.SCREENING_DOCUMENTS_MISSING_REQUIRED,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            details={"missing_documents": missing_documents},
+        )
+
+
+class ScreeningDocumentsPendingReviewError(AppException):
+    """Raised when documents are still pending review."""
+
+    def __init__(self, document_names: list[str] | None = None) -> None:
+        docs = ", ".join(document_names) if document_names else "Documentos"
+        super().__init__(
+            message=get_message(
+                ScreeningMessages.DOCUMENTS_PENDING_REVIEW, documents=docs
+            ),
+            code=ScreeningErrorCodes.SCREENING_DOCUMENTS_PENDING_REVIEW,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            details={"pending_documents": document_names} if document_names else None,
+        )
+
+
+class ScreeningProcessHasRejectedDocumentsError(AppException):
+    """Raised when process has rejected documents that need correction."""
+
+    def __init__(self, document_names: list[str] | None = None) -> None:
+        super().__init__(
+            message=get_message(ScreeningMessages.PROCESS_HAS_REJECTED_DOCUMENTS),
+            code=ScreeningErrorCodes.SCREENING_PROCESS_HAS_REJECTED_DOCUMENTS,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            details={"rejected_documents": document_names} if document_names else None,
+        )
+
+
+# =============================================================================
+# CLIENT VALIDATION EXCEPTIONS
+# =============================================================================
+
+
+class ScreeningClientValidationNotRequiredError(AppException):
+    """Raised when client validation is not required for this process."""
+
+    def __init__(self) -> None:
+        super().__init__(
+            message=get_message(ScreeningMessages.CLIENT_VALIDATION_NOT_REQUIRED),
+            code=ScreeningErrorCodes.SCREENING_CLIENT_VALIDATION_NOT_REQUIRED,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        )

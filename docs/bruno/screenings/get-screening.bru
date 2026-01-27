@@ -1,0 +1,40 @@
+meta {
+  name: Get Screening
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/screenings/{{screeningId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  X-Organization-ID: {{organizationId}}
+}
+
+docs {
+  # Obter Triagem
+  
+  Retorna os detalhes de um processo de triagem específico.
+  
+  ## Response
+  
+  Inclui:
+  - Dados do profissional
+  - Status atual
+  - Lista de etapas (steps) com status de cada uma
+  - Lista de documentos requeridos
+  - Token de acesso público
+  
+  ## Error Codes
+  
+  | Status | Code | Descrição |
+  |--------|------|-----------|
+  | 404 | `SCREENING_NOT_FOUND` | Triagem não encontrada |
+}

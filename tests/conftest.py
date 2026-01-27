@@ -6,7 +6,6 @@ from sqlalchemy.pool import StaticPool
 from sqlmodel import SQLModel
 
 from src.app.context import RequestContext, set_request_context
-from src.shared.domain.models import metadata
 from src.shared.infrastructure.database.connection import async_session_factory
 
 from uuid import UUID

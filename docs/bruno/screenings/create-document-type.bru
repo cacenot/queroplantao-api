@@ -1,0 +1,69 @@
+meta {
+  name: Create Document Type
+  type: http
+  seq: 18
+}
+
+post {
+  url: {{baseUrl}}/screenings/document-types
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  X-Organization-ID: {{organizationId}}
+}
+
+body:json {
+  {
+    "code": "CRM",
+    "name": "Registro no CRM",
+    "category": "PROFESSIONAL",
+    "help_text": "Comprovante de inscrição no Conselho Regional de Medicina",
+    "validation_instructions": "Verificar no site do CFM se a inscrição está ativa",
+    "validation_url": "https://portal.cfm.org.br/",
+    "requires_expiration": false,
+    "default_validity_days": null,
+    "required_for_professional_types": ["DOCTOR"],
+    "is_active": true
+  }
+}
+
+docs {
+  # Criar Tipo de Documento
+  
+  Cria um novo tipo de documento para a organização.
+  
+  ## Campos
+  
+  | Campo | Tipo | Obrigatório | Descrição |
+  |-------|------|-------------|-----------|
+  | code | string | Sim | Código único (ex: CRM, RG) |
+  | name | string | Sim | Nome do tipo de documento |
+  | category | enum | Sim | Categoria do documento |
+  | help_text | string | Não | Texto de ajuda para o profissional |
+  | validation_instructions | string | Não | Instruções para o verificador |
+  | validation_url | url | Não | URL para validação online |
+  | requires_expiration | boolean | Não | Se requer data de validade |
+  | default_validity_days | integer | Não | Dias de validade padrão |
+  | required_for_professional_types | array | Não | Tipos de profissional que requerem |
+  | is_active | boolean | Não | Se está ativo (default: true) |
+  
+  ## Categorias
+  
+  - `IDENTIFICATION`: RG, CNH, Passaporte
+  - `PROFESSIONAL`: CRM, COREN, CRF
+  - `ACADEMIC`: Diploma, Certificados
+  - `COMPLIANCE`: Vacinas, Atestados
+  - `OTHER`: Outros documentos
+  
+  ## Error Codes
+  
+  | Status | Code | Descrição |
+  |--------|------|-----------|
+  | 409 | `DOCUMENT_TYPE_CODE_EXISTS` | Código já existe |
+}

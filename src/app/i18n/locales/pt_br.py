@@ -5,6 +5,7 @@ from src.app.i18n.messages import (
     OrganizationMessages,
     ProfessionalMessages,
     ResourceMessages,
+    ScreeningMessages,
     UserMessages,
     ValidationMessages,
 )
@@ -123,6 +124,33 @@ MESSAGES: dict[str, str] = {
     ValidationMessages.UF_MUST_BE_STRING: "UF deve ser uma string",
     ValidationMessages.UF_INVALID_LENGTH: "UF deve ter 2 letras, encontrado {length}",
     ValidationMessages.UF_INVALID_CODE: "UF inválida: '{code}' não é um estado brasileiro válido",
+    # ==========================================================================
+    # Screening messages
+    # ==========================================================================
+    # Process
+    ScreeningMessages.PROCESS_NOT_FOUND: "Processo de triagem não encontrado",
+    ScreeningMessages.PROCESS_INVALID_STATUS: "Processo de triagem não pode ser alterado no status {status}",
+    ScreeningMessages.PROCESS_ALREADY_COMPLETED: "Processo de triagem já foi finalizado",
+    ScreeningMessages.PROCESS_CANNOT_APPROVE: "Processo de triagem não pode ser aprovado no status {status}",
+    ScreeningMessages.PROCESS_CANNOT_REJECT: "Processo de triagem não pode ser rejeitado no status {status}",
+    ScreeningMessages.PROCESS_CANNOT_CANCEL: "Processo de triagem não pode ser cancelado no status {status}",
+    ScreeningMessages.PROCESS_HAS_REJECTED_DOCUMENTS: "Existem documentos rejeitados pendentes de correção",
+    ScreeningMessages.PROCESS_INCOMPLETE_STEPS: "Nem todas as etapas obrigatórias foram concluídas",
+    # Step
+    ScreeningMessages.STEP_NOT_FOUND: "Etapa de triagem não encontrada",
+    ScreeningMessages.STEP_ALREADY_COMPLETED: "Esta etapa já foi concluída",
+    ScreeningMessages.STEP_SKIPPED: "Esta etapa foi ignorada e não pode ser alterada",
+    ScreeningMessages.STEP_NOT_IN_PROGRESS: "Esta etapa não está em andamento",
+    ScreeningMessages.STEP_INVALID_TYPE: "Tipo de etapa inválido para esta operação. Esperado: {expected}, recebido: {received}",
+    ScreeningMessages.STEP_CANNOT_GO_BACK: "Não é possível voltar para a etapa {step_type}",
+    # Conversation
+    ScreeningMessages.CONVERSATION_REJECTED: "Profissional rejeitado na conversa inicial",
+    # Documents
+    ScreeningMessages.DOCUMENTS_NOT_UPLOADED: "Documentos obrigatórios pendentes de envio: {documents}",
+    ScreeningMessages.DOCUMENTS_MISSING_REQUIRED: "Documentos obrigatórios não foram enviados: {missing}",
+    ScreeningMessages.DOCUMENTS_PENDING_REVIEW: "Documentos pendentes de verificação: {documents}",
+    # Client Validation
+    ScreeningMessages.CLIENT_VALIDATION_NOT_REQUIRED: "Validação do cliente não é necessária para este processo",
 }
 
 # =============================================================================

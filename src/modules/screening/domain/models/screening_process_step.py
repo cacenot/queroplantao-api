@@ -8,6 +8,7 @@ from sqlalchemy import JSON, Enum as SAEnum, Index, UniqueConstraint
 from sqlmodel import Field, Relationship
 
 from src.modules.screening.domain.models.enums import (
+    ClientValidationOutcome,
     ConversationOutcome,
     StepStatus,
     StepType,
@@ -88,6 +89,32 @@ class ScreeningProcessStepBase(BaseModel):
         default=None,
         max_length=2000,
         description="Reason for rejection (if rejected)",
+    )
+
+    # Client validation step fields (for CLIENT_VALIDATION step)
+    client_validation_outcome: Optional[ClientValidationOutcome] = Field(
+        default=None,
+        sa_type=SAEnum(
+            ClientValidationOutcome,
+            name="client_validation_outcome",
+            create_constraint=True,
+        ),
+        description="Client's decision: APPROVED or REJECTED",
+    )
+    client_validation_notes: Optional[str] = Field(
+        default=None,
+        max_length=2000,
+        description="Notes from the client company validation",
+    )
+    client_validated_by: Optional[str] = Field(
+        default=None,
+        max_length=255,
+        description="Name of the person at client company who validated",
+    )
+    client_validated_at: Optional[AwareDatetime] = AwareDatetimeField(
+        default=None,
+        nullable=True,
+        description="When the client validation was performed",
     )
 
 

@@ -1,0 +1,60 @@
+meta {
+  name: Advance Step
+  type: http
+  seq: 14
+}
+
+post {
+  url: {{baseUrl}}/screenings/{{screeningId}}/steps/advance
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  X-Organization-ID: {{organizationId}}
+}
+
+body:json {
+  {
+    "notes": "Etapa concluída com sucesso."
+  }
+}
+
+docs {
+  # Avançar Etapa
+  
+  Avança manualmente para a próxima etapa da triagem.
+  
+  ## Campos
+  
+  | Campo | Tipo | Obrigatório | Descrição |
+  |-------|------|-------------|-----------|
+  | notes | string | Não | Observações sobre a transição |
+  
+  ## Comportamento
+  
+  - Marca a etapa atual como `COMPLETED`
+  - Cria a próxima etapa como `IN_PROGRESS`
+  - Atualiza `current_step` no processo
+  
+  ## Validações por Etapa
+  
+  - **Etapa 1 (Conversa)**: Dados do profissional devem estar preenchidos
+  - **Etapa 2 (Seleção)**: Pelo menos 1 documento selecionado
+  - **Etapa 3 (Upload)**: Todos documentos obrigatórios enviados
+  - **Etapa 4 (Verificação)**: Todos documentos aprovados
+  - **Etapa 5 (Entrevista)**: Use `complete-interview` ao invés
+  - **Etapa 6 (Validação)**: Use `complete-client-validation` ao invés
+  
+  ## Error Codes
+  
+  | Status | Code | Descrição |
+  |--------|------|-----------|
+  | 404 | `SCREENING_NOT_FOUND` | Triagem não encontrada |
+  | 422 | `STEP_REQUIREMENTS_NOT_MET` | Requisitos da etapa não cumpridos |
+  | 422 | `NO_NEXT_STEP` | Já está na última etapa |
+}

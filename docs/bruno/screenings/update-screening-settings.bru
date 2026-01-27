@@ -1,0 +1,61 @@
+meta {
+  name: Update Screening Settings
+  type: http
+  seq: 20
+}
+
+patch {
+  url: {{baseUrl}}/screenings/settings
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  X-Organization-ID: {{organizationId}}
+}
+
+body:json {
+  {
+    "requires_client_company": true,
+    "requires_client_validation_step": true,
+    "token_expiry_hours": 48,
+    "auto_approve_existing_documents": false
+  }
+}
+
+docs {
+  # Atualizar Configurações de Triagem
+  
+  Atualiza as configurações de triagem da organização.
+  
+  ## Campos (todos opcionais - PATCH semântica)
+  
+  | Campo | Tipo | Descrição |
+  |-------|------|-----------|
+  | requires_client_company | boolean | Se triagem requer empresa cliente |
+  | requires_client_validation_step | boolean | Se etapa de validação do cliente é obrigatória |
+  | token_expiry_hours | integer | Horas de validade do token (1-720) |
+  | auto_approve_existing_documents | boolean | Aprovar docs existentes automaticamente |
+  
+  ## Comportamento
+  
+  - Apenas campos enviados são atualizados
+  - Se não existir configuração, cria uma nova
+  - Alterações afetam apenas novas triagens
+  
+  ## Permissões
+  
+  - Requer permissão de administrador da organização
+  
+  ## Error Codes
+  
+  | Status | Code | Descrição |
+  |--------|------|-----------|
+  | 401 | `AUTH_UNAUTHORIZED` | Não autenticado |
+  | 403 | `AUTH_FORBIDDEN` | Sem permissão |
+  | 422 | `VALIDATION_ERROR` | Valor inválido para campo |
+}

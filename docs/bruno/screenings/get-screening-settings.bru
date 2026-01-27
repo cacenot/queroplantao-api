@@ -1,0 +1,45 @@
+meta {
+  name: Get Screening Settings
+  type: http
+  seq: 19
+}
+
+get {
+  url: {{baseUrl}}/screenings/settings
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  X-Organization-ID: {{organizationId}}
+}
+
+docs {
+  # Obter Configurações de Triagem
+  
+  Retorna as configurações de triagem da organização.
+  
+  ## Resposta
+  
+  | Campo | Tipo | Descrição |
+  |-------|------|-----------|
+  | requires_client_company | boolean | Se triagem requer empresa cliente |
+  | requires_client_validation_step | boolean | Se etapa de validação do cliente é obrigatória |
+  | token_expiry_hours | integer | Horas de validade do token público |
+  | auto_approve_existing_documents | boolean | Aprovar docs existentes automaticamente |
+  
+  ## Comportamento
+  
+  - Se a organização não tem configurações, retorna os valores padrão
+  - Valores padrão: tudo false, token expira em 72 horas
+  
+  ## Error Codes
+  
+  | Status | Code | Descrição |
+  |--------|------|-----------|
+  | 401 | `AUTH_UNAUTHORIZED` | Não autenticado |
+}

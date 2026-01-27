@@ -4,6 +4,8 @@
 
 REST API for medical shift management (HR Tech). Multi-tenant architecture with organization-scoped data isolation. Built with FastAPI + SQLModel + PostgreSQL.
 
+**IMPORTANT: This API is in active development with no production deployment yet. Deprecated code should be immediately removed instead of being marked as `deprecated=True`.**
+
 ## Essential Commands
 
 ```bash

@@ -1,11 +1,21 @@
 """Screening module domain models."""
 
+from src.modules.screening.domain.models.document_type import (
+    DocumentTypeConfig,
+    DocumentTypeConfigBase,
+)
 from src.modules.screening.domain.models.enums import (
+    ClientValidationOutcome,
     ConversationOutcome,
     DocumentReviewStatus,
+    RequiredDocumentStatus,
     ScreeningStatus,
     StepStatus,
     StepType,
+)
+from src.modules.screening.domain.models.organization_screening_settings import (
+    OrganizationScreeningSettings,
+    OrganizationScreeningSettingsBase,
 )
 from src.modules.screening.domain.models.screening_document_review import (
     ScreeningDocumentReview,
@@ -23,27 +33,21 @@ from src.modules.screening.domain.models.screening_required_document import (
     ScreeningRequiredDocument,
     ScreeningRequiredDocumentBase,
 )
-from src.modules.screening.domain.models.screening_template import (
-    ScreeningTemplate,
-    ScreeningTemplateBase,
-)
-from src.modules.screening.domain.models.screening_template_step import (
-    ScreeningTemplateStep,
-    ScreeningTemplateStepBase,
-)
 
 __all__ = [
     # Enums
+    "ClientValidationOutcome",
     "ConversationOutcome",
     "DocumentReviewStatus",
+    "RequiredDocumentStatus",
     "ScreeningStatus",
     "StepStatus",
     "StepType",
-    # Template models
-    "ScreeningTemplate",
-    "ScreeningTemplateBase",
-    "ScreeningTemplateStep",
-    "ScreeningTemplateStepBase",
+    # Configuration models
+    "DocumentTypeConfig",
+    "DocumentTypeConfigBase",
+    "OrganizationScreeningSettings",
+    "OrganizationScreeningSettingsBase",
     # Process models
     "ScreeningProcess",
     "ScreeningProcessBase",

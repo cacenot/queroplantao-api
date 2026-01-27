@@ -17,9 +17,6 @@ from src.shared.domain.models.mixins import (
 )
 
 if TYPE_CHECKING:
-    from src.modules.contracts.domain.models.professional_contract import (
-        ProfessionalContract,
-    )
     from src.modules.professionals.domain.models.organization_professional import (
         OrganizationProfessional,
     )

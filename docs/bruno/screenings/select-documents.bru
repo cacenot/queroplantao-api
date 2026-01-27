@@ -1,0 +1,62 @@
+meta {
+  name: Select Documents
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{baseUrl}}/screenings/{{screeningId}}/documents
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  X-Organization-ID: {{organizationId}}
+}
+
+body:json {
+  [
+    {
+      "document_type_config_id": "{{documentTypeId1}}",
+      "is_required": true,
+      "notes": "Enviar frente e verso"
+    },
+    {
+      "document_type_config_id": "{{documentTypeId2}}",
+      "is_required": true,
+      "professional_document_id": "{{existingDocId}}"
+    }
+  ]
+}
+
+docs {
+  # Selecionar Documentos (Etapa 2)
+  
+  Define os documentos requeridos para a triagem.
+  
+  ## Campos por Documento
+  
+  | Campo | Tipo | Obrigatório | Descrição |
+  |-------|------|-------------|-----------|
+  | document_type_config_id | UUID | Sim | ID do tipo de documento |
+  | is_required | boolean | Não | Se é obrigatório (default: true) |
+  | notes | string | Não | Observações para o profissional |
+  | professional_document_id | UUID | Não | ID de documento existente para reutilizar |
+  
+  ## Comportamento
+  
+  - Se o documento já existe na lista, atualiza ao invés de criar
+  - Se `professional_document_id` for informado, marca como "documento existente"
+  - Documentos existentes podem ser aceitos automaticamente (config da org)
+  
+  ## Error Codes
+  
+  | Status | Code | Descrição |
+  |--------|------|-----------|
+  | 404 | `SCREENING_NOT_FOUND` | Triagem não encontrada |
+  | 422 | `DOCUMENT_TYPE_NOT_FOUND` | Tipo de documento inválido |
+}

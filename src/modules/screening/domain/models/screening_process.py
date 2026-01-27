@@ -37,7 +37,7 @@ if TYPE_CHECKING:
     from src.modules.screening.domain.models.screening_required_document import (
         ScreeningRequiredDocument,
     )
-    from src.modules.screening.domain.models.screening_template import ScreeningTemplate
+    from src.shared.domain.models.company import Company
 
 
 class ScreeningProcessBase(BaseModel):
@@ -128,6 +128,32 @@ class ScreeningProcessBase(BaseModel):
         description="Internal notes about this screening",
     )
 
+    # Expected professional profile (set during conversation step)
+    expected_professional_type: Optional[str] = Field(
+        default=None,
+        max_length=50,
+        description="Expected professional type (DOCTOR, NURSE, etc.)",
+    )
+    expected_specialty_id: Optional[UUID] = Field(
+        default=None,
+        nullable=True,
+        description="Expected specialty ID (for doctors)",
+    )
+
+    # Current assignee tracking for "my pending screenings" filter
+    current_assignee_id: Optional[UUID] = Field(
+        default=None,
+        nullable=True,
+        description="User currently responsible for action (for filtering)",
+    )
+
+    # Verifier assignment (who will review documents)
+    verifier_id: Optional[UUID] = Field(
+        default=None,
+        nullable=True,
+        description="User assigned to verify documents and conduct review",
+    )
+
 
 class ScreeningProcess(
     ScreeningProcessBase,
@@ -143,7 +169,6 @@ class ScreeningProcess(
     ScreeningProcess table model.
 
     Represents an individual screening instance for a professional.
-    Tracks progress through the configured steps from the template.
 
     Key behaviors:
     - If professional doesn't exist (by CPF in org), one is created automatically
@@ -189,6 +214,12 @@ class ScreeningProcess(
         Index("ix_screening_processes_assigned_to", "assigned_to"),
         # Index for escalated processes
         Index("ix_screening_processes_escalated_to", "escalated_to"),
+        # Index for current assignee (for "my pending screenings" filter)
+        Index("ix_screening_processes_current_assignee", "current_assignee_id"),
+        # Index for verifier
+        Index("ix_screening_processes_verifier", "verifier_id"),
+        # Index for client company
+        Index("ix_screening_processes_client_company", "client_company_id"),
     )
 
     # Organization reference (required - tenant isolation)
@@ -198,11 +229,11 @@ class ScreeningProcess(
         description="Organization that owns this screening process",
     )
 
-    # Template used (required)
-    template_id: UUID = Field(
-        foreign_key="screening_templates.id",
+    # Whether client validation step is required for this screening
+    client_validation_required: bool = Field(
+        default=False,
         nullable=False,
-        description="Template defining the steps for this screening",
+        description="Whether this screening requires client validation (Step 6)",
     )
 
     # Professional reference (created during screening if doesn't exist)
@@ -225,6 +256,14 @@ class ScreeningProcess(
         foreign_key="client_contracts.id",
         nullable=True,
         description="Client contract this screening is for (if applicable)",
+    )
+
+    # Client company (empresa contratante) - for outsourcing companies
+    client_company_id: Optional[UUID] = Field(
+        default=None,
+        foreign_key="companies.id",
+        nullable=True,
+        description="Client company (empresa contratante) for outsourcing scenarios",
     )
 
     # Workflow timestamps
@@ -268,13 +307,15 @@ class ScreeningProcess(
 
     # Relationships
     organization: "Organization" = Relationship()
-    template: "ScreeningTemplate" = Relationship(
-        back_populates="processes",
-    )
     organization_professional: Optional["OrganizationProfessional"] = Relationship()
     professional_contract: Optional["ProfessionalContract"] = Relationship()
     client_contract: Optional["ClientContract"] = Relationship(
         back_populates="screening_processes",
+    )
+    client_company: Optional["Company"] = Relationship(
+        sa_relationship_kwargs={
+            "foreign_keys": "[ScreeningProcess.client_company_id]",
+        },
     )
     steps: list["ScreeningProcessStep"] = Relationship(
         back_populates="process",

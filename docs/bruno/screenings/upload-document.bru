@@ -1,0 +1,58 @@
+meta {
+  name: Upload Document
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{baseUrl}}/screenings/{{screeningId}}/documents/{{documentId}}/upload
+  body: multipartForm
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  X-Organization-ID: {{organizationId}}
+}
+
+body:multipart-form {
+  file: @file(./sample-document.pdf)
+  expiration_date: 2025-12-31
+}
+
+docs {
+  # Upload de Documento (Etapa 3)
+  
+  Faz upload de um documento requerido.
+  
+  ## Campos do Form
+  
+  | Campo | Tipo | Obrigatório | Descrição |
+  |-------|------|-------------|-----------|
+  | file | file | Sim | Arquivo do documento |
+  | expiration_date | date | Condicional | Data de validade (se tipo requer) |
+  
+  ## Formatos Aceitos
+  
+  - PDF, JPG, PNG, WEBP
+  - Tamanho máximo: 10MB
+  
+  ## Comportamento
+  
+  - Cria novo `ProfessionalDocument` no módulo de profissionais
+  - Se já existia um documento anterior, incrementa a versão
+  - Atualiza `is_uploaded = true` no required document
+  
+  ## Error Codes
+  
+  | Status | Code | Descrição |
+  |--------|------|-----------|
+  | 404 | `SCREENING_NOT_FOUND` | Triagem não encontrada |
+  | 404 | `REQUIRED_DOCUMENT_NOT_FOUND` | Documento requerido não encontrado |
+  | 422 | `INVALID_FILE_TYPE` | Tipo de arquivo não suportado |
+  | 422 | `FILE_TOO_LARGE` | Arquivo excede limite de tamanho |
+  | 422 | `EXPIRATION_REQUIRED` | Data de validade obrigatória para este tipo |
+}

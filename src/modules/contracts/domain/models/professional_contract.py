@@ -29,7 +29,6 @@ if TYPE_CHECKING:
     from src.modules.professionals.domain.models.organization_professional import (
         OrganizationProfessional,
     )
-    from src.modules.screening.domain.models.screening_process import ScreeningProcess
     from src.modules.units.domain.models.unit import Unit
     from src.shared.domain.models.bank_account import BankAccount
     from src.shared.domain.models.company import Company

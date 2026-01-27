@@ -6,7 +6,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.app.exceptions import (
     InvitationAlreadyAcceptedError,
-    InvitationExpiredError,
     InvitationInvalidTokenError,
     MembershipNotFoundError,
 )

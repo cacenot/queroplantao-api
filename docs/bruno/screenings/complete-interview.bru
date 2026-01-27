@@ -1,0 +1,70 @@
+meta {
+  name: Complete Interview
+  type: http
+  seq: 11
+}
+
+post {
+  url: {{baseUrl}}/screenings/{{screeningId}}/interview/complete
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  X-Organization-ID: {{organizationId}}
+}
+
+body:json {
+  {
+    "interview_date": "2025-01-15T14:30:00Z",
+    "interview_method": "VIDEO_CALL",
+    "interview_notes": "Profissional demonstrou boa comunicação e conhecimento técnico. Disponibilidade confirmada para plantões noturnos.",
+    "outcome": "APPROVED"
+  }
+}
+
+docs {
+  # Concluir Entrevista (Etapa 5)
+  
+  Registra o resultado da entrevista com o profissional.
+  
+  ## Campos
+  
+  | Campo | Tipo | Obrigatório | Descrição |
+  |-------|------|-------------|-----------|
+  | interview_date | datetime | Sim | Data/hora da entrevista |
+  | interview_method | enum | Sim | Método utilizado |
+  | interview_notes | string | Não | Observações da entrevista |
+  | outcome | enum | Sim | Resultado da entrevista |
+  | escalation_reason | string | Condicional | Motivo (se escalated) |
+  
+  ## Métodos de Entrevista
+  
+  - `IN_PERSON`: Presencial
+  - `PHONE_CALL`: Ligação telefônica
+  - `VIDEO_CALL`: Chamada de vídeo
+  
+  ## Resultados Possíveis
+  
+  - `APPROVED`: Aprovado para próxima etapa
+  - `REJECTED`: Reprovado, triagem encerrada
+  - `ESCALATED`: Escalado para revisão superior
+  
+  ## Comportamento
+  
+  - Se `APPROVED`, avança para Etapa 6 (Validação Cliente)
+  - Se `REJECTED`, encerra a triagem com status rejeitado
+  - Se `ESCALATED`, mantém na etapa aguardando decisão
+  
+  ## Error Codes
+  
+  | Status | Code | Descrição |
+  |--------|------|-----------|
+  | 404 | `SCREENING_NOT_FOUND` | Triagem não encontrada |
+  | 422 | `WRONG_STEP` | Triagem não está na etapa de entrevista |
+  | 422 | `ESCALATION_REASON_REQUIRED` | Motivo obrigatório quando escalado |
+}

@@ -4,8 +4,7 @@ import asyncio
 import os
 import random
 import sys
-from datetime import date
-from uuid import UUID, uuid4
+from uuid import uuid4
 
 # Add project root to path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))

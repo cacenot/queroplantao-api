@@ -1,0 +1,53 @@
+meta {
+  name: List Screenings
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/screenings
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  X-Organization-ID: {{organizationId}}
+}
+
+params:query {
+  page: 1
+  size: 20
+  ~status: in_progress
+  ~assignee_id: 
+  ~client_company_id: 
+}
+
+docs {
+  # Listar Triagens
+  
+  Lista todos os processos de triagem da organização com paginação e filtros.
+  
+  ## Query Parameters
+  
+  | Parâmetro | Tipo | Descrição |
+  |-----------|------|-----------|
+  | page | int | Página (default: 1) |
+  | size | int | Itens por página (default: 20) |
+  | status | enum | Filtrar por status |
+  | assignee_id | UUID | Filtrar por responsável |
+  | client_company_id | UUID | Filtrar por empresa contratante |
+  | search | string | Buscar por nome ou CPF |
+  
+  ## Status Values
+  
+  - `pending` - Pendente
+  - `in_progress` - Em andamento
+  - `awaiting_approval` - Aguardando aprovação
+  - `approved` - Aprovado
+  - `rejected` - Rejeitado
+  - `cancelled` - Cancelado
+}

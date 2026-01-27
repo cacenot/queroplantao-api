@@ -19,13 +19,16 @@ class StepType(str, Enum):
     QUALIFICATION = "QUALIFICATION"  # Professional license/council registration
     SPECIALTY = "SPECIALTY"  # Medical specialties
     EDUCATION = "EDUCATION"  # Complementary education
-    DOCUMENTS = "DOCUMENTS"  # Document uploads
+    DOCUMENT_UPLOAD = "DOCUMENT_UPLOAD"  # Document uploads by professional
     COMPANY = "COMPANY"  # PJ company data
     BANK_ACCOUNT = "BANK_ACCOUNT"  # Bank account data
 
     # Review phases
     DOCUMENT_REVIEW = "DOCUMENT_REVIEW"  # Document verification by reviewer
     SUPERVISOR_REVIEW = "SUPERVISOR_REVIEW"  # Escalated review by supervisor
+
+    # Client validation (optional)
+    CLIENT_VALIDATION = "CLIENT_VALIDATION"  # Client company approval step
 
 
 class ScreeningStatus(str, Enum):
@@ -86,3 +89,28 @@ class ConversationOutcome(str, Enum):
 
     PROCEED = "PROCEED"  # Continue to next steps
     REJECT = "REJECT"  # Reject and end screening
+
+
+class ClientValidationOutcome(str, Enum):
+    """
+    Outcome of client company validation.
+
+    Final decision from the contracting client.
+    """
+
+    APPROVED = "APPROVED"  # Client approved the professional
+    REJECTED = "REJECTED"  # Client rejected the professional
+
+
+class RequiredDocumentStatus(str, Enum):
+    """
+    Status of a required document in the screening process.
+
+    Tracks the lifecycle of each document from upload request to approval.
+    """
+
+    PENDING_UPLOAD = "PENDING_UPLOAD"  # Waiting for document upload
+    UPLOADED = "UPLOADED"  # Document uploaded, awaiting review
+    APPROVED = "APPROVED"  # Document approved by reviewer
+    REJECTED = "REJECTED"  # Document rejected, needs re-upload
+    CORRECTION_NEEDED = "CORRECTION_NEEDED"  # Returned for correction after rejection

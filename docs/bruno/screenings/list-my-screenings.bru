@@ -1,0 +1,44 @@
+meta {
+  name: List My Screenings
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/screenings/me
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  X-Organization-ID: {{organizationId}}
+}
+
+params:query {
+  page: 1
+  size: 20
+  ~status: in_progress
+}
+
+docs {
+  # Minhas Triagens
+  
+  Lista os processos de triagem atribuídos ao usuário atual.
+  
+  ## Query Parameters
+  
+  | Parâmetro | Tipo | Descrição |
+  |-----------|------|-----------|
+  | page | int | Página (default: 1) |
+  | size | int | Itens por página (default: 20) |
+  | status | enum | Filtrar por status |
+  
+  ## Uso
+  
+  Este endpoint é útil para mostrar a lista de triagens que o usuário
+  precisa processar (sua "caixa de entrada" de trabalho).
+}

@@ -2,11 +2,11 @@
 
 ## Visão Geral
 
-O módulo de triagem gerencia o processo de coleta e validação de dados e documentos de profissionais de saúde. Permite criar templates configuráveis que definem quais etapas são necessárias para diferentes cenários (onboarding completo, verificação para contrato específico, etc.).
+O módulo de triagem gerencia o processo de coleta e validação de dados e documentos de profissionais de saúde. Implementa um fluxo de 10 etapas que pode ser personalizado por processo através de flags (como `client_validation_required`).
 
 ### Principais Funcionalidades
 
-- **Templates configuráveis**: Cada organização pode ter múltiplos templates com diferentes etapas
+- **Fluxo de 10 etapas**: Conversa → Dados Pessoais → Formação → Especialidade → Educação → Empresa → Conta Bancária → Documentos → Revisão → Validação do Cliente (opcional)
 - **Fluxo de conversa inicial**: Etapa de pré-triagem por telefone antes da coleta de dados
 - **Verificação individual de documentos**: Cada documento é revisado separadamente
 - **Escalação para supervisor**: Alertas podem ser escalados para revisão superior
@@ -20,17 +20,6 @@ O módulo de triagem gerencia o processo de coleta e validação de dados e docu
 │                                      TRIAGEM (SCREENING)                                │
 ├─────────────────────────────────────────────────────────────────────────────────────────┤
 │                                                                                         │
-│  ┌──────────────────┐      ┌─────────────────────┐                                      │
-│  │   Organization   │──1:N─│  ScreeningTemplate  │                                      │
-│  └──────────────────┘      └─────────────────────┘                                      │
-│          │                          │                                                   │
-│         1:N                        1:N                                                  │
-│          │                          │                                                   │
-│          │                 ┌────────────────────────┐                                   │
-│          │                 │ ScreeningTemplateStep  │                                   │
-│          │                 └────────────────────────┘                                   │
-│          │                                                                              │
-│          │                                                                              │
 │  ┌───────────────────────────────────────────────────────────────────────┐              │
 │  │                        PROCESSO DE TRIAGEM                            │              │
 │  │                                                                       │              │
@@ -61,7 +50,6 @@ O módulo de triagem gerencia o processo de coleta e validação de dados e docu
 │  │  ScreeningProcess ──N:1── OrganizationProfessional                    │              │
 │  │  ScreeningProcess ──N:1── ProfessionalContract (opcional)             │              │
 │  │  ScreeningProcess ──N:1── ClientContract (opcional)                   │              │
-│  │  ScreeningProcess ──N:1── ScreeningTemplate                           │              │
 │  └───────────────────────────────────────────────────────────────────────┘              │
 └─────────────────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -107,7 +95,7 @@ O módulo de triagem gerencia o processo de coleta e validação de dados e docu
 ## Enums
 
 ### StepType
-Tipos fixos de etapas disponíveis para configuração.
+Tipos fixos de etapas disponíveis no workflow de triagem.
 
 | Valor | Descrição |
 |-------|-----------|
@@ -124,6 +112,8 @@ Tipos fixos de etapas disponíveis para configuração.
 | **Verificação** | |
 | DOCUMENT_REVIEW | Verificação de documentos pelo gestor |
 | SUPERVISOR_REVIEW | Revisão superior (para alertas) |
+| **Etapas Opcionais** | |
+| CLIENT_VALIDATION | Validação pelo cliente (controlado por `client_validation_required`) |
 
 ### ScreeningStatus
 Status do processo de triagem.
@@ -173,57 +163,15 @@ Resultado da conversa inicial.
 | PROCEED | Continuar para próximas etapas |
 | REJECT | Rejeitar e encerrar triagem |
 
+### ClientValidationOutcome
+Resultado da validação pelo cliente.
+
+| Valor | Descrição |
+|-------|-----------|
+| APPROVED | Cliente aprovou o profissional |
+| REJECTED | Cliente rejeitou o profissional |
+
 ## Tabelas
-
-### screening_templates
-
-Templates configuráveis para processos de triagem.
-
-| Campo | Tipo | Nullable | Descrição |
-|-------|------|----------|-----------|
-| id | UUID (v7) | ❌ | Primary key |
-| organization_id | UUID | ❌ | FK para organizations (tenant isolation) |
-| name | VARCHAR(255) | ❌ | Nome do template |
-| description | VARCHAR(2000) | ✅ | Descrição do propósito |
-| professional_type | ProfessionalType | ✅ | Tipo de profissional (filtro opcional) |
-| is_default | BOOLEAN | ❌ | Se é o template padrão da org (único) |
-| is_active | BOOLEAN | ❌ | Se está habilitado para uso |
-| default_expiration_days | INTEGER | ❌ | Dias até expirar (1-365, default: 30) |
-| metadata | JSON | ✅ | Configurações extras |
-| **Tracking (TrackingMixin)** | | | |
-| created_by | UUID | ✅ | Quem criou |
-| updated_by | UUID | ✅ | Quem atualizou |
-| **Timestamps & Soft Delete** | | | |
-| created_at | TIMESTAMP | ❌ | Timestamp de criação |
-| updated_at | TIMESTAMP | ✅ | Timestamp de atualização |
-| deleted_at | TIMESTAMP | ✅ | Soft delete |
-
-**Constraints:**
-- UNIQUE PARTIAL INDEX: `(organization_id, name) WHERE deleted_at IS NULL`
-- UNIQUE PARTIAL INDEX: `(organization_id) WHERE is_default = true AND deleted_at IS NULL`
-
-### screening_template_steps
-
-Configuração de etapas dentro de um template.
-
-| Campo | Tipo | Nullable | Descrição |
-|-------|------|----------|-----------|
-| id | UUID (v7) | ❌ | Primary key |
-| template_id | UUID | ❌ | FK para screening_templates |
-| step_type | StepType | ❌ | Tipo da etapa |
-| order | INTEGER | ❌ | Ordem de exibição (1-based) |
-| is_required | BOOLEAN | ❌ | Se é obrigatória |
-| is_enabled | BOOLEAN | ❌ | Se está habilitada |
-| instructions | VARCHAR(2000) | ✅ | Instruções personalizadas |
-| depends_on | JSON | ✅ | Lista de StepType dependentes |
-| metadata | JSON | ✅ | Configurações extras |
-| **Timestamps** | | | |
-| created_at | TIMESTAMP | ❌ | Timestamp de criação |
-| updated_at | TIMESTAMP | ✅ | Timestamp de atualização |
-
-**Constraints:**
-- UNIQUE(template_id, step_type)
-- UNIQUE(template_id, order)
 
 ### screening_processes
 
@@ -233,24 +181,31 @@ Instância de um processo de triagem para um profissional.
 |-------|------|----------|-----------|
 | id | UUID (v7) | ❌ | Primary key |
 | organization_id | UUID | ❌ | FK para organizations (tenant isolation) |
-| template_id | UUID | ❌ | FK para screening_templates |
+| client_validation_required | BOOLEAN | ❌ | Se requer validação do cliente (default: false) |
 | organization_professional_id | UUID | ✅ | FK para organization_professionals |
 | professional_contract_id | UUID | ✅ | FK para professional_contracts |
 | client_contract_id | UUID | ✅ | FK para client_contracts |
+| client_company_id | UUID | ✅ | FK para companies (empresa contratante) |
 | **Identificação do Profissional** | | | |
 | professional_cpf | VARCHAR(11) | ✅ | CPF do profissional |
 | professional_email | VARCHAR(255) | ✅ | Email para envio do link |
 | professional_name | VARCHAR(255) | ✅ | Nome (antes de criar registro) |
 | professional_phone | VARCHAR(20) | ✅ | Telefone (E.164) |
+| **Perfil Esperado** | | | |
+| expected_professional_type | VARCHAR(50) | ✅ | Tipo esperado (DOCTOR, NURSE, etc.) |
+| expected_specialty_id | UUID | ✅ | Especialidade esperada (para médicos) |
 | **Status e Controle** | | | |
 | status | ScreeningStatus | ❌ | Status atual (default: DRAFT) |
 | current_step_type | StepType | ✅ | Etapa atual |
 | **Acesso por Token** | | | |
-| access_token | VARCHAR(64) | ✅ | Token hasheado (SHA-256) |
+| access_token | VARCHAR(64) | ✅ | Token para acesso do profissional |
 | access_token_expires_at | TIMESTAMP | ✅ | Expiração do token |
+| token_expires_at | TIMESTAMP | ✅ | Alias para expiração do token |
 | expires_at | TIMESTAMP | ✅ | Expiração do processo |
 | **Atribuição** | | | |
 | assigned_to | UUID | ✅ | Usuário responsável atual |
+| current_assignee_id | UUID | ✅ | Usuário responsável pela ação atual |
+| verifier_id | UUID | ✅ | Usuário que irá verificar documentos |
 | escalated_to | UUID | ✅ | Supervisor (quando escalado) |
 | escalation_reason | VARCHAR(2000) | ✅ | Motivo da escalação |
 | **Rejeição** | | | |
@@ -287,7 +242,7 @@ Progresso de cada etapa dentro de um processo.
 | id | UUID (v7) | ❌ | Primary key |
 | process_id | UUID | ❌ | FK para screening_processes |
 | step_type | StepType | ❌ | Tipo da etapa |
-| order | INTEGER | ❌ | Ordem (do template) |
+| order | INTEGER | ❌ | Ordem da etapa no fluxo |
 | is_required | BOOLEAN | ❌ | Se é obrigatória |
 | status | StepStatus | ❌ | Status atual (default: PENDING) |
 | assigned_to | UUID | ✅ | Responsável pela etapa |
@@ -299,6 +254,11 @@ Progresso de cada etapa dentro de um processo.
 | **Campos de Revisão** | | | |
 | review_notes | VARCHAR(2000) | ✅ | Notas da revisão |
 | rejection_reason | VARCHAR(2000) | ✅ | Motivo da rejeição |
+| **Campos de Validação do Cliente** | | | |
+| client_validation_outcome | ClientValidationOutcome | ✅ | Decisão: APPROVED/REJECTED |
+| client_validation_notes | VARCHAR(2000) | ✅ | Notas da validação pelo cliente |
+| client_validated_by | VARCHAR(255) | ✅ | Nome de quem validou na empresa cliente |
+| client_validated_at | TIMESTAMP | ✅ | Quando foi validado pelo cliente |
 | **Timestamps de Workflow** | | | |
 | started_at | TIMESTAMP | ✅ | Quando iniciou |
 | submitted_at | TIMESTAMP | ✅ | Quando submeteu |
@@ -383,12 +343,12 @@ Verificação individual de cada documento uploadado.
 
 ## Regras de Negócio
 
-### Templates
+### Fluxo Fixo de Etapas
 
-1. Cada organização pode ter múltiplos templates
-2. Apenas **um template** pode ser marcado como `is_default` por organização
-3. Templates definem quais etapas são necessárias e em qual ordem
-4. Etapas podem ter dependências (ex: SPECIALTY depende de QUALIFICATION)
+1. O sistema utiliza um fluxo fixo de 10 etapas (definido em `STEP_DEFINITIONS`)
+2. Etapas opcionais podem ser puladas (SPECIALTY, EDUCATION, COMPANY, CLIENT_VALIDATION)
+3. Etapas têm dependências: ex: SPECIALTY depende de QUALIFICATION
+4. Configurações por organização são armazenadas em `OrganizationScreeningSettings`
 
 ### Criação de Profissional
 
@@ -403,7 +363,7 @@ Verificação individual de cada documento uploadado.
 1. Token é gerado quando a triagem é enviada ao profissional
 2. Token é armazenado como hash SHA-256
 3. Token permite acesso sem autenticação completa
-4. Token expira após período configurado no template
+4. Token expira após período configurado em `OrganizationScreeningSettings.token_expiry_hours`
 5. Profissional pode preencher etapas via link com token
 
 ### Fluxo de Verificação de Documentos
@@ -427,23 +387,24 @@ Verificação individual de cada documento uploadado.
 
 1. Ao criar uma triagem, o escalista define quais documentos são obrigatórios
 2. Lista é armazenada em `screening_required_documents`
-3. Permite customização por processo, não apenas por template
+3. Permite customização por processo
 
 ### Dependências entre Etapas
 
-Configurável via campo `depends_on` no template step. Sugestão padrão:
+As etapas seguem uma ordem fixa definida em `STEP_DEFINITIONS`. Sugestão de dependências lógicas:
 
 | Etapa | Depende de |
 |-------|------------|
-| PROFESSIONAL_DATA | - |
+| CONVERSATION | - |
+| PROFESSIONAL_DATA | CONVERSATION |
 | QUALIFICATION | PROFESSIONAL_DATA |
 | SPECIALTY | QUALIFICATION |
 | EDUCATION | QUALIFICATION |
-| DOCUMENTS | PROFESSIONAL_DATA |
 | COMPANY | PROFESSIONAL_DATA |
 | BANK_ACCOUNT | PROFESSIONAL_DATA |
+| DOCUMENTS | PROFESSIONAL_DATA |
 | DOCUMENT_REVIEW | DOCUMENTS |
-| SUPERVISOR_REVIEW | DOCUMENT_REVIEW |
+| CLIENT_VALIDATION | DOCUMENT_REVIEW |
 
 ## Arquivos de Implementação
 
@@ -452,22 +413,62 @@ src/modules/screening/
 ├── __init__.py
 ├── domain/
 │   ├── __init__.py
-│   └── models/
+│   ├── models/
+│   │   ├── __init__.py
+│   │   ├── enums.py                        # StepType, ScreeningStatus, etc.
+│   │   ├── document_type.py                # Configuração de tipos de documento
+│   │   ├── organization_screening_settings.py  # Configurações por organização
+│   │   ├── screening_process.py            # Processo de triagem
+│   │   ├── screening_process_step.py       # Progresso de etapas
+│   │   ├── screening_required_document.py  # Documentos obrigatórios
+│   │   └── screening_document_review.py    # Verificação de documentos
+│   └── schemas/
 │       ├── __init__.py
-│       ├── enums.py                        # StepType, ScreeningStatus, etc.
-│       ├── screening_template.py           # Template configurável
-│       ├── screening_template_step.py      # Configuração de etapas
-│       ├── screening_process.py            # Processo de triagem
-│       ├── screening_process_step.py       # Progresso de etapas
-│       ├── screening_required_document.py  # Documentos obrigatórios
-│       └── screening_document_review.py    # Verificação de documentos
+│       ├── document_type.py
+│       ├── organization_screening_settings.py
+│       ├── screening_document_review.py
+│       ├── screening_process.py
+│       ├── screening_process_step.py
+│       └── screening_required_document.py
 ├── infrastructure/
+│   ├── __init__.py
+│   ├── filters.py                          # FilterSet/SortingSet
 │   └── repositories/
-│       └── __init__.py                     # TODO: Repositories
+│       ├── __init__.py
+│       ├── screening_process_repository.py
+│       ├── screening_process_step_repository.py
+│       ├── screening_document_review_repository.py
+│       ├── screening_required_document_repository.py
+│       └── organization_screening_settings_repository.py
 ├── presentation/
-│   └── routes.py                           # TODO: Endpoints
+│   ├── __init__.py
+│   ├── routes_module.py                    # Agregação de routers
+│   ├── dependencies/
+│   │   ├── __init__.py
+│   │   └── screening.py                    # Use case factories
+│   └── routes/
+│       ├── __init__.py
+│       ├── screening_process_routes.py     # CRUD de processos
+│       ├── screening_step_routes.py        # Avanço de etapas
+│       ├── screening_document_routes.py    # Upload e revisão de docs
+│       └── screening_public_routes.py      # Acesso por token
 └── use_cases/
-    └── __init__.py                         # TODO: Use cases
+    ├── __init__.py
+    ├── screening_process/
+    │   ├── __init__.py
+    │   ├── screening_process_create_use_case.py
+    │   ├── screening_process_get_use_case.py
+    │   ├── screening_process_list_use_case.py
+    │   ├── screening_process_advance_use_case.py
+    │   └── screening_process_complete_use_case.py
+    ├── screening_document/
+    │   ├── __init__.py
+    │   ├── screening_document_select_use_case.py
+    │   ├── screening_document_upload_use_case.py
+    │   └── screening_document_review_use_case.py
+    └── screening_validation/
+        ├── __init__.py
+        └── screening_client_validation_use_case.py
 ```
 
 ## Mixins Utilizados
@@ -476,15 +477,15 @@ src/modules/screening/
 |-------|--------|----------|
 | PrimaryKeyMixin | id (UUID v7) | Todas as tabelas |
 | TimestampMixin | created_at, updated_at | Todas as tabelas |
-| SoftDeleteMixin | deleted_at | ScreeningTemplate, ScreeningProcess |
-| TrackingMixin | created_by, updated_by | ScreeningTemplate, ScreeningProcess |
-| MetadataMixin | metadata | ScreeningTemplate, ScreeningTemplateStep, ScreeningProcess, ScreeningProcessStep |
-| VersionMixin | version | ScreeningProcess, ScreeningProcessStep |
+| SoftDeleteMixin | deleted_at | ScreeningProcess |
+| TrackingMixin | created_by, updated_by | ScreeningProcess, OrganizationScreeningSettings |
+| MetadataMixin | metadata | ScreeningProcess, ScreeningProcessStep |
+| VersionMixin | version | ScreeningProcess, ScreeningProcessStep, OrganizationScreeningSettings |
 
 ## Relacionamentos com Outros Módulos
 
 ### Organizations
-- `Organization.screening_templates` → lista de templates
+- `Organization.screening_settings` → configurações de triagem (1:1)
 - `Organization.screening_processes` → lista de processos
 
 ### Professionals
