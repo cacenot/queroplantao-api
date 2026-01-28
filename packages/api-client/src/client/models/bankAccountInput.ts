@@ -5,11 +5,11 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { BankAccountInputId } from "./bankAccountInputId";
-import type { BankAccountInputAgencyDigit } from "./bankAccountInputAgencyDigit";
-import type { BankAccountInputAccountDigit } from "./bankAccountInputAccountDigit";
-import type { BankAccountInputPixKeyType } from "./bankAccountInputPixKeyType";
-import type { BankAccountInputPixKey } from "./bankAccountInputPixKey";
+import type { BankAccountInputId } from "./bankAccountInputId.js";
+import type { BankAccountInputAgencyDigit } from "./bankAccountInputAgencyDigit.js";
+import type { BankAccountInputAccountDigit } from "./bankAccountInputAccountDigit.js";
+import type { BankAccountInputPixKeyType } from "./bankAccountInputPixKeyType.js";
+import type { BankAccountInputPixKey } from "./bankAccountInputPixKey.js";
 
 /**
  * Input schema for bank account.

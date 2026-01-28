@@ -5,12 +5,12 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { ProfessionalDocumentUpdateFileUrl } from "./professionalDocumentUpdateFileUrl";
-import type { ProfessionalDocumentUpdateFileName } from "./professionalDocumentUpdateFileName";
-import type { ProfessionalDocumentUpdateFileSize } from "./professionalDocumentUpdateFileSize";
-import type { ProfessionalDocumentUpdateMimeType } from "./professionalDocumentUpdateMimeType";
-import type { ProfessionalDocumentUpdateExpiresAt } from "./professionalDocumentUpdateExpiresAt";
-import type { ProfessionalDocumentUpdateNotes } from "./professionalDocumentUpdateNotes";
+import type { ProfessionalDocumentUpdateFileUrl } from "./professionalDocumentUpdateFileUrl.js";
+import type { ProfessionalDocumentUpdateFileName } from "./professionalDocumentUpdateFileName.js";
+import type { ProfessionalDocumentUpdateFileSize } from "./professionalDocumentUpdateFileSize.js";
+import type { ProfessionalDocumentUpdateMimeType } from "./professionalDocumentUpdateMimeType.js";
+import type { ProfessionalDocumentUpdateExpiresAt } from "./professionalDocumentUpdateExpiresAt.js";
+import type { ProfessionalDocumentUpdateNotes } from "./professionalDocumentUpdateNotes.js";
 
 /**
  * Schema for updating a professional document (PATCH - partial update).

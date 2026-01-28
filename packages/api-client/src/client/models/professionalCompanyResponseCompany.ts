@@ -5,6 +5,6 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { CompanyInfo } from "./companyInfo";
+import type { CompanyInfo } from "./companyInfo.js";
 
 export type ProfessionalCompanyResponseCompany = CompanyInfo | null;

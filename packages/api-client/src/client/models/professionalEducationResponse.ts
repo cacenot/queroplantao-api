@@ -5,14 +5,14 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { EducationLevel } from "./educationLevel";
-import type { ProfessionalEducationResponseStartYear } from "./professionalEducationResponseStartYear";
-import type { ProfessionalEducationResponseEndYear } from "./professionalEducationResponseEndYear";
-import type { ProfessionalEducationResponseWorkloadHours } from "./professionalEducationResponseWorkloadHours";
-import type { ProfessionalEducationResponseCertificateUrl } from "./professionalEducationResponseCertificateUrl";
-import type { ProfessionalEducationResponseNotes } from "./professionalEducationResponseNotes";
-import type { ProfessionalEducationResponseCreatedAt } from "./professionalEducationResponseCreatedAt";
-import type { ProfessionalEducationResponseUpdatedAt } from "./professionalEducationResponseUpdatedAt";
+import type { EducationLevel } from "./educationLevel.js";
+import type { ProfessionalEducationResponseStartYear } from "./professionalEducationResponseStartYear.js";
+import type { ProfessionalEducationResponseEndYear } from "./professionalEducationResponseEndYear.js";
+import type { ProfessionalEducationResponseWorkloadHours } from "./professionalEducationResponseWorkloadHours.js";
+import type { ProfessionalEducationResponseCertificateUrl } from "./professionalEducationResponseCertificateUrl.js";
+import type { ProfessionalEducationResponseNotes } from "./professionalEducationResponseNotes.js";
+import type { ProfessionalEducationResponseCreatedAt } from "./professionalEducationResponseCreatedAt.js";
+import type { ProfessionalEducationResponseUpdatedAt } from "./professionalEducationResponseUpdatedAt.js";
 
 /**
  * Schema for professional education response.

@@ -5,23 +5,23 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { StepType } from "./stepType";
-import type { StepStatus } from "./stepStatus";
-import type { ScreeningProcessStepResponseAssignedTo } from "./screeningProcessStepResponseAssignedTo";
-import type { ScreeningProcessStepResponseDataReferences } from "./screeningProcessStepResponseDataReferences";
-import type { ScreeningProcessStepResponseConversationNotes } from "./screeningProcessStepResponseConversationNotes";
-import type { ScreeningProcessStepResponseConversationOutcome } from "./screeningProcessStepResponseConversationOutcome";
-import type { ScreeningProcessStepResponseReviewNotes } from "./screeningProcessStepResponseReviewNotes";
-import type { ScreeningProcessStepResponseRejectionReason } from "./screeningProcessStepResponseRejectionReason";
-import type { ScreeningProcessStepResponseClientValidationOutcome } from "./screeningProcessStepResponseClientValidationOutcome";
-import type { ScreeningProcessStepResponseClientValidationNotes } from "./screeningProcessStepResponseClientValidationNotes";
-import type { ScreeningProcessStepResponseClientValidatedBy } from "./screeningProcessStepResponseClientValidatedBy";
-import type { ScreeningProcessStepResponseClientValidatedAt } from "./screeningProcessStepResponseClientValidatedAt";
-import type { ScreeningProcessStepResponseStartedAt } from "./screeningProcessStepResponseStartedAt";
-import type { ScreeningProcessStepResponseSubmittedAt } from "./screeningProcessStepResponseSubmittedAt";
-import type { ScreeningProcessStepResponseSubmittedBy } from "./screeningProcessStepResponseSubmittedBy";
-import type { ScreeningProcessStepResponseReviewedAt } from "./screeningProcessStepResponseReviewedAt";
-import type { ScreeningProcessStepResponseReviewedBy } from "./screeningProcessStepResponseReviewedBy";
+import type { StepType } from "./stepType.js";
+import type { StepStatus } from "./stepStatus.js";
+import type { ScreeningProcessStepResponseAssignedTo } from "./screeningProcessStepResponseAssignedTo.js";
+import type { ScreeningProcessStepResponseDataReferences } from "./screeningProcessStepResponseDataReferences.js";
+import type { ScreeningProcessStepResponseConversationNotes } from "./screeningProcessStepResponseConversationNotes.js";
+import type { ScreeningProcessStepResponseConversationOutcome } from "./screeningProcessStepResponseConversationOutcome.js";
+import type { ScreeningProcessStepResponseReviewNotes } from "./screeningProcessStepResponseReviewNotes.js";
+import type { ScreeningProcessStepResponseRejectionReason } from "./screeningProcessStepResponseRejectionReason.js";
+import type { ScreeningProcessStepResponseClientValidationOutcome } from "./screeningProcessStepResponseClientValidationOutcome.js";
+import type { ScreeningProcessStepResponseClientValidationNotes } from "./screeningProcessStepResponseClientValidationNotes.js";
+import type { ScreeningProcessStepResponseClientValidatedBy } from "./screeningProcessStepResponseClientValidatedBy.js";
+import type { ScreeningProcessStepResponseClientValidatedAt } from "./screeningProcessStepResponseClientValidatedAt.js";
+import type { ScreeningProcessStepResponseStartedAt } from "./screeningProcessStepResponseStartedAt.js";
+import type { ScreeningProcessStepResponseSubmittedAt } from "./screeningProcessStepResponseSubmittedAt.js";
+import type { ScreeningProcessStepResponseSubmittedBy } from "./screeningProcessStepResponseSubmittedBy.js";
+import type { ScreeningProcessStepResponseReviewedAt } from "./screeningProcessStepResponseReviewedAt.js";
+import type { ScreeningProcessStepResponseReviewedBy } from "./screeningProcessStepResponseReviewedBy.js";
 
 /**
  * Schema for screening process step response.

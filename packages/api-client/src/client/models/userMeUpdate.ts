@@ -5,10 +5,10 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { UserMeUpdateFullName } from "./userMeUpdateFullName";
-import type { UserMeUpdatePhone } from "./userMeUpdatePhone";
-import type { UserMeUpdateCpf } from "./userMeUpdateCpf";
-import type { UserMeUpdateAvatarUrl } from "./userMeUpdateAvatarUrl";
+import type { UserMeUpdateFullName } from "./userMeUpdateFullName.js";
+import type { UserMeUpdatePhone } from "./userMeUpdatePhone.js";
+import type { UserMeUpdateCpf } from "./userMeUpdateCpf.js";
+import type { UserMeUpdateAvatarUrl } from "./userMeUpdateAvatarUrl.js";
 
 /**
  * Schema for updating current user's profile (PATCH - partial update).

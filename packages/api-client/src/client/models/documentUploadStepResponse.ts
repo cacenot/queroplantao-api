@@ -5,17 +5,17 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { StepType } from "./stepType";
-import type { StepStatus } from "./stepStatus";
-import type { DocumentUploadStepResponseAssignedTo } from "./documentUploadStepResponseAssignedTo";
-import type { DocumentUploadStepResponseReviewNotes } from "./documentUploadStepResponseReviewNotes";
-import type { DocumentUploadStepResponseRejectionReason } from "./documentUploadStepResponseRejectionReason";
-import type { DocumentUploadStepResponseStartedAt } from "./documentUploadStepResponseStartedAt";
-import type { DocumentUploadStepResponseCompletedAt } from "./documentUploadStepResponseCompletedAt";
-import type { DocumentUploadStepResponseCompletedBy } from "./documentUploadStepResponseCompletedBy";
-import type { DocumentUploadStepResponseReviewedAt } from "./documentUploadStepResponseReviewedAt";
-import type { DocumentUploadStepResponseReviewedBy } from "./documentUploadStepResponseReviewedBy";
-import type { ScreeningDocumentSummary } from "./screeningDocumentSummary";
+import type { StepType } from "./stepType.js";
+import type { StepStatus } from "./stepStatus.js";
+import type { DocumentUploadStepResponseAssignedTo } from "./documentUploadStepResponseAssignedTo.js";
+import type { DocumentUploadStepResponseReviewNotes } from "./documentUploadStepResponseReviewNotes.js";
+import type { DocumentUploadStepResponseRejectionReason } from "./documentUploadStepResponseRejectionReason.js";
+import type { DocumentUploadStepResponseStartedAt } from "./documentUploadStepResponseStartedAt.js";
+import type { DocumentUploadStepResponseCompletedAt } from "./documentUploadStepResponseCompletedAt.js";
+import type { DocumentUploadStepResponseCompletedBy } from "./documentUploadStepResponseCompletedBy.js";
+import type { DocumentUploadStepResponseReviewedAt } from "./documentUploadStepResponseReviewedAt.js";
+import type { DocumentUploadStepResponseReviewedBy } from "./documentUploadStepResponseReviewedBy.js";
+import type { ScreeningDocumentSummary } from "./screeningDocumentSummary.js";
 
 /**
  * Response schema for document upload step.

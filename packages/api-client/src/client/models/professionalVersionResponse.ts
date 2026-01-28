@@ -5,18 +5,18 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { ProfessionalVersionResponseProfessionalId } from "./professionalVersionResponseProfessionalId";
-import type { ProfessionalVersionResponseDataSnapshot } from "./professionalVersionResponseDataSnapshot";
-import type { SourceType } from "./sourceType";
-import type { ProfessionalVersionResponseSourceId } from "./professionalVersionResponseSourceId";
-import type { ProfessionalVersionResponseAppliedAt } from "./professionalVersionResponseAppliedAt";
-import type { ProfessionalVersionResponseAppliedBy } from "./professionalVersionResponseAppliedBy";
-import type { ProfessionalVersionResponseRejectedAt } from "./professionalVersionResponseRejectedAt";
-import type { ProfessionalVersionResponseRejectedBy } from "./professionalVersionResponseRejectedBy";
-import type { ProfessionalVersionResponseRejectionReason } from "./professionalVersionResponseRejectionReason";
-import type { ProfessionalVersionResponseNotes } from "./professionalVersionResponseNotes";
-import type { ProfessionalVersionResponseCreatedBy } from "./professionalVersionResponseCreatedBy";
-import type { ProfessionalVersionResponseUpdatedBy } from "./professionalVersionResponseUpdatedBy";
+import type { ProfessionalVersionResponseProfessionalId } from "./professionalVersionResponseProfessionalId.js";
+import type { ProfessionalVersionResponseDataSnapshot } from "./professionalVersionResponseDataSnapshot.js";
+import type { SourceType } from "./sourceType.js";
+import type { ProfessionalVersionResponseSourceId } from "./professionalVersionResponseSourceId.js";
+import type { ProfessionalVersionResponseAppliedAt } from "./professionalVersionResponseAppliedAt.js";
+import type { ProfessionalVersionResponseAppliedBy } from "./professionalVersionResponseAppliedBy.js";
+import type { ProfessionalVersionResponseRejectedAt } from "./professionalVersionResponseRejectedAt.js";
+import type { ProfessionalVersionResponseRejectedBy } from "./professionalVersionResponseRejectedBy.js";
+import type { ProfessionalVersionResponseRejectionReason } from "./professionalVersionResponseRejectionReason.js";
+import type { ProfessionalVersionResponseNotes } from "./professionalVersionResponseNotes.js";
+import type { ProfessionalVersionResponseCreatedBy } from "./professionalVersionResponseCreatedBy.js";
+import type { ProfessionalVersionResponseUpdatedBy } from "./professionalVersionResponseUpdatedBy.js";
 
 /**
  * Response schema for a professional version.

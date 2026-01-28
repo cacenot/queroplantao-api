@@ -5,8 +5,8 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { StepType } from "./stepType";
-import type { StepStatus } from "./stepStatus";
+import type { StepType } from "./stepType.js";
+import type { StepStatus } from "./stepStatus.js";
 
 /**
  * Minimal schema for step summary in process detail.

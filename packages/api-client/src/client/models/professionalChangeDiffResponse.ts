@@ -5,9 +5,9 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { ChangeType } from "./changeType";
-import type { ProfessionalChangeDiffResponseOldValue } from "./professionalChangeDiffResponseOldValue";
-import type { ProfessionalChangeDiffResponseNewValue } from "./professionalChangeDiffResponseNewValue";
+import type { ChangeType } from "./changeType.js";
+import type { ProfessionalChangeDiffResponseOldValue } from "./professionalChangeDiffResponseOldValue.js";
+import type { ProfessionalChangeDiffResponseNewValue } from "./professionalChangeDiffResponseNewValue.js";
 
 /**
  * Response schema for a single change diff.

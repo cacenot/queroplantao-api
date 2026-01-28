@@ -5,21 +5,21 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { PersonalInfoInputEmail } from "./personalInfoInputEmail";
-import type { PersonalInfoInputPhone } from "./personalInfoInputPhone";
-import type { PersonalInfoInputCpf } from "./personalInfoInputCpf";
-import type { PersonalInfoInputBirthDate } from "./personalInfoInputBirthDate";
-import type { PersonalInfoInputNationality } from "./personalInfoInputNationality";
-import type { PersonalInfoInputGender } from "./personalInfoInputGender";
-import type { PersonalInfoInputMaritalStatus } from "./personalInfoInputMaritalStatus";
-import type { PersonalInfoInputAvatarUrl } from "./personalInfoInputAvatarUrl";
-import type { PersonalInfoInputAddress } from "./personalInfoInputAddress";
-import type { PersonalInfoInputNumber } from "./personalInfoInputNumber";
-import type { PersonalInfoInputComplement } from "./personalInfoInputComplement";
-import type { PersonalInfoInputNeighborhood } from "./personalInfoInputNeighborhood";
-import type { PersonalInfoInputCity } from "./personalInfoInputCity";
-import type { PersonalInfoInputStateCode } from "./personalInfoInputStateCode";
-import type { PersonalInfoInputPostalCode } from "./personalInfoInputPostalCode";
+import type { PersonalInfoInputEmail } from "./personalInfoInputEmail.js";
+import type { PersonalInfoInputPhone } from "./personalInfoInputPhone.js";
+import type { PersonalInfoInputCpf } from "./personalInfoInputCpf.js";
+import type { PersonalInfoInputBirthDate } from "./personalInfoInputBirthDate.js";
+import type { PersonalInfoInputNationality } from "./personalInfoInputNationality.js";
+import type { PersonalInfoInputGender } from "./personalInfoInputGender.js";
+import type { PersonalInfoInputMaritalStatus } from "./personalInfoInputMaritalStatus.js";
+import type { PersonalInfoInputAvatarUrl } from "./personalInfoInputAvatarUrl.js";
+import type { PersonalInfoInputAddress } from "./personalInfoInputAddress.js";
+import type { PersonalInfoInputNumber } from "./personalInfoInputNumber.js";
+import type { PersonalInfoInputComplement } from "./personalInfoInputComplement.js";
+import type { PersonalInfoInputNeighborhood } from "./personalInfoInputNeighborhood.js";
+import type { PersonalInfoInputCity } from "./personalInfoInputCity.js";
+import type { PersonalInfoInputStateCode } from "./personalInfoInputStateCode.js";
+import type { PersonalInfoInputPostalCode } from "./personalInfoInputPostalCode.js";
 
 /**
  * Input schema for professional personal information.

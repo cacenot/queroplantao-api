@@ -5,7 +5,7 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { DocumentUploadStepCompleteRequestNotes } from "./documentUploadStepCompleteRequestNotes";
+import type { DocumentUploadStepCompleteRequestNotes } from "./documentUploadStepCompleteRequestNotes.js";
 
 /**
  * Request schema for completing document upload step.

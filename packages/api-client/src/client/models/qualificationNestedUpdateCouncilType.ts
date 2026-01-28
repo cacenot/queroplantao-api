@@ -5,7 +5,7 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { CouncilType } from "./councilType";
+import type { CouncilType } from "./councilType.js";
 
 /**
  * Council type (immutable for updates)

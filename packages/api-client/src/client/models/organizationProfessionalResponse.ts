@@ -5,24 +5,24 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { OrganizationProfessionalResponseEmail } from "./organizationProfessionalResponseEmail";
-import type { OrganizationProfessionalResponsePhone } from "./organizationProfessionalResponsePhone";
-import type { OrganizationProfessionalResponseCpf } from "./organizationProfessionalResponseCpf";
-import type { OrganizationProfessionalResponseBirthDate } from "./organizationProfessionalResponseBirthDate";
-import type { OrganizationProfessionalResponseNationality } from "./organizationProfessionalResponseNationality";
-import type { OrganizationProfessionalResponseGender } from "./organizationProfessionalResponseGender";
-import type { OrganizationProfessionalResponseMaritalStatus } from "./organizationProfessionalResponseMaritalStatus";
-import type { OrganizationProfessionalResponseAvatarUrl } from "./organizationProfessionalResponseAvatarUrl";
-import type { OrganizationProfessionalResponseAddress } from "./organizationProfessionalResponseAddress";
-import type { OrganizationProfessionalResponseNumber } from "./organizationProfessionalResponseNumber";
-import type { OrganizationProfessionalResponseComplement } from "./organizationProfessionalResponseComplement";
-import type { OrganizationProfessionalResponseNeighborhood } from "./organizationProfessionalResponseNeighborhood";
-import type { OrganizationProfessionalResponseCity } from "./organizationProfessionalResponseCity";
-import type { OrganizationProfessionalResponseStateCode } from "./organizationProfessionalResponseStateCode";
-import type { OrganizationProfessionalResponsePostalCode } from "./organizationProfessionalResponsePostalCode";
-import type { OrganizationProfessionalResponseVerifiedAt } from "./organizationProfessionalResponseVerifiedAt";
-import type { OrganizationProfessionalResponseCreatedAt } from "./organizationProfessionalResponseCreatedAt";
-import type { OrganizationProfessionalResponseUpdatedAt } from "./organizationProfessionalResponseUpdatedAt";
+import type { OrganizationProfessionalResponseEmail } from "./organizationProfessionalResponseEmail.js";
+import type { OrganizationProfessionalResponsePhone } from "./organizationProfessionalResponsePhone.js";
+import type { OrganizationProfessionalResponseCpf } from "./organizationProfessionalResponseCpf.js";
+import type { OrganizationProfessionalResponseBirthDate } from "./organizationProfessionalResponseBirthDate.js";
+import type { OrganizationProfessionalResponseNationality } from "./organizationProfessionalResponseNationality.js";
+import type { OrganizationProfessionalResponseGender } from "./organizationProfessionalResponseGender.js";
+import type { OrganizationProfessionalResponseMaritalStatus } from "./organizationProfessionalResponseMaritalStatus.js";
+import type { OrganizationProfessionalResponseAvatarUrl } from "./organizationProfessionalResponseAvatarUrl.js";
+import type { OrganizationProfessionalResponseAddress } from "./organizationProfessionalResponseAddress.js";
+import type { OrganizationProfessionalResponseNumber } from "./organizationProfessionalResponseNumber.js";
+import type { OrganizationProfessionalResponseComplement } from "./organizationProfessionalResponseComplement.js";
+import type { OrganizationProfessionalResponseNeighborhood } from "./organizationProfessionalResponseNeighborhood.js";
+import type { OrganizationProfessionalResponseCity } from "./organizationProfessionalResponseCity.js";
+import type { OrganizationProfessionalResponseStateCode } from "./organizationProfessionalResponseStateCode.js";
+import type { OrganizationProfessionalResponsePostalCode } from "./organizationProfessionalResponsePostalCode.js";
+import type { OrganizationProfessionalResponseVerifiedAt } from "./organizationProfessionalResponseVerifiedAt.js";
+import type { OrganizationProfessionalResponseCreatedAt } from "./organizationProfessionalResponseCreatedAt.js";
+import type { OrganizationProfessionalResponseUpdatedAt } from "./organizationProfessionalResponseUpdatedAt.js";
 
 /**
  * Schema for organization professional response.

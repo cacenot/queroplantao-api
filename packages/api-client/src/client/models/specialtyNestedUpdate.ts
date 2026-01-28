@@ -5,15 +5,15 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { SpecialtyNestedUpdateId } from "./specialtyNestedUpdateId";
-import type { SpecialtyNestedUpdateSpecialtyId } from "./specialtyNestedUpdateSpecialtyId";
-import type { SpecialtyNestedUpdateIsPrimary } from "./specialtyNestedUpdateIsPrimary";
-import type { SpecialtyNestedUpdateRqeNumber } from "./specialtyNestedUpdateRqeNumber";
-import type { SpecialtyNestedUpdateRqeState } from "./specialtyNestedUpdateRqeState";
-import type { SpecialtyNestedUpdateResidencyStatus } from "./specialtyNestedUpdateResidencyStatus";
-import type { SpecialtyNestedUpdateResidencyInstitution } from "./specialtyNestedUpdateResidencyInstitution";
-import type { SpecialtyNestedUpdateResidencyExpectedCompletion } from "./specialtyNestedUpdateResidencyExpectedCompletion";
-import type { SpecialtyNestedUpdateCertificateUrl } from "./specialtyNestedUpdateCertificateUrl";
+import type { SpecialtyNestedUpdateId } from "./specialtyNestedUpdateId.js";
+import type { SpecialtyNestedUpdateSpecialtyId } from "./specialtyNestedUpdateSpecialtyId.js";
+import type { SpecialtyNestedUpdateIsPrimary } from "./specialtyNestedUpdateIsPrimary.js";
+import type { SpecialtyNestedUpdateRqeNumber } from "./specialtyNestedUpdateRqeNumber.js";
+import type { SpecialtyNestedUpdateRqeState } from "./specialtyNestedUpdateRqeState.js";
+import type { SpecialtyNestedUpdateResidencyStatus } from "./specialtyNestedUpdateResidencyStatus.js";
+import type { SpecialtyNestedUpdateResidencyInstitution } from "./specialtyNestedUpdateResidencyInstitution.js";
+import type { SpecialtyNestedUpdateResidencyExpectedCompletion } from "./specialtyNestedUpdateResidencyExpectedCompletion.js";
+import type { SpecialtyNestedUpdateCertificateUrl } from "./specialtyNestedUpdateCertificateUrl.js";
 
 /**
  * Schema for updating a specialty within a composite operation.

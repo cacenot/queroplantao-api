@@ -5,12 +5,12 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { EducationLevel } from "./educationLevel";
-import type { ProfessionalEducationCreateStartYear } from "./professionalEducationCreateStartYear";
-import type { ProfessionalEducationCreateEndYear } from "./professionalEducationCreateEndYear";
-import type { ProfessionalEducationCreateWorkloadHours } from "./professionalEducationCreateWorkloadHours";
-import type { ProfessionalEducationCreateCertificateUrl } from "./professionalEducationCreateCertificateUrl";
-import type { ProfessionalEducationCreateNotes } from "./professionalEducationCreateNotes";
+import type { EducationLevel } from "./educationLevel.js";
+import type { ProfessionalEducationCreateStartYear } from "./professionalEducationCreateStartYear.js";
+import type { ProfessionalEducationCreateEndYear } from "./professionalEducationCreateEndYear.js";
+import type { ProfessionalEducationCreateWorkloadHours } from "./professionalEducationCreateWorkloadHours.js";
+import type { ProfessionalEducationCreateCertificateUrl } from "./professionalEducationCreateCertificateUrl.js";
+import type { ProfessionalEducationCreateNotes } from "./professionalEducationCreateNotes.js";
 
 /**
  * Schema for creating a professional education record.

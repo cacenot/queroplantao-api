@@ -5,15 +5,15 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { QualificationNestedUpdateId } from "./qualificationNestedUpdateId";
-import type { QualificationNestedUpdateProfessionalType } from "./qualificationNestedUpdateProfessionalType";
-import type { QualificationNestedUpdateIsPrimary } from "./qualificationNestedUpdateIsPrimary";
-import type { QualificationNestedUpdateGraduationYear } from "./qualificationNestedUpdateGraduationYear";
-import type { QualificationNestedUpdateCouncilType } from "./qualificationNestedUpdateCouncilType";
-import type { QualificationNestedUpdateCouncilNumber } from "./qualificationNestedUpdateCouncilNumber";
-import type { QualificationNestedUpdateCouncilState } from "./qualificationNestedUpdateCouncilState";
-import type { QualificationNestedUpdateSpecialties } from "./qualificationNestedUpdateSpecialties";
-import type { QualificationNestedUpdateEducations } from "./qualificationNestedUpdateEducations";
+import type { QualificationNestedUpdateId } from "./qualificationNestedUpdateId.js";
+import type { QualificationNestedUpdateProfessionalType } from "./qualificationNestedUpdateProfessionalType.js";
+import type { QualificationNestedUpdateIsPrimary } from "./qualificationNestedUpdateIsPrimary.js";
+import type { QualificationNestedUpdateGraduationYear } from "./qualificationNestedUpdateGraduationYear.js";
+import type { QualificationNestedUpdateCouncilType } from "./qualificationNestedUpdateCouncilType.js";
+import type { QualificationNestedUpdateCouncilNumber } from "./qualificationNestedUpdateCouncilNumber.js";
+import type { QualificationNestedUpdateCouncilState } from "./qualificationNestedUpdateCouncilState.js";
+import type { QualificationNestedUpdateSpecialties } from "./qualificationNestedUpdateSpecialties.js";
+import type { QualificationNestedUpdateEducations } from "./qualificationNestedUpdateEducations.js";
 
 /**
  * Schema for updating a qualification with nested specialties and educations.

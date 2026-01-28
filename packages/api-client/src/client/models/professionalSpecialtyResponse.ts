@@ -5,15 +5,15 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { ProfessionalSpecialtyResponseRqeNumber } from "./professionalSpecialtyResponseRqeNumber";
-import type { ProfessionalSpecialtyResponseRqeState } from "./professionalSpecialtyResponseRqeState";
-import type { ResidencyStatus } from "./residencyStatus";
-import type { ProfessionalSpecialtyResponseResidencyInstitution } from "./professionalSpecialtyResponseResidencyInstitution";
-import type { ProfessionalSpecialtyResponseResidencyExpectedCompletion } from "./professionalSpecialtyResponseResidencyExpectedCompletion";
-import type { ProfessionalSpecialtyResponseCertificateUrl } from "./professionalSpecialtyResponseCertificateUrl";
-import type { ProfessionalSpecialtyResponseSpecialty } from "./professionalSpecialtyResponseSpecialty";
-import type { ProfessionalSpecialtyResponseCreatedAt } from "./professionalSpecialtyResponseCreatedAt";
-import type { ProfessionalSpecialtyResponseUpdatedAt } from "./professionalSpecialtyResponseUpdatedAt";
+import type { ProfessionalSpecialtyResponseRqeNumber } from "./professionalSpecialtyResponseRqeNumber.js";
+import type { ProfessionalSpecialtyResponseRqeState } from "./professionalSpecialtyResponseRqeState.js";
+import type { ResidencyStatus } from "./residencyStatus.js";
+import type { ProfessionalSpecialtyResponseResidencyInstitution } from "./professionalSpecialtyResponseResidencyInstitution.js";
+import type { ProfessionalSpecialtyResponseResidencyExpectedCompletion } from "./professionalSpecialtyResponseResidencyExpectedCompletion.js";
+import type { ProfessionalSpecialtyResponseCertificateUrl } from "./professionalSpecialtyResponseCertificateUrl.js";
+import type { ProfessionalSpecialtyResponseSpecialty } from "./professionalSpecialtyResponseSpecialty.js";
+import type { ProfessionalSpecialtyResponseCreatedAt } from "./professionalSpecialtyResponseCreatedAt.js";
+import type { ProfessionalSpecialtyResponseUpdatedAt } from "./professionalSpecialtyResponseUpdatedAt.js";
 
 /**
  * Schema for professional specialty response.

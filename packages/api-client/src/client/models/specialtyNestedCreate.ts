@@ -5,12 +5,12 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { SpecialtyNestedCreateRqeNumber } from "./specialtyNestedCreateRqeNumber";
-import type { SpecialtyNestedCreateRqeState } from "./specialtyNestedCreateRqeState";
-import type { ResidencyStatus } from "./residencyStatus";
-import type { SpecialtyNestedCreateResidencyInstitution } from "./specialtyNestedCreateResidencyInstitution";
-import type { SpecialtyNestedCreateResidencyExpectedCompletion } from "./specialtyNestedCreateResidencyExpectedCompletion";
-import type { SpecialtyNestedCreateCertificateUrl } from "./specialtyNestedCreateCertificateUrl";
+import type { SpecialtyNestedCreateRqeNumber } from "./specialtyNestedCreateRqeNumber.js";
+import type { SpecialtyNestedCreateRqeState } from "./specialtyNestedCreateRqeState.js";
+import type { ResidencyStatus } from "./residencyStatus.js";
+import type { SpecialtyNestedCreateResidencyInstitution } from "./specialtyNestedCreateResidencyInstitution.js";
+import type { SpecialtyNestedCreateResidencyExpectedCompletion } from "./specialtyNestedCreateResidencyExpectedCompletion.js";
+import type { SpecialtyNestedCreateCertificateUrl } from "./specialtyNestedCreateCertificateUrl.js";
 
 /**
  * Schema for creating a specialty within a composite operation.

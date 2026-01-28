@@ -5,7 +5,7 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { DocumentCategory } from "./documentCategory";
+import type { DocumentCategory } from "./documentCategory.js";
 
 export type ProfessionalDocumentResponseDocumentCategory =
   DocumentCategory | null;

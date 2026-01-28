@@ -7,7 +7,7 @@
 // Re-export all generated services (hooks, queries, mutations)
 export * from "./generated/auth/auth.js";
 // Skip enums - we have our own with labels in src/enums/
-// export * from "./generated/enums/enums";
+// export * from "./generated/enums/enums.js";
 export * from "./generated/health/health.js";
 export * from "./generated/invitations/invitations.js";
 export * from "./generated/organization-users/organization-users.js";

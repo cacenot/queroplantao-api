@@ -5,19 +5,19 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { OrganizationProfessionalCreateEmail } from "./organizationProfessionalCreateEmail";
-import type { OrganizationProfessionalCreatePhone } from "./organizationProfessionalCreatePhone";
-import type { OrganizationProfessionalCreateCpf } from "./organizationProfessionalCreateCpf";
-import type { OrganizationProfessionalCreateBirthDate } from "./organizationProfessionalCreateBirthDate";
-import type { OrganizationProfessionalCreateNationality } from "./organizationProfessionalCreateNationality";
-import type { OrganizationProfessionalCreateGender } from "./organizationProfessionalCreateGender";
-import type { OrganizationProfessionalCreateMaritalStatus } from "./organizationProfessionalCreateMaritalStatus";
-import type { OrganizationProfessionalCreateAvatarUrl } from "./organizationProfessionalCreateAvatarUrl";
-import type { OrganizationProfessionalCreateStateCode } from "./organizationProfessionalCreateStateCode";
-import type { OrganizationProfessionalCreateAddress } from "./organizationProfessionalCreateAddress";
-import type { OrganizationProfessionalCreateNumber } from "./organizationProfessionalCreateNumber";
-import type { OrganizationProfessionalCreateComplement } from "./organizationProfessionalCreateComplement";
-import type { OrganizationProfessionalCreateNeighborhood } from "./organizationProfessionalCreateNeighborhood";
+import type { OrganizationProfessionalCreateEmail } from "./organizationProfessionalCreateEmail.js";
+import type { OrganizationProfessionalCreatePhone } from "./organizationProfessionalCreatePhone.js";
+import type { OrganizationProfessionalCreateCpf } from "./organizationProfessionalCreateCpf.js";
+import type { OrganizationProfessionalCreateBirthDate } from "./organizationProfessionalCreateBirthDate.js";
+import type { OrganizationProfessionalCreateNationality } from "./organizationProfessionalCreateNationality.js";
+import type { OrganizationProfessionalCreateGender } from "./organizationProfessionalCreateGender.js";
+import type { OrganizationProfessionalCreateMaritalStatus } from "./organizationProfessionalCreateMaritalStatus.js";
+import type { OrganizationProfessionalCreateAvatarUrl } from "./organizationProfessionalCreateAvatarUrl.js";
+import type { OrganizationProfessionalCreateStateCode } from "./organizationProfessionalCreateStateCode.js";
+import type { OrganizationProfessionalCreateAddress } from "./organizationProfessionalCreateAddress.js";
+import type { OrganizationProfessionalCreateNumber } from "./organizationProfessionalCreateNumber.js";
+import type { OrganizationProfessionalCreateComplement } from "./organizationProfessionalCreateComplement.js";
+import type { OrganizationProfessionalCreateNeighborhood } from "./organizationProfessionalCreateNeighborhood.js";
 
 /**
  * Schema for creating an organization professional.

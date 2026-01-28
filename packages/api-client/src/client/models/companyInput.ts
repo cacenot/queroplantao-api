@@ -5,20 +5,20 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { CompanyInputId } from "./companyInputId";
-import type { CompanyInputCompanyId } from "./companyInputCompanyId";
-import type { CompanyInputNomeFantasia } from "./companyInputNomeFantasia";
-import type { CompanyInputInscricaoEstadual } from "./companyInputInscricaoEstadual";
-import type { CompanyInputInscricaoMunicipal } from "./companyInputInscricaoMunicipal";
-import type { CompanyInputAddress } from "./companyInputAddress";
-import type { CompanyInputNumber } from "./companyInputNumber";
-import type { CompanyInputComplement } from "./companyInputComplement";
-import type { CompanyInputNeighborhood } from "./companyInputNeighborhood";
-import type { CompanyInputCity } from "./companyInputCity";
-import type { CompanyInputStateCode } from "./companyInputStateCode";
-import type { CompanyInputPostalCode } from "./companyInputPostalCode";
-import type { CompanyInputStartedAt } from "./companyInputStartedAt";
-import type { CompanyInputEndedAt } from "./companyInputEndedAt";
+import type { CompanyInputId } from "./companyInputId.js";
+import type { CompanyInputCompanyId } from "./companyInputCompanyId.js";
+import type { CompanyInputNomeFantasia } from "./companyInputNomeFantasia.js";
+import type { CompanyInputInscricaoEstadual } from "./companyInputInscricaoEstadual.js";
+import type { CompanyInputInscricaoMunicipal } from "./companyInputInscricaoMunicipal.js";
+import type { CompanyInputAddress } from "./companyInputAddress.js";
+import type { CompanyInputNumber } from "./companyInputNumber.js";
+import type { CompanyInputComplement } from "./companyInputComplement.js";
+import type { CompanyInputNeighborhood } from "./companyInputNeighborhood.js";
+import type { CompanyInputCity } from "./companyInputCity.js";
+import type { CompanyInputStateCode } from "./companyInputStateCode.js";
+import type { CompanyInputPostalCode } from "./companyInputPostalCode.js";
+import type { CompanyInputStartedAt } from "./companyInputStartedAt.js";
+import type { CompanyInputEndedAt } from "./companyInputEndedAt.js";
 
 /**
  * Input schema for professional company.

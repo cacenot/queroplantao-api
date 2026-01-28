@@ -5,10 +5,10 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { ProfessionalQualificationUpdateIsPrimary } from "./professionalQualificationUpdateIsPrimary";
-import type { ProfessionalQualificationUpdateGraduationYear } from "./professionalQualificationUpdateGraduationYear";
-import type { ProfessionalQualificationUpdateCouncilNumber } from "./professionalQualificationUpdateCouncilNumber";
-import type { ProfessionalQualificationUpdateCouncilState } from "./professionalQualificationUpdateCouncilState";
+import type { ProfessionalQualificationUpdateIsPrimary } from "./professionalQualificationUpdateIsPrimary.js";
+import type { ProfessionalQualificationUpdateGraduationYear } from "./professionalQualificationUpdateGraduationYear.js";
+import type { ProfessionalQualificationUpdateCouncilNumber } from "./professionalQualificationUpdateCouncilNumber.js";
+import type { ProfessionalQualificationUpdateCouncilState } from "./professionalQualificationUpdateCouncilState.js";
 
 /**
  * Schema for updating a professional qualification (PATCH - partial update).

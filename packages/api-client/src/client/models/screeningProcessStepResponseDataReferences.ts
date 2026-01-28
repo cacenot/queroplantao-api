@@ -5,7 +5,7 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { ScreeningProcessStepResponseDataReferencesAnyOf } from "./screeningProcessStepResponseDataReferencesAnyOf";
+import type { ScreeningProcessStepResponseDataReferencesAnyOf } from "./screeningProcessStepResponseDataReferencesAnyOf.js";
 
 export type ScreeningProcessStepResponseDataReferences =
   ScreeningProcessStepResponseDataReferencesAnyOf | null;

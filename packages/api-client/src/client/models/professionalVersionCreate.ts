@@ -5,13 +5,13 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { ProfessionalVersionCreatePersonalInfo } from "./professionalVersionCreatePersonalInfo";
-import type { QualificationInput } from "./qualificationInput";
-import type { CompanyInput } from "./companyInput";
-import type { BankAccountInput } from "./bankAccountInput";
-import type { SourceType } from "./sourceType";
-import type { ProfessionalVersionCreateSourceId } from "./professionalVersionCreateSourceId";
-import type { ProfessionalVersionCreateNotes } from "./professionalVersionCreateNotes";
+import type { ProfessionalVersionCreatePersonalInfo } from "./professionalVersionCreatePersonalInfo.js";
+import type { QualificationInput } from "./qualificationInput.js";
+import type { CompanyInput } from "./companyInput.js";
+import type { BankAccountInput } from "./bankAccountInput.js";
+import type { SourceType } from "./sourceType.js";
+import type { ProfessionalVersionCreateSourceId } from "./professionalVersionCreateSourceId.js";
+import type { ProfessionalVersionCreateNotes } from "./professionalVersionCreateNotes.js";
 
 /**
  * Schema for creating a new professional version.

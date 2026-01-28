@@ -5,11 +5,11 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { ProfessionalType } from "./professionalType";
-import type { ProfessionalQualificationResponseGraduationYear } from "./professionalQualificationResponseGraduationYear";
-import type { CouncilType } from "./councilType";
-import type { ProfessionalQualificationResponseCreatedAt } from "./professionalQualificationResponseCreatedAt";
-import type { ProfessionalQualificationResponseUpdatedAt } from "./professionalQualificationResponseUpdatedAt";
+import type { ProfessionalType } from "./professionalType.js";
+import type { ProfessionalQualificationResponseGraduationYear } from "./professionalQualificationResponseGraduationYear.js";
+import type { CouncilType } from "./councilType.js";
+import type { ProfessionalQualificationResponseCreatedAt } from "./professionalQualificationResponseCreatedAt.js";
+import type { ProfessionalQualificationResponseUpdatedAt } from "./professionalQualificationResponseUpdatedAt.js";
 
 /**
  * Schema for professional qualification response.

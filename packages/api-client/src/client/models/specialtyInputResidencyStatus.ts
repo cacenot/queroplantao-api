@@ -5,6 +5,6 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { ResidencyStatus } from "./residencyStatus";
+import type { ResidencyStatus } from "./residencyStatus.js";
 
 export type SpecialtyInputResidencyStatus = ResidencyStatus | null;

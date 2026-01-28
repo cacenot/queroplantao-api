@@ -5,7 +5,7 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { ErrorResponseDetailsAnyOf } from "./errorResponseDetailsAnyOf";
+import type { ErrorResponseDetailsAnyOf } from "./errorResponseDetailsAnyOf.js";
 
 /**
  * Additional error details

@@ -5,12 +5,12 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { ProfessionalSpecialtyCreateRqeNumber } from "./professionalSpecialtyCreateRqeNumber";
-import type { ProfessionalSpecialtyCreateRqeState } from "./professionalSpecialtyCreateRqeState";
-import type { ResidencyStatus } from "./residencyStatus";
-import type { ProfessionalSpecialtyCreateResidencyInstitution } from "./professionalSpecialtyCreateResidencyInstitution";
-import type { ProfessionalSpecialtyCreateResidencyExpectedCompletion } from "./professionalSpecialtyCreateResidencyExpectedCompletion";
-import type { ProfessionalSpecialtyCreateCertificateUrl } from "./professionalSpecialtyCreateCertificateUrl";
+import type { ProfessionalSpecialtyCreateRqeNumber } from "./professionalSpecialtyCreateRqeNumber.js";
+import type { ProfessionalSpecialtyCreateRqeState } from "./professionalSpecialtyCreateRqeState.js";
+import type { ResidencyStatus } from "./residencyStatus.js";
+import type { ProfessionalSpecialtyCreateResidencyInstitution } from "./professionalSpecialtyCreateResidencyInstitution.js";
+import type { ProfessionalSpecialtyCreateResidencyExpectedCompletion } from "./professionalSpecialtyCreateResidencyExpectedCompletion.js";
+import type { ProfessionalSpecialtyCreateCertificateUrl } from "./professionalSpecialtyCreateCertificateUrl.js";
 
 /**
  * Schema for creating a professional specialty.

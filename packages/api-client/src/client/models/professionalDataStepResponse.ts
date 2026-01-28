@@ -5,18 +5,18 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { StepType } from "./stepType";
-import type { StepStatus } from "./stepStatus";
-import type { ProfessionalDataStepResponseAssignedTo } from "./professionalDataStepResponseAssignedTo";
-import type { ProfessionalDataStepResponseReviewNotes } from "./professionalDataStepResponseReviewNotes";
-import type { ProfessionalDataStepResponseRejectionReason } from "./professionalDataStepResponseRejectionReason";
-import type { ProfessionalDataStepResponseStartedAt } from "./professionalDataStepResponseStartedAt";
-import type { ProfessionalDataStepResponseCompletedAt } from "./professionalDataStepResponseCompletedAt";
-import type { ProfessionalDataStepResponseCompletedBy } from "./professionalDataStepResponseCompletedBy";
-import type { ProfessionalDataStepResponseReviewedAt } from "./professionalDataStepResponseReviewedAt";
-import type { ProfessionalDataStepResponseReviewedBy } from "./professionalDataStepResponseReviewedBy";
-import type { ProfessionalDataStepResponseProfessionalId } from "./professionalDataStepResponseProfessionalId";
-import type { ProfessionalDataStepResponseProfessionalVersionId } from "./professionalDataStepResponseProfessionalVersionId";
+import type { StepType } from "./stepType.js";
+import type { StepStatus } from "./stepStatus.js";
+import type { ProfessionalDataStepResponseAssignedTo } from "./professionalDataStepResponseAssignedTo.js";
+import type { ProfessionalDataStepResponseReviewNotes } from "./professionalDataStepResponseReviewNotes.js";
+import type { ProfessionalDataStepResponseRejectionReason } from "./professionalDataStepResponseRejectionReason.js";
+import type { ProfessionalDataStepResponseStartedAt } from "./professionalDataStepResponseStartedAt.js";
+import type { ProfessionalDataStepResponseCompletedAt } from "./professionalDataStepResponseCompletedAt.js";
+import type { ProfessionalDataStepResponseCompletedBy } from "./professionalDataStepResponseCompletedBy.js";
+import type { ProfessionalDataStepResponseReviewedAt } from "./professionalDataStepResponseReviewedAt.js";
+import type { ProfessionalDataStepResponseReviewedBy } from "./professionalDataStepResponseReviewedBy.js";
+import type { ProfessionalDataStepResponseProfessionalId } from "./professionalDataStepResponseProfessionalId.js";
+import type { ProfessionalDataStepResponseProfessionalVersionId } from "./professionalDataStepResponseProfessionalVersionId.js";
 
 /**
  * Response schema for professional data step.

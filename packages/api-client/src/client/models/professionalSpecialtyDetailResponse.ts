@@ -5,16 +5,16 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { ProfessionalSpecialtyDetailResponseRqeNumber } from "./professionalSpecialtyDetailResponseRqeNumber";
-import type { ProfessionalSpecialtyDetailResponseRqeState } from "./professionalSpecialtyDetailResponseRqeState";
-import type { ResidencyStatus } from "./residencyStatus";
-import type { ProfessionalSpecialtyDetailResponseResidencyInstitution } from "./professionalSpecialtyDetailResponseResidencyInstitution";
-import type { ProfessionalSpecialtyDetailResponseResidencyExpectedCompletion } from "./professionalSpecialtyDetailResponseResidencyExpectedCompletion";
-import type { ProfessionalSpecialtyDetailResponseCertificateUrl } from "./professionalSpecialtyDetailResponseCertificateUrl";
-import type { ProfessionalSpecialtyDetailResponseSpecialty } from "./professionalSpecialtyDetailResponseSpecialty";
-import type { ProfessionalDocumentResponse } from "./professionalDocumentResponse";
-import type { ProfessionalSpecialtyDetailResponseCreatedAt } from "./professionalSpecialtyDetailResponseCreatedAt";
-import type { ProfessionalSpecialtyDetailResponseUpdatedAt } from "./professionalSpecialtyDetailResponseUpdatedAt";
+import type { ProfessionalSpecialtyDetailResponseRqeNumber } from "./professionalSpecialtyDetailResponseRqeNumber.js";
+import type { ProfessionalSpecialtyDetailResponseRqeState } from "./professionalSpecialtyDetailResponseRqeState.js";
+import type { ResidencyStatus } from "./residencyStatus.js";
+import type { ProfessionalSpecialtyDetailResponseResidencyInstitution } from "./professionalSpecialtyDetailResponseResidencyInstitution.js";
+import type { ProfessionalSpecialtyDetailResponseResidencyExpectedCompletion } from "./professionalSpecialtyDetailResponseResidencyExpectedCompletion.js";
+import type { ProfessionalSpecialtyDetailResponseCertificateUrl } from "./professionalSpecialtyDetailResponseCertificateUrl.js";
+import type { ProfessionalSpecialtyDetailResponseSpecialty } from "./professionalSpecialtyDetailResponseSpecialty.js";
+import type { ProfessionalDocumentResponse } from "./professionalDocumentResponse.js";
+import type { ProfessionalSpecialtyDetailResponseCreatedAt } from "./professionalSpecialtyDetailResponseCreatedAt.js";
+import type { ProfessionalSpecialtyDetailResponseUpdatedAt } from "./professionalSpecialtyDetailResponseUpdatedAt.js";
 
 /**
  * Schema for professional specialty with nested documents.

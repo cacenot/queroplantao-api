@@ -5,8 +5,8 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { ScreeningDocumentSummaryDocumentTypeName } from "./screeningDocumentSummaryDocumentTypeName";
-import type { ScreeningDocumentSummaryUploadedAt } from "./screeningDocumentSummaryUploadedAt";
+import type { ScreeningDocumentSummaryDocumentTypeName } from "./screeningDocumentSummaryDocumentTypeName.js";
+import type { ScreeningDocumentSummaryUploadedAt } from "./screeningDocumentSummaryUploadedAt.js";
 
 /**
  * Summary of a document in the upload step response.

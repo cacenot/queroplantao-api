@@ -5,28 +5,28 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { OrganizationProfessionalDetailResponseEmail } from "./organizationProfessionalDetailResponseEmail";
-import type { OrganizationProfessionalDetailResponsePhone } from "./organizationProfessionalDetailResponsePhone";
-import type { OrganizationProfessionalDetailResponseCpf } from "./organizationProfessionalDetailResponseCpf";
-import type { OrganizationProfessionalDetailResponseBirthDate } from "./organizationProfessionalDetailResponseBirthDate";
-import type { OrganizationProfessionalDetailResponseNationality } from "./organizationProfessionalDetailResponseNationality";
-import type { OrganizationProfessionalDetailResponseGender } from "./organizationProfessionalDetailResponseGender";
-import type { OrganizationProfessionalDetailResponseMaritalStatus } from "./organizationProfessionalDetailResponseMaritalStatus";
-import type { OrganizationProfessionalDetailResponseAvatarUrl } from "./organizationProfessionalDetailResponseAvatarUrl";
-import type { OrganizationProfessionalDetailResponseAddress } from "./organizationProfessionalDetailResponseAddress";
-import type { OrganizationProfessionalDetailResponseNumber } from "./organizationProfessionalDetailResponseNumber";
-import type { OrganizationProfessionalDetailResponseComplement } from "./organizationProfessionalDetailResponseComplement";
-import type { OrganizationProfessionalDetailResponseNeighborhood } from "./organizationProfessionalDetailResponseNeighborhood";
-import type { OrganizationProfessionalDetailResponseCity } from "./organizationProfessionalDetailResponseCity";
-import type { OrganizationProfessionalDetailResponseStateCode } from "./organizationProfessionalDetailResponseStateCode";
-import type { OrganizationProfessionalDetailResponsePostalCode } from "./organizationProfessionalDetailResponsePostalCode";
-import type { ProfessionalQualificationDetailResponse } from "./professionalQualificationDetailResponse";
-import type { ProfessionalDocumentResponse } from "./professionalDocumentResponse";
-import type { ProfessionalCompanyDetailResponse } from "./professionalCompanyDetailResponse";
-import type { BankAccountResponse } from "./bankAccountResponse";
-import type { OrganizationProfessionalDetailResponseVerifiedAt } from "./organizationProfessionalDetailResponseVerifiedAt";
-import type { OrganizationProfessionalDetailResponseCreatedAt } from "./organizationProfessionalDetailResponseCreatedAt";
-import type { OrganizationProfessionalDetailResponseUpdatedAt } from "./organizationProfessionalDetailResponseUpdatedAt";
+import type { OrganizationProfessionalDetailResponseEmail } from "./organizationProfessionalDetailResponseEmail.js";
+import type { OrganizationProfessionalDetailResponsePhone } from "./organizationProfessionalDetailResponsePhone.js";
+import type { OrganizationProfessionalDetailResponseCpf } from "./organizationProfessionalDetailResponseCpf.js";
+import type { OrganizationProfessionalDetailResponseBirthDate } from "./organizationProfessionalDetailResponseBirthDate.js";
+import type { OrganizationProfessionalDetailResponseNationality } from "./organizationProfessionalDetailResponseNationality.js";
+import type { OrganizationProfessionalDetailResponseGender } from "./organizationProfessionalDetailResponseGender.js";
+import type { OrganizationProfessionalDetailResponseMaritalStatus } from "./organizationProfessionalDetailResponseMaritalStatus.js";
+import type { OrganizationProfessionalDetailResponseAvatarUrl } from "./organizationProfessionalDetailResponseAvatarUrl.js";
+import type { OrganizationProfessionalDetailResponseAddress } from "./organizationProfessionalDetailResponseAddress.js";
+import type { OrganizationProfessionalDetailResponseNumber } from "./organizationProfessionalDetailResponseNumber.js";
+import type { OrganizationProfessionalDetailResponseComplement } from "./organizationProfessionalDetailResponseComplement.js";
+import type { OrganizationProfessionalDetailResponseNeighborhood } from "./organizationProfessionalDetailResponseNeighborhood.js";
+import type { OrganizationProfessionalDetailResponseCity } from "./organizationProfessionalDetailResponseCity.js";
+import type { OrganizationProfessionalDetailResponseStateCode } from "./organizationProfessionalDetailResponseStateCode.js";
+import type { OrganizationProfessionalDetailResponsePostalCode } from "./organizationProfessionalDetailResponsePostalCode.js";
+import type { ProfessionalQualificationDetailResponse } from "./professionalQualificationDetailResponse.js";
+import type { ProfessionalDocumentResponse } from "./professionalDocumentResponse.js";
+import type { ProfessionalCompanyDetailResponse } from "./professionalCompanyDetailResponse.js";
+import type { BankAccountResponse } from "./bankAccountResponse.js";
+import type { OrganizationProfessionalDetailResponseVerifiedAt } from "./organizationProfessionalDetailResponseVerifiedAt.js";
+import type { OrganizationProfessionalDetailResponseCreatedAt } from "./organizationProfessionalDetailResponseCreatedAt.js";
+import type { OrganizationProfessionalDetailResponseUpdatedAt } from "./organizationProfessionalDetailResponseUpdatedAt.js";
 
 /**
  * Schema for organization professional with all nested data.

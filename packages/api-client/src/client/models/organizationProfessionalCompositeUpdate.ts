@@ -5,23 +5,23 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { OrganizationProfessionalCompositeUpdateFullName } from "./organizationProfessionalCompositeUpdateFullName";
-import type { OrganizationProfessionalCompositeUpdateEmail } from "./organizationProfessionalCompositeUpdateEmail";
-import type { OrganizationProfessionalCompositeUpdatePhone } from "./organizationProfessionalCompositeUpdatePhone";
-import type { OrganizationProfessionalCompositeUpdateCpf } from "./organizationProfessionalCompositeUpdateCpf";
-import type { OrganizationProfessionalCompositeUpdateBirthDate } from "./organizationProfessionalCompositeUpdateBirthDate";
-import type { OrganizationProfessionalCompositeUpdateNationality } from "./organizationProfessionalCompositeUpdateNationality";
-import type { OrganizationProfessionalCompositeUpdateGender } from "./organizationProfessionalCompositeUpdateGender";
-import type { OrganizationProfessionalCompositeUpdateMaritalStatus } from "./organizationProfessionalCompositeUpdateMaritalStatus";
-import type { OrganizationProfessionalCompositeUpdateAvatarUrl } from "./organizationProfessionalCompositeUpdateAvatarUrl";
-import type { OrganizationProfessionalCompositeUpdateAddress } from "./organizationProfessionalCompositeUpdateAddress";
-import type { OrganizationProfessionalCompositeUpdateNumber } from "./organizationProfessionalCompositeUpdateNumber";
-import type { OrganizationProfessionalCompositeUpdateComplement } from "./organizationProfessionalCompositeUpdateComplement";
-import type { OrganizationProfessionalCompositeUpdateNeighborhood } from "./organizationProfessionalCompositeUpdateNeighborhood";
-import type { OrganizationProfessionalCompositeUpdateCity } from "./organizationProfessionalCompositeUpdateCity";
-import type { OrganizationProfessionalCompositeUpdateStateCode } from "./organizationProfessionalCompositeUpdateStateCode";
-import type { OrganizationProfessionalCompositeUpdatePostalCode } from "./organizationProfessionalCompositeUpdatePostalCode";
-import type { OrganizationProfessionalCompositeUpdateQualification } from "./organizationProfessionalCompositeUpdateQualification";
+import type { OrganizationProfessionalCompositeUpdateFullName } from "./organizationProfessionalCompositeUpdateFullName.js";
+import type { OrganizationProfessionalCompositeUpdateEmail } from "./organizationProfessionalCompositeUpdateEmail.js";
+import type { OrganizationProfessionalCompositeUpdatePhone } from "./organizationProfessionalCompositeUpdatePhone.js";
+import type { OrganizationProfessionalCompositeUpdateCpf } from "./organizationProfessionalCompositeUpdateCpf.js";
+import type { OrganizationProfessionalCompositeUpdateBirthDate } from "./organizationProfessionalCompositeUpdateBirthDate.js";
+import type { OrganizationProfessionalCompositeUpdateNationality } from "./organizationProfessionalCompositeUpdateNationality.js";
+import type { OrganizationProfessionalCompositeUpdateGender } from "./organizationProfessionalCompositeUpdateGender.js";
+import type { OrganizationProfessionalCompositeUpdateMaritalStatus } from "./organizationProfessionalCompositeUpdateMaritalStatus.js";
+import type { OrganizationProfessionalCompositeUpdateAvatarUrl } from "./organizationProfessionalCompositeUpdateAvatarUrl.js";
+import type { OrganizationProfessionalCompositeUpdateAddress } from "./organizationProfessionalCompositeUpdateAddress.js";
+import type { OrganizationProfessionalCompositeUpdateNumber } from "./organizationProfessionalCompositeUpdateNumber.js";
+import type { OrganizationProfessionalCompositeUpdateComplement } from "./organizationProfessionalCompositeUpdateComplement.js";
+import type { OrganizationProfessionalCompositeUpdateNeighborhood } from "./organizationProfessionalCompositeUpdateNeighborhood.js";
+import type { OrganizationProfessionalCompositeUpdateCity } from "./organizationProfessionalCompositeUpdateCity.js";
+import type { OrganizationProfessionalCompositeUpdateStateCode } from "./organizationProfessionalCompositeUpdateStateCode.js";
+import type { OrganizationProfessionalCompositeUpdatePostalCode } from "./organizationProfessionalCompositeUpdatePostalCode.js";
+import type { OrganizationProfessionalCompositeUpdateQualification } from "./organizationProfessionalCompositeUpdateQualification.js";
 
 /**
  * Schema for updating a professional with qualification and nested entities.

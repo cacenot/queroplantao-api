@@ -5,9 +5,9 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { SpecialtyResponseDescription } from "./specialtyResponseDescription";
-import type { SpecialtyResponseCreatedAt } from "./specialtyResponseCreatedAt";
-import type { SpecialtyResponseUpdatedAt } from "./specialtyResponseUpdatedAt";
+import type { SpecialtyResponseDescription } from "./specialtyResponseDescription.js";
+import type { SpecialtyResponseCreatedAt } from "./specialtyResponseCreatedAt.js";
+import type { SpecialtyResponseUpdatedAt } from "./specialtyResponseUpdatedAt.js";
 
 /**
  * Schema for specialty response.

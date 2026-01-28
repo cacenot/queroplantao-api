@@ -5,8 +5,8 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { ReviewDocumentRequestNotes } from "./reviewDocumentRequestNotes";
-import type { ReviewDocumentRequestRejectionReason } from "./reviewDocumentRequestRejectionReason";
+import type { ReviewDocumentRequestNotes } from "./reviewDocumentRequestNotes.js";
+import type { ReviewDocumentRequestRejectionReason } from "./reviewDocumentRequestRejectionReason.js";
 
 /**
  * Request schema for reviewing a single document.

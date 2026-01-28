@@ -5,13 +5,13 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { QualificationInputId } from "./qualificationInputId";
-import type { ProfessionalType } from "./professionalType";
-import type { QualificationInputGraduationYear } from "./qualificationInputGraduationYear";
-import type { CouncilType } from "./councilType";
-import type { QualificationInputCouncilState } from "./qualificationInputCouncilState";
-import type { SpecialtyInput } from "./specialtyInput";
-import type { EducationInput } from "./educationInput";
+import type { QualificationInputId } from "./qualificationInputId.js";
+import type { ProfessionalType } from "./professionalType.js";
+import type { QualificationInputGraduationYear } from "./qualificationInputGraduationYear.js";
+import type { CouncilType } from "./councilType.js";
+import type { QualificationInputCouncilState } from "./qualificationInputCouncilState.js";
+import type { SpecialtyInput } from "./specialtyInput.js";
+import type { EducationInput } from "./educationInput.js";
 
 /**
  * Input schema for professional qualification with nested entities.

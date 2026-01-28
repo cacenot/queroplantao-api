@@ -5,21 +5,21 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { ProfessionalDocumentResponseQualificationId } from "./professionalDocumentResponseQualificationId";
-import type { ProfessionalDocumentResponseSpecialtyId } from "./professionalDocumentResponseSpecialtyId";
-import type { ProfessionalDocumentResponseFileSize } from "./professionalDocumentResponseFileSize";
-import type { ProfessionalDocumentResponseMimeType } from "./professionalDocumentResponseMimeType";
-import type { ProfessionalDocumentResponseExpiresAt } from "./professionalDocumentResponseExpiresAt";
-import type { ProfessionalDocumentResponseNotes } from "./professionalDocumentResponseNotes";
-import type { ProfessionalDocumentResponseDocumentTypeCode } from "./professionalDocumentResponseDocumentTypeCode";
-import type { ProfessionalDocumentResponseDocumentTypeName } from "./professionalDocumentResponseDocumentTypeName";
-import type { ProfessionalDocumentResponseDocumentCategory } from "./professionalDocumentResponseDocumentCategory";
-import type { DocumentSourceType } from "./documentSourceType";
-import type { ProfessionalDocumentResponseScreeningId } from "./professionalDocumentResponseScreeningId";
-import type { ProfessionalDocumentResponsePromotedAt } from "./professionalDocumentResponsePromotedAt";
-import type { ProfessionalDocumentResponsePromotedBy } from "./professionalDocumentResponsePromotedBy";
-import type { ProfessionalDocumentResponseCreatedAt } from "./professionalDocumentResponseCreatedAt";
-import type { ProfessionalDocumentResponseUpdatedAt } from "./professionalDocumentResponseUpdatedAt";
+import type { ProfessionalDocumentResponseQualificationId } from "./professionalDocumentResponseQualificationId.js";
+import type { ProfessionalDocumentResponseSpecialtyId } from "./professionalDocumentResponseSpecialtyId.js";
+import type { ProfessionalDocumentResponseFileSize } from "./professionalDocumentResponseFileSize.js";
+import type { ProfessionalDocumentResponseMimeType } from "./professionalDocumentResponseMimeType.js";
+import type { ProfessionalDocumentResponseExpiresAt } from "./professionalDocumentResponseExpiresAt.js";
+import type { ProfessionalDocumentResponseNotes } from "./professionalDocumentResponseNotes.js";
+import type { ProfessionalDocumentResponseDocumentTypeCode } from "./professionalDocumentResponseDocumentTypeCode.js";
+import type { ProfessionalDocumentResponseDocumentTypeName } from "./professionalDocumentResponseDocumentTypeName.js";
+import type { ProfessionalDocumentResponseDocumentCategory } from "./professionalDocumentResponseDocumentCategory.js";
+import type { DocumentSourceType } from "./documentSourceType.js";
+import type { ProfessionalDocumentResponseScreeningId } from "./professionalDocumentResponseScreeningId.js";
+import type { ProfessionalDocumentResponsePromotedAt } from "./professionalDocumentResponsePromotedAt.js";
+import type { ProfessionalDocumentResponsePromotedBy } from "./professionalDocumentResponsePromotedBy.js";
+import type { ProfessionalDocumentResponseCreatedAt } from "./professionalDocumentResponseCreatedAt.js";
+import type { ProfessionalDocumentResponseUpdatedAt } from "./professionalDocumentResponseUpdatedAt.js";
 
 /**
  * Schema for professional document response.

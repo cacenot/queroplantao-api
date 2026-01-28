@@ -5,8 +5,8 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { ProfessionalCompanyUpdateJoinedAt } from "./professionalCompanyUpdateJoinedAt";
-import type { ProfessionalCompanyUpdateLeftAt } from "./professionalCompanyUpdateLeftAt";
+import type { ProfessionalCompanyUpdateJoinedAt } from "./professionalCompanyUpdateJoinedAt.js";
+import type { ProfessionalCompanyUpdateLeftAt } from "./professionalCompanyUpdateLeftAt.js";
 
 /**
  * Schema for updating a professional-company link (PATCH - partial update).

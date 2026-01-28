@@ -5,7 +5,7 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { ProfessionalCompanyResponse } from "./professionalCompanyResponse";
+import type { ProfessionalCompanyResponse } from "./professionalCompanyResponse.js";
 
 export type PaginatedResponseProfessionalCompanyResponse = {
   items: ProfessionalCompanyResponse[];

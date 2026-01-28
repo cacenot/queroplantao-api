@@ -18,9 +18,9 @@ import type {
   UseQueryResult,
 } from "@tanstack/react-query";
 
-import type { ProfessionalTypeItem } from "../../models";
+import type { ProfessionalTypeItem } from "../../models/index.js";
 
-import { customFetch } from "../../custom-fetch";
+import { customFetch } from "../../custom-fetch.js";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 

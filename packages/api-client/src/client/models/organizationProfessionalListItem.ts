@@ -5,14 +5,14 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { OrganizationProfessionalListItemAvatarUrl } from "./organizationProfessionalListItemAvatarUrl";
-import type { OrganizationProfessionalListItemCity } from "./organizationProfessionalListItemCity";
-import type { OrganizationProfessionalListItemStateCode } from "./organizationProfessionalListItemStateCode";
-import type { OrganizationProfessionalListItemCpf } from "./organizationProfessionalListItemCpf";
-import type { OrganizationProfessionalListItemPhone } from "./organizationProfessionalListItemPhone";
-import type { OrganizationProfessionalListItemEmail } from "./organizationProfessionalListItemEmail";
-import type { OrganizationProfessionalListItemQualification } from "./organizationProfessionalListItemQualification";
-import type { SpecialtySummary } from "./specialtySummary";
+import type { OrganizationProfessionalListItemAvatarUrl } from "./organizationProfessionalListItemAvatarUrl.js";
+import type { OrganizationProfessionalListItemCity } from "./organizationProfessionalListItemCity.js";
+import type { OrganizationProfessionalListItemStateCode } from "./organizationProfessionalListItemStateCode.js";
+import type { OrganizationProfessionalListItemCpf } from "./organizationProfessionalListItemCpf.js";
+import type { OrganizationProfessionalListItemPhone } from "./organizationProfessionalListItemPhone.js";
+import type { OrganizationProfessionalListItemEmail } from "./organizationProfessionalListItemEmail.js";
+import type { OrganizationProfessionalListItemQualification } from "./organizationProfessionalListItemQualification.js";
+import type { SpecialtySummary } from "./specialtySummary.js";
 
 /**
  * Simplified schema for professional list responses.

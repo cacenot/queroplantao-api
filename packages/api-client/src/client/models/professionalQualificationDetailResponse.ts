@@ -5,14 +5,14 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { ProfessionalType } from "./professionalType";
-import type { ProfessionalQualificationDetailResponseGraduationYear } from "./professionalQualificationDetailResponseGraduationYear";
-import type { CouncilType } from "./councilType";
-import type { ProfessionalSpecialtyDetailResponse } from "./professionalSpecialtyDetailResponse";
-import type { ProfessionalEducationResponse } from "./professionalEducationResponse";
-import type { ProfessionalDocumentResponse } from "./professionalDocumentResponse";
-import type { ProfessionalQualificationDetailResponseCreatedAt } from "./professionalQualificationDetailResponseCreatedAt";
-import type { ProfessionalQualificationDetailResponseUpdatedAt } from "./professionalQualificationDetailResponseUpdatedAt";
+import type { ProfessionalType } from "./professionalType.js";
+import type { ProfessionalQualificationDetailResponseGraduationYear } from "./professionalQualificationDetailResponseGraduationYear.js";
+import type { CouncilType } from "./councilType.js";
+import type { ProfessionalSpecialtyDetailResponse } from "./professionalSpecialtyDetailResponse.js";
+import type { ProfessionalEducationResponse } from "./professionalEducationResponse.js";
+import type { ProfessionalDocumentResponse } from "./professionalDocumentResponse.js";
+import type { ProfessionalQualificationDetailResponseCreatedAt } from "./professionalQualificationDetailResponseCreatedAt.js";
+import type { ProfessionalQualificationDetailResponseUpdatedAt } from "./professionalQualificationDetailResponseUpdatedAt.js";
 
 /**
  * Schema for professional qualification with nested data.

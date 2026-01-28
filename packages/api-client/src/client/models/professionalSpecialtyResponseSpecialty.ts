@@ -5,6 +5,6 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { SpecialtyInfo } from "./specialtyInfo";
+import type { SpecialtyInfo } from "./specialtyInfo.js";
 
 export type ProfessionalSpecialtyResponseSpecialty = SpecialtyInfo | null;

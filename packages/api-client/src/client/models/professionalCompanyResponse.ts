@@ -5,10 +5,10 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { ProfessionalCompanyResponseLeftAt } from "./professionalCompanyResponseLeftAt";
-import type { ProfessionalCompanyResponseCompany } from "./professionalCompanyResponseCompany";
-import type { ProfessionalCompanyResponseCreatedAt } from "./professionalCompanyResponseCreatedAt";
-import type { ProfessionalCompanyResponseUpdatedAt } from "./professionalCompanyResponseUpdatedAt";
+import type { ProfessionalCompanyResponseLeftAt } from "./professionalCompanyResponseLeftAt.js";
+import type { ProfessionalCompanyResponseCompany } from "./professionalCompanyResponseCompany.js";
+import type { ProfessionalCompanyResponseCreatedAt } from "./professionalCompanyResponseCreatedAt.js";
+import type { ProfessionalCompanyResponseUpdatedAt } from "./professionalCompanyResponseUpdatedAt.js";
 
 /**
  * Schema for professional-company link response.

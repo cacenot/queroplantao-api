@@ -5,13 +5,13 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { ProfessionalDocumentCreateFileSize } from "./professionalDocumentCreateFileSize";
-import type { ProfessionalDocumentCreateMimeType } from "./professionalDocumentCreateMimeType";
-import type { ProfessionalDocumentCreateExpiresAt } from "./professionalDocumentCreateExpiresAt";
-import type { ProfessionalDocumentCreateNotes } from "./professionalDocumentCreateNotes";
-import type { ProfessionalDocumentCreateQualificationId } from "./professionalDocumentCreateQualificationId";
-import type { ProfessionalDocumentCreateSpecialtyId } from "./professionalDocumentCreateSpecialtyId";
-import type { ProfessionalDocumentCreateScreeningId } from "./professionalDocumentCreateScreeningId";
+import type { ProfessionalDocumentCreateFileSize } from "./professionalDocumentCreateFileSize.js";
+import type { ProfessionalDocumentCreateMimeType } from "./professionalDocumentCreateMimeType.js";
+import type { ProfessionalDocumentCreateExpiresAt } from "./professionalDocumentCreateExpiresAt.js";
+import type { ProfessionalDocumentCreateNotes } from "./professionalDocumentCreateNotes.js";
+import type { ProfessionalDocumentCreateQualificationId } from "./professionalDocumentCreateQualificationId.js";
+import type { ProfessionalDocumentCreateSpecialtyId } from "./professionalDocumentCreateSpecialtyId.js";
+import type { ProfessionalDocumentCreateScreeningId } from "./professionalDocumentCreateScreeningId.js";
 
 /**
  * Schema for creating a professional document.

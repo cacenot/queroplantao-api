@@ -5,8 +5,8 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { CompanyInfoCnpj } from "./companyInfoCnpj";
-import type { CompanyInfoTradeName } from "./companyInfoTradeName";
+import type { CompanyInfoCnpj } from "./companyInfoCnpj.js";
+import type { CompanyInfoTradeName } from "./companyInfoTradeName.js";
 
 /**
  * Embedded company information.

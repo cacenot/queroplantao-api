@@ -5,6 +5,6 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { ParentOrganizationInfo } from "./parentOrganizationInfo";
+import type { ParentOrganizationInfo } from "./parentOrganizationInfo.js";
 
 export type OrganizationMembershipInfoParent = ParentOrganizationInfo | null;

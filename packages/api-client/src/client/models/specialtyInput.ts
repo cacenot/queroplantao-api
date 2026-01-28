@@ -5,13 +5,13 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { SpecialtyInputId } from "./specialtyInputId";
-import type { SpecialtyInputRqeNumber } from "./specialtyInputRqeNumber";
-import type { SpecialtyInputRqeState } from "./specialtyInputRqeState";
-import type { SpecialtyInputResidencyStatus } from "./specialtyInputResidencyStatus";
-import type { SpecialtyInputResidencyInstitution } from "./specialtyInputResidencyInstitution";
-import type { SpecialtyInputResidencyExpectedCompletion } from "./specialtyInputResidencyExpectedCompletion";
-import type { SpecialtyInputCertificateUrl } from "./specialtyInputCertificateUrl";
+import type { SpecialtyInputId } from "./specialtyInputId.js";
+import type { SpecialtyInputRqeNumber } from "./specialtyInputRqeNumber.js";
+import type { SpecialtyInputRqeState } from "./specialtyInputRqeState.js";
+import type { SpecialtyInputResidencyStatus } from "./specialtyInputResidencyStatus.js";
+import type { SpecialtyInputResidencyInstitution } from "./specialtyInputResidencyInstitution.js";
+import type { SpecialtyInputResidencyExpectedCompletion } from "./specialtyInputResidencyExpectedCompletion.js";
+import type { SpecialtyInputCertificateUrl } from "./specialtyInputCertificateUrl.js";
 
 /**
  * Input schema for professional specialty.

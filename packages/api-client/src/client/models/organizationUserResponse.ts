@@ -5,11 +5,11 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { UserInfo } from "./userInfo";
-import type { RoleInfo } from "./roleInfo";
-import type { OrganizationUserResponseInvitedAt } from "./organizationUserResponseInvitedAt";
-import type { OrganizationUserResponseAcceptedAt } from "./organizationUserResponseAcceptedAt";
-import type { OrganizationUserResponseExpiresAt } from "./organizationUserResponseExpiresAt";
+import type { UserInfo } from "./userInfo.js";
+import type { RoleInfo } from "./roleInfo.js";
+import type { OrganizationUserResponseInvitedAt } from "./organizationUserResponseInvitedAt.js";
+import type { OrganizationUserResponseAcceptedAt } from "./organizationUserResponseAcceptedAt.js";
+import type { OrganizationUserResponseExpiresAt } from "./organizationUserResponseExpiresAt.js";
 
 /**
  * Response schema for organization user (membership).

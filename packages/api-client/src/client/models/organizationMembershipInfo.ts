@@ -5,8 +5,8 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { SrcModulesUsersDomainSchemasUserRoleInfo } from "./srcModulesUsersDomainSchemasUserRoleInfo";
-import type { OrganizationMembershipInfoParent } from "./organizationMembershipInfoParent";
+import type { SrcModulesUsersDomainSchemasUserRoleInfo } from "./srcModulesUsersDomainSchemasUserRoleInfo.js";
+import type { OrganizationMembershipInfoParent } from "./organizationMembershipInfoParent.js";
 
 /**
  * Organization membership info for user response.

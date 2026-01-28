@@ -5,12 +5,12 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { EducationLevel } from "./educationLevel";
-import type { EducationNestedCreateStartYear } from "./educationNestedCreateStartYear";
-import type { EducationNestedCreateEndYear } from "./educationNestedCreateEndYear";
-import type { EducationNestedCreateWorkloadHours } from "./educationNestedCreateWorkloadHours";
-import type { EducationNestedCreateCertificateUrl } from "./educationNestedCreateCertificateUrl";
-import type { EducationNestedCreateNotes } from "./educationNestedCreateNotes";
+import type { EducationLevel } from "./educationLevel.js";
+import type { EducationNestedCreateStartYear } from "./educationNestedCreateStartYear.js";
+import type { EducationNestedCreateEndYear } from "./educationNestedCreateEndYear.js";
+import type { EducationNestedCreateWorkloadHours } from "./educationNestedCreateWorkloadHours.js";
+import type { EducationNestedCreateCertificateUrl } from "./educationNestedCreateCertificateUrl.js";
+import type { EducationNestedCreateNotes } from "./educationNestedCreateNotes.js";
 
 /**
  * Schema for creating an education within a composite operation.

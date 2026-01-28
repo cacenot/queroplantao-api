@@ -5,13 +5,13 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { EducationInputId } from "./educationInputId";
-import type { EducationLevel } from "./educationLevel";
-import type { EducationInputStartYear } from "./educationInputStartYear";
-import type { EducationInputEndYear } from "./educationInputEndYear";
-import type { EducationInputWorkloadHours } from "./educationInputWorkloadHours";
-import type { EducationInputCertificateUrl } from "./educationInputCertificateUrl";
-import type { EducationInputNotes } from "./educationInputNotes";
+import type { EducationInputId } from "./educationInputId.js";
+import type { EducationLevel } from "./educationLevel.js";
+import type { EducationInputStartYear } from "./educationInputStartYear.js";
+import type { EducationInputEndYear } from "./educationInputEndYear.js";
+import type { EducationInputWorkloadHours } from "./educationInputWorkloadHours.js";
+import type { EducationInputCertificateUrl } from "./educationInputCertificateUrl.js";
+import type { EducationInputNotes } from "./educationInputNotes.js";
 
 /**
  * Input schema for professional education.

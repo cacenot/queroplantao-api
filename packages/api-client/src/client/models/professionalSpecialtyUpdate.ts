@@ -5,13 +5,13 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { ProfessionalSpecialtyUpdateIsPrimary } from "./professionalSpecialtyUpdateIsPrimary";
-import type { ProfessionalSpecialtyUpdateRqeNumber } from "./professionalSpecialtyUpdateRqeNumber";
-import type { ProfessionalSpecialtyUpdateRqeState } from "./professionalSpecialtyUpdateRqeState";
-import type { ProfessionalSpecialtyUpdateResidencyStatus } from "./professionalSpecialtyUpdateResidencyStatus";
-import type { ProfessionalSpecialtyUpdateResidencyInstitution } from "./professionalSpecialtyUpdateResidencyInstitution";
-import type { ProfessionalSpecialtyUpdateResidencyExpectedCompletion } from "./professionalSpecialtyUpdateResidencyExpectedCompletion";
-import type { ProfessionalSpecialtyUpdateCertificateUrl } from "./professionalSpecialtyUpdateCertificateUrl";
+import type { ProfessionalSpecialtyUpdateIsPrimary } from "./professionalSpecialtyUpdateIsPrimary.js";
+import type { ProfessionalSpecialtyUpdateRqeNumber } from "./professionalSpecialtyUpdateRqeNumber.js";
+import type { ProfessionalSpecialtyUpdateRqeState } from "./professionalSpecialtyUpdateRqeState.js";
+import type { ProfessionalSpecialtyUpdateResidencyStatus } from "./professionalSpecialtyUpdateResidencyStatus.js";
+import type { ProfessionalSpecialtyUpdateResidencyInstitution } from "./professionalSpecialtyUpdateResidencyInstitution.js";
+import type { ProfessionalSpecialtyUpdateResidencyExpectedCompletion } from "./professionalSpecialtyUpdateResidencyExpectedCompletion.js";
+import type { ProfessionalSpecialtyUpdateCertificateUrl } from "./professionalSpecialtyUpdateCertificateUrl.js";
 
 /**
  * Schema for updating a professional specialty (PATCH - partial update).

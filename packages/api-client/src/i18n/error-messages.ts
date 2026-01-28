@@ -5,7 +5,7 @@
  * DO NOT EDIT MANUALLY
  */
 
-import { ErrorCodes } from "./error-codes.js";
+import { ErrorCodes } from './error-codes.js';
 
 /**
  * PT-BR messages for each error code.

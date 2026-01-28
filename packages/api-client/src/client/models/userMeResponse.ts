@@ -5,13 +5,13 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { UserMeResponsePhone } from "./userMeResponsePhone";
-import type { UserMeResponseCpf } from "./userMeResponseCpf";
-import type { UserMeResponseAvatarUrl } from "./userMeResponseAvatarUrl";
-import type { UserMeResponseEmailVerifiedAt } from "./userMeResponseEmailVerifiedAt";
-import type { SrcModulesUsersDomainSchemasUserRoleInfo } from "./srcModulesUsersDomainSchemasUserRoleInfo";
-import type { PermissionInfo } from "./permissionInfo";
-import type { OrganizationMembershipInfo } from "./organizationMembershipInfo";
+import type { UserMeResponsePhone } from "./userMeResponsePhone.js";
+import type { UserMeResponseCpf } from "./userMeResponseCpf.js";
+import type { UserMeResponseAvatarUrl } from "./userMeResponseAvatarUrl.js";
+import type { UserMeResponseEmailVerifiedAt } from "./userMeResponseEmailVerifiedAt.js";
+import type { SrcModulesUsersDomainSchemasUserRoleInfo } from "./srcModulesUsersDomainSchemasUserRoleInfo.js";
+import type { PermissionInfo } from "./permissionInfo.js";
+import type { OrganizationMembershipInfo } from "./organizationMembershipInfo.js";
 
 /**
  * Response schema for GET /auth/me endpoint.

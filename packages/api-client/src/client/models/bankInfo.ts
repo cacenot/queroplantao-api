@@ -5,7 +5,7 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { BankInfoShortName } from "./bankInfoShortName";
+import type { BankInfoShortName } from "./bankInfoShortName.js";
 
 /**
  * Embedded bank information.

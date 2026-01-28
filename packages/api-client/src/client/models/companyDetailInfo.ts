@@ -5,18 +5,18 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { CompanyDetailInfoCnpj } from "./companyDetailInfoCnpj";
-import type { CompanyDetailInfoTradeName } from "./companyDetailInfoTradeName";
-import type { CompanyDetailInfoEmail } from "./companyDetailInfoEmail";
-import type { CompanyDetailInfoPhone } from "./companyDetailInfoPhone";
-import type { CompanyDetailInfoStreet } from "./companyDetailInfoStreet";
-import type { CompanyDetailInfoStreetNumber } from "./companyDetailInfoStreetNumber";
-import type { CompanyDetailInfoComplement } from "./companyDetailInfoComplement";
-import type { CompanyDetailInfoNeighborhood } from "./companyDetailInfoNeighborhood";
-import type { CompanyDetailInfoCity } from "./companyDetailInfoCity";
-import type { CompanyDetailInfoStateCode } from "./companyDetailInfoStateCode";
-import type { CompanyDetailInfoPostalCode } from "./companyDetailInfoPostalCode";
-import type { BankAccountResponse } from "./bankAccountResponse";
+import type { CompanyDetailInfoCnpj } from "./companyDetailInfoCnpj.js";
+import type { CompanyDetailInfoTradeName } from "./companyDetailInfoTradeName.js";
+import type { CompanyDetailInfoEmail } from "./companyDetailInfoEmail.js";
+import type { CompanyDetailInfoPhone } from "./companyDetailInfoPhone.js";
+import type { CompanyDetailInfoStreet } from "./companyDetailInfoStreet.js";
+import type { CompanyDetailInfoStreetNumber } from "./companyDetailInfoStreetNumber.js";
+import type { CompanyDetailInfoComplement } from "./companyDetailInfoComplement.js";
+import type { CompanyDetailInfoNeighborhood } from "./companyDetailInfoNeighborhood.js";
+import type { CompanyDetailInfoCity } from "./companyDetailInfoCity.js";
+import type { CompanyDetailInfoStateCode } from "./companyDetailInfoStateCode.js";
+import type { CompanyDetailInfoPostalCode } from "./companyDetailInfoPostalCode.js";
+import type { BankAccountResponse } from "./bankAccountResponse.js";
 
 /**
  * Detailed company information with bank accounts.

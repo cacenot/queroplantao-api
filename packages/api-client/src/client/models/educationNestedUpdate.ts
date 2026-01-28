@@ -5,16 +5,16 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { EducationNestedUpdateId } from "./educationNestedUpdateId";
-import type { EducationNestedUpdateLevel } from "./educationNestedUpdateLevel";
-import type { EducationNestedUpdateCourseName } from "./educationNestedUpdateCourseName";
-import type { EducationNestedUpdateInstitution } from "./educationNestedUpdateInstitution";
-import type { EducationNestedUpdateStartYear } from "./educationNestedUpdateStartYear";
-import type { EducationNestedUpdateEndYear } from "./educationNestedUpdateEndYear";
-import type { EducationNestedUpdateIsCompleted } from "./educationNestedUpdateIsCompleted";
-import type { EducationNestedUpdateWorkloadHours } from "./educationNestedUpdateWorkloadHours";
-import type { EducationNestedUpdateCertificateUrl } from "./educationNestedUpdateCertificateUrl";
-import type { EducationNestedUpdateNotes } from "./educationNestedUpdateNotes";
+import type { EducationNestedUpdateId } from "./educationNestedUpdateId.js";
+import type { EducationNestedUpdateLevel } from "./educationNestedUpdateLevel.js";
+import type { EducationNestedUpdateCourseName } from "./educationNestedUpdateCourseName.js";
+import type { EducationNestedUpdateInstitution } from "./educationNestedUpdateInstitution.js";
+import type { EducationNestedUpdateStartYear } from "./educationNestedUpdateStartYear.js";
+import type { EducationNestedUpdateEndYear } from "./educationNestedUpdateEndYear.js";
+import type { EducationNestedUpdateIsCompleted } from "./educationNestedUpdateIsCompleted.js";
+import type { EducationNestedUpdateWorkloadHours } from "./educationNestedUpdateWorkloadHours.js";
+import type { EducationNestedUpdateCertificateUrl } from "./educationNestedUpdateCertificateUrl.js";
+import type { EducationNestedUpdateNotes } from "./educationNestedUpdateNotes.js";
 
 /**
  * Schema for updating an education within a composite operation.

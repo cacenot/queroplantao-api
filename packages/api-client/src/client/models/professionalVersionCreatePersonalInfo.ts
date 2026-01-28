@@ -5,7 +5,7 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { PersonalInfoInput } from "./personalInfoInput";
+import type { PersonalInfoInput } from "./personalInfoInput.js";
 
 /**
  * Professional personal information

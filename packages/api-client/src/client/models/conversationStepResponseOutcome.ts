@@ -5,6 +5,6 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { ConversationOutcome } from "./conversationOutcome";
+import type { ConversationOutcome } from "./conversationOutcome.js";
 
 export type ConversationStepResponseOutcome = ConversationOutcome | null;

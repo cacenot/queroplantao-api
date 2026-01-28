@@ -5,7 +5,7 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { DocumentConfigItemDescription } from "./documentConfigItemDescription";
+import type { DocumentConfigItemDescription } from "./documentConfigItemDescription.js";
 
 /**
  * Single document configuration for the upload step.

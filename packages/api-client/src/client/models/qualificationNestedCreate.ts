@@ -5,12 +5,12 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { ProfessionalType } from "./professionalType";
-import type { QualificationNestedCreateGraduationYear } from "./qualificationNestedCreateGraduationYear";
-import type { CouncilType } from "./councilType";
-import type { QualificationNestedCreateCouncilState } from "./qualificationNestedCreateCouncilState";
-import type { SpecialtyNestedCreate } from "./specialtyNestedCreate";
-import type { EducationNestedCreate } from "./educationNestedCreate";
+import type { ProfessionalType } from "./professionalType.js";
+import type { QualificationNestedCreateGraduationYear } from "./qualificationNestedCreateGraduationYear.js";
+import type { CouncilType } from "./councilType.js";
+import type { QualificationNestedCreateCouncilState } from "./qualificationNestedCreateCouncilState.js";
+import type { SpecialtyNestedCreate } from "./specialtyNestedCreate.js";
+import type { EducationNestedCreate } from "./educationNestedCreate.js";
 
 /**
  * Schema for creating a qualification with nested specialties and educations.

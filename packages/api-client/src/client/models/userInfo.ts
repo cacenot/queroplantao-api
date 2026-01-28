@@ -5,7 +5,7 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { UserInfoAvatarUrl } from "./userInfoAvatarUrl";
+import type { UserInfoAvatarUrl } from "./userInfoAvatarUrl.js";
 
 /**
  * User basic information.

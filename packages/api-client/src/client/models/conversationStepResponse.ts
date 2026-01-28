@@ -5,18 +5,18 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { StepType } from "./stepType";
-import type { StepStatus } from "./stepStatus";
-import type { ConversationStepResponseAssignedTo } from "./conversationStepResponseAssignedTo";
-import type { ConversationStepResponseReviewNotes } from "./conversationStepResponseReviewNotes";
-import type { ConversationStepResponseRejectionReason } from "./conversationStepResponseRejectionReason";
-import type { ConversationStepResponseStartedAt } from "./conversationStepResponseStartedAt";
-import type { ConversationStepResponseCompletedAt } from "./conversationStepResponseCompletedAt";
-import type { ConversationStepResponseCompletedBy } from "./conversationStepResponseCompletedBy";
-import type { ConversationStepResponseReviewedAt } from "./conversationStepResponseReviewedAt";
-import type { ConversationStepResponseReviewedBy } from "./conversationStepResponseReviewedBy";
-import type { ConversationStepResponseNotes } from "./conversationStepResponseNotes";
-import type { ConversationStepResponseOutcome } from "./conversationStepResponseOutcome";
+import type { StepType } from "./stepType.js";
+import type { StepStatus } from "./stepStatus.js";
+import type { ConversationStepResponseAssignedTo } from "./conversationStepResponseAssignedTo.js";
+import type { ConversationStepResponseReviewNotes } from "./conversationStepResponseReviewNotes.js";
+import type { ConversationStepResponseRejectionReason } from "./conversationStepResponseRejectionReason.js";
+import type { ConversationStepResponseStartedAt } from "./conversationStepResponseStartedAt.js";
+import type { ConversationStepResponseCompletedAt } from "./conversationStepResponseCompletedAt.js";
+import type { ConversationStepResponseCompletedBy } from "./conversationStepResponseCompletedBy.js";
+import type { ConversationStepResponseReviewedAt } from "./conversationStepResponseReviewedAt.js";
+import type { ConversationStepResponseReviewedBy } from "./conversationStepResponseReviewedBy.js";
+import type { ConversationStepResponseNotes } from "./conversationStepResponseNotes.js";
+import type { ConversationStepResponseOutcome } from "./conversationStepResponseOutcome.js";
 
 /**
  * Response schema for conversation step.

@@ -5,28 +5,28 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { ScreeningStatus } from "./screeningStatus";
-import type { ScreeningProcessDetailResponseProfessionalCpf } from "./screeningProcessDetailResponseProfessionalCpf";
-import type { ScreeningProcessDetailResponseProfessionalName } from "./screeningProcessDetailResponseProfessionalName";
-import type { ScreeningProcessDetailResponseProfessionalPhone } from "./screeningProcessDetailResponseProfessionalPhone";
-import type { ScreeningProcessDetailResponseProfessionalEmail } from "./screeningProcessDetailResponseProfessionalEmail";
-import type { ScreeningProcessDetailResponseOrganizationProfessionalId } from "./screeningProcessDetailResponseOrganizationProfessionalId";
-import type { ScreeningProcessDetailResponseExpectedProfessionalType } from "./screeningProcessDetailResponseExpectedProfessionalType";
-import type { ScreeningProcessDetailResponseExpectedSpecialtyId } from "./screeningProcessDetailResponseExpectedSpecialtyId";
-import type { ScreeningProcessDetailResponseOwnerId } from "./screeningProcessDetailResponseOwnerId";
-import type { ScreeningProcessDetailResponseCurrentActorId } from "./screeningProcessDetailResponseCurrentActorId";
-import type { ScreeningProcessDetailResponseClientCompanyId } from "./screeningProcessDetailResponseClientCompanyId";
-import type { ScreeningProcessDetailResponseProfessionalContractId } from "./screeningProcessDetailResponseProfessionalContractId";
-import type { ScreeningProcessDetailResponseClientContractId } from "./screeningProcessDetailResponseClientContractId";
-import type { ScreeningProcessDetailResponseCurrentStepType } from "./screeningProcessDetailResponseCurrentStepType";
-import type { ScreeningProcessDetailResponseRejectionReason } from "./screeningProcessDetailResponseRejectionReason";
-import type { ScreeningProcessDetailResponseNotes } from "./screeningProcessDetailResponseNotes";
-import type { ScreeningProcessDetailResponseExpiresAt } from "./screeningProcessDetailResponseExpiresAt";
-import type { ScreeningProcessDetailResponseCompletedAt } from "./screeningProcessDetailResponseCompletedAt";
-import type { ScreeningProcessDetailResponseCreatedBy } from "./screeningProcessDetailResponseCreatedBy";
-import type { ScreeningProcessDetailResponseUpdatedBy } from "./screeningProcessDetailResponseUpdatedBy";
-import type { ScreeningProcessDetailResponseSteps } from "./screeningProcessDetailResponseSteps";
-import type { ScreeningProcessDetailResponseRequiredDocuments } from "./screeningProcessDetailResponseRequiredDocuments";
+import type { ScreeningStatus } from "./screeningStatus.js";
+import type { ScreeningProcessDetailResponseProfessionalCpf } from "./screeningProcessDetailResponseProfessionalCpf.js";
+import type { ScreeningProcessDetailResponseProfessionalName } from "./screeningProcessDetailResponseProfessionalName.js";
+import type { ScreeningProcessDetailResponseProfessionalPhone } from "./screeningProcessDetailResponseProfessionalPhone.js";
+import type { ScreeningProcessDetailResponseProfessionalEmail } from "./screeningProcessDetailResponseProfessionalEmail.js";
+import type { ScreeningProcessDetailResponseOrganizationProfessionalId } from "./screeningProcessDetailResponseOrganizationProfessionalId.js";
+import type { ScreeningProcessDetailResponseExpectedProfessionalType } from "./screeningProcessDetailResponseExpectedProfessionalType.js";
+import type { ScreeningProcessDetailResponseExpectedSpecialtyId } from "./screeningProcessDetailResponseExpectedSpecialtyId.js";
+import type { ScreeningProcessDetailResponseOwnerId } from "./screeningProcessDetailResponseOwnerId.js";
+import type { ScreeningProcessDetailResponseCurrentActorId } from "./screeningProcessDetailResponseCurrentActorId.js";
+import type { ScreeningProcessDetailResponseClientCompanyId } from "./screeningProcessDetailResponseClientCompanyId.js";
+import type { ScreeningProcessDetailResponseProfessionalContractId } from "./screeningProcessDetailResponseProfessionalContractId.js";
+import type { ScreeningProcessDetailResponseClientContractId } from "./screeningProcessDetailResponseClientContractId.js";
+import type { ScreeningProcessDetailResponseCurrentStepType } from "./screeningProcessDetailResponseCurrentStepType.js";
+import type { ScreeningProcessDetailResponseRejectionReason } from "./screeningProcessDetailResponseRejectionReason.js";
+import type { ScreeningProcessDetailResponseNotes } from "./screeningProcessDetailResponseNotes.js";
+import type { ScreeningProcessDetailResponseExpiresAt } from "./screeningProcessDetailResponseExpiresAt.js";
+import type { ScreeningProcessDetailResponseCompletedAt } from "./screeningProcessDetailResponseCompletedAt.js";
+import type { ScreeningProcessDetailResponseCreatedBy } from "./screeningProcessDetailResponseCreatedBy.js";
+import type { ScreeningProcessDetailResponseUpdatedBy } from "./screeningProcessDetailResponseUpdatedBy.js";
+import type { ScreeningProcessDetailResponseSteps } from "./screeningProcessDetailResponseSteps.js";
+import type { ScreeningProcessDetailResponseRequiredDocuments } from "./screeningProcessDetailResponseRequiredDocuments.js";
 
 /**
  * Schema for detailed screening process response with nested data.

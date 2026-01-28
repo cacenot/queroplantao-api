@@ -5,7 +5,7 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { SpecialtyNestedUpdate } from "./specialtyNestedUpdate";
+import type { SpecialtyNestedUpdate } from "./specialtyNestedUpdate.js";
 
 /**
  * Specialties for this qualification (null = no changes, [] = remove all)

@@ -5,9 +5,9 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { SourceType } from "./sourceType";
-import type { ProfessionalVersionListResponseAppliedAt } from "./professionalVersionListResponseAppliedAt";
-import type { ProfessionalVersionListResponseRejectedAt } from "./professionalVersionListResponseRejectedAt";
+import type { SourceType } from "./sourceType.js";
+import type { ProfessionalVersionListResponseAppliedAt } from "./professionalVersionListResponseAppliedAt.js";
+import type { ProfessionalVersionListResponseRejectedAt } from "./professionalVersionListResponseRejectedAt.js";
 
 /**
  * Response schema for version list item.

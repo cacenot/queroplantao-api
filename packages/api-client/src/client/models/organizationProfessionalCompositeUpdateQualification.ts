@@ -5,7 +5,7 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { QualificationNestedUpdate } from "./qualificationNestedUpdate";
+import type { QualificationNestedUpdate } from "./qualificationNestedUpdate.js";
 
 /**
  * The professional's qualification with specialties and educations (null = no changes)

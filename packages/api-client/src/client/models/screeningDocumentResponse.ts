@@ -5,18 +5,18 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { ScreeningDocumentResponseDescription } from "./screeningDocumentResponseDescription";
-import type { ScreeningDocumentStatus } from "./screeningDocumentStatus";
-import type { ScreeningDocumentResponseProfessionalDocumentId } from "./screeningDocumentResponseProfessionalDocumentId";
-import type { ScreeningDocumentResponseUploadedAt } from "./screeningDocumentResponseUploadedAt";
-import type { ScreeningDocumentResponseUploadedBy } from "./screeningDocumentResponseUploadedBy";
-import type { ScreeningDocumentResponseReviewNotes } from "./screeningDocumentResponseReviewNotes";
-import type { ScreeningDocumentResponseRejectionReason } from "./screeningDocumentResponseRejectionReason";
-import type { ScreeningDocumentResponseReviewedAt } from "./screeningDocumentResponseReviewedAt";
-import type { ScreeningDocumentResponseReviewedBy } from "./screeningDocumentResponseReviewedBy";
-import type { ScreeningDocumentResponseReviewHistoryItem } from "./screeningDocumentResponseReviewHistoryItem";
-import type { ScreeningDocumentResponseCreatedBy } from "./screeningDocumentResponseCreatedBy";
-import type { ScreeningDocumentResponseUpdatedBy } from "./screeningDocumentResponseUpdatedBy";
+import type { ScreeningDocumentResponseDescription } from "./screeningDocumentResponseDescription.js";
+import type { ScreeningDocumentStatus } from "./screeningDocumentStatus.js";
+import type { ScreeningDocumentResponseProfessionalDocumentId } from "./screeningDocumentResponseProfessionalDocumentId.js";
+import type { ScreeningDocumentResponseUploadedAt } from "./screeningDocumentResponseUploadedAt.js";
+import type { ScreeningDocumentResponseUploadedBy } from "./screeningDocumentResponseUploadedBy.js";
+import type { ScreeningDocumentResponseReviewNotes } from "./screeningDocumentResponseReviewNotes.js";
+import type { ScreeningDocumentResponseRejectionReason } from "./screeningDocumentResponseRejectionReason.js";
+import type { ScreeningDocumentResponseReviewedAt } from "./screeningDocumentResponseReviewedAt.js";
+import type { ScreeningDocumentResponseReviewedBy } from "./screeningDocumentResponseReviewedBy.js";
+import type { ScreeningDocumentResponseReviewHistoryItem } from "./screeningDocumentResponseReviewHistoryItem.js";
+import type { ScreeningDocumentResponseCreatedBy } from "./screeningDocumentResponseCreatedBy.js";
+import type { ScreeningDocumentResponseUpdatedBy } from "./screeningDocumentResponseUpdatedBy.js";
 
 /**
  * Full response schema for a screening document.

@@ -5,8 +5,8 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { OrganizationUserUpdateRoleId } from "./organizationUserUpdateRoleId";
-import type { OrganizationUserUpdateIsActive } from "./organizationUserUpdateIsActive";
+import type { OrganizationUserUpdateRoleId } from "./organizationUserUpdateRoleId.js";
+import type { OrganizationUserUpdateIsActive } from "./organizationUserUpdateIsActive.js";
 
 /**
  * Schema for updating a user's role in an organization.

@@ -5,19 +5,19 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { ProfessionalVersionDetailResponseProfessionalId } from "./professionalVersionDetailResponseProfessionalId";
-import type { ProfessionalVersionDetailResponseDataSnapshot } from "./professionalVersionDetailResponseDataSnapshot";
-import type { SourceType } from "./sourceType";
-import type { ProfessionalVersionDetailResponseSourceId } from "./professionalVersionDetailResponseSourceId";
-import type { ProfessionalVersionDetailResponseAppliedAt } from "./professionalVersionDetailResponseAppliedAt";
-import type { ProfessionalVersionDetailResponseAppliedBy } from "./professionalVersionDetailResponseAppliedBy";
-import type { ProfessionalVersionDetailResponseRejectedAt } from "./professionalVersionDetailResponseRejectedAt";
-import type { ProfessionalVersionDetailResponseRejectedBy } from "./professionalVersionDetailResponseRejectedBy";
-import type { ProfessionalVersionDetailResponseRejectionReason } from "./professionalVersionDetailResponseRejectionReason";
-import type { ProfessionalVersionDetailResponseNotes } from "./professionalVersionDetailResponseNotes";
-import type { ProfessionalVersionDetailResponseCreatedBy } from "./professionalVersionDetailResponseCreatedBy";
-import type { ProfessionalVersionDetailResponseUpdatedBy } from "./professionalVersionDetailResponseUpdatedBy";
-import type { ProfessionalChangeDiffResponse } from "./professionalChangeDiffResponse";
+import type { ProfessionalVersionDetailResponseProfessionalId } from "./professionalVersionDetailResponseProfessionalId.js";
+import type { ProfessionalVersionDetailResponseDataSnapshot } from "./professionalVersionDetailResponseDataSnapshot.js";
+import type { SourceType } from "./sourceType.js";
+import type { ProfessionalVersionDetailResponseSourceId } from "./professionalVersionDetailResponseSourceId.js";
+import type { ProfessionalVersionDetailResponseAppliedAt } from "./professionalVersionDetailResponseAppliedAt.js";
+import type { ProfessionalVersionDetailResponseAppliedBy } from "./professionalVersionDetailResponseAppliedBy.js";
+import type { ProfessionalVersionDetailResponseRejectedAt } from "./professionalVersionDetailResponseRejectedAt.js";
+import type { ProfessionalVersionDetailResponseRejectedBy } from "./professionalVersionDetailResponseRejectedBy.js";
+import type { ProfessionalVersionDetailResponseRejectionReason } from "./professionalVersionDetailResponseRejectionReason.js";
+import type { ProfessionalVersionDetailResponseNotes } from "./professionalVersionDetailResponseNotes.js";
+import type { ProfessionalVersionDetailResponseCreatedBy } from "./professionalVersionDetailResponseCreatedBy.js";
+import type { ProfessionalVersionDetailResponseUpdatedBy } from "./professionalVersionDetailResponseUpdatedBy.js";
+import type { ProfessionalChangeDiffResponse } from "./professionalChangeDiffResponse.js";
 
 /**
  * Detailed response schema including diffs.

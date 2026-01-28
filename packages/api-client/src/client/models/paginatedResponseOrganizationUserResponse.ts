@@ -5,7 +5,7 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { OrganizationUserResponse } from "./organizationUserResponse";
+import type { OrganizationUserResponse } from "./organizationUserResponse.js";
 
 export type PaginatedResponseOrganizationUserResponse = {
   items: OrganizationUserResponse[];

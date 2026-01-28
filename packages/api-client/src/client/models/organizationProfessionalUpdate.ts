@@ -5,22 +5,22 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { OrganizationProfessionalUpdateFullName } from "./organizationProfessionalUpdateFullName";
-import type { OrganizationProfessionalUpdateEmail } from "./organizationProfessionalUpdateEmail";
-import type { OrganizationProfessionalUpdatePhone } from "./organizationProfessionalUpdatePhone";
-import type { OrganizationProfessionalUpdateCpf } from "./organizationProfessionalUpdateCpf";
-import type { OrganizationProfessionalUpdateBirthDate } from "./organizationProfessionalUpdateBirthDate";
-import type { OrganizationProfessionalUpdateNationality } from "./organizationProfessionalUpdateNationality";
-import type { OrganizationProfessionalUpdateGender } from "./organizationProfessionalUpdateGender";
-import type { OrganizationProfessionalUpdateMaritalStatus } from "./organizationProfessionalUpdateMaritalStatus";
-import type { OrganizationProfessionalUpdateAvatarUrl } from "./organizationProfessionalUpdateAvatarUrl";
-import type { OrganizationProfessionalUpdateAddress } from "./organizationProfessionalUpdateAddress";
-import type { OrganizationProfessionalUpdateNumber } from "./organizationProfessionalUpdateNumber";
-import type { OrganizationProfessionalUpdateComplement } from "./organizationProfessionalUpdateComplement";
-import type { OrganizationProfessionalUpdateNeighborhood } from "./organizationProfessionalUpdateNeighborhood";
-import type { OrganizationProfessionalUpdateCity } from "./organizationProfessionalUpdateCity";
-import type { OrganizationProfessionalUpdateStateCode } from "./organizationProfessionalUpdateStateCode";
-import type { OrganizationProfessionalUpdatePostalCode } from "./organizationProfessionalUpdatePostalCode";
+import type { OrganizationProfessionalUpdateFullName } from "./organizationProfessionalUpdateFullName.js";
+import type { OrganizationProfessionalUpdateEmail } from "./organizationProfessionalUpdateEmail.js";
+import type { OrganizationProfessionalUpdatePhone } from "./organizationProfessionalUpdatePhone.js";
+import type { OrganizationProfessionalUpdateCpf } from "./organizationProfessionalUpdateCpf.js";
+import type { OrganizationProfessionalUpdateBirthDate } from "./organizationProfessionalUpdateBirthDate.js";
+import type { OrganizationProfessionalUpdateNationality } from "./organizationProfessionalUpdateNationality.js";
+import type { OrganizationProfessionalUpdateGender } from "./organizationProfessionalUpdateGender.js";
+import type { OrganizationProfessionalUpdateMaritalStatus } from "./organizationProfessionalUpdateMaritalStatus.js";
+import type { OrganizationProfessionalUpdateAvatarUrl } from "./organizationProfessionalUpdateAvatarUrl.js";
+import type { OrganizationProfessionalUpdateAddress } from "./organizationProfessionalUpdateAddress.js";
+import type { OrganizationProfessionalUpdateNumber } from "./organizationProfessionalUpdateNumber.js";
+import type { OrganizationProfessionalUpdateComplement } from "./organizationProfessionalUpdateComplement.js";
+import type { OrganizationProfessionalUpdateNeighborhood } from "./organizationProfessionalUpdateNeighborhood.js";
+import type { OrganizationProfessionalUpdateCity } from "./organizationProfessionalUpdateCity.js";
+import type { OrganizationProfessionalUpdateStateCode } from "./organizationProfessionalUpdateStateCode.js";
+import type { OrganizationProfessionalUpdatePostalCode } from "./organizationProfessionalUpdatePostalCode.js";
 
 /**
  * Schema for updating an organization professional (PATCH - partial update).

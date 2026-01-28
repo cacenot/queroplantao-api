@@ -5,20 +5,20 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { OrganizationProfessionalCompositeCreateEmail } from "./organizationProfessionalCompositeCreateEmail";
-import type { OrganizationProfessionalCompositeCreatePhone } from "./organizationProfessionalCompositeCreatePhone";
-import type { OrganizationProfessionalCompositeCreateCpf } from "./organizationProfessionalCompositeCreateCpf";
-import type { OrganizationProfessionalCompositeCreateBirthDate } from "./organizationProfessionalCompositeCreateBirthDate";
-import type { OrganizationProfessionalCompositeCreateNationality } from "./organizationProfessionalCompositeCreateNationality";
-import type { OrganizationProfessionalCompositeCreateGender } from "./organizationProfessionalCompositeCreateGender";
-import type { OrganizationProfessionalCompositeCreateMaritalStatus } from "./organizationProfessionalCompositeCreateMaritalStatus";
-import type { OrganizationProfessionalCompositeCreateAvatarUrl } from "./organizationProfessionalCompositeCreateAvatarUrl";
-import type { OrganizationProfessionalCompositeCreateStateCode } from "./organizationProfessionalCompositeCreateStateCode";
-import type { OrganizationProfessionalCompositeCreateAddress } from "./organizationProfessionalCompositeCreateAddress";
-import type { OrganizationProfessionalCompositeCreateNumber } from "./organizationProfessionalCompositeCreateNumber";
-import type { OrganizationProfessionalCompositeCreateComplement } from "./organizationProfessionalCompositeCreateComplement";
-import type { OrganizationProfessionalCompositeCreateNeighborhood } from "./organizationProfessionalCompositeCreateNeighborhood";
-import type { QualificationNestedCreate } from "./qualificationNestedCreate";
+import type { OrganizationProfessionalCompositeCreateEmail } from "./organizationProfessionalCompositeCreateEmail.js";
+import type { OrganizationProfessionalCompositeCreatePhone } from "./organizationProfessionalCompositeCreatePhone.js";
+import type { OrganizationProfessionalCompositeCreateCpf } from "./organizationProfessionalCompositeCreateCpf.js";
+import type { OrganizationProfessionalCompositeCreateBirthDate } from "./organizationProfessionalCompositeCreateBirthDate.js";
+import type { OrganizationProfessionalCompositeCreateNationality } from "./organizationProfessionalCompositeCreateNationality.js";
+import type { OrganizationProfessionalCompositeCreateGender } from "./organizationProfessionalCompositeCreateGender.js";
+import type { OrganizationProfessionalCompositeCreateMaritalStatus } from "./organizationProfessionalCompositeCreateMaritalStatus.js";
+import type { OrganizationProfessionalCompositeCreateAvatarUrl } from "./organizationProfessionalCompositeCreateAvatarUrl.js";
+import type { OrganizationProfessionalCompositeCreateStateCode } from "./organizationProfessionalCompositeCreateStateCode.js";
+import type { OrganizationProfessionalCompositeCreateAddress } from "./organizationProfessionalCompositeCreateAddress.js";
+import type { OrganizationProfessionalCompositeCreateNumber } from "./organizationProfessionalCompositeCreateNumber.js";
+import type { OrganizationProfessionalCompositeCreateComplement } from "./organizationProfessionalCompositeCreateComplement.js";
+import type { OrganizationProfessionalCompositeCreateNeighborhood } from "./organizationProfessionalCompositeCreateNeighborhood.js";
+import type { QualificationNestedCreate } from "./qualificationNestedCreate.js";
 
 /**
  * Schema for creating a professional with one qualification and nested entities.

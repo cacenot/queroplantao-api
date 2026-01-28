@@ -5,15 +5,15 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { ProfessionalEducationUpdateLevel } from "./professionalEducationUpdateLevel";
-import type { ProfessionalEducationUpdateCourseName } from "./professionalEducationUpdateCourseName";
-import type { ProfessionalEducationUpdateInstitution } from "./professionalEducationUpdateInstitution";
-import type { ProfessionalEducationUpdateStartYear } from "./professionalEducationUpdateStartYear";
-import type { ProfessionalEducationUpdateEndYear } from "./professionalEducationUpdateEndYear";
-import type { ProfessionalEducationUpdateIsCompleted } from "./professionalEducationUpdateIsCompleted";
-import type { ProfessionalEducationUpdateWorkloadHours } from "./professionalEducationUpdateWorkloadHours";
-import type { ProfessionalEducationUpdateCertificateUrl } from "./professionalEducationUpdateCertificateUrl";
-import type { ProfessionalEducationUpdateNotes } from "./professionalEducationUpdateNotes";
+import type { ProfessionalEducationUpdateLevel } from "./professionalEducationUpdateLevel.js";
+import type { ProfessionalEducationUpdateCourseName } from "./professionalEducationUpdateCourseName.js";
+import type { ProfessionalEducationUpdateInstitution } from "./professionalEducationUpdateInstitution.js";
+import type { ProfessionalEducationUpdateStartYear } from "./professionalEducationUpdateStartYear.js";
+import type { ProfessionalEducationUpdateEndYear } from "./professionalEducationUpdateEndYear.js";
+import type { ProfessionalEducationUpdateIsCompleted } from "./professionalEducationUpdateIsCompleted.js";
+import type { ProfessionalEducationUpdateWorkloadHours } from "./professionalEducationUpdateWorkloadHours.js";
+import type { ProfessionalEducationUpdateCertificateUrl } from "./professionalEducationUpdateCertificateUrl.js";
+import type { ProfessionalEducationUpdateNotes } from "./professionalEducationUpdateNotes.js";
 
 /**
  * Schema for updating a professional education record (PATCH - partial update).

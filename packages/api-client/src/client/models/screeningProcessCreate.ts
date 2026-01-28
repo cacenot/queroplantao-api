@@ -5,11 +5,11 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { ScreeningProcessCreateProfessionalEmail } from "./screeningProcessCreateProfessionalEmail";
-import type { ScreeningProcessCreateExpectedSpecialtyId } from "./screeningProcessCreateExpectedSpecialtyId";
-import type { ScreeningProcessCreateOwnerId } from "./screeningProcessCreateOwnerId";
-import type { ScreeningProcessCreateClientCompanyId } from "./screeningProcessCreateClientCompanyId";
-import type { ScreeningProcessCreateNotes } from "./screeningProcessCreateNotes";
+import type { ScreeningProcessCreateProfessionalEmail } from "./screeningProcessCreateProfessionalEmail.js";
+import type { ScreeningProcessCreateExpectedSpecialtyId } from "./screeningProcessCreateExpectedSpecialtyId.js";
+import type { ScreeningProcessCreateOwnerId } from "./screeningProcessCreateOwnerId.js";
+import type { ScreeningProcessCreateClientCompanyId } from "./screeningProcessCreateClientCompanyId.js";
+import type { ScreeningProcessCreateNotes } from "./screeningProcessCreateNotes.js";
 
 /**
  * Schema for creating a screening process (Step 1 - Conversation).

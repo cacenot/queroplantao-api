@@ -5,14 +5,14 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { BankAccountResponseAgencyDigit } from "./bankAccountResponseAgencyDigit";
-import type { BankAccountResponseAccountDigit } from "./bankAccountResponseAccountDigit";
-import type { AccountType } from "./accountType";
-import type { BankAccountResponsePixKeyType } from "./bankAccountResponsePixKeyType";
-import type { BankAccountResponsePixKey } from "./bankAccountResponsePixKey";
-import type { BankAccountResponseBank } from "./bankAccountResponseBank";
-import type { BankAccountResponseCreatedAt } from "./bankAccountResponseCreatedAt";
-import type { BankAccountResponseUpdatedAt } from "./bankAccountResponseUpdatedAt";
+import type { BankAccountResponseAgencyDigit } from "./bankAccountResponseAgencyDigit.js";
+import type { BankAccountResponseAccountDigit } from "./bankAccountResponseAccountDigit.js";
+import type { AccountType } from "./accountType.js";
+import type { BankAccountResponsePixKeyType } from "./bankAccountResponsePixKeyType.js";
+import type { BankAccountResponsePixKey } from "./bankAccountResponsePixKey.js";
+import type { BankAccountResponseBank } from "./bankAccountResponseBank.js";
+import type { BankAccountResponseCreatedAt } from "./bankAccountResponseCreatedAt.js";
+import type { BankAccountResponseUpdatedAt } from "./bankAccountResponseUpdatedAt.js";
 
 /**
  * Schema for bank account response.

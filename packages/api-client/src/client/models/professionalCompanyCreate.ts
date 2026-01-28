@@ -5,7 +5,7 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { ProfessionalCompanyCreateLeftAt } from "./professionalCompanyCreateLeftAt";
+import type { ProfessionalCompanyCreateLeftAt } from "./professionalCompanyCreateLeftAt.js";
 
 /**
  * Schema for creating a professional-company link.

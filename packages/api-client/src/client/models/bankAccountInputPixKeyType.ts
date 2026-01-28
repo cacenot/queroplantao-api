@@ -5,6 +5,6 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { PixKeyType } from "./pixKeyType";
+import type { PixKeyType } from "./pixKeyType.js";
 
 export type BankAccountInputPixKeyType = PixKeyType | null;
