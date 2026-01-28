@@ -5,7 +5,7 @@ TypeScript API client for the Quero Plantão API with React Query hooks.
 ## Installation
 
 ```bash
-npm install @queroplantao/api-client
+npm install @cacenot/queroplantao-api-client
 ```
 
 ## Setup
@@ -13,7 +13,7 @@ npm install @queroplantao/api-client
 Configure the client at app initialization:
 
 ```typescript
-import { configureApiClient } from '@queroplantao/api-client';
+import { configureApiClient } from '@cacenot/queroplantao-api-client';
 
 configureApiClient({
   baseUrl: 'https://api.queroplantao.com.br',
@@ -27,7 +27,7 @@ configureApiClient({
 ### React Query Hooks
 
 ```typescript
-import { useListProfessionals, useGetProfessional, useCreateProfessional } from '@queroplantao/api-client';
+import { useListProfessionals, useGetProfessional, useCreateProfessional } from '@cacenot/queroplantao-api-client';
 
 function ProfessionalsList() {
   const { data, isLoading } = useListProfessionals({ page: 1, page_size: 10 });
@@ -54,7 +54,7 @@ import {
   ProfessionalTypeLabels,
   getProfessionalTypeLabel,
   CouncilType,
-} from '@queroplantao/api-client/enums';
+} from '@cacenot/queroplantao-api-client/enums';
 
 // Get label for display
 const label = ProfessionalTypeLabels[ProfessionalType.DOCTOR]; // "Médico"
@@ -72,8 +72,8 @@ const options = Object.values(ProfessionalType).map((value) => ({
 ### Error Handling
 
 ```typescript
-import { ApiClientError, createErrorHandler } from '@queroplantao/api-client';
-import { ErrorCodes, getErrorMessage } from '@queroplantao/api-client/i18n';
+import { ApiClientError, createErrorHandler } from '@cacenot/queroplantao-api-client';
+import { ErrorCodes, getErrorMessage } from '@cacenot/queroplantao-api-client/i18n';
 
 const handleError = createErrorHandler({
   [ErrorCodes.PROFESSIONAL_CPF_ALREADY_EXISTS]: () => {
@@ -104,7 +104,7 @@ import {
   flattenPages,
   getNextPageParam,
   getTotalFromPages,
-} from '@queroplantao/api-client';
+} from '@cacenot/queroplantao-api-client';
 
 // For infinite queries (manual setup)
 const allItems = flattenPages(data?.pages);
@@ -115,9 +115,9 @@ const total = getTotalFromPages(data?.pages);
 
 | Path | Contents |
 |------|----------|
-| `@queroplantao/api-client` | Main entry: hooks, models, utilities |
-| `@queroplantao/api-client/enums` | Enums with PT-BR labels |
-| `@queroplantao/api-client/i18n` | Error codes and messages |
+| `@cacenot/queroplantao-api-client` | Main entry: hooks, models, utilities |
+| `@cacenot/queroplantao-api-client/enums` | Enums with PT-BR labels |
+| `@cacenot/queroplantao-api-client/i18n` | Error codes and messages |
 
 ## Development
 
