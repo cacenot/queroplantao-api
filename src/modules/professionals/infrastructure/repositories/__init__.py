@@ -2,6 +2,12 @@
 Repositories for the professionals module.
 """
 
+from src.modules.professionals.infrastructure.repositories.bank_account_repository import (
+    BankAccountRepository,
+)
+from src.modules.professionals.infrastructure.repositories.company_repository import (
+    CompanyRepository,
+)
 from src.modules.professionals.infrastructure.repositories.organization_professional_repository import (
     OrganizationProfessionalRepository,
 )
@@ -31,6 +37,8 @@ from src.shared.infrastructure.repositories.specialty_repository import (
 )
 
 __all__ = [
+    "BankAccountRepository",
+    "CompanyRepository",
     "OrganizationProfessionalRepository",
     "ProfessionalChangeDiffRepository",
     "ProfessionalCompanyRepository",

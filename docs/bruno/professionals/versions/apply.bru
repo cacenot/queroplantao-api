@@ -19,7 +19,6 @@ docs {
   ## Pré-requisitos
   
   - A versão deve estar pendente (não aplicada e não rejeitada)
-  - O snapshot deve conter apenas features suportadas (atualmente: personal_info)
   
   ## Comportamento
   
@@ -33,7 +32,7 @@ docs {
   | Status | Code | Descrição |
   |--------|------|-----------|
   | 404 | `PROF_VERSION_NOT_FOUND` | Versão não encontrada |
+  | 404 | `PROF_BANK_NOT_FOUND` | Banco não encontrado |
   | 409 | `PROF_VERSION_ALREADY_APPLIED` | Versão já foi aplicada |
   | 409 | `PROF_VERSION_ALREADY_REJECTED` | Versão já foi rejeitada |
-  | 501 | `PROF_VERSION_FEATURE_NOT_SUPPORTED` | Feature do snapshot ainda não suportada |
 }

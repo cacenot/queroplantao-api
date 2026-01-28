@@ -59,6 +59,7 @@ MESSAGES: dict[str, str] = {
     ProfessionalMessages.EMAIL_ALREADY_EXISTS: "Já existe um profissional com este e-mail na organização",
     ProfessionalMessages.COUNCIL_REGISTRATION_EXISTS: "Este registro de conselho já existe na organização",
     ProfessionalMessages.COMPANY_ALREADY_LINKED: "Este profissional já está vinculado a esta empresa",
+    ProfessionalMessages.BANK_NOT_FOUND: "Banco não encontrado",
     ProfessionalMessages.SPECIALTY_ALREADY_ASSIGNED: "Esta especialidade já está atribuída a esta qualificação",
     ProfessionalMessages.DUPLICATE_SPECIALTY_IDS: "IDs de especialidade duplicados na requisição",
     ProfessionalMessages.INVALID_COUNCIL_TYPE: "Tipo de conselho {council_type} não é válido para o tipo profissional {professional_type}",

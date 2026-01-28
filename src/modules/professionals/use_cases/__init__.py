@@ -73,6 +73,8 @@ from src.modules.professionals.use_cases.professional_version import (
 
 # Shared services
 from src.modules.professionals.use_cases.shared import (
+    BankAccountSyncService,
+    CompanySyncService,
     QualificationSyncService,
 )
 
@@ -134,6 +136,8 @@ __all__ = [
     "SnapshotApplierService",
     "SnapshotBuilderService",
     # Shared services
+    "BankAccountSyncService",
+    "CompanySyncService",
     "QualificationSyncService",
     # Specialty (read-only)
     "GetSpecialtyUseCase",

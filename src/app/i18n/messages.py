@@ -74,6 +74,7 @@ class ProfessionalMessages(StrEnum):
     COMPANY_ALREADY_LINKED = "professional.company_already_linked"
     SPECIALTY_ALREADY_ASSIGNED = "professional.specialty_already_assigned"
     DUPLICATE_SPECIALTY_IDS = "professional.duplicate_specialty_ids"
+    BANK_NOT_FOUND = "professional.bank_not_found"
 
     # Validation errors
     INVALID_COUNCIL_TYPE = "professional.invalid_council_type"

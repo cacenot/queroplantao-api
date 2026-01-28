@@ -21,6 +21,7 @@ from src.app.exceptions.auth_exceptions import (
     UserNotFoundError,
 )
 from src.app.exceptions.professional_exceptions import (
+    BankNotFoundError,
     CompanyAlreadyLinkedError,
     CompanyNotFoundError,
     CouncilRegistrationExistsError,
@@ -112,6 +113,7 @@ __all__ = [
     # Professional exceptions
     "CompanyAlreadyLinkedError",
     "CompanyNotFoundError",
+    "BankNotFoundError",
     "CouncilRegistrationExistsError",
     "CourseNameRequiredError",
     "DocumentNotFoundError",

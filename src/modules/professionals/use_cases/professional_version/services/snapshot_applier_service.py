@@ -5,22 +5,25 @@ actual database entities.
 
 Phase 1: personal_info supported.
 Phase 2: qualifications with nested entities (specialties, educations).
-Phase 3: Will add companies and bank_accounts.
+Phase 3: companies and bank_accounts supported.
 """
 
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.app.exceptions import VersionFeatureNotSupportedError
 from src.modules.professionals.domain.models import OrganizationProfessional
 from src.modules.professionals.domain.models.version_snapshot import (
+    BankAccountSnapshot,
+    CompanySnapshot,
     PersonalInfoSnapshot,
     ProfessionalDataSnapshot,
     QualificationSnapshot,
 )
 from src.modules.professionals.domain.schemas.professional_version import (
+    BankAccountInput,
+    CompanyInput,
     EducationInput,
     QualificationInput,
     SpecialtyInput,
@@ -29,6 +32,8 @@ from src.modules.professionals.infrastructure.repositories import (
     OrganizationProfessionalRepository,
 )
 from src.modules.professionals.use_cases.shared.services import (
+    BankAccountSyncService,
+    CompanySyncService,
     QualificationSyncService,
 )
 
@@ -115,7 +120,7 @@ class SnapshotApplierService:
             )
 
         # Phase 2: Apply qualifications
-        if "qualifications" in snapshot and snapshot["qualifications"]:
+        if "qualifications" in snapshot:
             await self._apply_qualifications(
                 professional_id=professional_id,
                 organization_id=organization_id,
@@ -125,10 +130,20 @@ class SnapshotApplierService:
             )
 
         # Phase 3: Apply companies and bank accounts
-        # if "companies" in snapshot:
-        #     await self._apply_companies(...)
-        # if "bank_accounts" in snapshot:
-        #     await self._apply_bank_accounts(...)
+        if "companies" in snapshot:
+            await self._apply_companies(
+                professional_id=professional_id,
+                organization_id=organization_id,
+                companies=snapshot["companies"],
+                applied_by=applied_by,
+            )
+        if "bank_accounts" in snapshot:
+            await self._apply_bank_accounts(
+                professional_id=professional_id,
+                organization_id=organization_id,
+                bank_accounts=snapshot["bank_accounts"],
+                applied_by=applied_by,
+            )
 
         await self.session.flush()
 
@@ -141,22 +156,9 @@ class SnapshotApplierService:
         """
         Validate that the snapshot only contains supported features.
 
-        Raises VersionFeatureNotSupportedError for unsupported features.
+        Phase 3: all snapshot features are supported.
         """
-        unsupported_features = []
-
-        # Phase 2: qualifications now supported
-
-        if snapshot.get("companies"):
-            unsupported_features.append("companies")
-
-        if snapshot.get("bank_accounts"):
-            unsupported_features.append("bank_accounts")
-
-        if unsupported_features:
-            raise VersionFeatureNotSupportedError(
-                feature=", ".join(unsupported_features)
-            )
+        return None
 
     async def _apply_personal_info(
         self,
@@ -295,3 +297,95 @@ class SnapshotApplierService:
             specialties=specialties_input,
             educations=educations_input,
         )
+
+    async def _apply_companies(
+        self,
+        professional_id: UUID,
+        organization_id: UUID,
+        companies: list[CompanySnapshot],
+        applied_by: UUID,
+    ) -> None:
+        """Apply companies from snapshot."""
+        companies_input = [self._convert_company_snapshot(c) for c in companies]
+        sync_service = CompanySyncService(self.session)
+        await sync_service.sync_companies(
+            professional_id=professional_id,
+            organization_id=organization_id,
+            companies_data=companies_input,
+            updated_by=applied_by,
+        )
+
+    async def _apply_bank_accounts(
+        self,
+        professional_id: UUID,
+        organization_id: UUID,
+        bank_accounts: list[BankAccountSnapshot],
+        applied_by: UUID,
+    ) -> None:
+        """Apply bank accounts from snapshot."""
+        bank_accounts_input = [
+            self._convert_bank_account_snapshot(b) for b in bank_accounts
+        ]
+        sync_service = BankAccountSyncService(self.session)
+        await sync_service.sync_bank_accounts(
+            professional_id=professional_id,
+            organization_id=organization_id,
+            bank_accounts_data=bank_accounts_input,
+            updated_by=applied_by,
+        )
+
+    def _convert_company_snapshot(self, snapshot: CompanySnapshot) -> CompanyInput:
+        """Convert CompanySnapshot to CompanyInput."""
+        from uuid import UUID as UUIDType
+
+        from src.shared.domain.value_objects import StateUF
+
+        return CompanyInput(
+            id=UUIDType(snapshot["id"]) if snapshot.get("id") else None,
+            company_id=UUIDType(snapshot["company_id"])
+            if snapshot.get("company_id")
+            else None,
+            cnpj=snapshot["cnpj"],
+            razao_social=snapshot["razao_social"],
+            nome_fantasia=snapshot.get("nome_fantasia"),
+            inscricao_estadual=snapshot.get("inscricao_estadual"),
+            inscricao_municipal=snapshot.get("inscricao_municipal"),
+            address=snapshot.get("address"),
+            number=snapshot.get("number"),
+            complement=snapshot.get("complement"),
+            neighborhood=snapshot.get("neighborhood"),
+            city=snapshot.get("city"),
+            state_code=(
+                StateUF(snapshot["state_code"]) if snapshot.get("state_code") else None
+            ),
+            postal_code=snapshot.get("postal_code"),
+            started_at=self._parse_date(snapshot.get("started_at")),
+            ended_at=self._parse_date(snapshot.get("ended_at")),
+        )
+
+    def _convert_bank_account_snapshot(
+        self, snapshot: BankAccountSnapshot
+    ) -> BankAccountInput:
+        """Convert BankAccountSnapshot to BankAccountInput."""
+        from src.shared.domain.models.enums import PixKeyType
+
+        pix_key_type = snapshot.get("pix_key_type")
+        return BankAccountInput(
+            id=None,
+            bank_code=snapshot["bank_code"],
+            agency_number=snapshot["agency_number"],
+            agency_digit=snapshot.get("agency_digit"),
+            account_number=snapshot["account_number"],
+            account_digit=snapshot.get("account_digit"),
+            account_holder_name=snapshot["account_holder_name"],
+            account_holder_document=snapshot["account_holder_document"],
+            pix_key_type=PixKeyType(pix_key_type) if pix_key_type else None,
+            pix_key=snapshot.get("pix_key"),
+            is_primary=snapshot.get("is_primary", False),
+            is_company_account=snapshot.get("is_company_account", False),
+        )
+
+    def _parse_date(self, value: str | None) -> date | None:
+        if value is None:
+            return None
+        return date.fromisoformat(value)

@@ -59,6 +59,13 @@ router = APIRouter(tags=["Professional Versions"])
                                 "message": "Profissional não encontrado",
                             },
                         },
+                        "bank_not_found": {
+                            "summary": "Bank not found",
+                            "value": {
+                                "code": ProfessionalErrorCodes.BANK_NOT_FOUND,
+                                "message": "Banco não encontrado",
+                            },
+                        },
                     }
                 }
             },
@@ -81,23 +88,6 @@ router = APIRouter(tags=["Professional Versions"])
                             "value": {
                                 "code": ProfessionalErrorCodes.EMAIL_ALREADY_EXISTS,
                                 "message": "Já existe um profissional com este email na organização",
-                            },
-                        },
-                    }
-                }
-            },
-        },
-        501: {
-            "model": ErrorResponse,
-            "description": "Feature not yet implemented",
-            "content": {
-                "application/json": {
-                    "examples": {
-                        "feature_not_supported": {
-                            "summary": "Feature not supported",
-                            "value": {
-                                "code": ProfessionalErrorCodes.VERSION_FEATURE_NOT_SUPPORTED,
-                                "message": "Funcionalidade do snapshot ainda não suportada: qualifications",
                             },
                         },
                     }
@@ -235,6 +225,26 @@ async def get_professional_version(
         404: {
             "model": ErrorResponse,
             "description": "Version not found",
+            "content": {
+                "application/json": {
+                    "examples": {
+                        "version_not_found": {
+                            "summary": "Version not found",
+                            "value": {
+                                "code": ProfessionalErrorCodes.VERSION_NOT_FOUND,
+                                "message": "Versão do profissional não encontrada",
+                            },
+                        },
+                        "bank_not_found": {
+                            "summary": "Bank not found",
+                            "value": {
+                                "code": ProfessionalErrorCodes.BANK_NOT_FOUND,
+                                "message": "Banco não encontrado",
+                            },
+                        },
+                    }
+                }
+            },
         },
         409: {
             "model": ErrorResponse,

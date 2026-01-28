@@ -19,6 +19,8 @@ from src.modules.professionals.infrastructure.filters import (
     SpecialtySorting,
 )
 from src.modules.professionals.infrastructure.repositories import (
+    BankAccountRepository,
+    CompanyRepository,
     OrganizationProfessionalRepository,
     ProfessionalCompanyRepository,
     ProfessionalDocumentRepository,
@@ -30,6 +32,8 @@ from src.modules.professionals.infrastructure.repositories import (
 
 __all__ = [
     # Repositories
+    "BankAccountRepository",
+    "CompanyRepository",
     "OrganizationProfessionalRepository",
     "ProfessionalCompanyRepository",
     "ProfessionalDocumentRepository",

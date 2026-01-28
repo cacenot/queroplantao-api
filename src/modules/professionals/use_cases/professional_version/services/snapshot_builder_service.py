@@ -251,15 +251,15 @@ class SnapshotBuilderService:
             "id": str(prof_company.id),
             "company_id": str(company.id),
             "cnpj": company.cnpj,
-            "razao_social": company.razao_social,
+            "razao_social": company.legal_name,
         }
 
-        if company.nome_fantasia:
-            snapshot["nome_fantasia"] = company.nome_fantasia
-        if company.inscricao_estadual:
-            snapshot["inscricao_estadual"] = company.inscricao_estadual
-        if company.inscricao_municipal:
-            snapshot["inscricao_municipal"] = company.inscricao_municipal
+        if company.trade_name:
+            snapshot["nome_fantasia"] = company.trade_name
+        if company.state_registration:
+            snapshot["inscricao_estadual"] = company.state_registration
+        if company.municipal_registration:
+            snapshot["inscricao_municipal"] = company.municipal_registration
 
         # Address from company
         if company.address:
@@ -278,10 +278,10 @@ class SnapshotBuilderService:
             snapshot["postal_code"] = company.postal_code
 
         # Dates from junction
-        if prof_company.started_at:
-            snapshot["started_at"] = prof_company.started_at.isoformat()
-        if prof_company.ended_at:
-            snapshot["ended_at"] = prof_company.ended_at.isoformat()
+        if prof_company.joined_at:
+            snapshot["started_at"] = prof_company.joined_at.isoformat()
+        if prof_company.left_at:
+            snapshot["ended_at"] = prof_company.left_at.isoformat()
 
         return snapshot
 
@@ -289,13 +289,13 @@ class SnapshotBuilderService:
         """Build bank account snapshot."""
         snapshot: BankAccountSnapshot = {
             "id": str(bank_account.id),
-            "bank_code": bank_account.bank_code,
-            "agency_number": bank_account.agency_number,
+            "bank_code": bank_account.bank.code if bank_account.bank else "",
+            "agency_number": bank_account.agency,
             "account_number": bank_account.account_number,
-            "account_holder_name": bank_account.account_holder_name,
-            "account_holder_document": bank_account.account_holder_document,
+            "account_holder_name": bank_account.holder_name,
+            "account_holder_document": bank_account.holder_document,
             "is_primary": bank_account.is_primary or False,
-            "is_company_account": bank_account.is_company_account or False,
+            "is_company_account": bank_account.company_id is not None,
         }
 
         # Get bank name if loaded

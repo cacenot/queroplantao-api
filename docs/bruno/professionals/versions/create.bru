@@ -60,17 +60,12 @@ docs {
   - `address`, `number`, `complement`, `neighborhood`, `city`, `state_code`, `postal_code`: Endereço
   - `is_verified`: Status de verificação
   
-  ## Fase 1 - Limitações
-  
-  Atualmente apenas `personal_info` é suportado. Os campos `qualifications`,
-  `companies` e `bank_accounts` serão implementados nas próximas fases.
-  
   ## Error Codes
   
   | Status | Code | Descrição |
   |--------|------|-----------|
   | 404 | `PROF_NOT_FOUND` | Profissional não encontrado |
+  | 404 | `PROF_BANK_NOT_FOUND` | Banco não encontrado |
   | 409 | `PROF_CPF_ALREADY_EXISTS` | CPF já existe na família de organizações |
   | 409 | `PROF_EMAIL_ALREADY_EXISTS` | Email já existe na família de organizações |
-  | 501 | `PROF_VERSION_FEATURE_NOT_SUPPORTED` | Feature do snapshot ainda não suportada |
 }

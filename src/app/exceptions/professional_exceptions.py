@@ -403,6 +403,26 @@ class CompanyAlreadyLinkedError(ProfessionalException):
         )
 
 
+class BankNotFoundError(ProfessionalException):
+    """Bank not found."""
+
+    def __init__(
+        self,
+        message: str | None = None,
+        details: dict[str, Any] | None = None,
+        *,
+        bank_code: str | None = None,
+    ) -> None:
+        if details is None and bank_code is not None:
+            details = {"bank_code": bank_code}
+        super().__init__(
+            message=message or get_message(ProfessionalMessages.BANK_NOT_FOUND),
+            code=ProfessionalErrorCodes.BANK_NOT_FOUND,
+            status_code=404,
+            details=details,
+        )
+
+
 # =============================================================================
 # Version Exceptions
 # =============================================================================
