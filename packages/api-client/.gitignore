@@ -4,10 +4,6 @@ node_modules/
 # Build output
 dist/
 
-# Generated files (regenerate with make client-generate)
-openapi.json
-src/client/generated/
-
 # IDE
 .idea/
 .vscode/
