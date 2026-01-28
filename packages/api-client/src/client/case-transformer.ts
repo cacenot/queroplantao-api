@@ -6,7 +6,9 @@
  * values (enums, UUIDs, dates, etc.) unchanged.
  */
 
-import { camelizeKeys, decamelizeKeys } from "humps";
+import humps from "humps";
+
+const { camelizeKeys, decamelizeKeys } = humps;
 
 /**
  * Convert object keys from snake_case to camelCase.
