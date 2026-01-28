@@ -5,10 +5,7 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import {
-  useMutation,
-  useQuery
-} from '@tanstack/react-query';
+import { useMutation, useQuery } from "@tanstack/react-query";
 import type {
   DataTag,
   DefinedInitialDataOptions,
@@ -21,8 +18,8 @@ import type {
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
-  UseQueryResult
-} from '@tanstack/react-query';
+  UseQueryResult,
+} from "@tanstack/react-query";
 
 import type {
   ErrorResponse,
@@ -33,691 +30,1048 @@ import type {
   OrganizationUserResponse,
   OrganizationUserUpdate,
   PaginatedResponseOrganizationUserListItem,
-  PaginatedResponseOrganizationUserResponse
-} from '../../models';
+  PaginatedResponseOrganizationUserResponse,
+} from "../../models";
 
-import { customFetch } from '../../custom-fetch';
-
+import { customFetch } from "../../custom-fetch";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
-
-
 
 /**
  * List all users (members) of the organization with their roles.
  * @summary List organization users
  */
 export type listUsersApiV1UsersGetResponse200 = {
-  data: PaginatedResponseOrganizationUserResponse
-  status: 200
-}
+  data: PaginatedResponseOrganizationUserResponse;
+  status: 200;
+};
 
 export type listUsersApiV1UsersGetResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-    
-export type listUsersApiV1UsersGetResponseSuccess = (listUsersApiV1UsersGetResponse200) & {
-  headers: Headers;
-};
-export type listUsersApiV1UsersGetResponseError = (listUsersApiV1UsersGetResponse422) & {
-  headers: Headers;
+  data: HTTPValidationError;
+  status: 422;
 };
 
-export type listUsersApiV1UsersGetResponse = (listUsersApiV1UsersGetResponseSuccess | listUsersApiV1UsersGetResponseError)
+export type listUsersApiV1UsersGetResponseSuccess =
+  listUsersApiV1UsersGetResponse200 & {
+    headers: Headers;
+  };
+export type listUsersApiV1UsersGetResponseError =
+  listUsersApiV1UsersGetResponse422 & {
+    headers: Headers;
+  };
 
-export const getListUsersApiV1UsersGetUrl = (params?: ListUsersApiV1UsersGetParams,) => {
+export type listUsersApiV1UsersGetResponse =
+  | listUsersApiV1UsersGetResponseSuccess
+  | listUsersApiV1UsersGetResponseError;
+
+export const getListUsersApiV1UsersGetUrl = (
+  params?: ListUsersApiV1UsersGetParams,
+) => {
   const normalizedParams = new URLSearchParams();
 
   Object.entries(params || {}).forEach(([key, value]) => {
-    
     if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString())
+      normalizedParams.append(key, value === null ? "null" : value.toString());
     }
   });
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/v1/users/?${stringifiedParams}` : `/api/v1/users/`
-}
+  return stringifiedParams.length > 0
+    ? `/api/v1/users/?${stringifiedParams}`
+    : `/api/v1/users/`;
+};
 
-export const listUsersApiV1UsersGet = async (params?: ListUsersApiV1UsersGetParams, options?: RequestInit): Promise<listUsersApiV1UsersGetResponse> => {
-  
-  return customFetch<listUsersApiV1UsersGetResponse>(getListUsersApiV1UsersGetUrl(params),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
+export const listUsersApiV1UsersGet = async (
+  params?: ListUsersApiV1UsersGetParams,
+  options?: RequestInit,
+): Promise<listUsersApiV1UsersGetResponse> => {
+  return customFetch<listUsersApiV1UsersGetResponse>(
+    getListUsersApiV1UsersGetUrl(params),
+    {
+      ...options,
+      method: "GET",
+    },
+  );
+};
 
-
-
-
-
-export const getListUsersApiV1UsersGetQueryKey = (params?: ListUsersApiV1UsersGetParams,) => {
-    return [
-    `/api/v1/users/`, ...(params ? [params]: [])
-    ] as const;
-    }
-
-    
-export const getListUsersApiV1UsersGetQueryOptions = <TData = Awaited<ReturnType<typeof listUsersApiV1UsersGet>>, TError = HTTPValidationError>(params?: ListUsersApiV1UsersGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listUsersApiV1UsersGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getListUsersApiV1UsersGetQueryKey = (
+  params?: ListUsersApiV1UsersGetParams,
 ) => {
+  return [`/api/v1/users/`, ...(params ? [params] : [])] as const;
+};
 
-const {query: queryOptions, request: requestOptions} = options ?? {};
+export const getListUsersApiV1UsersGetQueryOptions = <
+  TData = Awaited<ReturnType<typeof listUsersApiV1UsersGet>>,
+  TError = HTTPValidationError,
+>(
+  params?: ListUsersApiV1UsersGetParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof listUsersApiV1UsersGet>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getListUsersApiV1UsersGetQueryKey(params);
+  const queryKey =
+    queryOptions?.queryKey ?? getListUsersApiV1UsersGetQueryKey(params);
 
-  
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof listUsersApiV1UsersGet>>
+  > = ({ signal }) =>
+    listUsersApiV1UsersGet(params, { signal, ...requestOptions });
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof listUsersApiV1UsersGet>>> = ({ signal }) => listUsersApiV1UsersGet(params, { signal, ...requestOptions });
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 30000,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof listUsersApiV1UsersGet>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData> };
+};
 
-      
+export type ListUsersApiV1UsersGetQueryResult = NonNullable<
+  Awaited<ReturnType<typeof listUsersApiV1UsersGet>>
+>;
+export type ListUsersApiV1UsersGetQueryError = HTTPValidationError;
 
-      
-
-   return  { queryKey, queryFn,   staleTime: 30000,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listUsersApiV1UsersGet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData> }
-}
-
-export type ListUsersApiV1UsersGetQueryResult = NonNullable<Awaited<ReturnType<typeof listUsersApiV1UsersGet>>>
-export type ListUsersApiV1UsersGetQueryError = HTTPValidationError
-
-
-export function useListUsersApiV1UsersGet<TData = Awaited<ReturnType<typeof listUsersApiV1UsersGet>>, TError = HTTPValidationError>(
- params: undefined |  ListUsersApiV1UsersGetParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listUsersApiV1UsersGet>>, TError, TData>> & Pick<
+export function useListUsersApiV1UsersGet<
+  TData = Awaited<ReturnType<typeof listUsersApiV1UsersGet>>,
+  TError = HTTPValidationError,
+>(
+  params: undefined | ListUsersApiV1UsersGetParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof listUsersApiV1UsersGet>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof listUsersApiV1UsersGet>>,
           TError,
           Awaited<ReturnType<typeof listUsersApiV1UsersGet>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
-export function useListUsersApiV1UsersGet<TData = Awaited<ReturnType<typeof listUsersApiV1UsersGet>>, TError = HTTPValidationError>(
- params?: ListUsersApiV1UsersGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listUsersApiV1UsersGet>>, TError, TData>> & Pick<
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData>;
+};
+export function useListUsersApiV1UsersGet<
+  TData = Awaited<ReturnType<typeof listUsersApiV1UsersGet>>,
+  TError = HTTPValidationError,
+>(
+  params?: ListUsersApiV1UsersGetParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof listUsersApiV1UsersGet>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof listUsersApiV1UsersGet>>,
           TError,
           Awaited<ReturnType<typeof listUsersApiV1UsersGet>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
-export function useListUsersApiV1UsersGet<TData = Awaited<ReturnType<typeof listUsersApiV1UsersGet>>, TError = HTTPValidationError>(
- params?: ListUsersApiV1UsersGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listUsersApiV1UsersGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
+export function useListUsersApiV1UsersGet<
+  TData = Awaited<ReturnType<typeof listUsersApiV1UsersGet>>,
+  TError = HTTPValidationError,
+>(
+  params?: ListUsersApiV1UsersGetParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof listUsersApiV1UsersGet>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
 /**
  * @summary List organization users
  */
 
-export function useListUsersApiV1UsersGet<TData = Awaited<ReturnType<typeof listUsersApiV1UsersGet>>, TError = HTTPValidationError>(
- params?: ListUsersApiV1UsersGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listUsersApiV1UsersGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+export function useListUsersApiV1UsersGet<
+  TData = Awaited<ReturnType<typeof listUsersApiV1UsersGet>>,
+  TError = HTTPValidationError,
+>(
+  params?: ListUsersApiV1UsersGetParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof listUsersApiV1UsersGet>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+  const queryOptions = getListUsersApiV1UsersGetQueryOptions(params, options);
 
-  const queryOptions = getListUsersApiV1UsersGetQueryOptions(params,options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData> };
 
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
-
-
-
 
 /**
  * List users with simplified data: basic info and role.
  * @summary List organization users (summary)
  */
 export type listUsersSummaryApiV1UsersSummaryGetResponse200 = {
-  data: PaginatedResponseOrganizationUserListItem
-  status: 200
-}
+  data: PaginatedResponseOrganizationUserListItem;
+  status: 200;
+};
 
 export type listUsersSummaryApiV1UsersSummaryGetResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-    
-export type listUsersSummaryApiV1UsersSummaryGetResponseSuccess = (listUsersSummaryApiV1UsersSummaryGetResponse200) & {
-  headers: Headers;
-};
-export type listUsersSummaryApiV1UsersSummaryGetResponseError = (listUsersSummaryApiV1UsersSummaryGetResponse422) & {
-  headers: Headers;
+  data: HTTPValidationError;
+  status: 422;
 };
 
-export type listUsersSummaryApiV1UsersSummaryGetResponse = (listUsersSummaryApiV1UsersSummaryGetResponseSuccess | listUsersSummaryApiV1UsersSummaryGetResponseError)
+export type listUsersSummaryApiV1UsersSummaryGetResponseSuccess =
+  listUsersSummaryApiV1UsersSummaryGetResponse200 & {
+    headers: Headers;
+  };
+export type listUsersSummaryApiV1UsersSummaryGetResponseError =
+  listUsersSummaryApiV1UsersSummaryGetResponse422 & {
+    headers: Headers;
+  };
 
-export const getListUsersSummaryApiV1UsersSummaryGetUrl = (params?: ListUsersSummaryApiV1UsersSummaryGetParams,) => {
+export type listUsersSummaryApiV1UsersSummaryGetResponse =
+  | listUsersSummaryApiV1UsersSummaryGetResponseSuccess
+  | listUsersSummaryApiV1UsersSummaryGetResponseError;
+
+export const getListUsersSummaryApiV1UsersSummaryGetUrl = (
+  params?: ListUsersSummaryApiV1UsersSummaryGetParams,
+) => {
   const normalizedParams = new URLSearchParams();
 
   Object.entries(params || {}).forEach(([key, value]) => {
-    
     if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString())
+      normalizedParams.append(key, value === null ? "null" : value.toString());
     }
   });
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/v1/users/summary?${stringifiedParams}` : `/api/v1/users/summary`
-}
+  return stringifiedParams.length > 0
+    ? `/api/v1/users/summary?${stringifiedParams}`
+    : `/api/v1/users/summary`;
+};
 
-export const listUsersSummaryApiV1UsersSummaryGet = async (params?: ListUsersSummaryApiV1UsersSummaryGetParams, options?: RequestInit): Promise<listUsersSummaryApiV1UsersSummaryGetResponse> => {
-  
-  return customFetch<listUsersSummaryApiV1UsersSummaryGetResponse>(getListUsersSummaryApiV1UsersSummaryGetUrl(params),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
+export const listUsersSummaryApiV1UsersSummaryGet = async (
+  params?: ListUsersSummaryApiV1UsersSummaryGetParams,
+  options?: RequestInit,
+): Promise<listUsersSummaryApiV1UsersSummaryGetResponse> => {
+  return customFetch<listUsersSummaryApiV1UsersSummaryGetResponse>(
+    getListUsersSummaryApiV1UsersSummaryGetUrl(params),
+    {
+      ...options,
+      method: "GET",
+    },
+  );
+};
 
-
-
-
-
-export const getListUsersSummaryApiV1UsersSummaryGetQueryKey = (params?: ListUsersSummaryApiV1UsersSummaryGetParams,) => {
-    return [
-    `/api/v1/users/summary`, ...(params ? [params]: [])
-    ] as const;
-    }
-
-    
-export const getListUsersSummaryApiV1UsersSummaryGetQueryOptions = <TData = Awaited<ReturnType<typeof listUsersSummaryApiV1UsersSummaryGet>>, TError = HTTPValidationError>(params?: ListUsersSummaryApiV1UsersSummaryGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listUsersSummaryApiV1UsersSummaryGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getListUsersSummaryApiV1UsersSummaryGetQueryKey = (
+  params?: ListUsersSummaryApiV1UsersSummaryGetParams,
 ) => {
+  return [`/api/v1/users/summary`, ...(params ? [params] : [])] as const;
+};
 
-const {query: queryOptions, request: requestOptions} = options ?? {};
+export const getListUsersSummaryApiV1UsersSummaryGetQueryOptions = <
+  TData = Awaited<ReturnType<typeof listUsersSummaryApiV1UsersSummaryGet>>,
+  TError = HTTPValidationError,
+>(
+  params?: ListUsersSummaryApiV1UsersSummaryGetParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof listUsersSummaryApiV1UsersSummaryGet>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getListUsersSummaryApiV1UsersSummaryGetQueryKey(params);
+  const queryKey =
+    queryOptions?.queryKey ??
+    getListUsersSummaryApiV1UsersSummaryGetQueryKey(params);
 
-  
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof listUsersSummaryApiV1UsersSummaryGet>>
+  > = ({ signal }) =>
+    listUsersSummaryApiV1UsersSummaryGet(params, { signal, ...requestOptions });
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof listUsersSummaryApiV1UsersSummaryGet>>> = ({ signal }) => listUsersSummaryApiV1UsersSummaryGet(params, { signal, ...requestOptions });
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 30000,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof listUsersSummaryApiV1UsersSummaryGet>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData> };
+};
 
-      
+export type ListUsersSummaryApiV1UsersSummaryGetQueryResult = NonNullable<
+  Awaited<ReturnType<typeof listUsersSummaryApiV1UsersSummaryGet>>
+>;
+export type ListUsersSummaryApiV1UsersSummaryGetQueryError =
+  HTTPValidationError;
 
-      
-
-   return  { queryKey, queryFn,   staleTime: 30000,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listUsersSummaryApiV1UsersSummaryGet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData> }
-}
-
-export type ListUsersSummaryApiV1UsersSummaryGetQueryResult = NonNullable<Awaited<ReturnType<typeof listUsersSummaryApiV1UsersSummaryGet>>>
-export type ListUsersSummaryApiV1UsersSummaryGetQueryError = HTTPValidationError
-
-
-export function useListUsersSummaryApiV1UsersSummaryGet<TData = Awaited<ReturnType<typeof listUsersSummaryApiV1UsersSummaryGet>>, TError = HTTPValidationError>(
- params: undefined |  ListUsersSummaryApiV1UsersSummaryGetParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listUsersSummaryApiV1UsersSummaryGet>>, TError, TData>> & Pick<
+export function useListUsersSummaryApiV1UsersSummaryGet<
+  TData = Awaited<ReturnType<typeof listUsersSummaryApiV1UsersSummaryGet>>,
+  TError = HTTPValidationError,
+>(
+  params: undefined | ListUsersSummaryApiV1UsersSummaryGetParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof listUsersSummaryApiV1UsersSummaryGet>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof listUsersSummaryApiV1UsersSummaryGet>>,
           TError,
           Awaited<ReturnType<typeof listUsersSummaryApiV1UsersSummaryGet>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
-export function useListUsersSummaryApiV1UsersSummaryGet<TData = Awaited<ReturnType<typeof listUsersSummaryApiV1UsersSummaryGet>>, TError = HTTPValidationError>(
- params?: ListUsersSummaryApiV1UsersSummaryGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listUsersSummaryApiV1UsersSummaryGet>>, TError, TData>> & Pick<
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData>;
+};
+export function useListUsersSummaryApiV1UsersSummaryGet<
+  TData = Awaited<ReturnType<typeof listUsersSummaryApiV1UsersSummaryGet>>,
+  TError = HTTPValidationError,
+>(
+  params?: ListUsersSummaryApiV1UsersSummaryGetParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof listUsersSummaryApiV1UsersSummaryGet>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof listUsersSummaryApiV1UsersSummaryGet>>,
           TError,
           Awaited<ReturnType<typeof listUsersSummaryApiV1UsersSummaryGet>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
-export function useListUsersSummaryApiV1UsersSummaryGet<TData = Awaited<ReturnType<typeof listUsersSummaryApiV1UsersSummaryGet>>, TError = HTTPValidationError>(
- params?: ListUsersSummaryApiV1UsersSummaryGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listUsersSummaryApiV1UsersSummaryGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
+export function useListUsersSummaryApiV1UsersSummaryGet<
+  TData = Awaited<ReturnType<typeof listUsersSummaryApiV1UsersSummaryGet>>,
+  TError = HTTPValidationError,
+>(
+  params?: ListUsersSummaryApiV1UsersSummaryGetParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof listUsersSummaryApiV1UsersSummaryGet>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
 /**
  * @summary List organization users (summary)
  */
 
-export function useListUsersSummaryApiV1UsersSummaryGet<TData = Awaited<ReturnType<typeof listUsersSummaryApiV1UsersSummaryGet>>, TError = HTTPValidationError>(
- params?: ListUsersSummaryApiV1UsersSummaryGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listUsersSummaryApiV1UsersSummaryGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+export function useListUsersSummaryApiV1UsersSummaryGet<
+  TData = Awaited<ReturnType<typeof listUsersSummaryApiV1UsersSummaryGet>>,
+  TError = HTTPValidationError,
+>(
+  params?: ListUsersSummaryApiV1UsersSummaryGetParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof listUsersSummaryApiV1UsersSummaryGet>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+  const queryOptions = getListUsersSummaryApiV1UsersSummaryGetQueryOptions(
+    params,
+    options,
+  );
 
-  const queryOptions = getListUsersSummaryApiV1UsersSummaryGetQueryOptions(params,options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData> };
 
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
-
-
-
 
 /**
  * Send an invitation to a user to join the organization with a specific role.
  * @summary Invite user to organization
  */
 export type inviteUserApiV1UsersInvitePostResponse201 = {
-  data: OrganizationUserResponse
-  status: 201
-}
+  data: OrganizationUserResponse;
+  status: 201;
+};
 
 export type inviteUserApiV1UsersInvitePostResponse404 = {
-  data: ErrorResponse
-  status: 404
-}
+  data: ErrorResponse;
+  status: 404;
+};
 
 export type inviteUserApiV1UsersInvitePostResponse409 = {
-  data: ErrorResponse
-  status: 409
-}
+  data: ErrorResponse;
+  status: 409;
+};
 
 export type inviteUserApiV1UsersInvitePostResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-    
-export type inviteUserApiV1UsersInvitePostResponseSuccess = (inviteUserApiV1UsersInvitePostResponse201) & {
-  headers: Headers;
+  data: HTTPValidationError;
+  status: 422;
 };
-export type inviteUserApiV1UsersInvitePostResponseError = (inviteUserApiV1UsersInvitePostResponse404 | inviteUserApiV1UsersInvitePostResponse409 | inviteUserApiV1UsersInvitePostResponse422) & {
+
+export type inviteUserApiV1UsersInvitePostResponseSuccess =
+  inviteUserApiV1UsersInvitePostResponse201 & {
+    headers: Headers;
+  };
+export type inviteUserApiV1UsersInvitePostResponseError = (
+  | inviteUserApiV1UsersInvitePostResponse404
+  | inviteUserApiV1UsersInvitePostResponse409
+  | inviteUserApiV1UsersInvitePostResponse422
+) & {
   headers: Headers;
 };
 
-export type inviteUserApiV1UsersInvitePostResponse = (inviteUserApiV1UsersInvitePostResponseSuccess | inviteUserApiV1UsersInvitePostResponseError)
+export type inviteUserApiV1UsersInvitePostResponse =
+  | inviteUserApiV1UsersInvitePostResponseSuccess
+  | inviteUserApiV1UsersInvitePostResponseError;
 
 export const getInviteUserApiV1UsersInvitePostUrl = () => {
+  return `/api/v1/users/invite`;
+};
 
+export const inviteUserApiV1UsersInvitePost = async (
+  organizationUserInvite: OrganizationUserInvite,
+  options?: RequestInit,
+): Promise<inviteUserApiV1UsersInvitePostResponse> => {
+  return customFetch<inviteUserApiV1UsersInvitePostResponse>(
+    getInviteUserApiV1UsersInvitePostUrl(),
+    {
+      ...options,
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...options?.headers },
+      body: JSON.stringify(organizationUserInvite),
+    },
+  );
+};
 
-  
+export const getInviteUserApiV1UsersInvitePostMutationOptions = <
+  TError = ErrorResponse | HTTPValidationError,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof inviteUserApiV1UsersInvitePost>>,
+    TError,
+    { data: OrganizationUserInvite },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof inviteUserApiV1UsersInvitePost>>,
+  TError,
+  { data: OrganizationUserInvite },
+  TContext
+> => {
+  const mutationKey = ["inviteUserApiV1UsersInvitePost"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
 
-  return `/api/v1/users/invite`
-}
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof inviteUserApiV1UsersInvitePost>>,
+    { data: OrganizationUserInvite }
+  > = (props) => {
+    const { data } = props ?? {};
 
-export const inviteUserApiV1UsersInvitePost = async (organizationUserInvite: OrganizationUserInvite, options?: RequestInit): Promise<inviteUserApiV1UsersInvitePostResponse> => {
-  
-  return customFetch<inviteUserApiV1UsersInvitePostResponse>(getInviteUserApiV1UsersInvitePostUrl(),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      organizationUserInvite,)
-  }
-);}
+    return inviteUserApiV1UsersInvitePost(data, requestOptions);
+  };
 
+  return { mutationFn, ...mutationOptions };
+};
 
+export type InviteUserApiV1UsersInvitePostMutationResult = NonNullable<
+  Awaited<ReturnType<typeof inviteUserApiV1UsersInvitePost>>
+>;
+export type InviteUserApiV1UsersInvitePostMutationBody = OrganizationUserInvite;
+export type InviteUserApiV1UsersInvitePostMutationError =
+  | ErrorResponse
+  | HTTPValidationError;
 
-
-export const getInviteUserApiV1UsersInvitePostMutationOptions = <TError = ErrorResponse | HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof inviteUserApiV1UsersInvitePost>>, TError,{data: OrganizationUserInvite}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof inviteUserApiV1UsersInvitePost>>, TError,{data: OrganizationUserInvite}, TContext> => {
-
-const mutationKey = ['inviteUserApiV1UsersInvitePost'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof inviteUserApiV1UsersInvitePost>>, {data: OrganizationUserInvite}> = (props) => {
-          const {data} = props ?? {};
-
-          return  inviteUserApiV1UsersInvitePost(data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type InviteUserApiV1UsersInvitePostMutationResult = NonNullable<Awaited<ReturnType<typeof inviteUserApiV1UsersInvitePost>>>
-    export type InviteUserApiV1UsersInvitePostMutationBody = OrganizationUserInvite
-    export type InviteUserApiV1UsersInvitePostMutationError = ErrorResponse | HTTPValidationError
-
-    /**
+/**
  * @summary Invite user to organization
  */
-export const useInviteUserApiV1UsersInvitePost = <TError = ErrorResponse | HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof inviteUserApiV1UsersInvitePost>>, TError,{data: OrganizationUserInvite}, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof inviteUserApiV1UsersInvitePost>>,
-        TError,
-        {data: OrganizationUserInvite},
-        TContext
-      > => {
+export const useInviteUserApiV1UsersInvitePost = <
+  TError = ErrorResponse | HTTPValidationError,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof inviteUserApiV1UsersInvitePost>>,
+      TError,
+      { data: OrganizationUserInvite },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof inviteUserApiV1UsersInvitePost>>,
+  TError,
+  { data: OrganizationUserInvite },
+  TContext
+> => {
+  const mutationOptions =
+    getInviteUserApiV1UsersInvitePostMutationOptions(options);
 
-      const mutationOptions = getInviteUserApiV1UsersInvitePostMutationOptions(options);
-
-      return useMutation(mutationOptions, queryClient);
-    }
-    /**
+  return useMutation(mutationOptions, queryClient);
+};
+/**
  * Get details of a specific organization member.
  * @summary Get organization user
  */
 export type getUserApiV1UsersMembershipIdGetResponse200 = {
-  data: OrganizationUserResponse
-  status: 200
-}
+  data: OrganizationUserResponse;
+  status: 200;
+};
 
 export type getUserApiV1UsersMembershipIdGetResponse404 = {
-  data: ErrorResponse
-  status: 404
-}
+  data: ErrorResponse;
+  status: 404;
+};
 
 export type getUserApiV1UsersMembershipIdGetResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-    
-export type getUserApiV1UsersMembershipIdGetResponseSuccess = (getUserApiV1UsersMembershipIdGetResponse200) & {
-  headers: Headers;
-};
-export type getUserApiV1UsersMembershipIdGetResponseError = (getUserApiV1UsersMembershipIdGetResponse404 | getUserApiV1UsersMembershipIdGetResponse422) & {
-  headers: Headers;
+  data: HTTPValidationError;
+  status: 422;
 };
 
-export type getUserApiV1UsersMembershipIdGetResponse = (getUserApiV1UsersMembershipIdGetResponseSuccess | getUserApiV1UsersMembershipIdGetResponseError)
+export type getUserApiV1UsersMembershipIdGetResponseSuccess =
+  getUserApiV1UsersMembershipIdGetResponse200 & {
+    headers: Headers;
+  };
+export type getUserApiV1UsersMembershipIdGetResponseError = (
+  | getUserApiV1UsersMembershipIdGetResponse404
+  | getUserApiV1UsersMembershipIdGetResponse422
+) & {
+  headers: Headers;
+};
 
-export const getGetUserApiV1UsersMembershipIdGetUrl = (membershipId: string,) => {
+export type getUserApiV1UsersMembershipIdGetResponse =
+  | getUserApiV1UsersMembershipIdGetResponseSuccess
+  | getUserApiV1UsersMembershipIdGetResponseError;
 
-
-  
-
-  return `/api/v1/users/${membershipId}`
-}
-
-export const getUserApiV1UsersMembershipIdGet = async (membershipId: string, options?: RequestInit): Promise<getUserApiV1UsersMembershipIdGetResponse> => {
-  
-  return customFetch<getUserApiV1UsersMembershipIdGetResponse>(getGetUserApiV1UsersMembershipIdGetUrl(membershipId),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
-
-
-
-export const getGetUserApiV1UsersMembershipIdGetQueryKey = (membershipId?: string,) => {
-    return [
-    `/api/v1/users/${membershipId}`
-    ] as const;
-    }
-
-    
-export const getGetUserApiV1UsersMembershipIdGetQueryOptions = <TData = Awaited<ReturnType<typeof getUserApiV1UsersMembershipIdGet>>, TError = ErrorResponse | HTTPValidationError>(membershipId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserApiV1UsersMembershipIdGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getGetUserApiV1UsersMembershipIdGetUrl = (
+  membershipId: string,
 ) => {
+  return `/api/v1/users/${membershipId}`;
+};
 
-const {query: queryOptions, request: requestOptions} = options ?? {};
+export const getUserApiV1UsersMembershipIdGet = async (
+  membershipId: string,
+  options?: RequestInit,
+): Promise<getUserApiV1UsersMembershipIdGetResponse> => {
+  return customFetch<getUserApiV1UsersMembershipIdGetResponse>(
+    getGetUserApiV1UsersMembershipIdGetUrl(membershipId),
+    {
+      ...options,
+      method: "GET",
+    },
+  );
+};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetUserApiV1UsersMembershipIdGetQueryKey(membershipId);
+export const getGetUserApiV1UsersMembershipIdGetQueryKey = (
+  membershipId?: string,
+) => {
+  return [`/api/v1/users/${membershipId}`] as const;
+};
 
-  
+export const getGetUserApiV1UsersMembershipIdGetQueryOptions = <
+  TData = Awaited<ReturnType<typeof getUserApiV1UsersMembershipIdGet>>,
+  TError = ErrorResponse | HTTPValidationError,
+>(
+  membershipId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getUserApiV1UsersMembershipIdGet>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getUserApiV1UsersMembershipIdGet>>> = ({ signal }) => getUserApiV1UsersMembershipIdGet(membershipId, { signal, ...requestOptions });
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetUserApiV1UsersMembershipIdGetQueryKey(membershipId);
 
-      
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getUserApiV1UsersMembershipIdGet>>
+  > = ({ signal }) =>
+    getUserApiV1UsersMembershipIdGet(membershipId, {
+      signal,
+      ...requestOptions,
+    });
 
-      
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!membershipId,
+    staleTime: 30000,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getUserApiV1UsersMembershipIdGet>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData> };
+};
 
-   return  { queryKey, queryFn, enabled: !!(membershipId),  staleTime: 30000,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getUserApiV1UsersMembershipIdGet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData> }
-}
+export type GetUserApiV1UsersMembershipIdGetQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getUserApiV1UsersMembershipIdGet>>
+>;
+export type GetUserApiV1UsersMembershipIdGetQueryError =
+  | ErrorResponse
+  | HTTPValidationError;
 
-export type GetUserApiV1UsersMembershipIdGetQueryResult = NonNullable<Awaited<ReturnType<typeof getUserApiV1UsersMembershipIdGet>>>
-export type GetUserApiV1UsersMembershipIdGetQueryError = ErrorResponse | HTTPValidationError
-
-
-export function useGetUserApiV1UsersMembershipIdGet<TData = Awaited<ReturnType<typeof getUserApiV1UsersMembershipIdGet>>, TError = ErrorResponse | HTTPValidationError>(
- membershipId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserApiV1UsersMembershipIdGet>>, TError, TData>> & Pick<
+export function useGetUserApiV1UsersMembershipIdGet<
+  TData = Awaited<ReturnType<typeof getUserApiV1UsersMembershipIdGet>>,
+  TError = ErrorResponse | HTTPValidationError,
+>(
+  membershipId: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getUserApiV1UsersMembershipIdGet>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getUserApiV1UsersMembershipIdGet>>,
           TError,
           Awaited<ReturnType<typeof getUserApiV1UsersMembershipIdGet>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
-export function useGetUserApiV1UsersMembershipIdGet<TData = Awaited<ReturnType<typeof getUserApiV1UsersMembershipIdGet>>, TError = ErrorResponse | HTTPValidationError>(
- membershipId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserApiV1UsersMembershipIdGet>>, TError, TData>> & Pick<
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData>;
+};
+export function useGetUserApiV1UsersMembershipIdGet<
+  TData = Awaited<ReturnType<typeof getUserApiV1UsersMembershipIdGet>>,
+  TError = ErrorResponse | HTTPValidationError,
+>(
+  membershipId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getUserApiV1UsersMembershipIdGet>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getUserApiV1UsersMembershipIdGet>>,
           TError,
           Awaited<ReturnType<typeof getUserApiV1UsersMembershipIdGet>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
-export function useGetUserApiV1UsersMembershipIdGet<TData = Awaited<ReturnType<typeof getUserApiV1UsersMembershipIdGet>>, TError = ErrorResponse | HTTPValidationError>(
- membershipId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserApiV1UsersMembershipIdGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
+export function useGetUserApiV1UsersMembershipIdGet<
+  TData = Awaited<ReturnType<typeof getUserApiV1UsersMembershipIdGet>>,
+  TError = ErrorResponse | HTTPValidationError,
+>(
+  membershipId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getUserApiV1UsersMembershipIdGet>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
 /**
  * @summary Get organization user
  */
 
-export function useGetUserApiV1UsersMembershipIdGet<TData = Awaited<ReturnType<typeof getUserApiV1UsersMembershipIdGet>>, TError = ErrorResponse | HTTPValidationError>(
- membershipId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserApiV1UsersMembershipIdGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+export function useGetUserApiV1UsersMembershipIdGet<
+  TData = Awaited<ReturnType<typeof getUserApiV1UsersMembershipIdGet>>,
+  TError = ErrorResponse | HTTPValidationError,
+>(
+  membershipId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getUserApiV1UsersMembershipIdGet>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+  const queryOptions = getGetUserApiV1UsersMembershipIdGetQueryOptions(
+    membershipId,
+    options,
+  );
 
-  const queryOptions = getGetUserApiV1UsersMembershipIdGetQueryOptions(membershipId,options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData> };
 
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
-
-
-
 
 /**
  * Update a member's role or status in the organization.
  * @summary Update organization user
  */
 export type updateUserApiV1UsersMembershipIdPatchResponse200 = {
-  data: OrganizationUserResponse
-  status: 200
-}
+  data: OrganizationUserResponse;
+  status: 200;
+};
 
 export type updateUserApiV1UsersMembershipIdPatchResponse404 = {
-  data: ErrorResponse
-  status: 404
-}
+  data: ErrorResponse;
+  status: 404;
+};
 
 export type updateUserApiV1UsersMembershipIdPatchResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-    
-export type updateUserApiV1UsersMembershipIdPatchResponseSuccess = (updateUserApiV1UsersMembershipIdPatchResponse200) & {
-  headers: Headers;
-};
-export type updateUserApiV1UsersMembershipIdPatchResponseError = (updateUserApiV1UsersMembershipIdPatchResponse404 | updateUserApiV1UsersMembershipIdPatchResponse422) & {
-  headers: Headers;
+  data: HTTPValidationError;
+  status: 422;
 };
 
-export type updateUserApiV1UsersMembershipIdPatchResponse = (updateUserApiV1UsersMembershipIdPatchResponseSuccess | updateUserApiV1UsersMembershipIdPatchResponseError)
+export type updateUserApiV1UsersMembershipIdPatchResponseSuccess =
+  updateUserApiV1UsersMembershipIdPatchResponse200 & {
+    headers: Headers;
+  };
+export type updateUserApiV1UsersMembershipIdPatchResponseError = (
+  | updateUserApiV1UsersMembershipIdPatchResponse404
+  | updateUserApiV1UsersMembershipIdPatchResponse422
+) & {
+  headers: Headers;
+};
 
-export const getUpdateUserApiV1UsersMembershipIdPatchUrl = (membershipId: string,) => {
+export type updateUserApiV1UsersMembershipIdPatchResponse =
+  | updateUserApiV1UsersMembershipIdPatchResponseSuccess
+  | updateUserApiV1UsersMembershipIdPatchResponseError;
 
+export const getUpdateUserApiV1UsersMembershipIdPatchUrl = (
+  membershipId: string,
+) => {
+  return `/api/v1/users/${membershipId}`;
+};
 
-  
+export const updateUserApiV1UsersMembershipIdPatch = async (
+  membershipId: string,
+  organizationUserUpdate: OrganizationUserUpdate,
+  options?: RequestInit,
+): Promise<updateUserApiV1UsersMembershipIdPatchResponse> => {
+  return customFetch<updateUserApiV1UsersMembershipIdPatchResponse>(
+    getUpdateUserApiV1UsersMembershipIdPatchUrl(membershipId),
+    {
+      ...options,
+      method: "PATCH",
+      headers: { "Content-Type": "application/json", ...options?.headers },
+      body: JSON.stringify(organizationUserUpdate),
+    },
+  );
+};
 
-  return `/api/v1/users/${membershipId}`
-}
+export const getUpdateUserApiV1UsersMembershipIdPatchMutationOptions = <
+  TError = ErrorResponse | HTTPValidationError,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof updateUserApiV1UsersMembershipIdPatch>>,
+    TError,
+    { membershipId: string; data: OrganizationUserUpdate },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof updateUserApiV1UsersMembershipIdPatch>>,
+  TError,
+  { membershipId: string; data: OrganizationUserUpdate },
+  TContext
+> => {
+  const mutationKey = ["updateUserApiV1UsersMembershipIdPatch"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
 
-export const updateUserApiV1UsersMembershipIdPatch = async (membershipId: string,
-    organizationUserUpdate: OrganizationUserUpdate, options?: RequestInit): Promise<updateUserApiV1UsersMembershipIdPatchResponse> => {
-  
-  return customFetch<updateUserApiV1UsersMembershipIdPatchResponse>(getUpdateUserApiV1UsersMembershipIdPatchUrl(membershipId),
-  {      
-    ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      organizationUserUpdate,)
-  }
-);}
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof updateUserApiV1UsersMembershipIdPatch>>,
+    { membershipId: string; data: OrganizationUserUpdate }
+  > = (props) => {
+    const { membershipId, data } = props ?? {};
 
+    return updateUserApiV1UsersMembershipIdPatch(
+      membershipId,
+      data,
+      requestOptions,
+    );
+  };
 
+  return { mutationFn, ...mutationOptions };
+};
 
+export type UpdateUserApiV1UsersMembershipIdPatchMutationResult = NonNullable<
+  Awaited<ReturnType<typeof updateUserApiV1UsersMembershipIdPatch>>
+>;
+export type UpdateUserApiV1UsersMembershipIdPatchMutationBody =
+  OrganizationUserUpdate;
+export type UpdateUserApiV1UsersMembershipIdPatchMutationError =
+  | ErrorResponse
+  | HTTPValidationError;
 
-export const getUpdateUserApiV1UsersMembershipIdPatchMutationOptions = <TError = ErrorResponse | HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateUserApiV1UsersMembershipIdPatch>>, TError,{membershipId: string;data: OrganizationUserUpdate}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof updateUserApiV1UsersMembershipIdPatch>>, TError,{membershipId: string;data: OrganizationUserUpdate}, TContext> => {
-
-const mutationKey = ['updateUserApiV1UsersMembershipIdPatch'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateUserApiV1UsersMembershipIdPatch>>, {membershipId: string;data: OrganizationUserUpdate}> = (props) => {
-          const {membershipId,data} = props ?? {};
-
-          return  updateUserApiV1UsersMembershipIdPatch(membershipId,data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type UpdateUserApiV1UsersMembershipIdPatchMutationResult = NonNullable<Awaited<ReturnType<typeof updateUserApiV1UsersMembershipIdPatch>>>
-    export type UpdateUserApiV1UsersMembershipIdPatchMutationBody = OrganizationUserUpdate
-    export type UpdateUserApiV1UsersMembershipIdPatchMutationError = ErrorResponse | HTTPValidationError
-
-    /**
+/**
  * @summary Update organization user
  */
-export const useUpdateUserApiV1UsersMembershipIdPatch = <TError = ErrorResponse | HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateUserApiV1UsersMembershipIdPatch>>, TError,{membershipId: string;data: OrganizationUserUpdate}, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof updateUserApiV1UsersMembershipIdPatch>>,
-        TError,
-        {membershipId: string;data: OrganizationUserUpdate},
-        TContext
-      > => {
+export const useUpdateUserApiV1UsersMembershipIdPatch = <
+  TError = ErrorResponse | HTTPValidationError,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof updateUserApiV1UsersMembershipIdPatch>>,
+      TError,
+      { membershipId: string; data: OrganizationUserUpdate },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof updateUserApiV1UsersMembershipIdPatch>>,
+  TError,
+  { membershipId: string; data: OrganizationUserUpdate },
+  TContext
+> => {
+  const mutationOptions =
+    getUpdateUserApiV1UsersMembershipIdPatchMutationOptions(options);
 
-      const mutationOptions = getUpdateUserApiV1UsersMembershipIdPatchMutationOptions(options);
-
-      return useMutation(mutationOptions, queryClient);
-    }
-    /**
+  return useMutation(mutationOptions, queryClient);
+};
+/**
  * Remove a member from the organization.
  * @summary Remove user from organization
  */
 export type removeUserApiV1UsersMembershipIdDeleteResponse204 = {
-  data: void
-  status: 204
-}
+  data: void;
+  status: 204;
+};
 
 export type removeUserApiV1UsersMembershipIdDeleteResponse403 = {
-  data: ErrorResponse
-  status: 403
-}
+  data: ErrorResponse;
+  status: 403;
+};
 
 export type removeUserApiV1UsersMembershipIdDeleteResponse404 = {
-  data: ErrorResponse
-  status: 404
-}
+  data: ErrorResponse;
+  status: 404;
+};
 
 export type removeUserApiV1UsersMembershipIdDeleteResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-    
-export type removeUserApiV1UsersMembershipIdDeleteResponseSuccess = (removeUserApiV1UsersMembershipIdDeleteResponse204) & {
-  headers: Headers;
-};
-export type removeUserApiV1UsersMembershipIdDeleteResponseError = (removeUserApiV1UsersMembershipIdDeleteResponse403 | removeUserApiV1UsersMembershipIdDeleteResponse404 | removeUserApiV1UsersMembershipIdDeleteResponse422) & {
-  headers: Headers;
+  data: HTTPValidationError;
+  status: 422;
 };
 
-export type removeUserApiV1UsersMembershipIdDeleteResponse = (removeUserApiV1UsersMembershipIdDeleteResponseSuccess | removeUserApiV1UsersMembershipIdDeleteResponseError)
+export type removeUserApiV1UsersMembershipIdDeleteResponseSuccess =
+  removeUserApiV1UsersMembershipIdDeleteResponse204 & {
+    headers: Headers;
+  };
+export type removeUserApiV1UsersMembershipIdDeleteResponseError = (
+  | removeUserApiV1UsersMembershipIdDeleteResponse403
+  | removeUserApiV1UsersMembershipIdDeleteResponse404
+  | removeUserApiV1UsersMembershipIdDeleteResponse422
+) & {
+  headers: Headers;
+};
 
-export const getRemoveUserApiV1UsersMembershipIdDeleteUrl = (membershipId: string,) => {
+export type removeUserApiV1UsersMembershipIdDeleteResponse =
+  | removeUserApiV1UsersMembershipIdDeleteResponseSuccess
+  | removeUserApiV1UsersMembershipIdDeleteResponseError;
 
+export const getRemoveUserApiV1UsersMembershipIdDeleteUrl = (
+  membershipId: string,
+) => {
+  return `/api/v1/users/${membershipId}`;
+};
 
-  
+export const removeUserApiV1UsersMembershipIdDelete = async (
+  membershipId: string,
+  options?: RequestInit,
+): Promise<removeUserApiV1UsersMembershipIdDeleteResponse> => {
+  return customFetch<removeUserApiV1UsersMembershipIdDeleteResponse>(
+    getRemoveUserApiV1UsersMembershipIdDeleteUrl(membershipId),
+    {
+      ...options,
+      method: "DELETE",
+    },
+  );
+};
 
-  return `/api/v1/users/${membershipId}`
-}
+export const getRemoveUserApiV1UsersMembershipIdDeleteMutationOptions = <
+  TError = ErrorResponse | HTTPValidationError,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof removeUserApiV1UsersMembershipIdDelete>>,
+    TError,
+    { membershipId: string },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof removeUserApiV1UsersMembershipIdDelete>>,
+  TError,
+  { membershipId: string },
+  TContext
+> => {
+  const mutationKey = ["removeUserApiV1UsersMembershipIdDelete"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
 
-export const removeUserApiV1UsersMembershipIdDelete = async (membershipId: string, options?: RequestInit): Promise<removeUserApiV1UsersMembershipIdDeleteResponse> => {
-  
-  return customFetch<removeUserApiV1UsersMembershipIdDeleteResponse>(getRemoveUserApiV1UsersMembershipIdDeleteUrl(membershipId),
-  {      
-    ...options,
-    method: 'DELETE'
-    
-    
-  }
-);}
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof removeUserApiV1UsersMembershipIdDelete>>,
+    { membershipId: string }
+  > = (props) => {
+    const { membershipId } = props ?? {};
 
+    return removeUserApiV1UsersMembershipIdDelete(membershipId, requestOptions);
+  };
 
+  return { mutationFn, ...mutationOptions };
+};
 
+export type RemoveUserApiV1UsersMembershipIdDeleteMutationResult = NonNullable<
+  Awaited<ReturnType<typeof removeUserApiV1UsersMembershipIdDelete>>
+>;
 
-export const getRemoveUserApiV1UsersMembershipIdDeleteMutationOptions = <TError = ErrorResponse | HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof removeUserApiV1UsersMembershipIdDelete>>, TError,{membershipId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof removeUserApiV1UsersMembershipIdDelete>>, TError,{membershipId: string}, TContext> => {
+export type RemoveUserApiV1UsersMembershipIdDeleteMutationError =
+  | ErrorResponse
+  | HTTPValidationError;
 
-const mutationKey = ['removeUserApiV1UsersMembershipIdDelete'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof removeUserApiV1UsersMembershipIdDelete>>, {membershipId: string}> = (props) => {
-          const {membershipId} = props ?? {};
-
-          return  removeUserApiV1UsersMembershipIdDelete(membershipId,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type RemoveUserApiV1UsersMembershipIdDeleteMutationResult = NonNullable<Awaited<ReturnType<typeof removeUserApiV1UsersMembershipIdDelete>>>
-    
-    export type RemoveUserApiV1UsersMembershipIdDeleteMutationError = ErrorResponse | HTTPValidationError
-
-    /**
+/**
  * @summary Remove user from organization
  */
-export const useRemoveUserApiV1UsersMembershipIdDelete = <TError = ErrorResponse | HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof removeUserApiV1UsersMembershipIdDelete>>, TError,{membershipId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof removeUserApiV1UsersMembershipIdDelete>>,
-        TError,
-        {membershipId: string},
-        TContext
-      > => {
+export const useRemoveUserApiV1UsersMembershipIdDelete = <
+  TError = ErrorResponse | HTTPValidationError,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof removeUserApiV1UsersMembershipIdDelete>>,
+      TError,
+      { membershipId: string },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof removeUserApiV1UsersMembershipIdDelete>>,
+  TError,
+  { membershipId: string },
+  TContext
+> => {
+  const mutationOptions =
+    getRemoveUserApiV1UsersMembershipIdDeleteMutationOptions(options);
 
-      const mutationOptions = getRemoveUserApiV1UsersMembershipIdDeleteMutationOptions(options);
-
-      return useMutation(mutationOptions, queryClient);
-    }
-    
+  return useMutation(mutationOptions, queryClient);
+};

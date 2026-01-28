@@ -5,10 +5,7 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import {
-  useMutation,
-  useQuery
-} from '@tanstack/react-query';
+import { useMutation, useQuery } from "@tanstack/react-query";
 import type {
   DataTag,
   DefinedInitialDataOptions,
@@ -21,224 +18,301 @@ import type {
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
-  UseQueryResult
-} from '@tanstack/react-query';
+  UseQueryResult,
+} from "@tanstack/react-query";
 
 import type {
   HTTPValidationError,
   UserMeResponse,
-  UserMeUpdate
-} from '../../models';
+  UserMeUpdate,
+} from "../../models";
 
-import { customFetch } from '../../custom-fetch';
-
+import { customFetch } from "../../custom-fetch";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
-
-
 
 /**
  * Get the authenticated user's profile with roles, permissions, and organizations.
  * @summary Get current user
  */
 export type getMeApiV1AuthMeGetResponse200 = {
-  data: UserMeResponse
-  status: 200
-}
-    
-export type getMeApiV1AuthMeGetResponseSuccess = (getMeApiV1AuthMeGetResponse200) & {
-  headers: Headers;
+  data: UserMeResponse;
+  status: 200;
 };
-;
 
-export type getMeApiV1AuthMeGetResponse = (getMeApiV1AuthMeGetResponseSuccess)
+export type getMeApiV1AuthMeGetResponseSuccess =
+  getMeApiV1AuthMeGetResponse200 & {
+    headers: Headers;
+  };
+export type getMeApiV1AuthMeGetResponse = getMeApiV1AuthMeGetResponseSuccess;
 
 export const getGetMeApiV1AuthMeGetUrl = () => {
+  return `/api/v1/auth/me`;
+};
 
-
-  
-
-  return `/api/v1/auth/me`
-}
-
-export const getMeApiV1AuthMeGet = async ( options?: RequestInit): Promise<getMeApiV1AuthMeGetResponse> => {
-  
-  return customFetch<getMeApiV1AuthMeGetResponse>(getGetMeApiV1AuthMeGetUrl(),
-  {      
+export const getMeApiV1AuthMeGet = async (
+  options?: RequestInit,
+): Promise<getMeApiV1AuthMeGetResponse> => {
+  return customFetch<getMeApiV1AuthMeGetResponse>(getGetMeApiV1AuthMeGetUrl(), {
     ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
-
-
+    method: "GET",
+  });
+};
 
 export const getGetMeApiV1AuthMeGetQueryKey = () => {
-    return [
-    `/api/v1/auth/me`
-    ] as const;
-    }
+  return [`/api/v1/auth/me`] as const;
+};
 
-    
-export const getGetMeApiV1AuthMeGetQueryOptions = <TData = Awaited<ReturnType<typeof getMeApiV1AuthMeGet>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMeApiV1AuthMeGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
-) => {
+export const getGetMeApiV1AuthMeGetQueryOptions = <
+  TData = Awaited<ReturnType<typeof getMeApiV1AuthMeGet>>,
+  TError = unknown,
+>(options?: {
+  query?: Partial<
+    UseQueryOptions<
+      Awaited<ReturnType<typeof getMeApiV1AuthMeGet>>,
+      TError,
+      TData
+    >
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-const {query: queryOptions, request: requestOptions} = options ?? {};
+  const queryKey = queryOptions?.queryKey ?? getGetMeApiV1AuthMeGetQueryKey();
 
-  const queryKey =  queryOptions?.queryKey ?? getGetMeApiV1AuthMeGetQueryKey();
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getMeApiV1AuthMeGet>>
+  > = ({ signal }) => getMeApiV1AuthMeGet({ signal, ...requestOptions });
 
-  
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 30000,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getMeApiV1AuthMeGet>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData> };
+};
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getMeApiV1AuthMeGet>>> = ({ signal }) => getMeApiV1AuthMeGet({ signal, ...requestOptions });
+export type GetMeApiV1AuthMeGetQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getMeApiV1AuthMeGet>>
+>;
+export type GetMeApiV1AuthMeGetQueryError = unknown;
 
-      
-
-      
-
-   return  { queryKey, queryFn,   staleTime: 30000,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getMeApiV1AuthMeGet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData> }
-}
-
-export type GetMeApiV1AuthMeGetQueryResult = NonNullable<Awaited<ReturnType<typeof getMeApiV1AuthMeGet>>>
-export type GetMeApiV1AuthMeGetQueryError = unknown
-
-
-export function useGetMeApiV1AuthMeGet<TData = Awaited<ReturnType<typeof getMeApiV1AuthMeGet>>, TError = unknown>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMeApiV1AuthMeGet>>, TError, TData>> & Pick<
+export function useGetMeApiV1AuthMeGet<
+  TData = Awaited<ReturnType<typeof getMeApiV1AuthMeGet>>,
+  TError = unknown,
+>(
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getMeApiV1AuthMeGet>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getMeApiV1AuthMeGet>>,
           TError,
           Awaited<ReturnType<typeof getMeApiV1AuthMeGet>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
-export function useGetMeApiV1AuthMeGet<TData = Awaited<ReturnType<typeof getMeApiV1AuthMeGet>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMeApiV1AuthMeGet>>, TError, TData>> & Pick<
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData>;
+};
+export function useGetMeApiV1AuthMeGet<
+  TData = Awaited<ReturnType<typeof getMeApiV1AuthMeGet>>,
+  TError = unknown,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getMeApiV1AuthMeGet>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getMeApiV1AuthMeGet>>,
           TError,
           Awaited<ReturnType<typeof getMeApiV1AuthMeGet>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
-export function useGetMeApiV1AuthMeGet<TData = Awaited<ReturnType<typeof getMeApiV1AuthMeGet>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMeApiV1AuthMeGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
+export function useGetMeApiV1AuthMeGet<
+  TData = Awaited<ReturnType<typeof getMeApiV1AuthMeGet>>,
+  TError = unknown,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getMeApiV1AuthMeGet>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
 /**
  * @summary Get current user
  */
 
-export function useGetMeApiV1AuthMeGet<TData = Awaited<ReturnType<typeof getMeApiV1AuthMeGet>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMeApiV1AuthMeGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+export function useGetMeApiV1AuthMeGet<
+  TData = Awaited<ReturnType<typeof getMeApiV1AuthMeGet>>,
+  TError = unknown,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getMeApiV1AuthMeGet>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+  const queryOptions = getGetMeApiV1AuthMeGetQueryOptions(options);
 
-  const queryOptions = getGetMeApiV1AuthMeGetQueryOptions(options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData> };
 
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
-
-
-
 
 /**
  * Update the authenticated user's profile. Only provided fields are updated (PATCH semantics).
  * @summary Update current user
  */
 export type updateMeApiV1AuthMePatchResponse200 = {
-  data: UserMeResponse
-  status: 200
-}
+  data: UserMeResponse;
+  status: 200;
+};
 
 export type updateMeApiV1AuthMePatchResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-    
-export type updateMeApiV1AuthMePatchResponseSuccess = (updateMeApiV1AuthMePatchResponse200) & {
-  headers: Headers;
-};
-export type updateMeApiV1AuthMePatchResponseError = (updateMeApiV1AuthMePatchResponse422) & {
-  headers: Headers;
+  data: HTTPValidationError;
+  status: 422;
 };
 
-export type updateMeApiV1AuthMePatchResponse = (updateMeApiV1AuthMePatchResponseSuccess | updateMeApiV1AuthMePatchResponseError)
+export type updateMeApiV1AuthMePatchResponseSuccess =
+  updateMeApiV1AuthMePatchResponse200 & {
+    headers: Headers;
+  };
+export type updateMeApiV1AuthMePatchResponseError =
+  updateMeApiV1AuthMePatchResponse422 & {
+    headers: Headers;
+  };
+
+export type updateMeApiV1AuthMePatchResponse =
+  | updateMeApiV1AuthMePatchResponseSuccess
+  | updateMeApiV1AuthMePatchResponseError;
 
 export const getUpdateMeApiV1AuthMePatchUrl = () => {
+  return `/api/v1/auth/me`;
+};
 
+export const updateMeApiV1AuthMePatch = async (
+  userMeUpdate: UserMeUpdate,
+  options?: RequestInit,
+): Promise<updateMeApiV1AuthMePatchResponse> => {
+  return customFetch<updateMeApiV1AuthMePatchResponse>(
+    getUpdateMeApiV1AuthMePatchUrl(),
+    {
+      ...options,
+      method: "PATCH",
+      headers: { "Content-Type": "application/json", ...options?.headers },
+      body: JSON.stringify(userMeUpdate),
+    },
+  );
+};
 
-  
+export const getUpdateMeApiV1AuthMePatchMutationOptions = <
+  TError = HTTPValidationError,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof updateMeApiV1AuthMePatch>>,
+    TError,
+    { data: UserMeUpdate },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof updateMeApiV1AuthMePatch>>,
+  TError,
+  { data: UserMeUpdate },
+  TContext
+> => {
+  const mutationKey = ["updateMeApiV1AuthMePatch"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
 
-  return `/api/v1/auth/me`
-}
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof updateMeApiV1AuthMePatch>>,
+    { data: UserMeUpdate }
+  > = (props) => {
+    const { data } = props ?? {};
 
-export const updateMeApiV1AuthMePatch = async (userMeUpdate: UserMeUpdate, options?: RequestInit): Promise<updateMeApiV1AuthMePatchResponse> => {
-  
-  return customFetch<updateMeApiV1AuthMePatchResponse>(getUpdateMeApiV1AuthMePatchUrl(),
-  {      
-    ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      userMeUpdate,)
-  }
-);}
+    return updateMeApiV1AuthMePatch(data, requestOptions);
+  };
 
+  return { mutationFn, ...mutationOptions };
+};
 
+export type UpdateMeApiV1AuthMePatchMutationResult = NonNullable<
+  Awaited<ReturnType<typeof updateMeApiV1AuthMePatch>>
+>;
+export type UpdateMeApiV1AuthMePatchMutationBody = UserMeUpdate;
+export type UpdateMeApiV1AuthMePatchMutationError = HTTPValidationError;
 
-
-export const getUpdateMeApiV1AuthMePatchMutationOptions = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateMeApiV1AuthMePatch>>, TError,{data: UserMeUpdate}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof updateMeApiV1AuthMePatch>>, TError,{data: UserMeUpdate}, TContext> => {
-
-const mutationKey = ['updateMeApiV1AuthMePatch'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateMeApiV1AuthMePatch>>, {data: UserMeUpdate}> = (props) => {
-          const {data} = props ?? {};
-
-          return  updateMeApiV1AuthMePatch(data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type UpdateMeApiV1AuthMePatchMutationResult = NonNullable<Awaited<ReturnType<typeof updateMeApiV1AuthMePatch>>>
-    export type UpdateMeApiV1AuthMePatchMutationBody = UserMeUpdate
-    export type UpdateMeApiV1AuthMePatchMutationError = HTTPValidationError
-
-    /**
+/**
  * @summary Update current user
  */
-export const useUpdateMeApiV1AuthMePatch = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateMeApiV1AuthMePatch>>, TError,{data: UserMeUpdate}, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof updateMeApiV1AuthMePatch>>,
-        TError,
-        {data: UserMeUpdate},
-        TContext
-      > => {
+export const useUpdateMeApiV1AuthMePatch = <
+  TError = HTTPValidationError,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof updateMeApiV1AuthMePatch>>,
+      TError,
+      { data: UserMeUpdate },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof updateMeApiV1AuthMePatch>>,
+  TError,
+  { data: UserMeUpdate },
+  TContext
+> => {
+  const mutationOptions = getUpdateMeApiV1AuthMePatchMutationOptions(options);
 
-      const mutationOptions = getUpdateMeApiV1AuthMePatchMutationOptions(options);
-
-      return useMutation(mutationOptions, queryClient);
-    }
-    
+  return useMutation(mutationOptions, queryClient);
+};

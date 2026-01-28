@@ -5,9 +5,7 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import {
-  useQuery
-} from '@tanstack/react-query';
+import { useQuery } from "@tanstack/react-query";
 import type {
   DataTag,
   DefinedInitialDataOptions,
@@ -17,130 +15,236 @@ import type {
   QueryKey,
   UndefinedInitialDataOptions,
   UseQueryOptions,
-  UseQueryResult
-} from '@tanstack/react-query';
+  UseQueryResult,
+} from "@tanstack/react-query";
 
-import type {
-  ProfessionalTypeItem
-} from '../../models';
+import type { ProfessionalTypeItem } from "../../models";
 
-import { customFetch } from '../../custom-fetch';
-
+import { customFetch } from "../../custom-fetch";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
-
-
 
 /**
  * List all professional types with PT-BR labels and associated council.
  * @summary List professional types
  */
 export type listProfessionalTypesApiV1EnumsProfessionalTypesGetResponse200 = {
-  data: ProfessionalTypeItem[]
-  status: 200
-}
-    
-export type listProfessionalTypesApiV1EnumsProfessionalTypesGetResponseSuccess = (listProfessionalTypesApiV1EnumsProfessionalTypesGetResponse200) & {
-  headers: Headers;
+  data: ProfessionalTypeItem[];
+  status: 200;
 };
-;
 
-export type listProfessionalTypesApiV1EnumsProfessionalTypesGetResponse = (listProfessionalTypesApiV1EnumsProfessionalTypesGetResponseSuccess)
+export type listProfessionalTypesApiV1EnumsProfessionalTypesGetResponseSuccess =
+  listProfessionalTypesApiV1EnumsProfessionalTypesGetResponse200 & {
+    headers: Headers;
+  };
+export type listProfessionalTypesApiV1EnumsProfessionalTypesGetResponse =
+  listProfessionalTypesApiV1EnumsProfessionalTypesGetResponseSuccess;
 
 export const getListProfessionalTypesApiV1EnumsProfessionalTypesGetUrl = () => {
+  return `/api/v1/enums/professional-types`;
+};
 
+export const listProfessionalTypesApiV1EnumsProfessionalTypesGet = async (
+  options?: RequestInit,
+): Promise<listProfessionalTypesApiV1EnumsProfessionalTypesGetResponse> => {
+  return customFetch<listProfessionalTypesApiV1EnumsProfessionalTypesGetResponse>(
+    getListProfessionalTypesApiV1EnumsProfessionalTypesGetUrl(),
+    {
+      ...options,
+      method: "GET",
+    },
+  );
+};
 
-  
+export const getListProfessionalTypesApiV1EnumsProfessionalTypesGetQueryKey =
+  () => {
+    return [`/api/v1/enums/professional-types`] as const;
+  };
 
-  return `/api/v1/enums/professional-types`
-}
+export const getListProfessionalTypesApiV1EnumsProfessionalTypesGetQueryOptions =
+  <
+    TData = Awaited<
+      ReturnType<typeof listProfessionalTypesApiV1EnumsProfessionalTypesGet>
+    >,
+    TError = unknown,
+  >(options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof listProfessionalTypesApiV1EnumsProfessionalTypesGet>
+        >,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  }) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
 
-export const listProfessionalTypesApiV1EnumsProfessionalTypesGet = async ( options?: RequestInit): Promise<listProfessionalTypesApiV1EnumsProfessionalTypesGetResponse> => {
-  
-  return customFetch<listProfessionalTypesApiV1EnumsProfessionalTypesGetResponse>(getListProfessionalTypesApiV1EnumsProfessionalTypesGetUrl(),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
+    const queryKey =
+      queryOptions?.queryKey ??
+      getListProfessionalTypesApiV1EnumsProfessionalTypesGetQueryKey();
 
+    const queryFn: QueryFunction<
+      Awaited<
+        ReturnType<typeof listProfessionalTypesApiV1EnumsProfessionalTypesGet>
+      >
+    > = ({ signal }) =>
+      listProfessionalTypesApiV1EnumsProfessionalTypesGet({
+        signal,
+        ...requestOptions,
+      });
 
+    return {
+      queryKey,
+      queryFn,
+      staleTime: 30000,
+      ...queryOptions,
+    } as UseQueryOptions<
+      Awaited<
+        ReturnType<typeof listProfessionalTypesApiV1EnumsProfessionalTypesGet>
+      >,
+      TError,
+      TData
+    > & { queryKey: DataTag<QueryKey, TData> };
+  };
 
+export type ListProfessionalTypesApiV1EnumsProfessionalTypesGetQueryResult =
+  NonNullable<
+    Awaited<
+      ReturnType<typeof listProfessionalTypesApiV1EnumsProfessionalTypesGet>
+    >
+  >;
+export type ListProfessionalTypesApiV1EnumsProfessionalTypesGetQueryError =
+  unknown;
 
-
-export const getListProfessionalTypesApiV1EnumsProfessionalTypesGetQueryKey = () => {
-    return [
-    `/api/v1/enums/professional-types`
-    ] as const;
-    }
-
-    
-export const getListProfessionalTypesApiV1EnumsProfessionalTypesGetQueryOptions = <TData = Awaited<ReturnType<typeof listProfessionalTypesApiV1EnumsProfessionalTypesGet>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listProfessionalTypesApiV1EnumsProfessionalTypesGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getListProfessionalTypesApiV1EnumsProfessionalTypesGetQueryKey();
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof listProfessionalTypesApiV1EnumsProfessionalTypesGet>>> = ({ signal }) => listProfessionalTypesApiV1EnumsProfessionalTypesGet({ signal, ...requestOptions });
-
-      
-
-      
-
-   return  { queryKey, queryFn,   staleTime: 30000,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listProfessionalTypesApiV1EnumsProfessionalTypesGet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData> }
-}
-
-export type ListProfessionalTypesApiV1EnumsProfessionalTypesGetQueryResult = NonNullable<Awaited<ReturnType<typeof listProfessionalTypesApiV1EnumsProfessionalTypesGet>>>
-export type ListProfessionalTypesApiV1EnumsProfessionalTypesGetQueryError = unknown
-
-
-export function useListProfessionalTypesApiV1EnumsProfessionalTypesGet<TData = Awaited<ReturnType<typeof listProfessionalTypesApiV1EnumsProfessionalTypesGet>>, TError = unknown>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listProfessionalTypesApiV1EnumsProfessionalTypesGet>>, TError, TData>> & Pick<
+export function useListProfessionalTypesApiV1EnumsProfessionalTypesGet<
+  TData = Awaited<
+    ReturnType<typeof listProfessionalTypesApiV1EnumsProfessionalTypesGet>
+  >,
+  TError = unknown,
+>(
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof listProfessionalTypesApiV1EnumsProfessionalTypesGet>
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof listProfessionalTypesApiV1EnumsProfessionalTypesGet>>,
+          Awaited<
+            ReturnType<
+              typeof listProfessionalTypesApiV1EnumsProfessionalTypesGet
+            >
+          >,
           TError,
-          Awaited<ReturnType<typeof listProfessionalTypesApiV1EnumsProfessionalTypesGet>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
-export function useListProfessionalTypesApiV1EnumsProfessionalTypesGet<TData = Awaited<ReturnType<typeof listProfessionalTypesApiV1EnumsProfessionalTypesGet>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listProfessionalTypesApiV1EnumsProfessionalTypesGet>>, TError, TData>> & Pick<
+          Awaited<
+            ReturnType<
+              typeof listProfessionalTypesApiV1EnumsProfessionalTypesGet
+            >
+          >
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData>;
+};
+export function useListProfessionalTypesApiV1EnumsProfessionalTypesGet<
+  TData = Awaited<
+    ReturnType<typeof listProfessionalTypesApiV1EnumsProfessionalTypesGet>
+  >,
+  TError = unknown,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof listProfessionalTypesApiV1EnumsProfessionalTypesGet>
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof listProfessionalTypesApiV1EnumsProfessionalTypesGet>>,
+          Awaited<
+            ReturnType<
+              typeof listProfessionalTypesApiV1EnumsProfessionalTypesGet
+            >
+          >,
           TError,
-          Awaited<ReturnType<typeof listProfessionalTypesApiV1EnumsProfessionalTypesGet>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
-export function useListProfessionalTypesApiV1EnumsProfessionalTypesGet<TData = Awaited<ReturnType<typeof listProfessionalTypesApiV1EnumsProfessionalTypesGet>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listProfessionalTypesApiV1EnumsProfessionalTypesGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
+          Awaited<
+            ReturnType<
+              typeof listProfessionalTypesApiV1EnumsProfessionalTypesGet
+            >
+          >
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
+export function useListProfessionalTypesApiV1EnumsProfessionalTypesGet<
+  TData = Awaited<
+    ReturnType<typeof listProfessionalTypesApiV1EnumsProfessionalTypesGet>
+  >,
+  TError = unknown,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof listProfessionalTypesApiV1EnumsProfessionalTypesGet>
+        >,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
 /**
  * @summary List professional types
  */
 
-export function useListProfessionalTypesApiV1EnumsProfessionalTypesGet<TData = Awaited<ReturnType<typeof listProfessionalTypesApiV1EnumsProfessionalTypesGet>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listProfessionalTypesApiV1EnumsProfessionalTypesGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+export function useListProfessionalTypesApiV1EnumsProfessionalTypesGet<
+  TData = Awaited<
+    ReturnType<typeof listProfessionalTypesApiV1EnumsProfessionalTypesGet>
+  >,
+  TError = unknown,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof listProfessionalTypesApiV1EnumsProfessionalTypesGet>
+        >,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+  const queryOptions =
+    getListProfessionalTypesApiV1EnumsProfessionalTypesGetQueryOptions(options);
 
-  const queryOptions = getListProfessionalTypesApiV1EnumsProfessionalTypesGetQueryOptions(options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData> };
 
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
-
-
-
-

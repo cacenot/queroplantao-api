@@ -5,139 +5,169 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import {
-  useMutation
-} from '@tanstack/react-query';
+import { useMutation } from "@tanstack/react-query";
 import type {
   MutationFunction,
   QueryClient,
   UseMutationOptions,
-  UseMutationResult
-} from '@tanstack/react-query';
+  UseMutationResult,
+} from "@tanstack/react-query";
 
 import type {
   ErrorResponse,
   HTTPValidationError,
   InvitationAcceptRequest,
-  InvitationAcceptResponse
-} from '../../models';
+  InvitationAcceptResponse,
+} from "../../models";
 
-import { customFetch } from '../../custom-fetch';
-
+import { customFetch } from "../../custom-fetch";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
-
-
 
 /**
  * Accept an organization invitation using the token from the email.
  * @summary Accept invitation
  */
 export type acceptInvitationApiV1InvitationsAcceptPostResponse200 = {
-  data: InvitationAcceptResponse
-  status: 200
-}
+  data: InvitationAcceptResponse;
+  status: 200;
+};
 
 export type acceptInvitationApiV1InvitationsAcceptPostResponse400 = {
-  data: ErrorResponse
-  status: 400
-}
+  data: ErrorResponse;
+  status: 400;
+};
 
 export type acceptInvitationApiV1InvitationsAcceptPostResponse404 = {
-  data: ErrorResponse
-  status: 404
-}
+  data: ErrorResponse;
+  status: 404;
+};
 
 export type acceptInvitationApiV1InvitationsAcceptPostResponse409 = {
-  data: ErrorResponse
-  status: 409
-}
+  data: ErrorResponse;
+  status: 409;
+};
 
 export type acceptInvitationApiV1InvitationsAcceptPostResponse410 = {
-  data: ErrorResponse
-  status: 410
-}
+  data: ErrorResponse;
+  status: 410;
+};
 
 export type acceptInvitationApiV1InvitationsAcceptPostResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-    
-export type acceptInvitationApiV1InvitationsAcceptPostResponseSuccess = (acceptInvitationApiV1InvitationsAcceptPostResponse200) & {
-  headers: Headers;
+  data: HTTPValidationError;
+  status: 422;
 };
-export type acceptInvitationApiV1InvitationsAcceptPostResponseError = (acceptInvitationApiV1InvitationsAcceptPostResponse400 | acceptInvitationApiV1InvitationsAcceptPostResponse404 | acceptInvitationApiV1InvitationsAcceptPostResponse409 | acceptInvitationApiV1InvitationsAcceptPostResponse410 | acceptInvitationApiV1InvitationsAcceptPostResponse422) & {
+
+export type acceptInvitationApiV1InvitationsAcceptPostResponseSuccess =
+  acceptInvitationApiV1InvitationsAcceptPostResponse200 & {
+    headers: Headers;
+  };
+export type acceptInvitationApiV1InvitationsAcceptPostResponseError = (
+  | acceptInvitationApiV1InvitationsAcceptPostResponse400
+  | acceptInvitationApiV1InvitationsAcceptPostResponse404
+  | acceptInvitationApiV1InvitationsAcceptPostResponse409
+  | acceptInvitationApiV1InvitationsAcceptPostResponse410
+  | acceptInvitationApiV1InvitationsAcceptPostResponse422
+) & {
   headers: Headers;
 };
 
-export type acceptInvitationApiV1InvitationsAcceptPostResponse = (acceptInvitationApiV1InvitationsAcceptPostResponseSuccess | acceptInvitationApiV1InvitationsAcceptPostResponseError)
+export type acceptInvitationApiV1InvitationsAcceptPostResponse =
+  | acceptInvitationApiV1InvitationsAcceptPostResponseSuccess
+  | acceptInvitationApiV1InvitationsAcceptPostResponseError;
 
 export const getAcceptInvitationApiV1InvitationsAcceptPostUrl = () => {
+  return `/api/v1/invitations/accept`;
+};
 
+export const acceptInvitationApiV1InvitationsAcceptPost = async (
+  invitationAcceptRequest: InvitationAcceptRequest,
+  options?: RequestInit,
+): Promise<acceptInvitationApiV1InvitationsAcceptPostResponse> => {
+  return customFetch<acceptInvitationApiV1InvitationsAcceptPostResponse>(
+    getAcceptInvitationApiV1InvitationsAcceptPostUrl(),
+    {
+      ...options,
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...options?.headers },
+      body: JSON.stringify(invitationAcceptRequest),
+    },
+  );
+};
 
-  
+export const getAcceptInvitationApiV1InvitationsAcceptPostMutationOptions = <
+  TError = ErrorResponse | HTTPValidationError,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof acceptInvitationApiV1InvitationsAcceptPost>>,
+    TError,
+    { data: InvitationAcceptRequest },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof acceptInvitationApiV1InvitationsAcceptPost>>,
+  TError,
+  { data: InvitationAcceptRequest },
+  TContext
+> => {
+  const mutationKey = ["acceptInvitationApiV1InvitationsAcceptPost"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
 
-  return `/api/v1/invitations/accept`
-}
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof acceptInvitationApiV1InvitationsAcceptPost>>,
+    { data: InvitationAcceptRequest }
+  > = (props) => {
+    const { data } = props ?? {};
 
-export const acceptInvitationApiV1InvitationsAcceptPost = async (invitationAcceptRequest: InvitationAcceptRequest, options?: RequestInit): Promise<acceptInvitationApiV1InvitationsAcceptPostResponse> => {
-  
-  return customFetch<acceptInvitationApiV1InvitationsAcceptPostResponse>(getAcceptInvitationApiV1InvitationsAcceptPostUrl(),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      invitationAcceptRequest,)
-  }
-);}
+    return acceptInvitationApiV1InvitationsAcceptPost(data, requestOptions);
+  };
 
+  return { mutationFn, ...mutationOptions };
+};
 
+export type AcceptInvitationApiV1InvitationsAcceptPostMutationResult =
+  NonNullable<
+    Awaited<ReturnType<typeof acceptInvitationApiV1InvitationsAcceptPost>>
+  >;
+export type AcceptInvitationApiV1InvitationsAcceptPostMutationBody =
+  InvitationAcceptRequest;
+export type AcceptInvitationApiV1InvitationsAcceptPostMutationError =
+  | ErrorResponse
+  | HTTPValidationError;
 
-
-export const getAcceptInvitationApiV1InvitationsAcceptPostMutationOptions = <TError = ErrorResponse | HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof acceptInvitationApiV1InvitationsAcceptPost>>, TError,{data: InvitationAcceptRequest}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof acceptInvitationApiV1InvitationsAcceptPost>>, TError,{data: InvitationAcceptRequest}, TContext> => {
-
-const mutationKey = ['acceptInvitationApiV1InvitationsAcceptPost'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof acceptInvitationApiV1InvitationsAcceptPost>>, {data: InvitationAcceptRequest}> = (props) => {
-          const {data} = props ?? {};
-
-          return  acceptInvitationApiV1InvitationsAcceptPost(data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type AcceptInvitationApiV1InvitationsAcceptPostMutationResult = NonNullable<Awaited<ReturnType<typeof acceptInvitationApiV1InvitationsAcceptPost>>>
-    export type AcceptInvitationApiV1InvitationsAcceptPostMutationBody = InvitationAcceptRequest
-    export type AcceptInvitationApiV1InvitationsAcceptPostMutationError = ErrorResponse | HTTPValidationError
-
-    /**
+/**
  * @summary Accept invitation
  */
-export const useAcceptInvitationApiV1InvitationsAcceptPost = <TError = ErrorResponse | HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof acceptInvitationApiV1InvitationsAcceptPost>>, TError,{data: InvitationAcceptRequest}, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof acceptInvitationApiV1InvitationsAcceptPost>>,
-        TError,
-        {data: InvitationAcceptRequest},
-        TContext
-      > => {
+export const useAcceptInvitationApiV1InvitationsAcceptPost = <
+  TError = ErrorResponse | HTTPValidationError,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof acceptInvitationApiV1InvitationsAcceptPost>>,
+      TError,
+      { data: InvitationAcceptRequest },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof acceptInvitationApiV1InvitationsAcceptPost>>,
+  TError,
+  { data: InvitationAcceptRequest },
+  TContext
+> => {
+  const mutationOptions =
+    getAcceptInvitationApiV1InvitationsAcceptPostMutationOptions(options);
 
-      const mutationOptions = getAcceptInvitationApiV1InvitationsAcceptPostMutationOptions(options);
-
-      return useMutation(mutationOptions, queryClient);
-    }
-    
+  return useMutation(mutationOptions, queryClient);
+};

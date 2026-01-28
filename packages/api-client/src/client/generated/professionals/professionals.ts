@@ -5,10 +5,7 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import {
-  useMutation,
-  useQuery
-} from '@tanstack/react-query';
+import { useMutation, useQuery } from "@tanstack/react-query";
 import type {
   DataTag,
   DefinedInitialDataOptions,
@@ -21,8 +18,8 @@ import type {
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
-  UseQueryResult
-} from '@tanstack/react-query';
+  UseQueryResult,
+} from "@tanstack/react-query";
 
 import type {
   ErrorResponse,
@@ -67,689 +64,1228 @@ import type {
   ProfessionalVersionCreate,
   ProfessionalVersionDetailResponse,
   ProfessionalVersionReject,
-  ProfessionalVersionResponse
-} from '../../models';
+  ProfessionalVersionResponse,
+} from "../../models";
 
-import { customFetch } from '../../custom-fetch';
-
+import { customFetch } from "../../custom-fetch";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
-
-
 
 /**
  * Create a new professional in the organization.
  * @summary Create a professional
  */
 export type createProfessionalApiV1ProfessionalsPostResponse201 = {
-  data: OrganizationProfessionalResponse
-  status: 201
-}
+  data: OrganizationProfessionalResponse;
+  status: 201;
+};
 
 export type createProfessionalApiV1ProfessionalsPostResponse409 = {
-  data: ErrorResponse
-  status: 409
-}
+  data: ErrorResponse;
+  status: 409;
+};
 
 export type createProfessionalApiV1ProfessionalsPostResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-    
-export type createProfessionalApiV1ProfessionalsPostResponseSuccess = (createProfessionalApiV1ProfessionalsPostResponse201) & {
-  headers: Headers;
+  data: HTTPValidationError;
+  status: 422;
 };
-export type createProfessionalApiV1ProfessionalsPostResponseError = (createProfessionalApiV1ProfessionalsPostResponse409 | createProfessionalApiV1ProfessionalsPostResponse422) & {
+
+export type createProfessionalApiV1ProfessionalsPostResponseSuccess =
+  createProfessionalApiV1ProfessionalsPostResponse201 & {
+    headers: Headers;
+  };
+export type createProfessionalApiV1ProfessionalsPostResponseError = (
+  | createProfessionalApiV1ProfessionalsPostResponse409
+  | createProfessionalApiV1ProfessionalsPostResponse422
+) & {
   headers: Headers;
 };
 
-export type createProfessionalApiV1ProfessionalsPostResponse = (createProfessionalApiV1ProfessionalsPostResponseSuccess | createProfessionalApiV1ProfessionalsPostResponseError)
+export type createProfessionalApiV1ProfessionalsPostResponse =
+  | createProfessionalApiV1ProfessionalsPostResponseSuccess
+  | createProfessionalApiV1ProfessionalsPostResponseError;
 
 export const getCreateProfessionalApiV1ProfessionalsPostUrl = () => {
+  return `/api/v1/professionals/`;
+};
 
+export const createProfessionalApiV1ProfessionalsPost = async (
+  organizationProfessionalCreate: OrganizationProfessionalCreate,
+  options?: RequestInit,
+): Promise<createProfessionalApiV1ProfessionalsPostResponse> => {
+  return customFetch<createProfessionalApiV1ProfessionalsPostResponse>(
+    getCreateProfessionalApiV1ProfessionalsPostUrl(),
+    {
+      ...options,
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...options?.headers },
+      body: JSON.stringify(organizationProfessionalCreate),
+    },
+  );
+};
 
-  
+export const getCreateProfessionalApiV1ProfessionalsPostMutationOptions = <
+  TError = ErrorResponse | HTTPValidationError,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createProfessionalApiV1ProfessionalsPost>>,
+    TError,
+    { data: OrganizationProfessionalCreate },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof createProfessionalApiV1ProfessionalsPost>>,
+  TError,
+  { data: OrganizationProfessionalCreate },
+  TContext
+> => {
+  const mutationKey = ["createProfessionalApiV1ProfessionalsPost"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
 
-  return `/api/v1/professionals/`
-}
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof createProfessionalApiV1ProfessionalsPost>>,
+    { data: OrganizationProfessionalCreate }
+  > = (props) => {
+    const { data } = props ?? {};
 
-export const createProfessionalApiV1ProfessionalsPost = async (organizationProfessionalCreate: OrganizationProfessionalCreate, options?: RequestInit): Promise<createProfessionalApiV1ProfessionalsPostResponse> => {
-  
-  return customFetch<createProfessionalApiV1ProfessionalsPostResponse>(getCreateProfessionalApiV1ProfessionalsPostUrl(),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      organizationProfessionalCreate,)
-  }
-);}
+    return createProfessionalApiV1ProfessionalsPost(data, requestOptions);
+  };
 
+  return { mutationFn, ...mutationOptions };
+};
 
+export type CreateProfessionalApiV1ProfessionalsPostMutationResult =
+  NonNullable<
+    Awaited<ReturnType<typeof createProfessionalApiV1ProfessionalsPost>>
+  >;
+export type CreateProfessionalApiV1ProfessionalsPostMutationBody =
+  OrganizationProfessionalCreate;
+export type CreateProfessionalApiV1ProfessionalsPostMutationError =
+  | ErrorResponse
+  | HTTPValidationError;
 
-
-export const getCreateProfessionalApiV1ProfessionalsPostMutationOptions = <TError = ErrorResponse | HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createProfessionalApiV1ProfessionalsPost>>, TError,{data: OrganizationProfessionalCreate}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof createProfessionalApiV1ProfessionalsPost>>, TError,{data: OrganizationProfessionalCreate}, TContext> => {
-
-const mutationKey = ['createProfessionalApiV1ProfessionalsPost'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createProfessionalApiV1ProfessionalsPost>>, {data: OrganizationProfessionalCreate}> = (props) => {
-          const {data} = props ?? {};
-
-          return  createProfessionalApiV1ProfessionalsPost(data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type CreateProfessionalApiV1ProfessionalsPostMutationResult = NonNullable<Awaited<ReturnType<typeof createProfessionalApiV1ProfessionalsPost>>>
-    export type CreateProfessionalApiV1ProfessionalsPostMutationBody = OrganizationProfessionalCreate
-    export type CreateProfessionalApiV1ProfessionalsPostMutationError = ErrorResponse | HTTPValidationError
-
-    /**
+/**
  * @summary Create a professional
  */
-export const useCreateProfessionalApiV1ProfessionalsPost = <TError = ErrorResponse | HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createProfessionalApiV1ProfessionalsPost>>, TError,{data: OrganizationProfessionalCreate}, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof createProfessionalApiV1ProfessionalsPost>>,
-        TError,
-        {data: OrganizationProfessionalCreate},
-        TContext
-      > => {
+export const useCreateProfessionalApiV1ProfessionalsPost = <
+  TError = ErrorResponse | HTTPValidationError,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof createProfessionalApiV1ProfessionalsPost>>,
+      TError,
+      { data: OrganizationProfessionalCreate },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof createProfessionalApiV1ProfessionalsPost>>,
+  TError,
+  { data: OrganizationProfessionalCreate },
+  TContext
+> => {
+  const mutationOptions =
+    getCreateProfessionalApiV1ProfessionalsPostMutationOptions(options);
 
-      const mutationOptions = getCreateProfessionalApiV1ProfessionalsPostMutationOptions(options);
-
-      return useMutation(mutationOptions, queryClient);
-    }
-    /**
+  return useMutation(mutationOptions, queryClient);
+};
+/**
  * List all professionals in the organization with pagination, filtering and sorting.
  * @summary List professionals
  */
 export type listProfessionalsApiV1ProfessionalsGetResponse200 = {
-  data: PaginatedResponseOrganizationProfessionalResponse
-  status: 200
-}
+  data: PaginatedResponseOrganizationProfessionalResponse;
+  status: 200;
+};
 
 export type listProfessionalsApiV1ProfessionalsGetResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-    
-export type listProfessionalsApiV1ProfessionalsGetResponseSuccess = (listProfessionalsApiV1ProfessionalsGetResponse200) & {
-  headers: Headers;
-};
-export type listProfessionalsApiV1ProfessionalsGetResponseError = (listProfessionalsApiV1ProfessionalsGetResponse422) & {
-  headers: Headers;
+  data: HTTPValidationError;
+  status: 422;
 };
 
-export type listProfessionalsApiV1ProfessionalsGetResponse = (listProfessionalsApiV1ProfessionalsGetResponseSuccess | listProfessionalsApiV1ProfessionalsGetResponseError)
+export type listProfessionalsApiV1ProfessionalsGetResponseSuccess =
+  listProfessionalsApiV1ProfessionalsGetResponse200 & {
+    headers: Headers;
+  };
+export type listProfessionalsApiV1ProfessionalsGetResponseError =
+  listProfessionalsApiV1ProfessionalsGetResponse422 & {
+    headers: Headers;
+  };
 
-export const getListProfessionalsApiV1ProfessionalsGetUrl = (params?: ListProfessionalsApiV1ProfessionalsGetParams,) => {
+export type listProfessionalsApiV1ProfessionalsGetResponse =
+  | listProfessionalsApiV1ProfessionalsGetResponseSuccess
+  | listProfessionalsApiV1ProfessionalsGetResponseError;
+
+export const getListProfessionalsApiV1ProfessionalsGetUrl = (
+  params?: ListProfessionalsApiV1ProfessionalsGetParams,
+) => {
   const normalizedParams = new URLSearchParams();
 
   Object.entries(params || {}).forEach(([key, value]) => {
-    
     if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString())
+      normalizedParams.append(key, value === null ? "null" : value.toString());
     }
   });
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/v1/professionals/?${stringifiedParams}` : `/api/v1/professionals/`
-}
+  return stringifiedParams.length > 0
+    ? `/api/v1/professionals/?${stringifiedParams}`
+    : `/api/v1/professionals/`;
+};
 
-export const listProfessionalsApiV1ProfessionalsGet = async (params?: ListProfessionalsApiV1ProfessionalsGetParams, options?: RequestInit): Promise<listProfessionalsApiV1ProfessionalsGetResponse> => {
-  
-  return customFetch<listProfessionalsApiV1ProfessionalsGetResponse>(getListProfessionalsApiV1ProfessionalsGetUrl(params),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
+export const listProfessionalsApiV1ProfessionalsGet = async (
+  params?: ListProfessionalsApiV1ProfessionalsGetParams,
+  options?: RequestInit,
+): Promise<listProfessionalsApiV1ProfessionalsGetResponse> => {
+  return customFetch<listProfessionalsApiV1ProfessionalsGetResponse>(
+    getListProfessionalsApiV1ProfessionalsGetUrl(params),
+    {
+      ...options,
+      method: "GET",
+    },
+  );
+};
 
-
-
-
-
-export const getListProfessionalsApiV1ProfessionalsGetQueryKey = (params?: ListProfessionalsApiV1ProfessionalsGetParams,) => {
-    return [
-    `/api/v1/professionals/`, ...(params ? [params]: [])
-    ] as const;
-    }
-
-    
-export const getListProfessionalsApiV1ProfessionalsGetQueryOptions = <TData = Awaited<ReturnType<typeof listProfessionalsApiV1ProfessionalsGet>>, TError = HTTPValidationError>(params?: ListProfessionalsApiV1ProfessionalsGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listProfessionalsApiV1ProfessionalsGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getListProfessionalsApiV1ProfessionalsGetQueryKey = (
+  params?: ListProfessionalsApiV1ProfessionalsGetParams,
 ) => {
+  return [`/api/v1/professionals/`, ...(params ? [params] : [])] as const;
+};
 
-const {query: queryOptions, request: requestOptions} = options ?? {};
+export const getListProfessionalsApiV1ProfessionalsGetQueryOptions = <
+  TData = Awaited<ReturnType<typeof listProfessionalsApiV1ProfessionalsGet>>,
+  TError = HTTPValidationError,
+>(
+  params?: ListProfessionalsApiV1ProfessionalsGetParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof listProfessionalsApiV1ProfessionalsGet>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getListProfessionalsApiV1ProfessionalsGetQueryKey(params);
+  const queryKey =
+    queryOptions?.queryKey ??
+    getListProfessionalsApiV1ProfessionalsGetQueryKey(params);
 
-  
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof listProfessionalsApiV1ProfessionalsGet>>
+  > = ({ signal }) =>
+    listProfessionalsApiV1ProfessionalsGet(params, {
+      signal,
+      ...requestOptions,
+    });
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof listProfessionalsApiV1ProfessionalsGet>>> = ({ signal }) => listProfessionalsApiV1ProfessionalsGet(params, { signal, ...requestOptions });
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 30000,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof listProfessionalsApiV1ProfessionalsGet>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData> };
+};
 
-      
+export type ListProfessionalsApiV1ProfessionalsGetQueryResult = NonNullable<
+  Awaited<ReturnType<typeof listProfessionalsApiV1ProfessionalsGet>>
+>;
+export type ListProfessionalsApiV1ProfessionalsGetQueryError =
+  HTTPValidationError;
 
-      
-
-   return  { queryKey, queryFn,   staleTime: 30000,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listProfessionalsApiV1ProfessionalsGet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData> }
-}
-
-export type ListProfessionalsApiV1ProfessionalsGetQueryResult = NonNullable<Awaited<ReturnType<typeof listProfessionalsApiV1ProfessionalsGet>>>
-export type ListProfessionalsApiV1ProfessionalsGetQueryError = HTTPValidationError
-
-
-export function useListProfessionalsApiV1ProfessionalsGet<TData = Awaited<ReturnType<typeof listProfessionalsApiV1ProfessionalsGet>>, TError = HTTPValidationError>(
- params: undefined |  ListProfessionalsApiV1ProfessionalsGetParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listProfessionalsApiV1ProfessionalsGet>>, TError, TData>> & Pick<
+export function useListProfessionalsApiV1ProfessionalsGet<
+  TData = Awaited<ReturnType<typeof listProfessionalsApiV1ProfessionalsGet>>,
+  TError = HTTPValidationError,
+>(
+  params: undefined | ListProfessionalsApiV1ProfessionalsGetParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof listProfessionalsApiV1ProfessionalsGet>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof listProfessionalsApiV1ProfessionalsGet>>,
           TError,
           Awaited<ReturnType<typeof listProfessionalsApiV1ProfessionalsGet>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
-export function useListProfessionalsApiV1ProfessionalsGet<TData = Awaited<ReturnType<typeof listProfessionalsApiV1ProfessionalsGet>>, TError = HTTPValidationError>(
- params?: ListProfessionalsApiV1ProfessionalsGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listProfessionalsApiV1ProfessionalsGet>>, TError, TData>> & Pick<
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData>;
+};
+export function useListProfessionalsApiV1ProfessionalsGet<
+  TData = Awaited<ReturnType<typeof listProfessionalsApiV1ProfessionalsGet>>,
+  TError = HTTPValidationError,
+>(
+  params?: ListProfessionalsApiV1ProfessionalsGetParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof listProfessionalsApiV1ProfessionalsGet>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof listProfessionalsApiV1ProfessionalsGet>>,
           TError,
           Awaited<ReturnType<typeof listProfessionalsApiV1ProfessionalsGet>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
-export function useListProfessionalsApiV1ProfessionalsGet<TData = Awaited<ReturnType<typeof listProfessionalsApiV1ProfessionalsGet>>, TError = HTTPValidationError>(
- params?: ListProfessionalsApiV1ProfessionalsGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listProfessionalsApiV1ProfessionalsGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
+export function useListProfessionalsApiV1ProfessionalsGet<
+  TData = Awaited<ReturnType<typeof listProfessionalsApiV1ProfessionalsGet>>,
+  TError = HTTPValidationError,
+>(
+  params?: ListProfessionalsApiV1ProfessionalsGetParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof listProfessionalsApiV1ProfessionalsGet>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
 /**
  * @summary List professionals
  */
 
-export function useListProfessionalsApiV1ProfessionalsGet<TData = Awaited<ReturnType<typeof listProfessionalsApiV1ProfessionalsGet>>, TError = HTTPValidationError>(
- params?: ListProfessionalsApiV1ProfessionalsGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listProfessionalsApiV1ProfessionalsGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+export function useListProfessionalsApiV1ProfessionalsGet<
+  TData = Awaited<ReturnType<typeof listProfessionalsApiV1ProfessionalsGet>>,
+  TError = HTTPValidationError,
+>(
+  params?: ListProfessionalsApiV1ProfessionalsGetParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof listProfessionalsApiV1ProfessionalsGet>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+  const queryOptions = getListProfessionalsApiV1ProfessionalsGetQueryOptions(
+    params,
+    options,
+  );
 
-  const queryOptions = getListProfessionalsApiV1ProfessionalsGetQueryOptions(params,options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData> };
 
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
-
-
-
 
 /**
  * List professionals with simplified data: basic info, primary qualification, and specialties.
  * @summary List professionals (summary)
  */
 export type listProfessionalsSummaryApiV1ProfessionalsSummaryGetResponse200 = {
-  data: PaginatedResponseOrganizationProfessionalListItem
-  status: 200
-}
+  data: PaginatedResponseOrganizationProfessionalListItem;
+  status: 200;
+};
 
 export type listProfessionalsSummaryApiV1ProfessionalsSummaryGetResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-    
-export type listProfessionalsSummaryApiV1ProfessionalsSummaryGetResponseSuccess = (listProfessionalsSummaryApiV1ProfessionalsSummaryGetResponse200) & {
-  headers: Headers;
-};
-export type listProfessionalsSummaryApiV1ProfessionalsSummaryGetResponseError = (listProfessionalsSummaryApiV1ProfessionalsSummaryGetResponse422) & {
-  headers: Headers;
+  data: HTTPValidationError;
+  status: 422;
 };
 
-export type listProfessionalsSummaryApiV1ProfessionalsSummaryGetResponse = (listProfessionalsSummaryApiV1ProfessionalsSummaryGetResponseSuccess | listProfessionalsSummaryApiV1ProfessionalsSummaryGetResponseError)
+export type listProfessionalsSummaryApiV1ProfessionalsSummaryGetResponseSuccess =
+  listProfessionalsSummaryApiV1ProfessionalsSummaryGetResponse200 & {
+    headers: Headers;
+  };
+export type listProfessionalsSummaryApiV1ProfessionalsSummaryGetResponseError =
+  listProfessionalsSummaryApiV1ProfessionalsSummaryGetResponse422 & {
+    headers: Headers;
+  };
 
-export const getListProfessionalsSummaryApiV1ProfessionalsSummaryGetUrl = (params?: ListProfessionalsSummaryApiV1ProfessionalsSummaryGetParams,) => {
+export type listProfessionalsSummaryApiV1ProfessionalsSummaryGetResponse =
+  | listProfessionalsSummaryApiV1ProfessionalsSummaryGetResponseSuccess
+  | listProfessionalsSummaryApiV1ProfessionalsSummaryGetResponseError;
+
+export const getListProfessionalsSummaryApiV1ProfessionalsSummaryGetUrl = (
+  params?: ListProfessionalsSummaryApiV1ProfessionalsSummaryGetParams,
+) => {
   const normalizedParams = new URLSearchParams();
 
   Object.entries(params || {}).forEach(([key, value]) => {
-    
     if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString())
+      normalizedParams.append(key, value === null ? "null" : value.toString());
     }
   });
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/v1/professionals/summary?${stringifiedParams}` : `/api/v1/professionals/summary`
-}
+  return stringifiedParams.length > 0
+    ? `/api/v1/professionals/summary?${stringifiedParams}`
+    : `/api/v1/professionals/summary`;
+};
 
-export const listProfessionalsSummaryApiV1ProfessionalsSummaryGet = async (params?: ListProfessionalsSummaryApiV1ProfessionalsSummaryGetParams, options?: RequestInit): Promise<listProfessionalsSummaryApiV1ProfessionalsSummaryGetResponse> => {
-  
-  return customFetch<listProfessionalsSummaryApiV1ProfessionalsSummaryGetResponse>(getListProfessionalsSummaryApiV1ProfessionalsSummaryGetUrl(params),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
+export const listProfessionalsSummaryApiV1ProfessionalsSummaryGet = async (
+  params?: ListProfessionalsSummaryApiV1ProfessionalsSummaryGetParams,
+  options?: RequestInit,
+): Promise<listProfessionalsSummaryApiV1ProfessionalsSummaryGetResponse> => {
+  return customFetch<listProfessionalsSummaryApiV1ProfessionalsSummaryGetResponse>(
+    getListProfessionalsSummaryApiV1ProfessionalsSummaryGetUrl(params),
+    {
+      ...options,
+      method: "GET",
+    },
+  );
+};
 
-
-
-
-
-export const getListProfessionalsSummaryApiV1ProfessionalsSummaryGetQueryKey = (params?: ListProfessionalsSummaryApiV1ProfessionalsSummaryGetParams,) => {
-    return [
-    `/api/v1/professionals/summary`, ...(params ? [params]: [])
-    ] as const;
-    }
-
-    
-export const getListProfessionalsSummaryApiV1ProfessionalsSummaryGetQueryOptions = <TData = Awaited<ReturnType<typeof listProfessionalsSummaryApiV1ProfessionalsSummaryGet>>, TError = HTTPValidationError>(params?: ListProfessionalsSummaryApiV1ProfessionalsSummaryGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listProfessionalsSummaryApiV1ProfessionalsSummaryGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getListProfessionalsSummaryApiV1ProfessionalsSummaryGetQueryKey = (
+  params?: ListProfessionalsSummaryApiV1ProfessionalsSummaryGetParams,
 ) => {
+  return [
+    `/api/v1/professionals/summary`,
+    ...(params ? [params] : []),
+  ] as const;
+};
 
-const {query: queryOptions, request: requestOptions} = options ?? {};
+export const getListProfessionalsSummaryApiV1ProfessionalsSummaryGetQueryOptions =
+  <
+    TData = Awaited<
+      ReturnType<typeof listProfessionalsSummaryApiV1ProfessionalsSummaryGet>
+    >,
+    TError = HTTPValidationError,
+  >(
+    params?: ListProfessionalsSummaryApiV1ProfessionalsSummaryGetParams,
+    options?: {
+      query?: Partial<
+        UseQueryOptions<
+          Awaited<
+            ReturnType<
+              typeof listProfessionalsSummaryApiV1ProfessionalsSummaryGet
+            >
+          >,
+          TError,
+          TData
+        >
+      >;
+      request?: SecondParameter<typeof customFetch>;
+    },
+  ) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getListProfessionalsSummaryApiV1ProfessionalsSummaryGetQueryKey(params);
+    const queryKey =
+      queryOptions?.queryKey ??
+      getListProfessionalsSummaryApiV1ProfessionalsSummaryGetQueryKey(params);
 
-  
+    const queryFn: QueryFunction<
+      Awaited<
+        ReturnType<typeof listProfessionalsSummaryApiV1ProfessionalsSummaryGet>
+      >
+    > = ({ signal }) =>
+      listProfessionalsSummaryApiV1ProfessionalsSummaryGet(params, {
+        signal,
+        ...requestOptions,
+      });
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof listProfessionalsSummaryApiV1ProfessionalsSummaryGet>>> = ({ signal }) => listProfessionalsSummaryApiV1ProfessionalsSummaryGet(params, { signal, ...requestOptions });
+    return {
+      queryKey,
+      queryFn,
+      staleTime: 30000,
+      ...queryOptions,
+    } as UseQueryOptions<
+      Awaited<
+        ReturnType<typeof listProfessionalsSummaryApiV1ProfessionalsSummaryGet>
+      >,
+      TError,
+      TData
+    > & { queryKey: DataTag<QueryKey, TData> };
+  };
 
-      
+export type ListProfessionalsSummaryApiV1ProfessionalsSummaryGetQueryResult =
+  NonNullable<
+    Awaited<
+      ReturnType<typeof listProfessionalsSummaryApiV1ProfessionalsSummaryGet>
+    >
+  >;
+export type ListProfessionalsSummaryApiV1ProfessionalsSummaryGetQueryError =
+  HTTPValidationError;
 
-      
-
-   return  { queryKey, queryFn,   staleTime: 30000,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listProfessionalsSummaryApiV1ProfessionalsSummaryGet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData> }
-}
-
-export type ListProfessionalsSummaryApiV1ProfessionalsSummaryGetQueryResult = NonNullable<Awaited<ReturnType<typeof listProfessionalsSummaryApiV1ProfessionalsSummaryGet>>>
-export type ListProfessionalsSummaryApiV1ProfessionalsSummaryGetQueryError = HTTPValidationError
-
-
-export function useListProfessionalsSummaryApiV1ProfessionalsSummaryGet<TData = Awaited<ReturnType<typeof listProfessionalsSummaryApiV1ProfessionalsSummaryGet>>, TError = HTTPValidationError>(
- params: undefined |  ListProfessionalsSummaryApiV1ProfessionalsSummaryGetParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listProfessionalsSummaryApiV1ProfessionalsSummaryGet>>, TError, TData>> & Pick<
+export function useListProfessionalsSummaryApiV1ProfessionalsSummaryGet<
+  TData = Awaited<
+    ReturnType<typeof listProfessionalsSummaryApiV1ProfessionalsSummaryGet>
+  >,
+  TError = HTTPValidationError,
+>(
+  params:
+    | undefined
+    | ListProfessionalsSummaryApiV1ProfessionalsSummaryGetParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof listProfessionalsSummaryApiV1ProfessionalsSummaryGet
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof listProfessionalsSummaryApiV1ProfessionalsSummaryGet>>,
+          Awaited<
+            ReturnType<
+              typeof listProfessionalsSummaryApiV1ProfessionalsSummaryGet
+            >
+          >,
           TError,
-          Awaited<ReturnType<typeof listProfessionalsSummaryApiV1ProfessionalsSummaryGet>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
-export function useListProfessionalsSummaryApiV1ProfessionalsSummaryGet<TData = Awaited<ReturnType<typeof listProfessionalsSummaryApiV1ProfessionalsSummaryGet>>, TError = HTTPValidationError>(
- params?: ListProfessionalsSummaryApiV1ProfessionalsSummaryGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listProfessionalsSummaryApiV1ProfessionalsSummaryGet>>, TError, TData>> & Pick<
+          Awaited<
+            ReturnType<
+              typeof listProfessionalsSummaryApiV1ProfessionalsSummaryGet
+            >
+          >
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData>;
+};
+export function useListProfessionalsSummaryApiV1ProfessionalsSummaryGet<
+  TData = Awaited<
+    ReturnType<typeof listProfessionalsSummaryApiV1ProfessionalsSummaryGet>
+  >,
+  TError = HTTPValidationError,
+>(
+  params?: ListProfessionalsSummaryApiV1ProfessionalsSummaryGetParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof listProfessionalsSummaryApiV1ProfessionalsSummaryGet
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof listProfessionalsSummaryApiV1ProfessionalsSummaryGet>>,
+          Awaited<
+            ReturnType<
+              typeof listProfessionalsSummaryApiV1ProfessionalsSummaryGet
+            >
+          >,
           TError,
-          Awaited<ReturnType<typeof listProfessionalsSummaryApiV1ProfessionalsSummaryGet>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
-export function useListProfessionalsSummaryApiV1ProfessionalsSummaryGet<TData = Awaited<ReturnType<typeof listProfessionalsSummaryApiV1ProfessionalsSummaryGet>>, TError = HTTPValidationError>(
- params?: ListProfessionalsSummaryApiV1ProfessionalsSummaryGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listProfessionalsSummaryApiV1ProfessionalsSummaryGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
+          Awaited<
+            ReturnType<
+              typeof listProfessionalsSummaryApiV1ProfessionalsSummaryGet
+            >
+          >
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
+export function useListProfessionalsSummaryApiV1ProfessionalsSummaryGet<
+  TData = Awaited<
+    ReturnType<typeof listProfessionalsSummaryApiV1ProfessionalsSummaryGet>
+  >,
+  TError = HTTPValidationError,
+>(
+  params?: ListProfessionalsSummaryApiV1ProfessionalsSummaryGetParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof listProfessionalsSummaryApiV1ProfessionalsSummaryGet
+          >
+        >,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
 /**
  * @summary List professionals (summary)
  */
 
-export function useListProfessionalsSummaryApiV1ProfessionalsSummaryGet<TData = Awaited<ReturnType<typeof listProfessionalsSummaryApiV1ProfessionalsSummaryGet>>, TError = HTTPValidationError>(
- params?: ListProfessionalsSummaryApiV1ProfessionalsSummaryGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listProfessionalsSummaryApiV1ProfessionalsSummaryGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+export function useListProfessionalsSummaryApiV1ProfessionalsSummaryGet<
+  TData = Awaited<
+    ReturnType<typeof listProfessionalsSummaryApiV1ProfessionalsSummaryGet>
+  >,
+  TError = HTTPValidationError,
+>(
+  params?: ListProfessionalsSummaryApiV1ProfessionalsSummaryGetParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof listProfessionalsSummaryApiV1ProfessionalsSummaryGet
+          >
+        >,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+  const queryOptions =
+    getListProfessionalsSummaryApiV1ProfessionalsSummaryGetQueryOptions(
+      params,
+      options,
+    );
 
-  const queryOptions = getListProfessionalsSummaryApiV1ProfessionalsSummaryGetQueryOptions(params,options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData> };
 
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
-
-
-
 
 /**
  * Get a professional by ID with all related data: qualifications, specialties, educations, documents, companies, and bank accounts.
  * @summary Get a professional
  */
 export type getProfessionalApiV1ProfessionalsProfessionalIdGetResponse200 = {
-  data: OrganizationProfessionalDetailResponse
-  status: 200
-}
+  data: OrganizationProfessionalDetailResponse;
+  status: 200;
+};
 
 export type getProfessionalApiV1ProfessionalsProfessionalIdGetResponse404 = {
-  data: ErrorResponse
-  status: 404
-}
+  data: ErrorResponse;
+  status: 404;
+};
 
 export type getProfessionalApiV1ProfessionalsProfessionalIdGetResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-    
-export type getProfessionalApiV1ProfessionalsProfessionalIdGetResponseSuccess = (getProfessionalApiV1ProfessionalsProfessionalIdGetResponse200) & {
-  headers: Headers;
-};
-export type getProfessionalApiV1ProfessionalsProfessionalIdGetResponseError = (getProfessionalApiV1ProfessionalsProfessionalIdGetResponse404 | getProfessionalApiV1ProfessionalsProfessionalIdGetResponse422) & {
-  headers: Headers;
+  data: HTTPValidationError;
+  status: 422;
 };
 
-export type getProfessionalApiV1ProfessionalsProfessionalIdGetResponse = (getProfessionalApiV1ProfessionalsProfessionalIdGetResponseSuccess | getProfessionalApiV1ProfessionalsProfessionalIdGetResponseError)
+export type getProfessionalApiV1ProfessionalsProfessionalIdGetResponseSuccess =
+  getProfessionalApiV1ProfessionalsProfessionalIdGetResponse200 & {
+    headers: Headers;
+  };
+export type getProfessionalApiV1ProfessionalsProfessionalIdGetResponseError = (
+  | getProfessionalApiV1ProfessionalsProfessionalIdGetResponse404
+  | getProfessionalApiV1ProfessionalsProfessionalIdGetResponse422
+) & {
+  headers: Headers;
+};
 
-export const getGetProfessionalApiV1ProfessionalsProfessionalIdGetUrl = (professionalId: string,) => {
+export type getProfessionalApiV1ProfessionalsProfessionalIdGetResponse =
+  | getProfessionalApiV1ProfessionalsProfessionalIdGetResponseSuccess
+  | getProfessionalApiV1ProfessionalsProfessionalIdGetResponseError;
 
-
-  
-
-  return `/api/v1/professionals/${professionalId}`
-}
-
-export const getProfessionalApiV1ProfessionalsProfessionalIdGet = async (professionalId: string, options?: RequestInit): Promise<getProfessionalApiV1ProfessionalsProfessionalIdGetResponse> => {
-  
-  return customFetch<getProfessionalApiV1ProfessionalsProfessionalIdGetResponse>(getGetProfessionalApiV1ProfessionalsProfessionalIdGetUrl(professionalId),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
-
-
-
-export const getGetProfessionalApiV1ProfessionalsProfessionalIdGetQueryKey = (professionalId?: string,) => {
-    return [
-    `/api/v1/professionals/${professionalId}`
-    ] as const;
-    }
-
-    
-export const getGetProfessionalApiV1ProfessionalsProfessionalIdGetQueryOptions = <TData = Awaited<ReturnType<typeof getProfessionalApiV1ProfessionalsProfessionalIdGet>>, TError = ErrorResponse | HTTPValidationError>(professionalId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getProfessionalApiV1ProfessionalsProfessionalIdGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getGetProfessionalApiV1ProfessionalsProfessionalIdGetUrl = (
+  professionalId: string,
 ) => {
+  return `/api/v1/professionals/${professionalId}`;
+};
 
-const {query: queryOptions, request: requestOptions} = options ?? {};
+export const getProfessionalApiV1ProfessionalsProfessionalIdGet = async (
+  professionalId: string,
+  options?: RequestInit,
+): Promise<getProfessionalApiV1ProfessionalsProfessionalIdGetResponse> => {
+  return customFetch<getProfessionalApiV1ProfessionalsProfessionalIdGetResponse>(
+    getGetProfessionalApiV1ProfessionalsProfessionalIdGetUrl(professionalId),
+    {
+      ...options,
+      method: "GET",
+    },
+  );
+};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetProfessionalApiV1ProfessionalsProfessionalIdGetQueryKey(professionalId);
+export const getGetProfessionalApiV1ProfessionalsProfessionalIdGetQueryKey = (
+  professionalId?: string,
+) => {
+  return [`/api/v1/professionals/${professionalId}`] as const;
+};
 
-  
+export const getGetProfessionalApiV1ProfessionalsProfessionalIdGetQueryOptions =
+  <
+    TData = Awaited<
+      ReturnType<typeof getProfessionalApiV1ProfessionalsProfessionalIdGet>
+    >,
+    TError = ErrorResponse | HTTPValidationError,
+  >(
+    professionalId: string,
+    options?: {
+      query?: Partial<
+        UseQueryOptions<
+          Awaited<
+            ReturnType<
+              typeof getProfessionalApiV1ProfessionalsProfessionalIdGet
+            >
+          >,
+          TError,
+          TData
+        >
+      >;
+      request?: SecondParameter<typeof customFetch>;
+    },
+  ) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getProfessionalApiV1ProfessionalsProfessionalIdGet>>> = ({ signal }) => getProfessionalApiV1ProfessionalsProfessionalIdGet(professionalId, { signal, ...requestOptions });
+    const queryKey =
+      queryOptions?.queryKey ??
+      getGetProfessionalApiV1ProfessionalsProfessionalIdGetQueryKey(
+        professionalId,
+      );
 
-      
+    const queryFn: QueryFunction<
+      Awaited<
+        ReturnType<typeof getProfessionalApiV1ProfessionalsProfessionalIdGet>
+      >
+    > = ({ signal }) =>
+      getProfessionalApiV1ProfessionalsProfessionalIdGet(professionalId, {
+        signal,
+        ...requestOptions,
+      });
 
-      
+    return {
+      queryKey,
+      queryFn,
+      enabled: !!professionalId,
+      staleTime: 30000,
+      ...queryOptions,
+    } as UseQueryOptions<
+      Awaited<
+        ReturnType<typeof getProfessionalApiV1ProfessionalsProfessionalIdGet>
+      >,
+      TError,
+      TData
+    > & { queryKey: DataTag<QueryKey, TData> };
+  };
 
-   return  { queryKey, queryFn, enabled: !!(professionalId),  staleTime: 30000,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getProfessionalApiV1ProfessionalsProfessionalIdGet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData> }
-}
+export type GetProfessionalApiV1ProfessionalsProfessionalIdGetQueryResult =
+  NonNullable<
+    Awaited<
+      ReturnType<typeof getProfessionalApiV1ProfessionalsProfessionalIdGet>
+    >
+  >;
+export type GetProfessionalApiV1ProfessionalsProfessionalIdGetQueryError =
+  | ErrorResponse
+  | HTTPValidationError;
 
-export type GetProfessionalApiV1ProfessionalsProfessionalIdGetQueryResult = NonNullable<Awaited<ReturnType<typeof getProfessionalApiV1ProfessionalsProfessionalIdGet>>>
-export type GetProfessionalApiV1ProfessionalsProfessionalIdGetQueryError = ErrorResponse | HTTPValidationError
-
-
-export function useGetProfessionalApiV1ProfessionalsProfessionalIdGet<TData = Awaited<ReturnType<typeof getProfessionalApiV1ProfessionalsProfessionalIdGet>>, TError = ErrorResponse | HTTPValidationError>(
- professionalId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getProfessionalApiV1ProfessionalsProfessionalIdGet>>, TError, TData>> & Pick<
+export function useGetProfessionalApiV1ProfessionalsProfessionalIdGet<
+  TData = Awaited<
+    ReturnType<typeof getProfessionalApiV1ProfessionalsProfessionalIdGet>
+  >,
+  TError = ErrorResponse | HTTPValidationError,
+>(
+  professionalId: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof getProfessionalApiV1ProfessionalsProfessionalIdGet>
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getProfessionalApiV1ProfessionalsProfessionalIdGet>>,
+          Awaited<
+            ReturnType<
+              typeof getProfessionalApiV1ProfessionalsProfessionalIdGet
+            >
+          >,
           TError,
-          Awaited<ReturnType<typeof getProfessionalApiV1ProfessionalsProfessionalIdGet>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
-export function useGetProfessionalApiV1ProfessionalsProfessionalIdGet<TData = Awaited<ReturnType<typeof getProfessionalApiV1ProfessionalsProfessionalIdGet>>, TError = ErrorResponse | HTTPValidationError>(
- professionalId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getProfessionalApiV1ProfessionalsProfessionalIdGet>>, TError, TData>> & Pick<
+          Awaited<
+            ReturnType<
+              typeof getProfessionalApiV1ProfessionalsProfessionalIdGet
+            >
+          >
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData>;
+};
+export function useGetProfessionalApiV1ProfessionalsProfessionalIdGet<
+  TData = Awaited<
+    ReturnType<typeof getProfessionalApiV1ProfessionalsProfessionalIdGet>
+  >,
+  TError = ErrorResponse | HTTPValidationError,
+>(
+  professionalId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof getProfessionalApiV1ProfessionalsProfessionalIdGet>
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getProfessionalApiV1ProfessionalsProfessionalIdGet>>,
+          Awaited<
+            ReturnType<
+              typeof getProfessionalApiV1ProfessionalsProfessionalIdGet
+            >
+          >,
           TError,
-          Awaited<ReturnType<typeof getProfessionalApiV1ProfessionalsProfessionalIdGet>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
-export function useGetProfessionalApiV1ProfessionalsProfessionalIdGet<TData = Awaited<ReturnType<typeof getProfessionalApiV1ProfessionalsProfessionalIdGet>>, TError = ErrorResponse | HTTPValidationError>(
- professionalId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getProfessionalApiV1ProfessionalsProfessionalIdGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
+          Awaited<
+            ReturnType<
+              typeof getProfessionalApiV1ProfessionalsProfessionalIdGet
+            >
+          >
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
+export function useGetProfessionalApiV1ProfessionalsProfessionalIdGet<
+  TData = Awaited<
+    ReturnType<typeof getProfessionalApiV1ProfessionalsProfessionalIdGet>
+  >,
+  TError = ErrorResponse | HTTPValidationError,
+>(
+  professionalId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof getProfessionalApiV1ProfessionalsProfessionalIdGet>
+        >,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
 /**
  * @summary Get a professional
  */
 
-export function useGetProfessionalApiV1ProfessionalsProfessionalIdGet<TData = Awaited<ReturnType<typeof getProfessionalApiV1ProfessionalsProfessionalIdGet>>, TError = ErrorResponse | HTTPValidationError>(
- professionalId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getProfessionalApiV1ProfessionalsProfessionalIdGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+export function useGetProfessionalApiV1ProfessionalsProfessionalIdGet<
+  TData = Awaited<
+    ReturnType<typeof getProfessionalApiV1ProfessionalsProfessionalIdGet>
+  >,
+  TError = ErrorResponse | HTTPValidationError,
+>(
+  professionalId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof getProfessionalApiV1ProfessionalsProfessionalIdGet>
+        >,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+  const queryOptions =
+    getGetProfessionalApiV1ProfessionalsProfessionalIdGetQueryOptions(
+      professionalId,
+      options,
+    );
 
-  const queryOptions = getGetProfessionalApiV1ProfessionalsProfessionalIdGetQueryOptions(professionalId,options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData> };
 
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
-
-
-
 
 /**
  * Partially update a professional. Only provided fields will be updated.
  * @summary Update a professional
  */
-export type updateProfessionalApiV1ProfessionalsProfessionalIdPatchResponse200 = {
-  data: OrganizationProfessionalResponse
-  status: 200
-}
+export type updateProfessionalApiV1ProfessionalsProfessionalIdPatchResponse200 =
+  {
+    data: OrganizationProfessionalResponse;
+    status: 200;
+  };
 
-export type updateProfessionalApiV1ProfessionalsProfessionalIdPatchResponse404 = {
-  data: ErrorResponse
-  status: 404
-}
+export type updateProfessionalApiV1ProfessionalsProfessionalIdPatchResponse404 =
+  {
+    data: ErrorResponse;
+    status: 404;
+  };
 
-export type updateProfessionalApiV1ProfessionalsProfessionalIdPatchResponse409 = {
-  data: ErrorResponse
-  status: 409
-}
+export type updateProfessionalApiV1ProfessionalsProfessionalIdPatchResponse409 =
+  {
+    data: ErrorResponse;
+    status: 409;
+  };
 
-export type updateProfessionalApiV1ProfessionalsProfessionalIdPatchResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-    
-export type updateProfessionalApiV1ProfessionalsProfessionalIdPatchResponseSuccess = (updateProfessionalApiV1ProfessionalsProfessionalIdPatchResponse200) & {
-  headers: Headers;
+export type updateProfessionalApiV1ProfessionalsProfessionalIdPatchResponse422 =
+  {
+    data: HTTPValidationError;
+    status: 422;
+  };
+
+export type updateProfessionalApiV1ProfessionalsProfessionalIdPatchResponseSuccess =
+  updateProfessionalApiV1ProfessionalsProfessionalIdPatchResponse200 & {
+    headers: Headers;
+  };
+export type updateProfessionalApiV1ProfessionalsProfessionalIdPatchResponseError =
+  (
+    | updateProfessionalApiV1ProfessionalsProfessionalIdPatchResponse404
+    | updateProfessionalApiV1ProfessionalsProfessionalIdPatchResponse409
+    | updateProfessionalApiV1ProfessionalsProfessionalIdPatchResponse422
+  ) & {
+    headers: Headers;
+  };
+
+export type updateProfessionalApiV1ProfessionalsProfessionalIdPatchResponse =
+  | updateProfessionalApiV1ProfessionalsProfessionalIdPatchResponseSuccess
+  | updateProfessionalApiV1ProfessionalsProfessionalIdPatchResponseError;
+
+export const getUpdateProfessionalApiV1ProfessionalsProfessionalIdPatchUrl = (
+  professionalId: string,
+) => {
+  return `/api/v1/professionals/${professionalId}`;
 };
-export type updateProfessionalApiV1ProfessionalsProfessionalIdPatchResponseError = (updateProfessionalApiV1ProfessionalsProfessionalIdPatchResponse404 | updateProfessionalApiV1ProfessionalsProfessionalIdPatchResponse409 | updateProfessionalApiV1ProfessionalsProfessionalIdPatchResponse422) & {
-  headers: Headers;
+
+export const updateProfessionalApiV1ProfessionalsProfessionalIdPatch = async (
+  professionalId: string,
+  organizationProfessionalUpdate: OrganizationProfessionalUpdate,
+  options?: RequestInit,
+): Promise<updateProfessionalApiV1ProfessionalsProfessionalIdPatchResponse> => {
+  return customFetch<updateProfessionalApiV1ProfessionalsProfessionalIdPatchResponse>(
+    getUpdateProfessionalApiV1ProfessionalsProfessionalIdPatchUrl(
+      professionalId,
+    ),
+    {
+      ...options,
+      method: "PATCH",
+      headers: { "Content-Type": "application/json", ...options?.headers },
+      body: JSON.stringify(organizationProfessionalUpdate),
+    },
+  );
 };
 
-export type updateProfessionalApiV1ProfessionalsProfessionalIdPatchResponse = (updateProfessionalApiV1ProfessionalsProfessionalIdPatchResponseSuccess | updateProfessionalApiV1ProfessionalsProfessionalIdPatchResponseError)
+export const getUpdateProfessionalApiV1ProfessionalsProfessionalIdPatchMutationOptions =
+  <TError = ErrorResponse | HTTPValidationError, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<
+          typeof updateProfessionalApiV1ProfessionalsProfessionalIdPatch
+        >
+      >,
+      TError,
+      { professionalId: string; data: OrganizationProfessionalUpdate },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  }): UseMutationOptions<
+    Awaited<
+      ReturnType<typeof updateProfessionalApiV1ProfessionalsProfessionalIdPatch>
+    >,
+    TError,
+    { professionalId: string; data: OrganizationProfessionalUpdate },
+    TContext
+  > => {
+    const mutationKey = [
+      "updateProfessionalApiV1ProfessionalsProfessionalIdPatch",
+    ];
+    const { mutation: mutationOptions, request: requestOptions } = options
+      ? options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+        ? options
+        : { ...options, mutation: { ...options.mutation, mutationKey } }
+      : { mutation: { mutationKey }, request: undefined };
 
-export const getUpdateProfessionalApiV1ProfessionalsProfessionalIdPatchUrl = (professionalId: string,) => {
+    const mutationFn: MutationFunction<
+      Awaited<
+        ReturnType<
+          typeof updateProfessionalApiV1ProfessionalsProfessionalIdPatch
+        >
+      >,
+      { professionalId: string; data: OrganizationProfessionalUpdate }
+    > = (props) => {
+      const { professionalId, data } = props ?? {};
 
+      return updateProfessionalApiV1ProfessionalsProfessionalIdPatch(
+        professionalId,
+        data,
+        requestOptions,
+      );
+    };
 
-  
+    return { mutationFn, ...mutationOptions };
+  };
 
-  return `/api/v1/professionals/${professionalId}`
-}
+export type UpdateProfessionalApiV1ProfessionalsProfessionalIdPatchMutationResult =
+  NonNullable<
+    Awaited<
+      ReturnType<typeof updateProfessionalApiV1ProfessionalsProfessionalIdPatch>
+    >
+  >;
+export type UpdateProfessionalApiV1ProfessionalsProfessionalIdPatchMutationBody =
+  OrganizationProfessionalUpdate;
+export type UpdateProfessionalApiV1ProfessionalsProfessionalIdPatchMutationError =
+  ErrorResponse | HTTPValidationError;
 
-export const updateProfessionalApiV1ProfessionalsProfessionalIdPatch = async (professionalId: string,
-    organizationProfessionalUpdate: OrganizationProfessionalUpdate, options?: RequestInit): Promise<updateProfessionalApiV1ProfessionalsProfessionalIdPatchResponse> => {
-  
-  return customFetch<updateProfessionalApiV1ProfessionalsProfessionalIdPatchResponse>(getUpdateProfessionalApiV1ProfessionalsProfessionalIdPatchUrl(professionalId),
-  {      
-    ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      organizationProfessionalUpdate,)
-  }
-);}
-
-
-
-
-export const getUpdateProfessionalApiV1ProfessionalsProfessionalIdPatchMutationOptions = <TError = ErrorResponse | HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateProfessionalApiV1ProfessionalsProfessionalIdPatch>>, TError,{professionalId: string;data: OrganizationProfessionalUpdate}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof updateProfessionalApiV1ProfessionalsProfessionalIdPatch>>, TError,{professionalId: string;data: OrganizationProfessionalUpdate}, TContext> => {
-
-const mutationKey = ['updateProfessionalApiV1ProfessionalsProfessionalIdPatch'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateProfessionalApiV1ProfessionalsProfessionalIdPatch>>, {professionalId: string;data: OrganizationProfessionalUpdate}> = (props) => {
-          const {professionalId,data} = props ?? {};
-
-          return  updateProfessionalApiV1ProfessionalsProfessionalIdPatch(professionalId,data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type UpdateProfessionalApiV1ProfessionalsProfessionalIdPatchMutationResult = NonNullable<Awaited<ReturnType<typeof updateProfessionalApiV1ProfessionalsProfessionalIdPatch>>>
-    export type UpdateProfessionalApiV1ProfessionalsProfessionalIdPatchMutationBody = OrganizationProfessionalUpdate
-    export type UpdateProfessionalApiV1ProfessionalsProfessionalIdPatchMutationError = ErrorResponse | HTTPValidationError
-
-    /**
+/**
  * @summary Update a professional
  */
-export const useUpdateProfessionalApiV1ProfessionalsProfessionalIdPatch = <TError = ErrorResponse | HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateProfessionalApiV1ProfessionalsProfessionalIdPatch>>, TError,{professionalId: string;data: OrganizationProfessionalUpdate}, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof updateProfessionalApiV1ProfessionalsProfessionalIdPatch>>,
-        TError,
-        {professionalId: string;data: OrganizationProfessionalUpdate},
-        TContext
-      > => {
+export const useUpdateProfessionalApiV1ProfessionalsProfessionalIdPatch = <
+  TError = ErrorResponse | HTTPValidationError,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<
+          typeof updateProfessionalApiV1ProfessionalsProfessionalIdPatch
+        >
+      >,
+      TError,
+      { professionalId: string; data: OrganizationProfessionalUpdate },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<
+    ReturnType<typeof updateProfessionalApiV1ProfessionalsProfessionalIdPatch>
+  >,
+  TError,
+  { professionalId: string; data: OrganizationProfessionalUpdate },
+  TContext
+> => {
+  const mutationOptions =
+    getUpdateProfessionalApiV1ProfessionalsProfessionalIdPatchMutationOptions(
+      options,
+    );
 
-      const mutationOptions = getUpdateProfessionalApiV1ProfessionalsProfessionalIdPatchMutationOptions(options);
-
-      return useMutation(mutationOptions, queryClient);
-    }
-    /**
+  return useMutation(mutationOptions, queryClient);
+};
+/**
  * Soft delete a professional. The professional will be marked as deleted but not removed from the database.
  * @summary Delete a professional
  */
-export type deleteProfessionalApiV1ProfessionalsProfessionalIdDeleteResponse204 = {
-  data: void
-  status: 204
-}
+export type deleteProfessionalApiV1ProfessionalsProfessionalIdDeleteResponse204 =
+  {
+    data: void;
+    status: 204;
+  };
 
-export type deleteProfessionalApiV1ProfessionalsProfessionalIdDeleteResponse404 = {
-  data: ErrorResponse
-  status: 404
-}
+export type deleteProfessionalApiV1ProfessionalsProfessionalIdDeleteResponse404 =
+  {
+    data: ErrorResponse;
+    status: 404;
+  };
 
-export type deleteProfessionalApiV1ProfessionalsProfessionalIdDeleteResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-    
-export type deleteProfessionalApiV1ProfessionalsProfessionalIdDeleteResponseSuccess = (deleteProfessionalApiV1ProfessionalsProfessionalIdDeleteResponse204) & {
-  headers: Headers;
+export type deleteProfessionalApiV1ProfessionalsProfessionalIdDeleteResponse422 =
+  {
+    data: HTTPValidationError;
+    status: 422;
+  };
+
+export type deleteProfessionalApiV1ProfessionalsProfessionalIdDeleteResponseSuccess =
+  deleteProfessionalApiV1ProfessionalsProfessionalIdDeleteResponse204 & {
+    headers: Headers;
+  };
+export type deleteProfessionalApiV1ProfessionalsProfessionalIdDeleteResponseError =
+  (
+    | deleteProfessionalApiV1ProfessionalsProfessionalIdDeleteResponse404
+    | deleteProfessionalApiV1ProfessionalsProfessionalIdDeleteResponse422
+  ) & {
+    headers: Headers;
+  };
+
+export type deleteProfessionalApiV1ProfessionalsProfessionalIdDeleteResponse =
+  | deleteProfessionalApiV1ProfessionalsProfessionalIdDeleteResponseSuccess
+  | deleteProfessionalApiV1ProfessionalsProfessionalIdDeleteResponseError;
+
+export const getDeleteProfessionalApiV1ProfessionalsProfessionalIdDeleteUrl = (
+  professionalId: string,
+) => {
+  return `/api/v1/professionals/${professionalId}`;
 };
-export type deleteProfessionalApiV1ProfessionalsProfessionalIdDeleteResponseError = (deleteProfessionalApiV1ProfessionalsProfessionalIdDeleteResponse404 | deleteProfessionalApiV1ProfessionalsProfessionalIdDeleteResponse422) & {
-  headers: Headers;
+
+export const deleteProfessionalApiV1ProfessionalsProfessionalIdDelete = async (
+  professionalId: string,
+  options?: RequestInit,
+): Promise<deleteProfessionalApiV1ProfessionalsProfessionalIdDeleteResponse> => {
+  return customFetch<deleteProfessionalApiV1ProfessionalsProfessionalIdDeleteResponse>(
+    getDeleteProfessionalApiV1ProfessionalsProfessionalIdDeleteUrl(
+      professionalId,
+    ),
+    {
+      ...options,
+      method: "DELETE",
+    },
+  );
 };
 
-export type deleteProfessionalApiV1ProfessionalsProfessionalIdDeleteResponse = (deleteProfessionalApiV1ProfessionalsProfessionalIdDeleteResponseSuccess | deleteProfessionalApiV1ProfessionalsProfessionalIdDeleteResponseError)
+export const getDeleteProfessionalApiV1ProfessionalsProfessionalIdDeleteMutationOptions =
+  <TError = ErrorResponse | HTTPValidationError, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<
+          typeof deleteProfessionalApiV1ProfessionalsProfessionalIdDelete
+        >
+      >,
+      TError,
+      { professionalId: string },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  }): UseMutationOptions<
+    Awaited<
+      ReturnType<
+        typeof deleteProfessionalApiV1ProfessionalsProfessionalIdDelete
+      >
+    >,
+    TError,
+    { professionalId: string },
+    TContext
+  > => {
+    const mutationKey = [
+      "deleteProfessionalApiV1ProfessionalsProfessionalIdDelete",
+    ];
+    const { mutation: mutationOptions, request: requestOptions } = options
+      ? options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+        ? options
+        : { ...options, mutation: { ...options.mutation, mutationKey } }
+      : { mutation: { mutationKey }, request: undefined };
 
-export const getDeleteProfessionalApiV1ProfessionalsProfessionalIdDeleteUrl = (professionalId: string,) => {
+    const mutationFn: MutationFunction<
+      Awaited<
+        ReturnType<
+          typeof deleteProfessionalApiV1ProfessionalsProfessionalIdDelete
+        >
+      >,
+      { professionalId: string }
+    > = (props) => {
+      const { professionalId } = props ?? {};
 
+      return deleteProfessionalApiV1ProfessionalsProfessionalIdDelete(
+        professionalId,
+        requestOptions,
+      );
+    };
 
-  
+    return { mutationFn, ...mutationOptions };
+  };
 
-  return `/api/v1/professionals/${professionalId}`
-}
+export type DeleteProfessionalApiV1ProfessionalsProfessionalIdDeleteMutationResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof deleteProfessionalApiV1ProfessionalsProfessionalIdDelete
+      >
+    >
+  >;
 
-export const deleteProfessionalApiV1ProfessionalsProfessionalIdDelete = async (professionalId: string, options?: RequestInit): Promise<deleteProfessionalApiV1ProfessionalsProfessionalIdDeleteResponse> => {
-  
-  return customFetch<deleteProfessionalApiV1ProfessionalsProfessionalIdDeleteResponse>(getDeleteProfessionalApiV1ProfessionalsProfessionalIdDeleteUrl(professionalId),
-  {      
-    ...options,
-    method: 'DELETE'
-    
-    
-  }
-);}
+export type DeleteProfessionalApiV1ProfessionalsProfessionalIdDeleteMutationError =
+  ErrorResponse | HTTPValidationError;
 
-
-
-
-export const getDeleteProfessionalApiV1ProfessionalsProfessionalIdDeleteMutationOptions = <TError = ErrorResponse | HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteProfessionalApiV1ProfessionalsProfessionalIdDelete>>, TError,{professionalId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof deleteProfessionalApiV1ProfessionalsProfessionalIdDelete>>, TError,{professionalId: string}, TContext> => {
-
-const mutationKey = ['deleteProfessionalApiV1ProfessionalsProfessionalIdDelete'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteProfessionalApiV1ProfessionalsProfessionalIdDelete>>, {professionalId: string}> = (props) => {
-          const {professionalId} = props ?? {};
-
-          return  deleteProfessionalApiV1ProfessionalsProfessionalIdDelete(professionalId,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type DeleteProfessionalApiV1ProfessionalsProfessionalIdDeleteMutationResult = NonNullable<Awaited<ReturnType<typeof deleteProfessionalApiV1ProfessionalsProfessionalIdDelete>>>
-    
-    export type DeleteProfessionalApiV1ProfessionalsProfessionalIdDeleteMutationError = ErrorResponse | HTTPValidationError
-
-    /**
+/**
  * @summary Delete a professional
  */
-export const useDeleteProfessionalApiV1ProfessionalsProfessionalIdDelete = <TError = ErrorResponse | HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteProfessionalApiV1ProfessionalsProfessionalIdDelete>>, TError,{professionalId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof deleteProfessionalApiV1ProfessionalsProfessionalIdDelete>>,
-        TError,
-        {professionalId: string},
-        TContext
-      > => {
+export const useDeleteProfessionalApiV1ProfessionalsProfessionalIdDelete = <
+  TError = ErrorResponse | HTTPValidationError,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<
+          typeof deleteProfessionalApiV1ProfessionalsProfessionalIdDelete
+        >
+      >,
+      TError,
+      { professionalId: string },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<
+    ReturnType<typeof deleteProfessionalApiV1ProfessionalsProfessionalIdDelete>
+  >,
+  TError,
+  { professionalId: string },
+  TContext
+> => {
+  const mutationOptions =
+    getDeleteProfessionalApiV1ProfessionalsProfessionalIdDeleteMutationOptions(
+      options,
+    );
 
-      const mutationOptions = getDeleteProfessionalApiV1ProfessionalsProfessionalIdDeleteMutationOptions(options);
-
-      return useMutation(mutationOptions, queryClient);
-    }
-    /**
+  return useMutation(mutationOptions, queryClient);
+};
+/**
  * Create a professional with one qualification and nested specialties and educations in a single transaction.
 
 This endpoint creates:
@@ -768,104 +1304,173 @@ All entities are created atomically - if any validation fails, nothing is persis
 - No duplicate specialty_ids in the request
  * @summary Create a professional with qualification
  */
-export type createProfessionalCompositeApiV1ProfessionalsCompositePostResponse201 = {
-  data: OrganizationProfessionalDetailResponse
-  status: 201
-}
+export type createProfessionalCompositeApiV1ProfessionalsCompositePostResponse201 =
+  {
+    data: OrganizationProfessionalDetailResponse;
+    status: 201;
+  };
 
-export type createProfessionalCompositeApiV1ProfessionalsCompositePostResponse404 = {
-  data: ErrorResponse
-  status: 404
-}
+export type createProfessionalCompositeApiV1ProfessionalsCompositePostResponse404 =
+  {
+    data: ErrorResponse;
+    status: 404;
+  };
 
-export type createProfessionalCompositeApiV1ProfessionalsCompositePostResponse409 = {
-  data: ErrorResponse
-  status: 409
-}
+export type createProfessionalCompositeApiV1ProfessionalsCompositePostResponse409 =
+  {
+    data: ErrorResponse;
+    status: 409;
+  };
 
-export type createProfessionalCompositeApiV1ProfessionalsCompositePostResponse422 = {
-  data: ErrorResponse
-  status: 422
-}
-    
-export type createProfessionalCompositeApiV1ProfessionalsCompositePostResponseSuccess = (createProfessionalCompositeApiV1ProfessionalsCompositePostResponse201) & {
-  headers: Headers;
-};
-export type createProfessionalCompositeApiV1ProfessionalsCompositePostResponseError = (createProfessionalCompositeApiV1ProfessionalsCompositePostResponse404 | createProfessionalCompositeApiV1ProfessionalsCompositePostResponse409 | createProfessionalCompositeApiV1ProfessionalsCompositePostResponse422) & {
-  headers: Headers;
-};
+export type createProfessionalCompositeApiV1ProfessionalsCompositePostResponse422 =
+  {
+    data: ErrorResponse;
+    status: 422;
+  };
 
-export type createProfessionalCompositeApiV1ProfessionalsCompositePostResponse = (createProfessionalCompositeApiV1ProfessionalsCompositePostResponseSuccess | createProfessionalCompositeApiV1ProfessionalsCompositePostResponseError)
+export type createProfessionalCompositeApiV1ProfessionalsCompositePostResponseSuccess =
+  createProfessionalCompositeApiV1ProfessionalsCompositePostResponse201 & {
+    headers: Headers;
+  };
+export type createProfessionalCompositeApiV1ProfessionalsCompositePostResponseError =
+  (
+    | createProfessionalCompositeApiV1ProfessionalsCompositePostResponse404
+    | createProfessionalCompositeApiV1ProfessionalsCompositePostResponse409
+    | createProfessionalCompositeApiV1ProfessionalsCompositePostResponse422
+  ) & {
+    headers: Headers;
+  };
 
-export const getCreateProfessionalCompositeApiV1ProfessionalsCompositePostUrl = () => {
+export type createProfessionalCompositeApiV1ProfessionalsCompositePostResponse =
+  | createProfessionalCompositeApiV1ProfessionalsCompositePostResponseSuccess
+  | createProfessionalCompositeApiV1ProfessionalsCompositePostResponseError;
 
+export const getCreateProfessionalCompositeApiV1ProfessionalsCompositePostUrl =
+  () => {
+    return `/api/v1/professionals/composite`;
+  };
 
-  
+export const createProfessionalCompositeApiV1ProfessionalsCompositePost =
+  async (
+    organizationProfessionalCompositeCreate: OrganizationProfessionalCompositeCreate,
+    options?: RequestInit,
+  ): Promise<createProfessionalCompositeApiV1ProfessionalsCompositePostResponse> => {
+    return customFetch<createProfessionalCompositeApiV1ProfessionalsCompositePostResponse>(
+      getCreateProfessionalCompositeApiV1ProfessionalsCompositePostUrl(),
+      {
+        ...options,
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...options?.headers },
+        body: JSON.stringify(organizationProfessionalCompositeCreate),
+      },
+    );
+  };
 
-  return `/api/v1/professionals/composite`
-}
+export const getCreateProfessionalCompositeApiV1ProfessionalsCompositePostMutationOptions =
+  <TError = ErrorResponse, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<
+          typeof createProfessionalCompositeApiV1ProfessionalsCompositePost
+        >
+      >,
+      TError,
+      { data: OrganizationProfessionalCompositeCreate },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  }): UseMutationOptions<
+    Awaited<
+      ReturnType<
+        typeof createProfessionalCompositeApiV1ProfessionalsCompositePost
+      >
+    >,
+    TError,
+    { data: OrganizationProfessionalCompositeCreate },
+    TContext
+  > => {
+    const mutationKey = [
+      "createProfessionalCompositeApiV1ProfessionalsCompositePost",
+    ];
+    const { mutation: mutationOptions, request: requestOptions } = options
+      ? options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+        ? options
+        : { ...options, mutation: { ...options.mutation, mutationKey } }
+      : { mutation: { mutationKey }, request: undefined };
 
-export const createProfessionalCompositeApiV1ProfessionalsCompositePost = async (organizationProfessionalCompositeCreate: OrganizationProfessionalCompositeCreate, options?: RequestInit): Promise<createProfessionalCompositeApiV1ProfessionalsCompositePostResponse> => {
-  
-  return customFetch<createProfessionalCompositeApiV1ProfessionalsCompositePostResponse>(getCreateProfessionalCompositeApiV1ProfessionalsCompositePostUrl(),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      organizationProfessionalCompositeCreate,)
-  }
-);}
+    const mutationFn: MutationFunction<
+      Awaited<
+        ReturnType<
+          typeof createProfessionalCompositeApiV1ProfessionalsCompositePost
+        >
+      >,
+      { data: OrganizationProfessionalCompositeCreate }
+    > = (props) => {
+      const { data } = props ?? {};
 
+      return createProfessionalCompositeApiV1ProfessionalsCompositePost(
+        data,
+        requestOptions,
+      );
+    };
 
+    return { mutationFn, ...mutationOptions };
+  };
 
+export type CreateProfessionalCompositeApiV1ProfessionalsCompositePostMutationResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof createProfessionalCompositeApiV1ProfessionalsCompositePost
+      >
+    >
+  >;
+export type CreateProfessionalCompositeApiV1ProfessionalsCompositePostMutationBody =
+  OrganizationProfessionalCompositeCreate;
+export type CreateProfessionalCompositeApiV1ProfessionalsCompositePostMutationError =
+  ErrorResponse;
 
-export const getCreateProfessionalCompositeApiV1ProfessionalsCompositePostMutationOptions = <TError = ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createProfessionalCompositeApiV1ProfessionalsCompositePost>>, TError,{data: OrganizationProfessionalCompositeCreate}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof createProfessionalCompositeApiV1ProfessionalsCompositePost>>, TError,{data: OrganizationProfessionalCompositeCreate}, TContext> => {
-
-const mutationKey = ['createProfessionalCompositeApiV1ProfessionalsCompositePost'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createProfessionalCompositeApiV1ProfessionalsCompositePost>>, {data: OrganizationProfessionalCompositeCreate}> = (props) => {
-          const {data} = props ?? {};
-
-          return  createProfessionalCompositeApiV1ProfessionalsCompositePost(data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type CreateProfessionalCompositeApiV1ProfessionalsCompositePostMutationResult = NonNullable<Awaited<ReturnType<typeof createProfessionalCompositeApiV1ProfessionalsCompositePost>>>
-    export type CreateProfessionalCompositeApiV1ProfessionalsCompositePostMutationBody = OrganizationProfessionalCompositeCreate
-    export type CreateProfessionalCompositeApiV1ProfessionalsCompositePostMutationError = ErrorResponse
-
-    /**
+/**
  * @summary Create a professional with qualification
  */
-export const useCreateProfessionalCompositeApiV1ProfessionalsCompositePost = <TError = ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createProfessionalCompositeApiV1ProfessionalsCompositePost>>, TError,{data: OrganizationProfessionalCompositeCreate}, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof createProfessionalCompositeApiV1ProfessionalsCompositePost>>,
-        TError,
-        {data: OrganizationProfessionalCompositeCreate},
-        TContext
-      > => {
+export const useCreateProfessionalCompositeApiV1ProfessionalsCompositePost = <
+  TError = ErrorResponse,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<
+          typeof createProfessionalCompositeApiV1ProfessionalsCompositePost
+        >
+      >,
+      TError,
+      { data: OrganizationProfessionalCompositeCreate },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<
+    ReturnType<
+      typeof createProfessionalCompositeApiV1ProfessionalsCompositePost
+    >
+  >,
+  TError,
+  { data: OrganizationProfessionalCompositeCreate },
+  TContext
+> => {
+  const mutationOptions =
+    getCreateProfessionalCompositeApiV1ProfessionalsCompositePostMutationOptions(
+      options,
+    );
 
-      const mutationOptions = getCreateProfessionalCompositeApiV1ProfessionalsCompositePostMutationOptions(options);
-
-      return useMutation(mutationOptions, queryClient);
-    }
-    /**
+  return useMutation(mutationOptions, queryClient);
+};
+/**
  * Partially update a professional with qualification and nested entities.
 
 **Professional fields:** PATCH semantics - only update provided fields.
@@ -886,3393 +1491,6872 @@ export const useCreateProfessionalCompositeApiV1ProfessionalsCompositePost = <TE
 - Specialty_id existence and no duplicates
  * @summary Update a professional with qualification
  */
-export type updateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatchResponse200 = {
-  data: OrganizationProfessionalDetailResponse
-  status: 200
-}
+export type updateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatchResponse200 =
+  {
+    data: OrganizationProfessionalDetailResponse;
+    status: 200;
+  };
 
-export type updateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatchResponse404 = {
-  data: ErrorResponse
-  status: 404
-}
+export type updateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatchResponse404 =
+  {
+    data: ErrorResponse;
+    status: 404;
+  };
 
-export type updateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatchResponse409 = {
-  data: ErrorResponse
-  status: 409
-}
+export type updateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatchResponse409 =
+  {
+    data: ErrorResponse;
+    status: 409;
+  };
 
-export type updateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatchResponse422 = {
-  data: ErrorResponse
-  status: 422
-}
-    
-export type updateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatchResponseSuccess = (updateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatchResponse200) & {
-  headers: Headers;
-};
-export type updateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatchResponseError = (updateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatchResponse404 | updateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatchResponse409 | updateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatchResponse422) & {
-  headers: Headers;
-};
+export type updateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatchResponse422 =
+  {
+    data: ErrorResponse;
+    status: 422;
+  };
 
-export type updateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatchResponse = (updateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatchResponseSuccess | updateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatchResponseError)
+export type updateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatchResponseSuccess =
+  updateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatchResponse200 & {
+    headers: Headers;
+  };
+export type updateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatchResponseError =
+  (
+    | updateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatchResponse404
+    | updateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatchResponse409
+    | updateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatchResponse422
+  ) & {
+    headers: Headers;
+  };
 
-export const getUpdateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatchUrl = (professionalId: string,) => {
+export type updateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatchResponse =
 
+    | updateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatchResponseSuccess
+    | updateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatchResponseError;
 
-  
+export const getUpdateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatchUrl =
+  (professionalId: string) => {
+    return `/api/v1/professionals/${professionalId}/composite`;
+  };
 
-  return `/api/v1/professionals/${professionalId}/composite`
-}
+export const updateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatch =
+  async (
+    professionalId: string,
+    organizationProfessionalCompositeUpdate: OrganizationProfessionalCompositeUpdate,
+    options?: RequestInit,
+  ): Promise<updateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatchResponse> => {
+    return customFetch<updateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatchResponse>(
+      getUpdateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatchUrl(
+        professionalId,
+      ),
+      {
+        ...options,
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", ...options?.headers },
+        body: JSON.stringify(organizationProfessionalCompositeUpdate),
+      },
+    );
+  };
 
-export const updateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatch = async (professionalId: string,
-    organizationProfessionalCompositeUpdate: OrganizationProfessionalCompositeUpdate, options?: RequestInit): Promise<updateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatchResponse> => {
-  
-  return customFetch<updateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatchResponse>(getUpdateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatchUrl(professionalId),
-  {      
-    ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      organizationProfessionalCompositeUpdate,)
-  }
-);}
+export const getUpdateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatchMutationOptions =
+  <TError = ErrorResponse, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<
+          typeof updateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatch
+        >
+      >,
+      TError,
+      { professionalId: string; data: OrganizationProfessionalCompositeUpdate },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  }): UseMutationOptions<
+    Awaited<
+      ReturnType<
+        typeof updateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatch
+      >
+    >,
+    TError,
+    { professionalId: string; data: OrganizationProfessionalCompositeUpdate },
+    TContext
+  > => {
+    const mutationKey = [
+      "updateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatch",
+    ];
+    const { mutation: mutationOptions, request: requestOptions } = options
+      ? options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+        ? options
+        : { ...options, mutation: { ...options.mutation, mutationKey } }
+      : { mutation: { mutationKey }, request: undefined };
 
+    const mutationFn: MutationFunction<
+      Awaited<
+        ReturnType<
+          typeof updateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatch
+        >
+      >,
+      { professionalId: string; data: OrganizationProfessionalCompositeUpdate }
+    > = (props) => {
+      const { professionalId, data } = props ?? {};
 
+      return updateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatch(
+        professionalId,
+        data,
+        requestOptions,
+      );
+    };
 
+    return { mutationFn, ...mutationOptions };
+  };
 
-export const getUpdateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatchMutationOptions = <TError = ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatch>>, TError,{professionalId: string;data: OrganizationProfessionalCompositeUpdate}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof updateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatch>>, TError,{professionalId: string;data: OrganizationProfessionalCompositeUpdate}, TContext> => {
+export type UpdateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatchMutationResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof updateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatch
+      >
+    >
+  >;
+export type UpdateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatchMutationBody =
+  OrganizationProfessionalCompositeUpdate;
+export type UpdateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatchMutationError =
+  ErrorResponse;
 
-const mutationKey = ['updateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatch'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatch>>, {professionalId: string;data: OrganizationProfessionalCompositeUpdate}> = (props) => {
-          const {professionalId,data} = props ?? {};
-
-          return  updateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatch(professionalId,data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type UpdateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatchMutationResult = NonNullable<Awaited<ReturnType<typeof updateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatch>>>
-    export type UpdateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatchMutationBody = OrganizationProfessionalCompositeUpdate
-    export type UpdateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatchMutationError = ErrorResponse
-
-    /**
+/**
  * @summary Update a professional with qualification
  */
-export const useUpdateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatch = <TError = ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatch>>, TError,{professionalId: string;data: OrganizationProfessionalCompositeUpdate}, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof updateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatch>>,
+export const useUpdateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatch =
+  <TError = ErrorResponse, TContext = unknown>(
+    options?: {
+      mutation?: UseMutationOptions<
+        Awaited<
+          ReturnType<
+            typeof updateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatch
+          >
+        >,
         TError,
-        {professionalId: string;data: OrganizationProfessionalCompositeUpdate},
+        {
+          professionalId: string;
+          data: OrganizationProfessionalCompositeUpdate;
+        },
         TContext
-      > => {
+      >;
+      request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+  ): UseMutationResult<
+    Awaited<
+      ReturnType<
+        typeof updateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatch
+      >
+    >,
+    TError,
+    { professionalId: string; data: OrganizationProfessionalCompositeUpdate },
+    TContext
+  > => {
+    const mutationOptions =
+      getUpdateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatchMutationOptions(
+        options,
+      );
 
-      const mutationOptions = getUpdateProfessionalCompositeApiV1ProfessionalsProfessionalIdCompositePatchMutationOptions(options);
-
-      return useMutation(mutationOptions, queryClient);
-    }
-    /**
+    return useMutation(mutationOptions, queryClient);
+  };
+/**
  * Create a link between a professional and a company (PJ relationship).
  * @summary Link a company to a professional
  */
-export type createCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPostResponse201 = {
-  data: ProfessionalCompanyResponse
-  status: 201
-}
+export type createCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPostResponse201 =
+  {
+    data: ProfessionalCompanyResponse;
+    status: 201;
+  };
 
-export type createCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPostResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-    
-export type createCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPostResponseSuccess = (createCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPostResponse201) & {
-  headers: Headers;
-};
-export type createCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPostResponseError = (createCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPostResponse422) & {
-  headers: Headers;
-};
+export type createCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPostResponse422 =
+  {
+    data: HTTPValidationError;
+    status: 422;
+  };
 
-export type createCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPostResponse = (createCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPostResponseSuccess | createCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPostResponseError)
+export type createCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPostResponseSuccess =
+  createCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPostResponse201 & {
+    headers: Headers;
+  };
+export type createCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPostResponseError =
+  createCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPostResponse422 & {
+    headers: Headers;
+  };
 
-export const getCreateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPostUrl = (professionalId: string,) => {
+export type createCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPostResponse =
 
+    | createCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPostResponseSuccess
+    | createCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPostResponseError;
 
-  
+export const getCreateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPostUrl =
+  (professionalId: string) => {
+    return `/api/v1/professionals/${professionalId}/companies/`;
+  };
 
-  return `/api/v1/professionals/${professionalId}/companies/`
-}
+export const createCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPost =
+  async (
+    professionalId: string,
+    professionalCompanyCreate: ProfessionalCompanyCreate,
+    options?: RequestInit,
+  ): Promise<createCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPostResponse> => {
+    return customFetch<createCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPostResponse>(
+      getCreateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPostUrl(
+        professionalId,
+      ),
+      {
+        ...options,
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...options?.headers },
+        body: JSON.stringify(professionalCompanyCreate),
+      },
+    );
+  };
 
-export const createCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPost = async (professionalId: string,
-    professionalCompanyCreate: ProfessionalCompanyCreate, options?: RequestInit): Promise<createCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPostResponse> => {
-  
-  return customFetch<createCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPostResponse>(getCreateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPostUrl(professionalId),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      professionalCompanyCreate,)
-  }
-);}
+export const getCreateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPostMutationOptions =
+  <TError = HTTPValidationError, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<
+          typeof createCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPost
+        >
+      >,
+      TError,
+      { professionalId: string; data: ProfessionalCompanyCreate },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  }): UseMutationOptions<
+    Awaited<
+      ReturnType<
+        typeof createCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPost
+      >
+    >,
+    TError,
+    { professionalId: string; data: ProfessionalCompanyCreate },
+    TContext
+  > => {
+    const mutationKey = [
+      "createCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPost",
+    ];
+    const { mutation: mutationOptions, request: requestOptions } = options
+      ? options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+        ? options
+        : { ...options, mutation: { ...options.mutation, mutationKey } }
+      : { mutation: { mutationKey }, request: undefined };
 
+    const mutationFn: MutationFunction<
+      Awaited<
+        ReturnType<
+          typeof createCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPost
+        >
+      >,
+      { professionalId: string; data: ProfessionalCompanyCreate }
+    > = (props) => {
+      const { professionalId, data } = props ?? {};
 
+      return createCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPost(
+        professionalId,
+        data,
+        requestOptions,
+      );
+    };
 
+    return { mutationFn, ...mutationOptions };
+  };
 
-export const getCreateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPostMutationOptions = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPost>>, TError,{professionalId: string;data: ProfessionalCompanyCreate}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof createCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPost>>, TError,{professionalId: string;data: ProfessionalCompanyCreate}, TContext> => {
+export type CreateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPostMutationResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof createCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPost
+      >
+    >
+  >;
+export type CreateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPostMutationBody =
+  ProfessionalCompanyCreate;
+export type CreateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPostMutationError =
+  HTTPValidationError;
 
-const mutationKey = ['createCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPost'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPost>>, {professionalId: string;data: ProfessionalCompanyCreate}> = (props) => {
-          const {professionalId,data} = props ?? {};
-
-          return  createCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPost(professionalId,data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type CreateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPostMutationResult = NonNullable<Awaited<ReturnType<typeof createCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPost>>>
-    export type CreateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPostMutationBody = ProfessionalCompanyCreate
-    export type CreateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPostMutationError = HTTPValidationError
-
-    /**
+/**
  * @summary Link a company to a professional
  */
-export const useCreateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPost = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPost>>, TError,{professionalId: string;data: ProfessionalCompanyCreate}, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof createCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPost>>,
+export const useCreateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPost =
+  <TError = HTTPValidationError, TContext = unknown>(
+    options?: {
+      mutation?: UseMutationOptions<
+        Awaited<
+          ReturnType<
+            typeof createCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPost
+          >
+        >,
         TError,
-        {professionalId: string;data: ProfessionalCompanyCreate},
+        { professionalId: string; data: ProfessionalCompanyCreate },
         TContext
-      > => {
+      >;
+      request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+  ): UseMutationResult<
+    Awaited<
+      ReturnType<
+        typeof createCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPost
+      >
+    >,
+    TError,
+    { professionalId: string; data: ProfessionalCompanyCreate },
+    TContext
+  > => {
+    const mutationOptions =
+      getCreateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPostMutationOptions(
+        options,
+      );
 
-      const mutationOptions = getCreateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesPostMutationOptions(options);
-
-      return useMutation(mutationOptions, queryClient);
-    }
-    /**
+    return useMutation(mutationOptions, queryClient);
+  };
+/**
  * List all company links for a professional with pagination, filtering and sorting.
  * @summary List professional companies
  */
-export type listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetResponse200 = {
-  data: PaginatedResponseProfessionalCompanyResponse
-  status: 200
-}
+export type listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetResponse200 =
+  {
+    data: PaginatedResponseProfessionalCompanyResponse;
+    status: 200;
+  };
 
-export type listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-    
-export type listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetResponseSuccess = (listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetResponse200) & {
-  headers: Headers;
-};
-export type listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetResponseError = (listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetResponse422) & {
-  headers: Headers;
-};
+export type listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetResponse422 =
+  {
+    data: HTTPValidationError;
+    status: 422;
+  };
 
-export type listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetResponse = (listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetResponseSuccess | listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetResponseError)
+export type listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetResponseSuccess =
+  listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetResponse200 & {
+    headers: Headers;
+  };
+export type listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetResponseError =
+  listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetResponse422 & {
+    headers: Headers;
+  };
 
-export const getListCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetUrl = (professionalId: string,
-    params?: ListCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetParams,) => {
-  const normalizedParams = new URLSearchParams();
+export type listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetResponse =
 
-  Object.entries(params || {}).forEach(([key, value]) => {
-    
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString())
-    }
-  });
+    | listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetResponseSuccess
+    | listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetResponseError;
 
-  const stringifiedParams = normalizedParams.toString();
+export const getListCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetUrl =
+  (
+    professionalId: string,
+    params?: ListCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetParams,
+  ) => {
+    const normalizedParams = new URLSearchParams();
 
-  return stringifiedParams.length > 0 ? `/api/v1/professionals/${professionalId}/companies/?${stringifiedParams}` : `/api/v1/professionals/${professionalId}/companies/`
-}
+    Object.entries(params || {}).forEach(([key, value]) => {
+      if (value !== undefined) {
+        normalizedParams.append(
+          key,
+          value === null ? "null" : value.toString(),
+        );
+      }
+    });
 
-export const listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGet = async (professionalId: string,
-    params?: ListCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetParams, options?: RequestInit): Promise<listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetResponse> => {
-  
-  return customFetch<listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetResponse>(getListCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetUrl(professionalId,params),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
+    const stringifiedParams = normalizedParams.toString();
 
+    return stringifiedParams.length > 0
+      ? `/api/v1/professionals/${professionalId}/companies/?${stringifiedParams}`
+      : `/api/v1/professionals/${professionalId}/companies/`;
+  };
 
+export const listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGet =
+  async (
+    professionalId: string,
+    params?: ListCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetParams,
+    options?: RequestInit,
+  ): Promise<listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetResponse> => {
+    return customFetch<listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetResponse>(
+      getListCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetUrl(
+        professionalId,
+        params,
+      ),
+      {
+        ...options,
+        method: "GET",
+      },
+    );
+  };
 
-
-
-export const getListCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetQueryKey = (professionalId?: string,
-    params?: ListCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetParams,) => {
+export const getListCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetQueryKey =
+  (
+    professionalId?: string,
+    params?: ListCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetParams,
+  ) => {
     return [
-    `/api/v1/professionals/${professionalId}/companies/`, ...(params ? [params]: [])
+      `/api/v1/professionals/${professionalId}/companies/`,
+      ...(params ? [params] : []),
     ] as const;
-    }
+  };
 
-    
-export const getListCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetQueryOptions = <TData = Awaited<ReturnType<typeof listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGet>>, TError = HTTPValidationError>(professionalId: string,
-    params?: ListCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
-) => {
+export const getListCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetQueryOptions =
+  <
+    TData = Awaited<
+      ReturnType<
+        typeof listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGet
+      >
+    >,
+    TError = HTTPValidationError,
+  >(
+    professionalId: string,
+    params?: ListCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetParams,
+    options?: {
+      query?: Partial<
+        UseQueryOptions<
+          Awaited<
+            ReturnType<
+              typeof listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGet
+            >
+          >,
+          TError,
+          TData
+        >
+      >;
+      request?: SecondParameter<typeof customFetch>;
+    },
+  ) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
 
-const {query: queryOptions, request: requestOptions} = options ?? {};
+    const queryKey =
+      queryOptions?.queryKey ??
+      getListCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetQueryKey(
+        professionalId,
+        params,
+      );
 
-  const queryKey =  queryOptions?.queryKey ?? getListCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetQueryKey(professionalId,params);
+    const queryFn: QueryFunction<
+      Awaited<
+        ReturnType<
+          typeof listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGet
+        >
+      >
+    > = ({ signal }) =>
+      listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGet(
+        professionalId,
+        params,
+        { signal, ...requestOptions },
+      );
 
-  
+    return {
+      queryKey,
+      queryFn,
+      enabled: !!professionalId,
+      staleTime: 30000,
+      ...queryOptions,
+    } as UseQueryOptions<
+      Awaited<
+        ReturnType<
+          typeof listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGet
+        >
+      >,
+      TError,
+      TData
+    > & { queryKey: DataTag<QueryKey, TData> };
+  };
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGet>>> = ({ signal }) => listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGet(professionalId,params, { signal, ...requestOptions });
+export type ListCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetQueryResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGet
+      >
+    >
+  >;
+export type ListCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetQueryError =
+  HTTPValidationError;
 
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(professionalId),  staleTime: 30000,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData> }
-}
-
-export type ListCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetQueryResult = NonNullable<Awaited<ReturnType<typeof listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGet>>>
-export type ListCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetQueryError = HTTPValidationError
-
-
-export function useListCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGet<TData = Awaited<ReturnType<typeof listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGet>>, TError = HTTPValidationError>(
- professionalId: string,
-    params: undefined |  ListCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGet>>, TError, TData>> & Pick<
+export function useListCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGet<
+  TData = Awaited<
+    ReturnType<
+      typeof listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  professionalId: string,
+  params:
+    | undefined
+    | ListCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGet
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGet>>,
+          Awaited<
+            ReturnType<
+              typeof listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGet
+            >
+          >,
           TError,
-          Awaited<ReturnType<typeof listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGet>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
-export function useListCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGet<TData = Awaited<ReturnType<typeof listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGet>>, TError = HTTPValidationError>(
- professionalId: string,
-    params?: ListCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGet>>, TError, TData>> & Pick<
+          Awaited<
+            ReturnType<
+              typeof listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGet
+            >
+          >
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData>;
+};
+export function useListCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGet<
+  TData = Awaited<
+    ReturnType<
+      typeof listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  professionalId: string,
+  params?: ListCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGet
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGet>>,
+          Awaited<
+            ReturnType<
+              typeof listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGet
+            >
+          >,
           TError,
-          Awaited<ReturnType<typeof listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGet>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
-export function useListCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGet<TData = Awaited<ReturnType<typeof listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGet>>, TError = HTTPValidationError>(
- professionalId: string,
-    params?: ListCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
+          Awaited<
+            ReturnType<
+              typeof listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGet
+            >
+          >
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
+export function useListCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGet<
+  TData = Awaited<
+    ReturnType<
+      typeof listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  professionalId: string,
+  params?: ListCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGet
+          >
+        >,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
 /**
  * @summary List professional companies
  */
 
-export function useListCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGet<TData = Awaited<ReturnType<typeof listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGet>>, TError = HTTPValidationError>(
- professionalId: string,
-    params?: ListCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+export function useListCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGet<
+  TData = Awaited<
+    ReturnType<
+      typeof listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  professionalId: string,
+  params?: ListCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof listCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGet
+          >
+        >,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+  const queryOptions =
+    getListCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetQueryOptions(
+      professionalId,
+      params,
+      options,
+    );
 
-  const queryOptions = getListCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetQueryOptions(professionalId,params,options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData> };
 
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
-
-
-
 
 /**
  * Get a specific company link by ID.
  * @summary Get a professional company link
  */
-export type getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGetResponse200 = {
-  data: ProfessionalCompanyResponse
-  status: 200
-}
+export type getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGetResponse200 =
+  {
+    data: ProfessionalCompanyResponse;
+    status: 200;
+  };
 
-export type getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGetResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-    
-export type getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGetResponseSuccess = (getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGetResponse200) & {
-  headers: Headers;
-};
-export type getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGetResponseError = (getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGetResponse422) & {
-  headers: Headers;
-};
+export type getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGetResponse422 =
+  {
+    data: HTTPValidationError;
+    status: 422;
+  };
 
-export type getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGetResponse = (getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGetResponseSuccess | getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGetResponseError)
+export type getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGetResponseSuccess =
+  getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGetResponse200 & {
+    headers: Headers;
+  };
+export type getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGetResponseError =
+  getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGetResponse422 & {
+    headers: Headers;
+  };
 
-export const getGetCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGetUrl = (professionalId: string,
-    companyLinkId: string,) => {
+export type getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGetResponse =
 
+    | getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGetResponseSuccess
+    | getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGetResponseError;
 
-  
+export const getGetCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGetUrl =
+  (professionalId: string, companyLinkId: string) => {
+    return `/api/v1/professionals/${professionalId}/companies/${companyLinkId}`;
+  };
 
-  return `/api/v1/professionals/${professionalId}/companies/${companyLinkId}`
-}
+export const getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGet =
+  async (
+    professionalId: string,
+    companyLinkId: string,
+    options?: RequestInit,
+  ): Promise<getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGetResponse> => {
+    return customFetch<getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGetResponse>(
+      getGetCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGetUrl(
+        professionalId,
+        companyLinkId,
+      ),
+      {
+        ...options,
+        method: "GET",
+      },
+    );
+  };
 
-export const getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGet = async (professionalId: string,
-    companyLinkId: string, options?: RequestInit): Promise<getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGetResponse> => {
-  
-  return customFetch<getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGetResponse>(getGetCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGetUrl(professionalId,companyLinkId),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
-
-
-
-export const getGetCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGetQueryKey = (professionalId?: string,
-    companyLinkId?: string,) => {
+export const getGetCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGetQueryKey =
+  (professionalId?: string, companyLinkId?: string) => {
     return [
-    `/api/v1/professionals/${professionalId}/companies/${companyLinkId}`
+      `/api/v1/professionals/${professionalId}/companies/${companyLinkId}`,
     ] as const;
-    }
+  };
 
-    
-export const getGetCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGetQueryOptions = <TData = Awaited<ReturnType<typeof getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGet>>, TError = HTTPValidationError>(professionalId: string,
-    companyLinkId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
-) => {
+export const getGetCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGetQueryOptions =
+  <
+    TData = Awaited<
+      ReturnType<
+        typeof getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGet
+      >
+    >,
+    TError = HTTPValidationError,
+  >(
+    professionalId: string,
+    companyLinkId: string,
+    options?: {
+      query?: Partial<
+        UseQueryOptions<
+          Awaited<
+            ReturnType<
+              typeof getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGet
+            >
+          >,
+          TError,
+          TData
+        >
+      >;
+      request?: SecondParameter<typeof customFetch>;
+    },
+  ) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
 
-const {query: queryOptions, request: requestOptions} = options ?? {};
+    const queryKey =
+      queryOptions?.queryKey ??
+      getGetCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGetQueryKey(
+        professionalId,
+        companyLinkId,
+      );
 
-  const queryKey =  queryOptions?.queryKey ?? getGetCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGetQueryKey(professionalId,companyLinkId);
+    const queryFn: QueryFunction<
+      Awaited<
+        ReturnType<
+          typeof getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGet
+        >
+      >
+    > = ({ signal }) =>
+      getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGet(
+        professionalId,
+        companyLinkId,
+        { signal, ...requestOptions },
+      );
 
-  
+    return {
+      queryKey,
+      queryFn,
+      enabled: !!(professionalId && companyLinkId),
+      staleTime: 30000,
+      ...queryOptions,
+    } as UseQueryOptions<
+      Awaited<
+        ReturnType<
+          typeof getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGet
+        >
+      >,
+      TError,
+      TData
+    > & { queryKey: DataTag<QueryKey, TData> };
+  };
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGet>>> = ({ signal }) => getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGet(professionalId,companyLinkId, { signal, ...requestOptions });
+export type GetCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGetQueryResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGet
+      >
+    >
+  >;
+export type GetCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGetQueryError =
+  HTTPValidationError;
 
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(professionalId && companyLinkId),  staleTime: 30000,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData> }
-}
-
-export type GetCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGetQueryResult = NonNullable<Awaited<ReturnType<typeof getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGet>>>
-export type GetCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGetQueryError = HTTPValidationError
-
-
-export function useGetCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGet<TData = Awaited<ReturnType<typeof getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGet>>, TError = HTTPValidationError>(
- professionalId: string,
-    companyLinkId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGet>>, TError, TData>> & Pick<
+export function useGetCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  professionalId: string,
+  companyLinkId: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGet
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGet>>,
+          Awaited<
+            ReturnType<
+              typeof getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGet
+            >
+          >,
           TError,
-          Awaited<ReturnType<typeof getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGet>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
-export function useGetCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGet<TData = Awaited<ReturnType<typeof getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGet>>, TError = HTTPValidationError>(
- professionalId: string,
-    companyLinkId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGet>>, TError, TData>> & Pick<
+          Awaited<
+            ReturnType<
+              typeof getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGet
+            >
+          >
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData>;
+};
+export function useGetCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  professionalId: string,
+  companyLinkId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGet
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGet>>,
+          Awaited<
+            ReturnType<
+              typeof getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGet
+            >
+          >,
           TError,
-          Awaited<ReturnType<typeof getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGet>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
-export function useGetCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGet<TData = Awaited<ReturnType<typeof getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGet>>, TError = HTTPValidationError>(
- professionalId: string,
-    companyLinkId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
+          Awaited<
+            ReturnType<
+              typeof getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGet
+            >
+          >
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
+export function useGetCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  professionalId: string,
+  companyLinkId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGet
+          >
+        >,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
 /**
  * @summary Get a professional company link
  */
 
-export function useGetCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGet<TData = Awaited<ReturnType<typeof getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGet>>, TError = HTTPValidationError>(
- professionalId: string,
-    companyLinkId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+export function useGetCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  professionalId: string,
+  companyLinkId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGet
+          >
+        >,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+  const queryOptions =
+    getGetCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGetQueryOptions(
+      professionalId,
+      companyLinkId,
+      options,
+    );
 
-  const queryOptions = getGetCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdGetQueryOptions(professionalId,companyLinkId,options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData> };
 
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
-
-
-
 
 /**
  * Partially update a company link (e.g., update left_at date).
  * @summary Update a professional company link
  */
-export type updateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatchResponse200 = {
-  data: ProfessionalCompanyResponse
-  status: 200
-}
+export type updateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatchResponse200 =
+  {
+    data: ProfessionalCompanyResponse;
+    status: 200;
+  };
 
-export type updateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatchResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-    
-export type updateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatchResponseSuccess = (updateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatchResponse200) & {
-  headers: Headers;
-};
-export type updateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatchResponseError = (updateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatchResponse422) & {
-  headers: Headers;
-};
+export type updateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatchResponse422 =
+  {
+    data: HTTPValidationError;
+    status: 422;
+  };
 
-export type updateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatchResponse = (updateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatchResponseSuccess | updateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatchResponseError)
+export type updateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatchResponseSuccess =
+  updateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatchResponse200 & {
+    headers: Headers;
+  };
+export type updateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatchResponseError =
+  updateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatchResponse422 & {
+    headers: Headers;
+  };
 
-export const getUpdateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatchUrl = (professionalId: string,
-    companyLinkId: string,) => {
+export type updateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatchResponse =
 
+    | updateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatchResponseSuccess
+    | updateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatchResponseError;
 
-  
+export const getUpdateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatchUrl =
+  (professionalId: string, companyLinkId: string) => {
+    return `/api/v1/professionals/${professionalId}/companies/${companyLinkId}`;
+  };
 
-  return `/api/v1/professionals/${professionalId}/companies/${companyLinkId}`
-}
-
-export const updateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatch = async (professionalId: string,
+export const updateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatch =
+  async (
+    professionalId: string,
     companyLinkId: string,
-    professionalCompanyUpdate: ProfessionalCompanyUpdate, options?: RequestInit): Promise<updateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatchResponse> => {
-  
-  return customFetch<updateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatchResponse>(getUpdateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatchUrl(professionalId,companyLinkId),
-  {      
-    ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      professionalCompanyUpdate,)
-  }
-);}
+    professionalCompanyUpdate: ProfessionalCompanyUpdate,
+    options?: RequestInit,
+  ): Promise<updateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatchResponse> => {
+    return customFetch<updateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatchResponse>(
+      getUpdateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatchUrl(
+        professionalId,
+        companyLinkId,
+      ),
+      {
+        ...options,
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", ...options?.headers },
+        body: JSON.stringify(professionalCompanyUpdate),
+      },
+    );
+  };
 
+export const getUpdateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatchMutationOptions =
+  <TError = HTTPValidationError, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<
+          typeof updateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatch
+        >
+      >,
+      TError,
+      {
+        professionalId: string;
+        companyLinkId: string;
+        data: ProfessionalCompanyUpdate;
+      },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  }): UseMutationOptions<
+    Awaited<
+      ReturnType<
+        typeof updateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatch
+      >
+    >,
+    TError,
+    {
+      professionalId: string;
+      companyLinkId: string;
+      data: ProfessionalCompanyUpdate;
+    },
+    TContext
+  > => {
+    const mutationKey = [
+      "updateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatch",
+    ];
+    const { mutation: mutationOptions, request: requestOptions } = options
+      ? options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+        ? options
+        : { ...options, mutation: { ...options.mutation, mutationKey } }
+      : { mutation: { mutationKey }, request: undefined };
 
+    const mutationFn: MutationFunction<
+      Awaited<
+        ReturnType<
+          typeof updateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatch
+        >
+      >,
+      {
+        professionalId: string;
+        companyLinkId: string;
+        data: ProfessionalCompanyUpdate;
+      }
+    > = (props) => {
+      const { professionalId, companyLinkId, data } = props ?? {};
 
+      return updateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatch(
+        professionalId,
+        companyLinkId,
+        data,
+        requestOptions,
+      );
+    };
 
-export const getUpdateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatchMutationOptions = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatch>>, TError,{professionalId: string;companyLinkId: string;data: ProfessionalCompanyUpdate}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof updateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatch>>, TError,{professionalId: string;companyLinkId: string;data: ProfessionalCompanyUpdate}, TContext> => {
+    return { mutationFn, ...mutationOptions };
+  };
 
-const mutationKey = ['updateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatch'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+export type UpdateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatchMutationResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof updateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatch
+      >
+    >
+  >;
+export type UpdateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatchMutationBody =
+  ProfessionalCompanyUpdate;
+export type UpdateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatchMutationError =
+  HTTPValidationError;
 
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatch>>, {professionalId: string;companyLinkId: string;data: ProfessionalCompanyUpdate}> = (props) => {
-          const {professionalId,companyLinkId,data} = props ?? {};
-
-          return  updateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatch(professionalId,companyLinkId,data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type UpdateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatchMutationResult = NonNullable<Awaited<ReturnType<typeof updateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatch>>>
-    export type UpdateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatchMutationBody = ProfessionalCompanyUpdate
-    export type UpdateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatchMutationError = HTTPValidationError
-
-    /**
+/**
  * @summary Update a professional company link
  */
-export const useUpdateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatch = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatch>>, TError,{professionalId: string;companyLinkId: string;data: ProfessionalCompanyUpdate}, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof updateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatch>>,
+export const useUpdateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatch =
+  <TError = HTTPValidationError, TContext = unknown>(
+    options?: {
+      mutation?: UseMutationOptions<
+        Awaited<
+          ReturnType<
+            typeof updateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatch
+          >
+        >,
         TError,
-        {professionalId: string;companyLinkId: string;data: ProfessionalCompanyUpdate},
+        {
+          professionalId: string;
+          companyLinkId: string;
+          data: ProfessionalCompanyUpdate;
+        },
         TContext
-      > => {
+      >;
+      request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+  ): UseMutationResult<
+    Awaited<
+      ReturnType<
+        typeof updateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatch
+      >
+    >,
+    TError,
+    {
+      professionalId: string;
+      companyLinkId: string;
+      data: ProfessionalCompanyUpdate;
+    },
+    TContext
+  > => {
+    const mutationOptions =
+      getUpdateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatchMutationOptions(
+        options,
+      );
 
-      const mutationOptions = getUpdateCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdPatchMutationOptions(options);
-
-      return useMutation(mutationOptions, queryClient);
-    }
-    /**
+    return useMutation(mutationOptions, queryClient);
+  };
+/**
  * Soft delete a company link.
  * @summary Remove a company link from a professional
  */
-export type deleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDeleteResponse204 = {
-  data: void
-  status: 204
-}
+export type deleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDeleteResponse204 =
+  {
+    data: void;
+    status: 204;
+  };
 
-export type deleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDeleteResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-    
-export type deleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDeleteResponseSuccess = (deleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDeleteResponse204) & {
-  headers: Headers;
-};
-export type deleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDeleteResponseError = (deleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDeleteResponse422) & {
-  headers: Headers;
-};
+export type deleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDeleteResponse422 =
+  {
+    data: HTTPValidationError;
+    status: 422;
+  };
 
-export type deleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDeleteResponse = (deleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDeleteResponseSuccess | deleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDeleteResponseError)
+export type deleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDeleteResponseSuccess =
+  deleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDeleteResponse204 & {
+    headers: Headers;
+  };
+export type deleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDeleteResponseError =
+  deleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDeleteResponse422 & {
+    headers: Headers;
+  };
 
-export const getDeleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDeleteUrl = (professionalId: string,
-    companyLinkId: string,) => {
+export type deleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDeleteResponse =
 
+    | deleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDeleteResponseSuccess
+    | deleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDeleteResponseError;
 
-  
+export const getDeleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDeleteUrl =
+  (professionalId: string, companyLinkId: string) => {
+    return `/api/v1/professionals/${professionalId}/companies/${companyLinkId}`;
+  };
 
-  return `/api/v1/professionals/${professionalId}/companies/${companyLinkId}`
-}
+export const deleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDelete =
+  async (
+    professionalId: string,
+    companyLinkId: string,
+    options?: RequestInit,
+  ): Promise<deleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDeleteResponse> => {
+    return customFetch<deleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDeleteResponse>(
+      getDeleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDeleteUrl(
+        professionalId,
+        companyLinkId,
+      ),
+      {
+        ...options,
+        method: "DELETE",
+      },
+    );
+  };
 
-export const deleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDelete = async (professionalId: string,
-    companyLinkId: string, options?: RequestInit): Promise<deleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDeleteResponse> => {
-  
-  return customFetch<deleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDeleteResponse>(getDeleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDeleteUrl(professionalId,companyLinkId),
-  {      
-    ...options,
-    method: 'DELETE'
-    
-    
-  }
-);}
+export const getDeleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDeleteMutationOptions =
+  <TError = HTTPValidationError, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<
+          typeof deleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDelete
+        >
+      >,
+      TError,
+      { professionalId: string; companyLinkId: string },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  }): UseMutationOptions<
+    Awaited<
+      ReturnType<
+        typeof deleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDelete
+      >
+    >,
+    TError,
+    { professionalId: string; companyLinkId: string },
+    TContext
+  > => {
+    const mutationKey = [
+      "deleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDelete",
+    ];
+    const { mutation: mutationOptions, request: requestOptions } = options
+      ? options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+        ? options
+        : { ...options, mutation: { ...options.mutation, mutationKey } }
+      : { mutation: { mutationKey }, request: undefined };
 
+    const mutationFn: MutationFunction<
+      Awaited<
+        ReturnType<
+          typeof deleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDelete
+        >
+      >,
+      { professionalId: string; companyLinkId: string }
+    > = (props) => {
+      const { professionalId, companyLinkId } = props ?? {};
 
+      return deleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDelete(
+        professionalId,
+        companyLinkId,
+        requestOptions,
+      );
+    };
 
+    return { mutationFn, ...mutationOptions };
+  };
 
-export const getDeleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDeleteMutationOptions = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDelete>>, TError,{professionalId: string;companyLinkId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof deleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDelete>>, TError,{professionalId: string;companyLinkId: string}, TContext> => {
+export type DeleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDeleteMutationResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof deleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDelete
+      >
+    >
+  >;
 
-const mutationKey = ['deleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDelete'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+export type DeleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDeleteMutationError =
+  HTTPValidationError;
 
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDelete>>, {professionalId: string;companyLinkId: string}> = (props) => {
-          const {professionalId,companyLinkId} = props ?? {};
-
-          return  deleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDelete(professionalId,companyLinkId,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type DeleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDeleteMutationResult = NonNullable<Awaited<ReturnType<typeof deleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDelete>>>
-    
-    export type DeleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDeleteMutationError = HTTPValidationError
-
-    /**
+/**
  * @summary Remove a company link from a professional
  */
-export const useDeleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDelete = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDelete>>, TError,{professionalId: string;companyLinkId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof deleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDelete>>,
+export const useDeleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDelete =
+  <TError = HTTPValidationError, TContext = unknown>(
+    options?: {
+      mutation?: UseMutationOptions<
+        Awaited<
+          ReturnType<
+            typeof deleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDelete
+          >
+        >,
         TError,
-        {professionalId: string;companyLinkId: string},
+        { professionalId: string; companyLinkId: string },
         TContext
-      > => {
+      >;
+      request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+  ): UseMutationResult<
+    Awaited<
+      ReturnType<
+        typeof deleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDelete
+      >
+    >,
+    TError,
+    { professionalId: string; companyLinkId: string },
+    TContext
+  > => {
+    const mutationOptions =
+      getDeleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDeleteMutationOptions(
+        options,
+      );
 
-      const mutationOptions = getDeleteCompanyLinkApiV1ProfessionalsProfessionalIdCompaniesCompanyLinkIdDeleteMutationOptions(options);
-
-      return useMutation(mutationOptions, queryClient);
-    }
-    /**
+    return useMutation(mutationOptions, queryClient);
+  };
+/**
  * Create a new document for a professional.
  * @summary Add a document to a professional
  */
-export type createDocumentApiV1ProfessionalsProfessionalIdDocumentsPostResponse201 = {
-  data: ProfessionalDocumentResponse
-  status: 201
-}
+export type createDocumentApiV1ProfessionalsProfessionalIdDocumentsPostResponse201 =
+  {
+    data: ProfessionalDocumentResponse;
+    status: 201;
+  };
 
-export type createDocumentApiV1ProfessionalsProfessionalIdDocumentsPostResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-    
-export type createDocumentApiV1ProfessionalsProfessionalIdDocumentsPostResponseSuccess = (createDocumentApiV1ProfessionalsProfessionalIdDocumentsPostResponse201) & {
-  headers: Headers;
-};
-export type createDocumentApiV1ProfessionalsProfessionalIdDocumentsPostResponseError = (createDocumentApiV1ProfessionalsProfessionalIdDocumentsPostResponse422) & {
-  headers: Headers;
-};
+export type createDocumentApiV1ProfessionalsProfessionalIdDocumentsPostResponse422 =
+  {
+    data: HTTPValidationError;
+    status: 422;
+  };
 
-export type createDocumentApiV1ProfessionalsProfessionalIdDocumentsPostResponse = (createDocumentApiV1ProfessionalsProfessionalIdDocumentsPostResponseSuccess | createDocumentApiV1ProfessionalsProfessionalIdDocumentsPostResponseError)
+export type createDocumentApiV1ProfessionalsProfessionalIdDocumentsPostResponseSuccess =
+  createDocumentApiV1ProfessionalsProfessionalIdDocumentsPostResponse201 & {
+    headers: Headers;
+  };
+export type createDocumentApiV1ProfessionalsProfessionalIdDocumentsPostResponseError =
+  createDocumentApiV1ProfessionalsProfessionalIdDocumentsPostResponse422 & {
+    headers: Headers;
+  };
 
-export const getCreateDocumentApiV1ProfessionalsProfessionalIdDocumentsPostUrl = (professionalId: string,) => {
+export type createDocumentApiV1ProfessionalsProfessionalIdDocumentsPostResponse =
 
+    | createDocumentApiV1ProfessionalsProfessionalIdDocumentsPostResponseSuccess
+    | createDocumentApiV1ProfessionalsProfessionalIdDocumentsPostResponseError;
 
-  
+export const getCreateDocumentApiV1ProfessionalsProfessionalIdDocumentsPostUrl =
+  (professionalId: string) => {
+    return `/api/v1/professionals/${professionalId}/documents/`;
+  };
 
-  return `/api/v1/professionals/${professionalId}/documents/`
-}
+export const createDocumentApiV1ProfessionalsProfessionalIdDocumentsPost =
+  async (
+    professionalId: string,
+    professionalDocumentCreate: ProfessionalDocumentCreate,
+    options?: RequestInit,
+  ): Promise<createDocumentApiV1ProfessionalsProfessionalIdDocumentsPostResponse> => {
+    return customFetch<createDocumentApiV1ProfessionalsProfessionalIdDocumentsPostResponse>(
+      getCreateDocumentApiV1ProfessionalsProfessionalIdDocumentsPostUrl(
+        professionalId,
+      ),
+      {
+        ...options,
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...options?.headers },
+        body: JSON.stringify(professionalDocumentCreate),
+      },
+    );
+  };
 
-export const createDocumentApiV1ProfessionalsProfessionalIdDocumentsPost = async (professionalId: string,
-    professionalDocumentCreate: ProfessionalDocumentCreate, options?: RequestInit): Promise<createDocumentApiV1ProfessionalsProfessionalIdDocumentsPostResponse> => {
-  
-  return customFetch<createDocumentApiV1ProfessionalsProfessionalIdDocumentsPostResponse>(getCreateDocumentApiV1ProfessionalsProfessionalIdDocumentsPostUrl(professionalId),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      professionalDocumentCreate,)
-  }
-);}
+export const getCreateDocumentApiV1ProfessionalsProfessionalIdDocumentsPostMutationOptions =
+  <TError = HTTPValidationError, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<
+          typeof createDocumentApiV1ProfessionalsProfessionalIdDocumentsPost
+        >
+      >,
+      TError,
+      { professionalId: string; data: ProfessionalDocumentCreate },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  }): UseMutationOptions<
+    Awaited<
+      ReturnType<
+        typeof createDocumentApiV1ProfessionalsProfessionalIdDocumentsPost
+      >
+    >,
+    TError,
+    { professionalId: string; data: ProfessionalDocumentCreate },
+    TContext
+  > => {
+    const mutationKey = [
+      "createDocumentApiV1ProfessionalsProfessionalIdDocumentsPost",
+    ];
+    const { mutation: mutationOptions, request: requestOptions } = options
+      ? options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+        ? options
+        : { ...options, mutation: { ...options.mutation, mutationKey } }
+      : { mutation: { mutationKey }, request: undefined };
 
+    const mutationFn: MutationFunction<
+      Awaited<
+        ReturnType<
+          typeof createDocumentApiV1ProfessionalsProfessionalIdDocumentsPost
+        >
+      >,
+      { professionalId: string; data: ProfessionalDocumentCreate }
+    > = (props) => {
+      const { professionalId, data } = props ?? {};
 
+      return createDocumentApiV1ProfessionalsProfessionalIdDocumentsPost(
+        professionalId,
+        data,
+        requestOptions,
+      );
+    };
 
+    return { mutationFn, ...mutationOptions };
+  };
 
-export const getCreateDocumentApiV1ProfessionalsProfessionalIdDocumentsPostMutationOptions = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createDocumentApiV1ProfessionalsProfessionalIdDocumentsPost>>, TError,{professionalId: string;data: ProfessionalDocumentCreate}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof createDocumentApiV1ProfessionalsProfessionalIdDocumentsPost>>, TError,{professionalId: string;data: ProfessionalDocumentCreate}, TContext> => {
+export type CreateDocumentApiV1ProfessionalsProfessionalIdDocumentsPostMutationResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof createDocumentApiV1ProfessionalsProfessionalIdDocumentsPost
+      >
+    >
+  >;
+export type CreateDocumentApiV1ProfessionalsProfessionalIdDocumentsPostMutationBody =
+  ProfessionalDocumentCreate;
+export type CreateDocumentApiV1ProfessionalsProfessionalIdDocumentsPostMutationError =
+  HTTPValidationError;
 
-const mutationKey = ['createDocumentApiV1ProfessionalsProfessionalIdDocumentsPost'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createDocumentApiV1ProfessionalsProfessionalIdDocumentsPost>>, {professionalId: string;data: ProfessionalDocumentCreate}> = (props) => {
-          const {professionalId,data} = props ?? {};
-
-          return  createDocumentApiV1ProfessionalsProfessionalIdDocumentsPost(professionalId,data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type CreateDocumentApiV1ProfessionalsProfessionalIdDocumentsPostMutationResult = NonNullable<Awaited<ReturnType<typeof createDocumentApiV1ProfessionalsProfessionalIdDocumentsPost>>>
-    export type CreateDocumentApiV1ProfessionalsProfessionalIdDocumentsPostMutationBody = ProfessionalDocumentCreate
-    export type CreateDocumentApiV1ProfessionalsProfessionalIdDocumentsPostMutationError = HTTPValidationError
-
-    /**
+/**
  * @summary Add a document to a professional
  */
-export const useCreateDocumentApiV1ProfessionalsProfessionalIdDocumentsPost = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createDocumentApiV1ProfessionalsProfessionalIdDocumentsPost>>, TError,{professionalId: string;data: ProfessionalDocumentCreate}, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof createDocumentApiV1ProfessionalsProfessionalIdDocumentsPost>>,
-        TError,
-        {professionalId: string;data: ProfessionalDocumentCreate},
-        TContext
-      > => {
+export const useCreateDocumentApiV1ProfessionalsProfessionalIdDocumentsPost = <
+  TError = HTTPValidationError,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<
+          typeof createDocumentApiV1ProfessionalsProfessionalIdDocumentsPost
+        >
+      >,
+      TError,
+      { professionalId: string; data: ProfessionalDocumentCreate },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<
+    ReturnType<
+      typeof createDocumentApiV1ProfessionalsProfessionalIdDocumentsPost
+    >
+  >,
+  TError,
+  { professionalId: string; data: ProfessionalDocumentCreate },
+  TContext
+> => {
+  const mutationOptions =
+    getCreateDocumentApiV1ProfessionalsProfessionalIdDocumentsPostMutationOptions(
+      options,
+    );
 
-      const mutationOptions = getCreateDocumentApiV1ProfessionalsProfessionalIdDocumentsPostMutationOptions(options);
-
-      return useMutation(mutationOptions, queryClient);
-    }
-    /**
+  return useMutation(mutationOptions, queryClient);
+};
+/**
  * List all documents for a professional with pagination, filtering and sorting.
  * @summary List professional documents
  */
-export type listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetResponse200 = {
-  data: PaginatedResponseProfessionalDocumentResponse
-  status: 200
-}
+export type listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetResponse200 =
+  {
+    data: PaginatedResponseProfessionalDocumentResponse;
+    status: 200;
+  };
 
-export type listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-    
-export type listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetResponseSuccess = (listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetResponse200) & {
-  headers: Headers;
-};
-export type listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetResponseError = (listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetResponse422) & {
-  headers: Headers;
-};
+export type listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetResponse422 =
+  {
+    data: HTTPValidationError;
+    status: 422;
+  };
 
-export type listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetResponse = (listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetResponseSuccess | listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetResponseError)
+export type listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetResponseSuccess =
+  listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetResponse200 & {
+    headers: Headers;
+  };
+export type listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetResponseError =
+  listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetResponse422 & {
+    headers: Headers;
+  };
 
-export const getListDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetUrl = (professionalId: string,
-    params?: ListDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetParams,) => {
+export type listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetResponse =
+  | listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetResponseSuccess
+  | listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetResponseError;
+
+export const getListDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetUrl = (
+  professionalId: string,
+  params?: ListDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetParams,
+) => {
   const normalizedParams = new URLSearchParams();
 
   Object.entries(params || {}).forEach(([key, value]) => {
-    
     if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString())
+      normalizedParams.append(key, value === null ? "null" : value.toString());
     }
   });
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/v1/professionals/${professionalId}/documents/?${stringifiedParams}` : `/api/v1/professionals/${professionalId}/documents/`
-}
+  return stringifiedParams.length > 0
+    ? `/api/v1/professionals/${professionalId}/documents/?${stringifiedParams}`
+    : `/api/v1/professionals/${professionalId}/documents/`;
+};
 
-export const listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGet = async (professionalId: string,
-    params?: ListDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetParams, options?: RequestInit): Promise<listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetResponse> => {
-  
-  return customFetch<listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetResponse>(getListDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetUrl(professionalId,params),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
+export const listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGet = async (
+  professionalId: string,
+  params?: ListDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetParams,
+  options?: RequestInit,
+): Promise<listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetResponse> => {
+  return customFetch<listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetResponse>(
+    getListDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetUrl(
+      professionalId,
+      params,
+    ),
+    {
+      ...options,
+      method: "GET",
+    },
+  );
+};
 
-
-
-
-
-export const getListDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetQueryKey = (professionalId?: string,
-    params?: ListDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetParams,) => {
+export const getListDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetQueryKey =
+  (
+    professionalId?: string,
+    params?: ListDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetParams,
+  ) => {
     return [
-    `/api/v1/professionals/${professionalId}/documents/`, ...(params ? [params]: [])
+      `/api/v1/professionals/${professionalId}/documents/`,
+      ...(params ? [params] : []),
     ] as const;
-    }
+  };
 
-    
-export const getListDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetQueryOptions = <TData = Awaited<ReturnType<typeof listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGet>>, TError = HTTPValidationError>(professionalId: string,
-    params?: ListDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
-) => {
+export const getListDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetQueryOptions =
+  <
+    TData = Awaited<
+      ReturnType<
+        typeof listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGet
+      >
+    >,
+    TError = HTTPValidationError,
+  >(
+    professionalId: string,
+    params?: ListDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetParams,
+    options?: {
+      query?: Partial<
+        UseQueryOptions<
+          Awaited<
+            ReturnType<
+              typeof listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGet
+            >
+          >,
+          TError,
+          TData
+        >
+      >;
+      request?: SecondParameter<typeof customFetch>;
+    },
+  ) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
 
-const {query: queryOptions, request: requestOptions} = options ?? {};
+    const queryKey =
+      queryOptions?.queryKey ??
+      getListDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetQueryKey(
+        professionalId,
+        params,
+      );
 
-  const queryKey =  queryOptions?.queryKey ?? getListDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetQueryKey(professionalId,params);
+    const queryFn: QueryFunction<
+      Awaited<
+        ReturnType<
+          typeof listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGet
+        >
+      >
+    > = ({ signal }) =>
+      listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGet(
+        professionalId,
+        params,
+        { signal, ...requestOptions },
+      );
 
-  
+    return {
+      queryKey,
+      queryFn,
+      enabled: !!professionalId,
+      staleTime: 30000,
+      ...queryOptions,
+    } as UseQueryOptions<
+      Awaited<
+        ReturnType<
+          typeof listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGet
+        >
+      >,
+      TError,
+      TData
+    > & { queryKey: DataTag<QueryKey, TData> };
+  };
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGet>>> = ({ signal }) => listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGet(professionalId,params, { signal, ...requestOptions });
+export type ListDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetQueryResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGet
+      >
+    >
+  >;
+export type ListDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetQueryError =
+  HTTPValidationError;
 
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(professionalId),  staleTime: 30000,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData> }
-}
-
-export type ListDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetQueryResult = NonNullable<Awaited<ReturnType<typeof listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGet>>>
-export type ListDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetQueryError = HTTPValidationError
-
-
-export function useListDocumentsApiV1ProfessionalsProfessionalIdDocumentsGet<TData = Awaited<ReturnType<typeof listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGet>>, TError = HTTPValidationError>(
- professionalId: string,
-    params: undefined |  ListDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGet>>, TError, TData>> & Pick<
+export function useListDocumentsApiV1ProfessionalsProfessionalIdDocumentsGet<
+  TData = Awaited<
+    ReturnType<typeof listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGet>
+  >,
+  TError = HTTPValidationError,
+>(
+  professionalId: string,
+  params:
+    | undefined
+    | ListDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGet
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGet>>,
+          Awaited<
+            ReturnType<
+              typeof listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGet
+            >
+          >,
           TError,
-          Awaited<ReturnType<typeof listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGet>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
-export function useListDocumentsApiV1ProfessionalsProfessionalIdDocumentsGet<TData = Awaited<ReturnType<typeof listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGet>>, TError = HTTPValidationError>(
- professionalId: string,
-    params?: ListDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGet>>, TError, TData>> & Pick<
+          Awaited<
+            ReturnType<
+              typeof listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGet
+            >
+          >
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData>;
+};
+export function useListDocumentsApiV1ProfessionalsProfessionalIdDocumentsGet<
+  TData = Awaited<
+    ReturnType<typeof listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGet>
+  >,
+  TError = HTTPValidationError,
+>(
+  professionalId: string,
+  params?: ListDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGet
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGet>>,
+          Awaited<
+            ReturnType<
+              typeof listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGet
+            >
+          >,
           TError,
-          Awaited<ReturnType<typeof listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGet>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
-export function useListDocumentsApiV1ProfessionalsProfessionalIdDocumentsGet<TData = Awaited<ReturnType<typeof listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGet>>, TError = HTTPValidationError>(
- professionalId: string,
-    params?: ListDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
+          Awaited<
+            ReturnType<
+              typeof listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGet
+            >
+          >
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
+export function useListDocumentsApiV1ProfessionalsProfessionalIdDocumentsGet<
+  TData = Awaited<
+    ReturnType<typeof listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGet>
+  >,
+  TError = HTTPValidationError,
+>(
+  professionalId: string,
+  params?: ListDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGet
+          >
+        >,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
 /**
  * @summary List professional documents
  */
 
-export function useListDocumentsApiV1ProfessionalsProfessionalIdDocumentsGet<TData = Awaited<ReturnType<typeof listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGet>>, TError = HTTPValidationError>(
- professionalId: string,
-    params?: ListDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+export function useListDocumentsApiV1ProfessionalsProfessionalIdDocumentsGet<
+  TData = Awaited<
+    ReturnType<typeof listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGet>
+  >,
+  TError = HTTPValidationError,
+>(
+  professionalId: string,
+  params?: ListDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof listDocumentsApiV1ProfessionalsProfessionalIdDocumentsGet
+          >
+        >,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+  const queryOptions =
+    getListDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetQueryOptions(
+      professionalId,
+      params,
+      options,
+    );
 
-  const queryOptions = getListDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetQueryOptions(professionalId,params,options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData> };
 
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
-
-
-
 
 /**
  * Get a specific document by ID.
  * @summary Get a professional document
  */
-export type getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGetResponse200 = {
-  data: ProfessionalDocumentResponse
-  status: 200
-}
+export type getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGetResponse200 =
+  {
+    data: ProfessionalDocumentResponse;
+    status: 200;
+  };
 
-export type getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGetResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-    
-export type getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGetResponseSuccess = (getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGetResponse200) & {
-  headers: Headers;
-};
-export type getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGetResponseError = (getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGetResponse422) & {
-  headers: Headers;
-};
+export type getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGetResponse422 =
+  {
+    data: HTTPValidationError;
+    status: 422;
+  };
 
-export type getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGetResponse = (getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGetResponseSuccess | getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGetResponseError)
+export type getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGetResponseSuccess =
+  getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGetResponse200 & {
+    headers: Headers;
+  };
+export type getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGetResponseError =
+  getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGetResponse422 & {
+    headers: Headers;
+  };
 
-export const getGetDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGetUrl = (professionalId: string,
-    documentId: string,) => {
+export type getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGetResponse =
 
+    | getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGetResponseSuccess
+    | getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGetResponseError;
 
-  
+export const getGetDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGetUrl =
+  (professionalId: string, documentId: string) => {
+    return `/api/v1/professionals/${professionalId}/documents/${documentId}`;
+  };
 
-  return `/api/v1/professionals/${professionalId}/documents/${documentId}`
-}
+export const getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGet =
+  async (
+    professionalId: string,
+    documentId: string,
+    options?: RequestInit,
+  ): Promise<getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGetResponse> => {
+    return customFetch<getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGetResponse>(
+      getGetDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGetUrl(
+        professionalId,
+        documentId,
+      ),
+      {
+        ...options,
+        method: "GET",
+      },
+    );
+  };
 
-export const getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGet = async (professionalId: string,
-    documentId: string, options?: RequestInit): Promise<getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGetResponse> => {
-  
-  return customFetch<getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGetResponse>(getGetDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGetUrl(professionalId,documentId),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
-
-
-
-export const getGetDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGetQueryKey = (professionalId?: string,
-    documentId?: string,) => {
+export const getGetDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGetQueryKey =
+  (professionalId?: string, documentId?: string) => {
     return [
-    `/api/v1/professionals/${professionalId}/documents/${documentId}`
+      `/api/v1/professionals/${professionalId}/documents/${documentId}`,
     ] as const;
-    }
+  };
 
-    
-export const getGetDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGetQueryOptions = <TData = Awaited<ReturnType<typeof getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGet>>, TError = HTTPValidationError>(professionalId: string,
-    documentId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
-) => {
+export const getGetDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGetQueryOptions =
+  <
+    TData = Awaited<
+      ReturnType<
+        typeof getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGet
+      >
+    >,
+    TError = HTTPValidationError,
+  >(
+    professionalId: string,
+    documentId: string,
+    options?: {
+      query?: Partial<
+        UseQueryOptions<
+          Awaited<
+            ReturnType<
+              typeof getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGet
+            >
+          >,
+          TError,
+          TData
+        >
+      >;
+      request?: SecondParameter<typeof customFetch>;
+    },
+  ) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
 
-const {query: queryOptions, request: requestOptions} = options ?? {};
+    const queryKey =
+      queryOptions?.queryKey ??
+      getGetDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGetQueryKey(
+        professionalId,
+        documentId,
+      );
 
-  const queryKey =  queryOptions?.queryKey ?? getGetDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGetQueryKey(professionalId,documentId);
+    const queryFn: QueryFunction<
+      Awaited<
+        ReturnType<
+          typeof getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGet
+        >
+      >
+    > = ({ signal }) =>
+      getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGet(
+        professionalId,
+        documentId,
+        { signal, ...requestOptions },
+      );
 
-  
+    return {
+      queryKey,
+      queryFn,
+      enabled: !!(professionalId && documentId),
+      staleTime: 30000,
+      ...queryOptions,
+    } as UseQueryOptions<
+      Awaited<
+        ReturnType<
+          typeof getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGet
+        >
+      >,
+      TError,
+      TData
+    > & { queryKey: DataTag<QueryKey, TData> };
+  };
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGet>>> = ({ signal }) => getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGet(professionalId,documentId, { signal, ...requestOptions });
+export type GetDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGetQueryResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGet
+      >
+    >
+  >;
+export type GetDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGetQueryError =
+  HTTPValidationError;
 
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(professionalId && documentId),  staleTime: 30000,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData> }
-}
-
-export type GetDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGetQueryResult = NonNullable<Awaited<ReturnType<typeof getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGet>>>
-export type GetDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGetQueryError = HTTPValidationError
-
-
-export function useGetDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGet<TData = Awaited<ReturnType<typeof getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGet>>, TError = HTTPValidationError>(
- professionalId: string,
-    documentId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGet>>, TError, TData>> & Pick<
+export function useGetDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  professionalId: string,
+  documentId: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGet
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGet>>,
+          Awaited<
+            ReturnType<
+              typeof getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGet
+            >
+          >,
           TError,
-          Awaited<ReturnType<typeof getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGet>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
-export function useGetDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGet<TData = Awaited<ReturnType<typeof getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGet>>, TError = HTTPValidationError>(
- professionalId: string,
-    documentId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGet>>, TError, TData>> & Pick<
+          Awaited<
+            ReturnType<
+              typeof getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGet
+            >
+          >
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData>;
+};
+export function useGetDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  professionalId: string,
+  documentId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGet
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGet>>,
+          Awaited<
+            ReturnType<
+              typeof getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGet
+            >
+          >,
           TError,
-          Awaited<ReturnType<typeof getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGet>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
-export function useGetDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGet<TData = Awaited<ReturnType<typeof getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGet>>, TError = HTTPValidationError>(
- professionalId: string,
-    documentId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
+          Awaited<
+            ReturnType<
+              typeof getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGet
+            >
+          >
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
+export function useGetDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  professionalId: string,
+  documentId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGet
+          >
+        >,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
 /**
  * @summary Get a professional document
  */
 
-export function useGetDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGet<TData = Awaited<ReturnType<typeof getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGet>>, TError = HTTPValidationError>(
- professionalId: string,
-    documentId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+export function useGetDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  professionalId: string,
+  documentId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGet
+          >
+        >,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+  const queryOptions =
+    getGetDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGetQueryOptions(
+      professionalId,
+      documentId,
+      options,
+    );
 
-  const queryOptions = getGetDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdGetQueryOptions(professionalId,documentId,options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData> };
 
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
-
-
-
 
 /**
  * Partially update a document. Only provided fields will be updated.
  * @summary Update a professional document
  */
-export type updateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatchResponse200 = {
-  data: ProfessionalDocumentResponse
-  status: 200
-}
+export type updateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatchResponse200 =
+  {
+    data: ProfessionalDocumentResponse;
+    status: 200;
+  };
 
-export type updateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatchResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-    
-export type updateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatchResponseSuccess = (updateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatchResponse200) & {
-  headers: Headers;
-};
-export type updateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatchResponseError = (updateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatchResponse422) & {
-  headers: Headers;
-};
+export type updateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatchResponse422 =
+  {
+    data: HTTPValidationError;
+    status: 422;
+  };
 
-export type updateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatchResponse = (updateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatchResponseSuccess | updateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatchResponseError)
+export type updateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatchResponseSuccess =
+  updateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatchResponse200 & {
+    headers: Headers;
+  };
+export type updateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatchResponseError =
+  updateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatchResponse422 & {
+    headers: Headers;
+  };
 
-export const getUpdateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatchUrl = (professionalId: string,
-    documentId: string,) => {
+export type updateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatchResponse =
 
+    | updateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatchResponseSuccess
+    | updateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatchResponseError;
 
-  
+export const getUpdateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatchUrl =
+  (professionalId: string, documentId: string) => {
+    return `/api/v1/professionals/${professionalId}/documents/${documentId}`;
+  };
 
-  return `/api/v1/professionals/${professionalId}/documents/${documentId}`
-}
-
-export const updateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatch = async (professionalId: string,
+export const updateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatch =
+  async (
+    professionalId: string,
     documentId: string,
-    professionalDocumentUpdate: ProfessionalDocumentUpdate, options?: RequestInit): Promise<updateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatchResponse> => {
-  
-  return customFetch<updateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatchResponse>(getUpdateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatchUrl(professionalId,documentId),
-  {      
-    ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      professionalDocumentUpdate,)
-  }
-);}
+    professionalDocumentUpdate: ProfessionalDocumentUpdate,
+    options?: RequestInit,
+  ): Promise<updateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatchResponse> => {
+    return customFetch<updateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatchResponse>(
+      getUpdateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatchUrl(
+        professionalId,
+        documentId,
+      ),
+      {
+        ...options,
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", ...options?.headers },
+        body: JSON.stringify(professionalDocumentUpdate),
+      },
+    );
+  };
 
+export const getUpdateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatchMutationOptions =
+  <TError = HTTPValidationError, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<
+          typeof updateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatch
+        >
+      >,
+      TError,
+      {
+        professionalId: string;
+        documentId: string;
+        data: ProfessionalDocumentUpdate;
+      },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  }): UseMutationOptions<
+    Awaited<
+      ReturnType<
+        typeof updateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatch
+      >
+    >,
+    TError,
+    {
+      professionalId: string;
+      documentId: string;
+      data: ProfessionalDocumentUpdate;
+    },
+    TContext
+  > => {
+    const mutationKey = [
+      "updateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatch",
+    ];
+    const { mutation: mutationOptions, request: requestOptions } = options
+      ? options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+        ? options
+        : { ...options, mutation: { ...options.mutation, mutationKey } }
+      : { mutation: { mutationKey }, request: undefined };
 
+    const mutationFn: MutationFunction<
+      Awaited<
+        ReturnType<
+          typeof updateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatch
+        >
+      >,
+      {
+        professionalId: string;
+        documentId: string;
+        data: ProfessionalDocumentUpdate;
+      }
+    > = (props) => {
+      const { professionalId, documentId, data } = props ?? {};
 
+      return updateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatch(
+        professionalId,
+        documentId,
+        data,
+        requestOptions,
+      );
+    };
 
-export const getUpdateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatchMutationOptions = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatch>>, TError,{professionalId: string;documentId: string;data: ProfessionalDocumentUpdate}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof updateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatch>>, TError,{professionalId: string;documentId: string;data: ProfessionalDocumentUpdate}, TContext> => {
+    return { mutationFn, ...mutationOptions };
+  };
 
-const mutationKey = ['updateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatch'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+export type UpdateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatchMutationResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof updateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatch
+      >
+    >
+  >;
+export type UpdateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatchMutationBody =
+  ProfessionalDocumentUpdate;
+export type UpdateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatchMutationError =
+  HTTPValidationError;
 
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatch>>, {professionalId: string;documentId: string;data: ProfessionalDocumentUpdate}> = (props) => {
-          const {professionalId,documentId,data} = props ?? {};
-
-          return  updateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatch(professionalId,documentId,data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type UpdateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatchMutationResult = NonNullable<Awaited<ReturnType<typeof updateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatch>>>
-    export type UpdateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatchMutationBody = ProfessionalDocumentUpdate
-    export type UpdateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatchMutationError = HTTPValidationError
-
-    /**
+/**
  * @summary Update a professional document
  */
-export const useUpdateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatch = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatch>>, TError,{professionalId: string;documentId: string;data: ProfessionalDocumentUpdate}, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof updateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatch>>,
+export const useUpdateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatch =
+  <TError = HTTPValidationError, TContext = unknown>(
+    options?: {
+      mutation?: UseMutationOptions<
+        Awaited<
+          ReturnType<
+            typeof updateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatch
+          >
+        >,
         TError,
-        {professionalId: string;documentId: string;data: ProfessionalDocumentUpdate},
+        {
+          professionalId: string;
+          documentId: string;
+          data: ProfessionalDocumentUpdate;
+        },
         TContext
-      > => {
+      >;
+      request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+  ): UseMutationResult<
+    Awaited<
+      ReturnType<
+        typeof updateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatch
+      >
+    >,
+    TError,
+    {
+      professionalId: string;
+      documentId: string;
+      data: ProfessionalDocumentUpdate;
+    },
+    TContext
+  > => {
+    const mutationOptions =
+      getUpdateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatchMutationOptions(
+        options,
+      );
 
-      const mutationOptions = getUpdateDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdPatchMutationOptions(options);
-
-      return useMutation(mutationOptions, queryClient);
-    }
-    /**
+    return useMutation(mutationOptions, queryClient);
+  };
+/**
  * Soft delete a document.
  * @summary Delete a professional document
  */
-export type deleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDeleteResponse204 = {
-  data: void
-  status: 204
-}
+export type deleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDeleteResponse204 =
+  {
+    data: void;
+    status: 204;
+  };
 
-export type deleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDeleteResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-    
-export type deleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDeleteResponseSuccess = (deleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDeleteResponse204) & {
-  headers: Headers;
-};
-export type deleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDeleteResponseError = (deleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDeleteResponse422) & {
-  headers: Headers;
-};
+export type deleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDeleteResponse422 =
+  {
+    data: HTTPValidationError;
+    status: 422;
+  };
 
-export type deleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDeleteResponse = (deleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDeleteResponseSuccess | deleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDeleteResponseError)
+export type deleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDeleteResponseSuccess =
+  deleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDeleteResponse204 & {
+    headers: Headers;
+  };
+export type deleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDeleteResponseError =
+  deleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDeleteResponse422 & {
+    headers: Headers;
+  };
 
-export const getDeleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDeleteUrl = (professionalId: string,
-    documentId: string,) => {
+export type deleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDeleteResponse =
 
+    | deleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDeleteResponseSuccess
+    | deleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDeleteResponseError;
 
-  
+export const getDeleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDeleteUrl =
+  (professionalId: string, documentId: string) => {
+    return `/api/v1/professionals/${professionalId}/documents/${documentId}`;
+  };
 
-  return `/api/v1/professionals/${professionalId}/documents/${documentId}`
-}
+export const deleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDelete =
+  async (
+    professionalId: string,
+    documentId: string,
+    options?: RequestInit,
+  ): Promise<deleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDeleteResponse> => {
+    return customFetch<deleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDeleteResponse>(
+      getDeleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDeleteUrl(
+        professionalId,
+        documentId,
+      ),
+      {
+        ...options,
+        method: "DELETE",
+      },
+    );
+  };
 
-export const deleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDelete = async (professionalId: string,
-    documentId: string, options?: RequestInit): Promise<deleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDeleteResponse> => {
-  
-  return customFetch<deleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDeleteResponse>(getDeleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDeleteUrl(professionalId,documentId),
-  {      
-    ...options,
-    method: 'DELETE'
-    
-    
-  }
-);}
+export const getDeleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDeleteMutationOptions =
+  <TError = HTTPValidationError, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<
+          typeof deleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDelete
+        >
+      >,
+      TError,
+      { professionalId: string; documentId: string },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  }): UseMutationOptions<
+    Awaited<
+      ReturnType<
+        typeof deleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDelete
+      >
+    >,
+    TError,
+    { professionalId: string; documentId: string },
+    TContext
+  > => {
+    const mutationKey = [
+      "deleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDelete",
+    ];
+    const { mutation: mutationOptions, request: requestOptions } = options
+      ? options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+        ? options
+        : { ...options, mutation: { ...options.mutation, mutationKey } }
+      : { mutation: { mutationKey }, request: undefined };
 
+    const mutationFn: MutationFunction<
+      Awaited<
+        ReturnType<
+          typeof deleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDelete
+        >
+      >,
+      { professionalId: string; documentId: string }
+    > = (props) => {
+      const { professionalId, documentId } = props ?? {};
 
+      return deleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDelete(
+        professionalId,
+        documentId,
+        requestOptions,
+      );
+    };
 
+    return { mutationFn, ...mutationOptions };
+  };
 
-export const getDeleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDeleteMutationOptions = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDelete>>, TError,{professionalId: string;documentId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof deleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDelete>>, TError,{professionalId: string;documentId: string}, TContext> => {
+export type DeleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDeleteMutationResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof deleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDelete
+      >
+    >
+  >;
 
-const mutationKey = ['deleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDelete'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+export type DeleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDeleteMutationError =
+  HTTPValidationError;
 
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDelete>>, {professionalId: string;documentId: string}> = (props) => {
-          const {professionalId,documentId} = props ?? {};
-
-          return  deleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDelete(professionalId,documentId,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type DeleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDeleteMutationResult = NonNullable<Awaited<ReturnType<typeof deleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDelete>>>
-    
-    export type DeleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDeleteMutationError = HTTPValidationError
-
-    /**
+/**
  * @summary Delete a professional document
  */
-export const useDeleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDelete = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDelete>>, TError,{professionalId: string;documentId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof deleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDelete>>,
+export const useDeleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDelete =
+  <TError = HTTPValidationError, TContext = unknown>(
+    options?: {
+      mutation?: UseMutationOptions<
+        Awaited<
+          ReturnType<
+            typeof deleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDelete
+          >
+        >,
         TError,
-        {professionalId: string;documentId: string},
+        { professionalId: string; documentId: string },
         TContext
-      > => {
+      >;
+      request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+  ): UseMutationResult<
+    Awaited<
+      ReturnType<
+        typeof deleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDelete
+      >
+    >,
+    TError,
+    { professionalId: string; documentId: string },
+    TContext
+  > => {
+    const mutationOptions =
+      getDeleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDeleteMutationOptions(
+        options,
+      );
 
-      const mutationOptions = getDeleteDocumentApiV1ProfessionalsProfessionalIdDocumentsDocumentIdDeleteMutationOptions(options);
-
-      return useMutation(mutationOptions, queryClient);
-    }
-    /**
+    return useMutation(mutationOptions, queryClient);
+  };
+/**
  * Create a new education record for a professional.
  * @summary Add an education to a professional
  */
-export type createEducationApiV1ProfessionalsProfessionalIdEducationsPostResponse201 = {
-  data: ProfessionalEducationResponse
-  status: 201
-}
+export type createEducationApiV1ProfessionalsProfessionalIdEducationsPostResponse201 =
+  {
+    data: ProfessionalEducationResponse;
+    status: 201;
+  };
 
-export type createEducationApiV1ProfessionalsProfessionalIdEducationsPostResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-    
-export type createEducationApiV1ProfessionalsProfessionalIdEducationsPostResponseSuccess = (createEducationApiV1ProfessionalsProfessionalIdEducationsPostResponse201) & {
-  headers: Headers;
-};
-export type createEducationApiV1ProfessionalsProfessionalIdEducationsPostResponseError = (createEducationApiV1ProfessionalsProfessionalIdEducationsPostResponse422) & {
-  headers: Headers;
-};
+export type createEducationApiV1ProfessionalsProfessionalIdEducationsPostResponse422 =
+  {
+    data: HTTPValidationError;
+    status: 422;
+  };
 
-export type createEducationApiV1ProfessionalsProfessionalIdEducationsPostResponse = (createEducationApiV1ProfessionalsProfessionalIdEducationsPostResponseSuccess | createEducationApiV1ProfessionalsProfessionalIdEducationsPostResponseError)
+export type createEducationApiV1ProfessionalsProfessionalIdEducationsPostResponseSuccess =
+  createEducationApiV1ProfessionalsProfessionalIdEducationsPostResponse201 & {
+    headers: Headers;
+  };
+export type createEducationApiV1ProfessionalsProfessionalIdEducationsPostResponseError =
+  createEducationApiV1ProfessionalsProfessionalIdEducationsPostResponse422 & {
+    headers: Headers;
+  };
 
-export const getCreateEducationApiV1ProfessionalsProfessionalIdEducationsPostUrl = (professionalId: string,) => {
+export type createEducationApiV1ProfessionalsProfessionalIdEducationsPostResponse =
 
+    | createEducationApiV1ProfessionalsProfessionalIdEducationsPostResponseSuccess
+    | createEducationApiV1ProfessionalsProfessionalIdEducationsPostResponseError;
 
-  
+export const getCreateEducationApiV1ProfessionalsProfessionalIdEducationsPostUrl =
+  (professionalId: string) => {
+    return `/api/v1/professionals/${professionalId}/educations/`;
+  };
 
-  return `/api/v1/professionals/${professionalId}/educations/`
-}
+export const createEducationApiV1ProfessionalsProfessionalIdEducationsPost =
+  async (
+    professionalId: string,
+    professionalEducationCreate: ProfessionalEducationCreate,
+    options?: RequestInit,
+  ): Promise<createEducationApiV1ProfessionalsProfessionalIdEducationsPostResponse> => {
+    return customFetch<createEducationApiV1ProfessionalsProfessionalIdEducationsPostResponse>(
+      getCreateEducationApiV1ProfessionalsProfessionalIdEducationsPostUrl(
+        professionalId,
+      ),
+      {
+        ...options,
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...options?.headers },
+        body: JSON.stringify(professionalEducationCreate),
+      },
+    );
+  };
 
-export const createEducationApiV1ProfessionalsProfessionalIdEducationsPost = async (professionalId: string,
-    professionalEducationCreate: ProfessionalEducationCreate, options?: RequestInit): Promise<createEducationApiV1ProfessionalsProfessionalIdEducationsPostResponse> => {
-  
-  return customFetch<createEducationApiV1ProfessionalsProfessionalIdEducationsPostResponse>(getCreateEducationApiV1ProfessionalsProfessionalIdEducationsPostUrl(professionalId),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      professionalEducationCreate,)
-  }
-);}
+export const getCreateEducationApiV1ProfessionalsProfessionalIdEducationsPostMutationOptions =
+  <TError = HTTPValidationError, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<
+          typeof createEducationApiV1ProfessionalsProfessionalIdEducationsPost
+        >
+      >,
+      TError,
+      { professionalId: string; data: ProfessionalEducationCreate },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  }): UseMutationOptions<
+    Awaited<
+      ReturnType<
+        typeof createEducationApiV1ProfessionalsProfessionalIdEducationsPost
+      >
+    >,
+    TError,
+    { professionalId: string; data: ProfessionalEducationCreate },
+    TContext
+  > => {
+    const mutationKey = [
+      "createEducationApiV1ProfessionalsProfessionalIdEducationsPost",
+    ];
+    const { mutation: mutationOptions, request: requestOptions } = options
+      ? options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+        ? options
+        : { ...options, mutation: { ...options.mutation, mutationKey } }
+      : { mutation: { mutationKey }, request: undefined };
 
+    const mutationFn: MutationFunction<
+      Awaited<
+        ReturnType<
+          typeof createEducationApiV1ProfessionalsProfessionalIdEducationsPost
+        >
+      >,
+      { professionalId: string; data: ProfessionalEducationCreate }
+    > = (props) => {
+      const { professionalId, data } = props ?? {};
 
+      return createEducationApiV1ProfessionalsProfessionalIdEducationsPost(
+        professionalId,
+        data,
+        requestOptions,
+      );
+    };
 
+    return { mutationFn, ...mutationOptions };
+  };
 
-export const getCreateEducationApiV1ProfessionalsProfessionalIdEducationsPostMutationOptions = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createEducationApiV1ProfessionalsProfessionalIdEducationsPost>>, TError,{professionalId: string;data: ProfessionalEducationCreate}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof createEducationApiV1ProfessionalsProfessionalIdEducationsPost>>, TError,{professionalId: string;data: ProfessionalEducationCreate}, TContext> => {
+export type CreateEducationApiV1ProfessionalsProfessionalIdEducationsPostMutationResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof createEducationApiV1ProfessionalsProfessionalIdEducationsPost
+      >
+    >
+  >;
+export type CreateEducationApiV1ProfessionalsProfessionalIdEducationsPostMutationBody =
+  ProfessionalEducationCreate;
+export type CreateEducationApiV1ProfessionalsProfessionalIdEducationsPostMutationError =
+  HTTPValidationError;
 
-const mutationKey = ['createEducationApiV1ProfessionalsProfessionalIdEducationsPost'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createEducationApiV1ProfessionalsProfessionalIdEducationsPost>>, {professionalId: string;data: ProfessionalEducationCreate}> = (props) => {
-          const {professionalId,data} = props ?? {};
-
-          return  createEducationApiV1ProfessionalsProfessionalIdEducationsPost(professionalId,data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type CreateEducationApiV1ProfessionalsProfessionalIdEducationsPostMutationResult = NonNullable<Awaited<ReturnType<typeof createEducationApiV1ProfessionalsProfessionalIdEducationsPost>>>
-    export type CreateEducationApiV1ProfessionalsProfessionalIdEducationsPostMutationBody = ProfessionalEducationCreate
-    export type CreateEducationApiV1ProfessionalsProfessionalIdEducationsPostMutationError = HTTPValidationError
-
-    /**
+/**
  * @summary Add an education to a professional
  */
-export const useCreateEducationApiV1ProfessionalsProfessionalIdEducationsPost = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createEducationApiV1ProfessionalsProfessionalIdEducationsPost>>, TError,{professionalId: string;data: ProfessionalEducationCreate}, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof createEducationApiV1ProfessionalsProfessionalIdEducationsPost>>,
+export const useCreateEducationApiV1ProfessionalsProfessionalIdEducationsPost =
+  <TError = HTTPValidationError, TContext = unknown>(
+    options?: {
+      mutation?: UseMutationOptions<
+        Awaited<
+          ReturnType<
+            typeof createEducationApiV1ProfessionalsProfessionalIdEducationsPost
+          >
+        >,
         TError,
-        {professionalId: string;data: ProfessionalEducationCreate},
+        { professionalId: string; data: ProfessionalEducationCreate },
         TContext
-      > => {
+      >;
+      request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+  ): UseMutationResult<
+    Awaited<
+      ReturnType<
+        typeof createEducationApiV1ProfessionalsProfessionalIdEducationsPost
+      >
+    >,
+    TError,
+    { professionalId: string; data: ProfessionalEducationCreate },
+    TContext
+  > => {
+    const mutationOptions =
+      getCreateEducationApiV1ProfessionalsProfessionalIdEducationsPostMutationOptions(
+        options,
+      );
 
-      const mutationOptions = getCreateEducationApiV1ProfessionalsProfessionalIdEducationsPostMutationOptions(options);
-
-      return useMutation(mutationOptions, queryClient);
-    }
-    /**
+    return useMutation(mutationOptions, queryClient);
+  };
+/**
  * List all education records for a professional with pagination, filtering and sorting.
  * @summary List professional educations
  */
-export type listEducationsApiV1ProfessionalsProfessionalIdEducationsGetResponse200 = {
-  data: PaginatedResponseProfessionalEducationResponse
-  status: 200
-}
+export type listEducationsApiV1ProfessionalsProfessionalIdEducationsGetResponse200 =
+  {
+    data: PaginatedResponseProfessionalEducationResponse;
+    status: 200;
+  };
 
-export type listEducationsApiV1ProfessionalsProfessionalIdEducationsGetResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-    
-export type listEducationsApiV1ProfessionalsProfessionalIdEducationsGetResponseSuccess = (listEducationsApiV1ProfessionalsProfessionalIdEducationsGetResponse200) & {
-  headers: Headers;
-};
-export type listEducationsApiV1ProfessionalsProfessionalIdEducationsGetResponseError = (listEducationsApiV1ProfessionalsProfessionalIdEducationsGetResponse422) & {
-  headers: Headers;
-};
+export type listEducationsApiV1ProfessionalsProfessionalIdEducationsGetResponse422 =
+  {
+    data: HTTPValidationError;
+    status: 422;
+  };
 
-export type listEducationsApiV1ProfessionalsProfessionalIdEducationsGetResponse = (listEducationsApiV1ProfessionalsProfessionalIdEducationsGetResponseSuccess | listEducationsApiV1ProfessionalsProfessionalIdEducationsGetResponseError)
+export type listEducationsApiV1ProfessionalsProfessionalIdEducationsGetResponseSuccess =
+  listEducationsApiV1ProfessionalsProfessionalIdEducationsGetResponse200 & {
+    headers: Headers;
+  };
+export type listEducationsApiV1ProfessionalsProfessionalIdEducationsGetResponseError =
+  listEducationsApiV1ProfessionalsProfessionalIdEducationsGetResponse422 & {
+    headers: Headers;
+  };
 
-export const getListEducationsApiV1ProfessionalsProfessionalIdEducationsGetUrl = (professionalId: string,
-    params?: ListEducationsApiV1ProfessionalsProfessionalIdEducationsGetParams,) => {
-  const normalizedParams = new URLSearchParams();
+export type listEducationsApiV1ProfessionalsProfessionalIdEducationsGetResponse =
 
-  Object.entries(params || {}).forEach(([key, value]) => {
-    
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString())
-    }
-  });
+    | listEducationsApiV1ProfessionalsProfessionalIdEducationsGetResponseSuccess
+    | listEducationsApiV1ProfessionalsProfessionalIdEducationsGetResponseError;
 
-  const stringifiedParams = normalizedParams.toString();
+export const getListEducationsApiV1ProfessionalsProfessionalIdEducationsGetUrl =
+  (
+    professionalId: string,
+    params?: ListEducationsApiV1ProfessionalsProfessionalIdEducationsGetParams,
+  ) => {
+    const normalizedParams = new URLSearchParams();
 
-  return stringifiedParams.length > 0 ? `/api/v1/professionals/${professionalId}/educations/?${stringifiedParams}` : `/api/v1/professionals/${professionalId}/educations/`
-}
+    Object.entries(params || {}).forEach(([key, value]) => {
+      if (value !== undefined) {
+        normalizedParams.append(
+          key,
+          value === null ? "null" : value.toString(),
+        );
+      }
+    });
 
-export const listEducationsApiV1ProfessionalsProfessionalIdEducationsGet = async (professionalId: string,
-    params?: ListEducationsApiV1ProfessionalsProfessionalIdEducationsGetParams, options?: RequestInit): Promise<listEducationsApiV1ProfessionalsProfessionalIdEducationsGetResponse> => {
-  
-  return customFetch<listEducationsApiV1ProfessionalsProfessionalIdEducationsGetResponse>(getListEducationsApiV1ProfessionalsProfessionalIdEducationsGetUrl(professionalId,params),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
+    const stringifiedParams = normalizedParams.toString();
 
+    return stringifiedParams.length > 0
+      ? `/api/v1/professionals/${professionalId}/educations/?${stringifiedParams}`
+      : `/api/v1/professionals/${professionalId}/educations/`;
+  };
 
+export const listEducationsApiV1ProfessionalsProfessionalIdEducationsGet =
+  async (
+    professionalId: string,
+    params?: ListEducationsApiV1ProfessionalsProfessionalIdEducationsGetParams,
+    options?: RequestInit,
+  ): Promise<listEducationsApiV1ProfessionalsProfessionalIdEducationsGetResponse> => {
+    return customFetch<listEducationsApiV1ProfessionalsProfessionalIdEducationsGetResponse>(
+      getListEducationsApiV1ProfessionalsProfessionalIdEducationsGetUrl(
+        professionalId,
+        params,
+      ),
+      {
+        ...options,
+        method: "GET",
+      },
+    );
+  };
 
-
-
-export const getListEducationsApiV1ProfessionalsProfessionalIdEducationsGetQueryKey = (professionalId?: string,
-    params?: ListEducationsApiV1ProfessionalsProfessionalIdEducationsGetParams,) => {
+export const getListEducationsApiV1ProfessionalsProfessionalIdEducationsGetQueryKey =
+  (
+    professionalId?: string,
+    params?: ListEducationsApiV1ProfessionalsProfessionalIdEducationsGetParams,
+  ) => {
     return [
-    `/api/v1/professionals/${professionalId}/educations/`, ...(params ? [params]: [])
+      `/api/v1/professionals/${professionalId}/educations/`,
+      ...(params ? [params] : []),
     ] as const;
-    }
+  };
 
-    
-export const getListEducationsApiV1ProfessionalsProfessionalIdEducationsGetQueryOptions = <TData = Awaited<ReturnType<typeof listEducationsApiV1ProfessionalsProfessionalIdEducationsGet>>, TError = HTTPValidationError>(professionalId: string,
-    params?: ListEducationsApiV1ProfessionalsProfessionalIdEducationsGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listEducationsApiV1ProfessionalsProfessionalIdEducationsGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
-) => {
+export const getListEducationsApiV1ProfessionalsProfessionalIdEducationsGetQueryOptions =
+  <
+    TData = Awaited<
+      ReturnType<
+        typeof listEducationsApiV1ProfessionalsProfessionalIdEducationsGet
+      >
+    >,
+    TError = HTTPValidationError,
+  >(
+    professionalId: string,
+    params?: ListEducationsApiV1ProfessionalsProfessionalIdEducationsGetParams,
+    options?: {
+      query?: Partial<
+        UseQueryOptions<
+          Awaited<
+            ReturnType<
+              typeof listEducationsApiV1ProfessionalsProfessionalIdEducationsGet
+            >
+          >,
+          TError,
+          TData
+        >
+      >;
+      request?: SecondParameter<typeof customFetch>;
+    },
+  ) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
 
-const {query: queryOptions, request: requestOptions} = options ?? {};
+    const queryKey =
+      queryOptions?.queryKey ??
+      getListEducationsApiV1ProfessionalsProfessionalIdEducationsGetQueryKey(
+        professionalId,
+        params,
+      );
 
-  const queryKey =  queryOptions?.queryKey ?? getListEducationsApiV1ProfessionalsProfessionalIdEducationsGetQueryKey(professionalId,params);
+    const queryFn: QueryFunction<
+      Awaited<
+        ReturnType<
+          typeof listEducationsApiV1ProfessionalsProfessionalIdEducationsGet
+        >
+      >
+    > = ({ signal }) =>
+      listEducationsApiV1ProfessionalsProfessionalIdEducationsGet(
+        professionalId,
+        params,
+        { signal, ...requestOptions },
+      );
 
-  
+    return {
+      queryKey,
+      queryFn,
+      enabled: !!professionalId,
+      staleTime: 30000,
+      ...queryOptions,
+    } as UseQueryOptions<
+      Awaited<
+        ReturnType<
+          typeof listEducationsApiV1ProfessionalsProfessionalIdEducationsGet
+        >
+      >,
+      TError,
+      TData
+    > & { queryKey: DataTag<QueryKey, TData> };
+  };
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof listEducationsApiV1ProfessionalsProfessionalIdEducationsGet>>> = ({ signal }) => listEducationsApiV1ProfessionalsProfessionalIdEducationsGet(professionalId,params, { signal, ...requestOptions });
+export type ListEducationsApiV1ProfessionalsProfessionalIdEducationsGetQueryResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof listEducationsApiV1ProfessionalsProfessionalIdEducationsGet
+      >
+    >
+  >;
+export type ListEducationsApiV1ProfessionalsProfessionalIdEducationsGetQueryError =
+  HTTPValidationError;
 
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(professionalId),  staleTime: 30000,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listEducationsApiV1ProfessionalsProfessionalIdEducationsGet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData> }
-}
-
-export type ListEducationsApiV1ProfessionalsProfessionalIdEducationsGetQueryResult = NonNullable<Awaited<ReturnType<typeof listEducationsApiV1ProfessionalsProfessionalIdEducationsGet>>>
-export type ListEducationsApiV1ProfessionalsProfessionalIdEducationsGetQueryError = HTTPValidationError
-
-
-export function useListEducationsApiV1ProfessionalsProfessionalIdEducationsGet<TData = Awaited<ReturnType<typeof listEducationsApiV1ProfessionalsProfessionalIdEducationsGet>>, TError = HTTPValidationError>(
- professionalId: string,
-    params: undefined |  ListEducationsApiV1ProfessionalsProfessionalIdEducationsGetParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listEducationsApiV1ProfessionalsProfessionalIdEducationsGet>>, TError, TData>> & Pick<
+export function useListEducationsApiV1ProfessionalsProfessionalIdEducationsGet<
+  TData = Awaited<
+    ReturnType<
+      typeof listEducationsApiV1ProfessionalsProfessionalIdEducationsGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  professionalId: string,
+  params:
+    | undefined
+    | ListEducationsApiV1ProfessionalsProfessionalIdEducationsGetParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof listEducationsApiV1ProfessionalsProfessionalIdEducationsGet
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof listEducationsApiV1ProfessionalsProfessionalIdEducationsGet>>,
+          Awaited<
+            ReturnType<
+              typeof listEducationsApiV1ProfessionalsProfessionalIdEducationsGet
+            >
+          >,
           TError,
-          Awaited<ReturnType<typeof listEducationsApiV1ProfessionalsProfessionalIdEducationsGet>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
-export function useListEducationsApiV1ProfessionalsProfessionalIdEducationsGet<TData = Awaited<ReturnType<typeof listEducationsApiV1ProfessionalsProfessionalIdEducationsGet>>, TError = HTTPValidationError>(
- professionalId: string,
-    params?: ListEducationsApiV1ProfessionalsProfessionalIdEducationsGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listEducationsApiV1ProfessionalsProfessionalIdEducationsGet>>, TError, TData>> & Pick<
+          Awaited<
+            ReturnType<
+              typeof listEducationsApiV1ProfessionalsProfessionalIdEducationsGet
+            >
+          >
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData>;
+};
+export function useListEducationsApiV1ProfessionalsProfessionalIdEducationsGet<
+  TData = Awaited<
+    ReturnType<
+      typeof listEducationsApiV1ProfessionalsProfessionalIdEducationsGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  professionalId: string,
+  params?: ListEducationsApiV1ProfessionalsProfessionalIdEducationsGetParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof listEducationsApiV1ProfessionalsProfessionalIdEducationsGet
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof listEducationsApiV1ProfessionalsProfessionalIdEducationsGet>>,
+          Awaited<
+            ReturnType<
+              typeof listEducationsApiV1ProfessionalsProfessionalIdEducationsGet
+            >
+          >,
           TError,
-          Awaited<ReturnType<typeof listEducationsApiV1ProfessionalsProfessionalIdEducationsGet>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
-export function useListEducationsApiV1ProfessionalsProfessionalIdEducationsGet<TData = Awaited<ReturnType<typeof listEducationsApiV1ProfessionalsProfessionalIdEducationsGet>>, TError = HTTPValidationError>(
- professionalId: string,
-    params?: ListEducationsApiV1ProfessionalsProfessionalIdEducationsGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listEducationsApiV1ProfessionalsProfessionalIdEducationsGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
+          Awaited<
+            ReturnType<
+              typeof listEducationsApiV1ProfessionalsProfessionalIdEducationsGet
+            >
+          >
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
+export function useListEducationsApiV1ProfessionalsProfessionalIdEducationsGet<
+  TData = Awaited<
+    ReturnType<
+      typeof listEducationsApiV1ProfessionalsProfessionalIdEducationsGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  professionalId: string,
+  params?: ListEducationsApiV1ProfessionalsProfessionalIdEducationsGetParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof listEducationsApiV1ProfessionalsProfessionalIdEducationsGet
+          >
+        >,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
 /**
  * @summary List professional educations
  */
 
-export function useListEducationsApiV1ProfessionalsProfessionalIdEducationsGet<TData = Awaited<ReturnType<typeof listEducationsApiV1ProfessionalsProfessionalIdEducationsGet>>, TError = HTTPValidationError>(
- professionalId: string,
-    params?: ListEducationsApiV1ProfessionalsProfessionalIdEducationsGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listEducationsApiV1ProfessionalsProfessionalIdEducationsGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+export function useListEducationsApiV1ProfessionalsProfessionalIdEducationsGet<
+  TData = Awaited<
+    ReturnType<
+      typeof listEducationsApiV1ProfessionalsProfessionalIdEducationsGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  professionalId: string,
+  params?: ListEducationsApiV1ProfessionalsProfessionalIdEducationsGetParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof listEducationsApiV1ProfessionalsProfessionalIdEducationsGet
+          >
+        >,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+  const queryOptions =
+    getListEducationsApiV1ProfessionalsProfessionalIdEducationsGetQueryOptions(
+      professionalId,
+      params,
+      options,
+    );
 
-  const queryOptions = getListEducationsApiV1ProfessionalsProfessionalIdEducationsGetQueryOptions(professionalId,params,options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData> };
 
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
-
-
-
 
 /**
  * Get a specific education record by ID.
  * @summary Get a professional education
  */
-export type getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGetResponse200 = {
-  data: ProfessionalEducationResponse
-  status: 200
-}
+export type getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGetResponse200 =
+  {
+    data: ProfessionalEducationResponse;
+    status: 200;
+  };
 
-export type getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGetResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-    
-export type getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGetResponseSuccess = (getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGetResponse200) & {
-  headers: Headers;
-};
-export type getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGetResponseError = (getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGetResponse422) & {
-  headers: Headers;
-};
+export type getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGetResponse422 =
+  {
+    data: HTTPValidationError;
+    status: 422;
+  };
 
-export type getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGetResponse = (getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGetResponseSuccess | getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGetResponseError)
+export type getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGetResponseSuccess =
+  getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGetResponse200 & {
+    headers: Headers;
+  };
+export type getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGetResponseError =
+  getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGetResponse422 & {
+    headers: Headers;
+  };
 
-export const getGetEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGetUrl = (professionalId: string,
-    educationId: string,) => {
+export type getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGetResponse =
 
+    | getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGetResponseSuccess
+    | getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGetResponseError;
 
-  
+export const getGetEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGetUrl =
+  (professionalId: string, educationId: string) => {
+    return `/api/v1/professionals/${professionalId}/educations/${educationId}`;
+  };
 
-  return `/api/v1/professionals/${professionalId}/educations/${educationId}`
-}
+export const getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGet =
+  async (
+    professionalId: string,
+    educationId: string,
+    options?: RequestInit,
+  ): Promise<getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGetResponse> => {
+    return customFetch<getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGetResponse>(
+      getGetEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGetUrl(
+        professionalId,
+        educationId,
+      ),
+      {
+        ...options,
+        method: "GET",
+      },
+    );
+  };
 
-export const getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGet = async (professionalId: string,
-    educationId: string, options?: RequestInit): Promise<getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGetResponse> => {
-  
-  return customFetch<getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGetResponse>(getGetEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGetUrl(professionalId,educationId),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
-
-
-
-export const getGetEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGetQueryKey = (professionalId?: string,
-    educationId?: string,) => {
+export const getGetEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGetQueryKey =
+  (professionalId?: string, educationId?: string) => {
     return [
-    `/api/v1/professionals/${professionalId}/educations/${educationId}`
+      `/api/v1/professionals/${professionalId}/educations/${educationId}`,
     ] as const;
-    }
+  };
 
-    
-export const getGetEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGetQueryOptions = <TData = Awaited<ReturnType<typeof getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGet>>, TError = HTTPValidationError>(professionalId: string,
-    educationId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
-) => {
+export const getGetEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGetQueryOptions =
+  <
+    TData = Awaited<
+      ReturnType<
+        typeof getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGet
+      >
+    >,
+    TError = HTTPValidationError,
+  >(
+    professionalId: string,
+    educationId: string,
+    options?: {
+      query?: Partial<
+        UseQueryOptions<
+          Awaited<
+            ReturnType<
+              typeof getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGet
+            >
+          >,
+          TError,
+          TData
+        >
+      >;
+      request?: SecondParameter<typeof customFetch>;
+    },
+  ) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
 
-const {query: queryOptions, request: requestOptions} = options ?? {};
+    const queryKey =
+      queryOptions?.queryKey ??
+      getGetEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGetQueryKey(
+        professionalId,
+        educationId,
+      );
 
-  const queryKey =  queryOptions?.queryKey ?? getGetEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGetQueryKey(professionalId,educationId);
+    const queryFn: QueryFunction<
+      Awaited<
+        ReturnType<
+          typeof getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGet
+        >
+      >
+    > = ({ signal }) =>
+      getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGet(
+        professionalId,
+        educationId,
+        { signal, ...requestOptions },
+      );
 
-  
+    return {
+      queryKey,
+      queryFn,
+      enabled: !!(professionalId && educationId),
+      staleTime: 30000,
+      ...queryOptions,
+    } as UseQueryOptions<
+      Awaited<
+        ReturnType<
+          typeof getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGet
+        >
+      >,
+      TError,
+      TData
+    > & { queryKey: DataTag<QueryKey, TData> };
+  };
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGet>>> = ({ signal }) => getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGet(professionalId,educationId, { signal, ...requestOptions });
+export type GetEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGetQueryResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGet
+      >
+    >
+  >;
+export type GetEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGetQueryError =
+  HTTPValidationError;
 
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(professionalId && educationId),  staleTime: 30000,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData> }
-}
-
-export type GetEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGetQueryResult = NonNullable<Awaited<ReturnType<typeof getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGet>>>
-export type GetEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGetQueryError = HTTPValidationError
-
-
-export function useGetEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGet<TData = Awaited<ReturnType<typeof getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGet>>, TError = HTTPValidationError>(
- professionalId: string,
-    educationId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGet>>, TError, TData>> & Pick<
+export function useGetEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  professionalId: string,
+  educationId: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGet
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGet>>,
+          Awaited<
+            ReturnType<
+              typeof getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGet
+            >
+          >,
           TError,
-          Awaited<ReturnType<typeof getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGet>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
-export function useGetEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGet<TData = Awaited<ReturnType<typeof getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGet>>, TError = HTTPValidationError>(
- professionalId: string,
-    educationId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGet>>, TError, TData>> & Pick<
+          Awaited<
+            ReturnType<
+              typeof getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGet
+            >
+          >
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData>;
+};
+export function useGetEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  professionalId: string,
+  educationId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGet
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGet>>,
+          Awaited<
+            ReturnType<
+              typeof getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGet
+            >
+          >,
           TError,
-          Awaited<ReturnType<typeof getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGet>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
-export function useGetEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGet<TData = Awaited<ReturnType<typeof getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGet>>, TError = HTTPValidationError>(
- professionalId: string,
-    educationId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
+          Awaited<
+            ReturnType<
+              typeof getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGet
+            >
+          >
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
+export function useGetEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  professionalId: string,
+  educationId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGet
+          >
+        >,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
 /**
  * @summary Get a professional education
  */
 
-export function useGetEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGet<TData = Awaited<ReturnType<typeof getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGet>>, TError = HTTPValidationError>(
- professionalId: string,
-    educationId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+export function useGetEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  professionalId: string,
+  educationId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGet
+          >
+        >,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+  const queryOptions =
+    getGetEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGetQueryOptions(
+      professionalId,
+      educationId,
+      options,
+    );
 
-  const queryOptions = getGetEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdGetQueryOptions(professionalId,educationId,options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData> };
 
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
-
-
-
 
 /**
  * Partially update an education record. Only provided fields will be updated.
  * @summary Update a professional education
  */
-export type updateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatchResponse200 = {
-  data: ProfessionalEducationResponse
-  status: 200
-}
+export type updateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatchResponse200 =
+  {
+    data: ProfessionalEducationResponse;
+    status: 200;
+  };
 
-export type updateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatchResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-    
-export type updateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatchResponseSuccess = (updateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatchResponse200) & {
-  headers: Headers;
-};
-export type updateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatchResponseError = (updateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatchResponse422) & {
-  headers: Headers;
-};
+export type updateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatchResponse422 =
+  {
+    data: HTTPValidationError;
+    status: 422;
+  };
 
-export type updateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatchResponse = (updateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatchResponseSuccess | updateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatchResponseError)
+export type updateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatchResponseSuccess =
+  updateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatchResponse200 & {
+    headers: Headers;
+  };
+export type updateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatchResponseError =
+  updateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatchResponse422 & {
+    headers: Headers;
+  };
 
-export const getUpdateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatchUrl = (professionalId: string,
-    educationId: string,) => {
+export type updateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatchResponse =
 
+    | updateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatchResponseSuccess
+    | updateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatchResponseError;
 
-  
+export const getUpdateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatchUrl =
+  (professionalId: string, educationId: string) => {
+    return `/api/v1/professionals/${professionalId}/educations/${educationId}`;
+  };
 
-  return `/api/v1/professionals/${professionalId}/educations/${educationId}`
-}
-
-export const updateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatch = async (professionalId: string,
+export const updateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatch =
+  async (
+    professionalId: string,
     educationId: string,
-    professionalEducationUpdate: ProfessionalEducationUpdate, options?: RequestInit): Promise<updateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatchResponse> => {
-  
-  return customFetch<updateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatchResponse>(getUpdateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatchUrl(professionalId,educationId),
-  {      
-    ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      professionalEducationUpdate,)
-  }
-);}
+    professionalEducationUpdate: ProfessionalEducationUpdate,
+    options?: RequestInit,
+  ): Promise<updateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatchResponse> => {
+    return customFetch<updateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatchResponse>(
+      getUpdateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatchUrl(
+        professionalId,
+        educationId,
+      ),
+      {
+        ...options,
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", ...options?.headers },
+        body: JSON.stringify(professionalEducationUpdate),
+      },
+    );
+  };
 
+export const getUpdateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatchMutationOptions =
+  <TError = HTTPValidationError, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<
+          typeof updateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatch
+        >
+      >,
+      TError,
+      {
+        professionalId: string;
+        educationId: string;
+        data: ProfessionalEducationUpdate;
+      },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  }): UseMutationOptions<
+    Awaited<
+      ReturnType<
+        typeof updateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatch
+      >
+    >,
+    TError,
+    {
+      professionalId: string;
+      educationId: string;
+      data: ProfessionalEducationUpdate;
+    },
+    TContext
+  > => {
+    const mutationKey = [
+      "updateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatch",
+    ];
+    const { mutation: mutationOptions, request: requestOptions } = options
+      ? options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+        ? options
+        : { ...options, mutation: { ...options.mutation, mutationKey } }
+      : { mutation: { mutationKey }, request: undefined };
 
+    const mutationFn: MutationFunction<
+      Awaited<
+        ReturnType<
+          typeof updateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatch
+        >
+      >,
+      {
+        professionalId: string;
+        educationId: string;
+        data: ProfessionalEducationUpdate;
+      }
+    > = (props) => {
+      const { professionalId, educationId, data } = props ?? {};
 
+      return updateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatch(
+        professionalId,
+        educationId,
+        data,
+        requestOptions,
+      );
+    };
 
-export const getUpdateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatchMutationOptions = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatch>>, TError,{professionalId: string;educationId: string;data: ProfessionalEducationUpdate}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof updateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatch>>, TError,{professionalId: string;educationId: string;data: ProfessionalEducationUpdate}, TContext> => {
+    return { mutationFn, ...mutationOptions };
+  };
 
-const mutationKey = ['updateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatch'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+export type UpdateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatchMutationResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof updateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatch
+      >
+    >
+  >;
+export type UpdateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatchMutationBody =
+  ProfessionalEducationUpdate;
+export type UpdateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatchMutationError =
+  HTTPValidationError;
 
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatch>>, {professionalId: string;educationId: string;data: ProfessionalEducationUpdate}> = (props) => {
-          const {professionalId,educationId,data} = props ?? {};
-
-          return  updateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatch(professionalId,educationId,data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type UpdateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatchMutationResult = NonNullable<Awaited<ReturnType<typeof updateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatch>>>
-    export type UpdateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatchMutationBody = ProfessionalEducationUpdate
-    export type UpdateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatchMutationError = HTTPValidationError
-
-    /**
+/**
  * @summary Update a professional education
  */
-export const useUpdateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatch = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatch>>, TError,{professionalId: string;educationId: string;data: ProfessionalEducationUpdate}, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof updateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatch>>,
+export const useUpdateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatch =
+  <TError = HTTPValidationError, TContext = unknown>(
+    options?: {
+      mutation?: UseMutationOptions<
+        Awaited<
+          ReturnType<
+            typeof updateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatch
+          >
+        >,
         TError,
-        {professionalId: string;educationId: string;data: ProfessionalEducationUpdate},
+        {
+          professionalId: string;
+          educationId: string;
+          data: ProfessionalEducationUpdate;
+        },
         TContext
-      > => {
+      >;
+      request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+  ): UseMutationResult<
+    Awaited<
+      ReturnType<
+        typeof updateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatch
+      >
+    >,
+    TError,
+    {
+      professionalId: string;
+      educationId: string;
+      data: ProfessionalEducationUpdate;
+    },
+    TContext
+  > => {
+    const mutationOptions =
+      getUpdateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatchMutationOptions(
+        options,
+      );
 
-      const mutationOptions = getUpdateEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdPatchMutationOptions(options);
-
-      return useMutation(mutationOptions, queryClient);
-    }
-    /**
+    return useMutation(mutationOptions, queryClient);
+  };
+/**
  * Soft delete an education record.
  * @summary Delete a professional education
  */
-export type deleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDeleteResponse204 = {
-  data: void
-  status: 204
-}
+export type deleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDeleteResponse204 =
+  {
+    data: void;
+    status: 204;
+  };
 
-export type deleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDeleteResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-    
-export type deleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDeleteResponseSuccess = (deleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDeleteResponse204) & {
-  headers: Headers;
-};
-export type deleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDeleteResponseError = (deleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDeleteResponse422) & {
-  headers: Headers;
-};
+export type deleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDeleteResponse422 =
+  {
+    data: HTTPValidationError;
+    status: 422;
+  };
 
-export type deleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDeleteResponse = (deleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDeleteResponseSuccess | deleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDeleteResponseError)
+export type deleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDeleteResponseSuccess =
+  deleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDeleteResponse204 & {
+    headers: Headers;
+  };
+export type deleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDeleteResponseError =
+  deleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDeleteResponse422 & {
+    headers: Headers;
+  };
 
-export const getDeleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDeleteUrl = (professionalId: string,
-    educationId: string,) => {
+export type deleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDeleteResponse =
 
+    | deleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDeleteResponseSuccess
+    | deleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDeleteResponseError;
 
-  
+export const getDeleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDeleteUrl =
+  (professionalId: string, educationId: string) => {
+    return `/api/v1/professionals/${professionalId}/educations/${educationId}`;
+  };
 
-  return `/api/v1/professionals/${professionalId}/educations/${educationId}`
-}
+export const deleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDelete =
+  async (
+    professionalId: string,
+    educationId: string,
+    options?: RequestInit,
+  ): Promise<deleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDeleteResponse> => {
+    return customFetch<deleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDeleteResponse>(
+      getDeleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDeleteUrl(
+        professionalId,
+        educationId,
+      ),
+      {
+        ...options,
+        method: "DELETE",
+      },
+    );
+  };
 
-export const deleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDelete = async (professionalId: string,
-    educationId: string, options?: RequestInit): Promise<deleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDeleteResponse> => {
-  
-  return customFetch<deleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDeleteResponse>(getDeleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDeleteUrl(professionalId,educationId),
-  {      
-    ...options,
-    method: 'DELETE'
-    
-    
-  }
-);}
+export const getDeleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDeleteMutationOptions =
+  <TError = HTTPValidationError, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<
+          typeof deleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDelete
+        >
+      >,
+      TError,
+      { professionalId: string; educationId: string },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  }): UseMutationOptions<
+    Awaited<
+      ReturnType<
+        typeof deleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDelete
+      >
+    >,
+    TError,
+    { professionalId: string; educationId: string },
+    TContext
+  > => {
+    const mutationKey = [
+      "deleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDelete",
+    ];
+    const { mutation: mutationOptions, request: requestOptions } = options
+      ? options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+        ? options
+        : { ...options, mutation: { ...options.mutation, mutationKey } }
+      : { mutation: { mutationKey }, request: undefined };
 
+    const mutationFn: MutationFunction<
+      Awaited<
+        ReturnType<
+          typeof deleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDelete
+        >
+      >,
+      { professionalId: string; educationId: string }
+    > = (props) => {
+      const { professionalId, educationId } = props ?? {};
 
+      return deleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDelete(
+        professionalId,
+        educationId,
+        requestOptions,
+      );
+    };
 
+    return { mutationFn, ...mutationOptions };
+  };
 
-export const getDeleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDeleteMutationOptions = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDelete>>, TError,{professionalId: string;educationId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof deleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDelete>>, TError,{professionalId: string;educationId: string}, TContext> => {
+export type DeleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDeleteMutationResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof deleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDelete
+      >
+    >
+  >;
 
-const mutationKey = ['deleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDelete'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+export type DeleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDeleteMutationError =
+  HTTPValidationError;
 
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDelete>>, {professionalId: string;educationId: string}> = (props) => {
-          const {professionalId,educationId} = props ?? {};
-
-          return  deleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDelete(professionalId,educationId,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type DeleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDeleteMutationResult = NonNullable<Awaited<ReturnType<typeof deleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDelete>>>
-    
-    export type DeleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDeleteMutationError = HTTPValidationError
-
-    /**
+/**
  * @summary Delete a professional education
  */
-export const useDeleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDelete = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDelete>>, TError,{professionalId: string;educationId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof deleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDelete>>,
+export const useDeleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDelete =
+  <TError = HTTPValidationError, TContext = unknown>(
+    options?: {
+      mutation?: UseMutationOptions<
+        Awaited<
+          ReturnType<
+            typeof deleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDelete
+          >
+        >,
         TError,
-        {professionalId: string;educationId: string},
+        { professionalId: string; educationId: string },
         TContext
-      > => {
+      >;
+      request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+  ): UseMutationResult<
+    Awaited<
+      ReturnType<
+        typeof deleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDelete
+      >
+    >,
+    TError,
+    { professionalId: string; educationId: string },
+    TContext
+  > => {
+    const mutationOptions =
+      getDeleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDeleteMutationOptions(
+        options,
+      );
 
-      const mutationOptions = getDeleteEducationApiV1ProfessionalsProfessionalIdEducationsEducationIdDeleteMutationOptions(options);
-
-      return useMutation(mutationOptions, queryClient);
-    }
-    /**
+    return useMutation(mutationOptions, queryClient);
+  };
+/**
  * Create a new qualification (e.g., CRM, COREN) for a professional.
  * @summary Add a qualification to a professional
  */
-export type createQualificationApiV1ProfessionalsProfessionalIdQualificationsPostResponse201 = {
-  data: ProfessionalQualificationResponse
-  status: 201
-}
+export type createQualificationApiV1ProfessionalsProfessionalIdQualificationsPostResponse201 =
+  {
+    data: ProfessionalQualificationResponse;
+    status: 201;
+  };
 
-export type createQualificationApiV1ProfessionalsProfessionalIdQualificationsPostResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-    
-export type createQualificationApiV1ProfessionalsProfessionalIdQualificationsPostResponseSuccess = (createQualificationApiV1ProfessionalsProfessionalIdQualificationsPostResponse201) & {
-  headers: Headers;
-};
-export type createQualificationApiV1ProfessionalsProfessionalIdQualificationsPostResponseError = (createQualificationApiV1ProfessionalsProfessionalIdQualificationsPostResponse422) & {
-  headers: Headers;
-};
+export type createQualificationApiV1ProfessionalsProfessionalIdQualificationsPostResponse422 =
+  {
+    data: HTTPValidationError;
+    status: 422;
+  };
 
-export type createQualificationApiV1ProfessionalsProfessionalIdQualificationsPostResponse = (createQualificationApiV1ProfessionalsProfessionalIdQualificationsPostResponseSuccess | createQualificationApiV1ProfessionalsProfessionalIdQualificationsPostResponseError)
+export type createQualificationApiV1ProfessionalsProfessionalIdQualificationsPostResponseSuccess =
+  createQualificationApiV1ProfessionalsProfessionalIdQualificationsPostResponse201 & {
+    headers: Headers;
+  };
+export type createQualificationApiV1ProfessionalsProfessionalIdQualificationsPostResponseError =
+  createQualificationApiV1ProfessionalsProfessionalIdQualificationsPostResponse422 & {
+    headers: Headers;
+  };
 
-export const getCreateQualificationApiV1ProfessionalsProfessionalIdQualificationsPostUrl = (professionalId: string,) => {
+export type createQualificationApiV1ProfessionalsProfessionalIdQualificationsPostResponse =
 
+    | createQualificationApiV1ProfessionalsProfessionalIdQualificationsPostResponseSuccess
+    | createQualificationApiV1ProfessionalsProfessionalIdQualificationsPostResponseError;
 
-  
+export const getCreateQualificationApiV1ProfessionalsProfessionalIdQualificationsPostUrl =
+  (professionalId: string) => {
+    return `/api/v1/professionals/${professionalId}/qualifications/`;
+  };
 
-  return `/api/v1/professionals/${professionalId}/qualifications/`
-}
+export const createQualificationApiV1ProfessionalsProfessionalIdQualificationsPost =
+  async (
+    professionalId: string,
+    professionalQualificationCreate: ProfessionalQualificationCreate,
+    options?: RequestInit,
+  ): Promise<createQualificationApiV1ProfessionalsProfessionalIdQualificationsPostResponse> => {
+    return customFetch<createQualificationApiV1ProfessionalsProfessionalIdQualificationsPostResponse>(
+      getCreateQualificationApiV1ProfessionalsProfessionalIdQualificationsPostUrl(
+        professionalId,
+      ),
+      {
+        ...options,
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...options?.headers },
+        body: JSON.stringify(professionalQualificationCreate),
+      },
+    );
+  };
 
-export const createQualificationApiV1ProfessionalsProfessionalIdQualificationsPost = async (professionalId: string,
-    professionalQualificationCreate: ProfessionalQualificationCreate, options?: RequestInit): Promise<createQualificationApiV1ProfessionalsProfessionalIdQualificationsPostResponse> => {
-  
-  return customFetch<createQualificationApiV1ProfessionalsProfessionalIdQualificationsPostResponse>(getCreateQualificationApiV1ProfessionalsProfessionalIdQualificationsPostUrl(professionalId),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      professionalQualificationCreate,)
-  }
-);}
+export const getCreateQualificationApiV1ProfessionalsProfessionalIdQualificationsPostMutationOptions =
+  <TError = HTTPValidationError, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<
+          typeof createQualificationApiV1ProfessionalsProfessionalIdQualificationsPost
+        >
+      >,
+      TError,
+      { professionalId: string; data: ProfessionalQualificationCreate },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  }): UseMutationOptions<
+    Awaited<
+      ReturnType<
+        typeof createQualificationApiV1ProfessionalsProfessionalIdQualificationsPost
+      >
+    >,
+    TError,
+    { professionalId: string; data: ProfessionalQualificationCreate },
+    TContext
+  > => {
+    const mutationKey = [
+      "createQualificationApiV1ProfessionalsProfessionalIdQualificationsPost",
+    ];
+    const { mutation: mutationOptions, request: requestOptions } = options
+      ? options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+        ? options
+        : { ...options, mutation: { ...options.mutation, mutationKey } }
+      : { mutation: { mutationKey }, request: undefined };
 
+    const mutationFn: MutationFunction<
+      Awaited<
+        ReturnType<
+          typeof createQualificationApiV1ProfessionalsProfessionalIdQualificationsPost
+        >
+      >,
+      { professionalId: string; data: ProfessionalQualificationCreate }
+    > = (props) => {
+      const { professionalId, data } = props ?? {};
 
+      return createQualificationApiV1ProfessionalsProfessionalIdQualificationsPost(
+        professionalId,
+        data,
+        requestOptions,
+      );
+    };
 
+    return { mutationFn, ...mutationOptions };
+  };
 
-export const getCreateQualificationApiV1ProfessionalsProfessionalIdQualificationsPostMutationOptions = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createQualificationApiV1ProfessionalsProfessionalIdQualificationsPost>>, TError,{professionalId: string;data: ProfessionalQualificationCreate}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof createQualificationApiV1ProfessionalsProfessionalIdQualificationsPost>>, TError,{professionalId: string;data: ProfessionalQualificationCreate}, TContext> => {
+export type CreateQualificationApiV1ProfessionalsProfessionalIdQualificationsPostMutationResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof createQualificationApiV1ProfessionalsProfessionalIdQualificationsPost
+      >
+    >
+  >;
+export type CreateQualificationApiV1ProfessionalsProfessionalIdQualificationsPostMutationBody =
+  ProfessionalQualificationCreate;
+export type CreateQualificationApiV1ProfessionalsProfessionalIdQualificationsPostMutationError =
+  HTTPValidationError;
 
-const mutationKey = ['createQualificationApiV1ProfessionalsProfessionalIdQualificationsPost'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createQualificationApiV1ProfessionalsProfessionalIdQualificationsPost>>, {professionalId: string;data: ProfessionalQualificationCreate}> = (props) => {
-          const {professionalId,data} = props ?? {};
-
-          return  createQualificationApiV1ProfessionalsProfessionalIdQualificationsPost(professionalId,data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type CreateQualificationApiV1ProfessionalsProfessionalIdQualificationsPostMutationResult = NonNullable<Awaited<ReturnType<typeof createQualificationApiV1ProfessionalsProfessionalIdQualificationsPost>>>
-    export type CreateQualificationApiV1ProfessionalsProfessionalIdQualificationsPostMutationBody = ProfessionalQualificationCreate
-    export type CreateQualificationApiV1ProfessionalsProfessionalIdQualificationsPostMutationError = HTTPValidationError
-
-    /**
+/**
  * @summary Add a qualification to a professional
  */
-export const useCreateQualificationApiV1ProfessionalsProfessionalIdQualificationsPost = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createQualificationApiV1ProfessionalsProfessionalIdQualificationsPost>>, TError,{professionalId: string;data: ProfessionalQualificationCreate}, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof createQualificationApiV1ProfessionalsProfessionalIdQualificationsPost>>,
+export const useCreateQualificationApiV1ProfessionalsProfessionalIdQualificationsPost =
+  <TError = HTTPValidationError, TContext = unknown>(
+    options?: {
+      mutation?: UseMutationOptions<
+        Awaited<
+          ReturnType<
+            typeof createQualificationApiV1ProfessionalsProfessionalIdQualificationsPost
+          >
+        >,
         TError,
-        {professionalId: string;data: ProfessionalQualificationCreate},
+        { professionalId: string; data: ProfessionalQualificationCreate },
         TContext
-      > => {
+      >;
+      request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+  ): UseMutationResult<
+    Awaited<
+      ReturnType<
+        typeof createQualificationApiV1ProfessionalsProfessionalIdQualificationsPost
+      >
+    >,
+    TError,
+    { professionalId: string; data: ProfessionalQualificationCreate },
+    TContext
+  > => {
+    const mutationOptions =
+      getCreateQualificationApiV1ProfessionalsProfessionalIdQualificationsPostMutationOptions(
+        options,
+      );
 
-      const mutationOptions = getCreateQualificationApiV1ProfessionalsProfessionalIdQualificationsPostMutationOptions(options);
-
-      return useMutation(mutationOptions, queryClient);
-    }
-    /**
+    return useMutation(mutationOptions, queryClient);
+  };
+/**
  * List all qualifications for a professional with pagination, filtering and sorting.
  * @summary List professional qualifications
  */
-export type listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetResponse200 = {
-  data: PaginatedResponseProfessionalQualificationResponse
-  status: 200
-}
+export type listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetResponse200 =
+  {
+    data: PaginatedResponseProfessionalQualificationResponse;
+    status: 200;
+  };
 
-export type listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-    
-export type listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetResponseSuccess = (listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetResponse200) & {
-  headers: Headers;
-};
-export type listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetResponseError = (listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetResponse422) & {
-  headers: Headers;
-};
+export type listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetResponse422 =
+  {
+    data: HTTPValidationError;
+    status: 422;
+  };
 
-export type listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetResponse = (listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetResponseSuccess | listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetResponseError)
+export type listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetResponseSuccess =
+  listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetResponse200 & {
+    headers: Headers;
+  };
+export type listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetResponseError =
+  listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetResponse422 & {
+    headers: Headers;
+  };
 
-export const getListQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetUrl = (professionalId: string,
-    params?: ListQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetParams,) => {
-  const normalizedParams = new URLSearchParams();
+export type listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetResponse =
 
-  Object.entries(params || {}).forEach(([key, value]) => {
-    
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString())
-    }
-  });
+    | listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetResponseSuccess
+    | listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetResponseError;
 
-  const stringifiedParams = normalizedParams.toString();
+export const getListQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetUrl =
+  (
+    professionalId: string,
+    params?: ListQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetParams,
+  ) => {
+    const normalizedParams = new URLSearchParams();
 
-  return stringifiedParams.length > 0 ? `/api/v1/professionals/${professionalId}/qualifications/?${stringifiedParams}` : `/api/v1/professionals/${professionalId}/qualifications/`
-}
+    Object.entries(params || {}).forEach(([key, value]) => {
+      if (value !== undefined) {
+        normalizedParams.append(
+          key,
+          value === null ? "null" : value.toString(),
+        );
+      }
+    });
 
-export const listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGet = async (professionalId: string,
-    params?: ListQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetParams, options?: RequestInit): Promise<listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetResponse> => {
-  
-  return customFetch<listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetResponse>(getListQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetUrl(professionalId,params),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
+    const stringifiedParams = normalizedParams.toString();
 
+    return stringifiedParams.length > 0
+      ? `/api/v1/professionals/${professionalId}/qualifications/?${stringifiedParams}`
+      : `/api/v1/professionals/${professionalId}/qualifications/`;
+  };
 
+export const listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGet =
+  async (
+    professionalId: string,
+    params?: ListQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetParams,
+    options?: RequestInit,
+  ): Promise<listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetResponse> => {
+    return customFetch<listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetResponse>(
+      getListQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetUrl(
+        professionalId,
+        params,
+      ),
+      {
+        ...options,
+        method: "GET",
+      },
+    );
+  };
 
-
-
-export const getListQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetQueryKey = (professionalId?: string,
-    params?: ListQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetParams,) => {
+export const getListQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetQueryKey =
+  (
+    professionalId?: string,
+    params?: ListQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetParams,
+  ) => {
     return [
-    `/api/v1/professionals/${professionalId}/qualifications/`, ...(params ? [params]: [])
+      `/api/v1/professionals/${professionalId}/qualifications/`,
+      ...(params ? [params] : []),
     ] as const;
-    }
+  };
 
-    
-export const getListQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetQueryOptions = <TData = Awaited<ReturnType<typeof listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGet>>, TError = HTTPValidationError>(professionalId: string,
-    params?: ListQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
-) => {
+export const getListQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetQueryOptions =
+  <
+    TData = Awaited<
+      ReturnType<
+        typeof listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGet
+      >
+    >,
+    TError = HTTPValidationError,
+  >(
+    professionalId: string,
+    params?: ListQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetParams,
+    options?: {
+      query?: Partial<
+        UseQueryOptions<
+          Awaited<
+            ReturnType<
+              typeof listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGet
+            >
+          >,
+          TError,
+          TData
+        >
+      >;
+      request?: SecondParameter<typeof customFetch>;
+    },
+  ) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
 
-const {query: queryOptions, request: requestOptions} = options ?? {};
+    const queryKey =
+      queryOptions?.queryKey ??
+      getListQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetQueryKey(
+        professionalId,
+        params,
+      );
 
-  const queryKey =  queryOptions?.queryKey ?? getListQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetQueryKey(professionalId,params);
+    const queryFn: QueryFunction<
+      Awaited<
+        ReturnType<
+          typeof listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGet
+        >
+      >
+    > = ({ signal }) =>
+      listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGet(
+        professionalId,
+        params,
+        { signal, ...requestOptions },
+      );
 
-  
+    return {
+      queryKey,
+      queryFn,
+      enabled: !!professionalId,
+      staleTime: 30000,
+      ...queryOptions,
+    } as UseQueryOptions<
+      Awaited<
+        ReturnType<
+          typeof listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGet
+        >
+      >,
+      TError,
+      TData
+    > & { queryKey: DataTag<QueryKey, TData> };
+  };
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGet>>> = ({ signal }) => listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGet(professionalId,params, { signal, ...requestOptions });
+export type ListQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetQueryResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGet
+      >
+    >
+  >;
+export type ListQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetQueryError =
+  HTTPValidationError;
 
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(professionalId),  staleTime: 30000,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData> }
-}
-
-export type ListQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetQueryResult = NonNullable<Awaited<ReturnType<typeof listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGet>>>
-export type ListQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetQueryError = HTTPValidationError
-
-
-export function useListQualificationsApiV1ProfessionalsProfessionalIdQualificationsGet<TData = Awaited<ReturnType<typeof listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGet>>, TError = HTTPValidationError>(
- professionalId: string,
-    params: undefined |  ListQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGet>>, TError, TData>> & Pick<
+export function useListQualificationsApiV1ProfessionalsProfessionalIdQualificationsGet<
+  TData = Awaited<
+    ReturnType<
+      typeof listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  professionalId: string,
+  params:
+    | undefined
+    | ListQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGet
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGet>>,
+          Awaited<
+            ReturnType<
+              typeof listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGet
+            >
+          >,
           TError,
-          Awaited<ReturnType<typeof listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGet>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
-export function useListQualificationsApiV1ProfessionalsProfessionalIdQualificationsGet<TData = Awaited<ReturnType<typeof listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGet>>, TError = HTTPValidationError>(
- professionalId: string,
-    params?: ListQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGet>>, TError, TData>> & Pick<
+          Awaited<
+            ReturnType<
+              typeof listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGet
+            >
+          >
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData>;
+};
+export function useListQualificationsApiV1ProfessionalsProfessionalIdQualificationsGet<
+  TData = Awaited<
+    ReturnType<
+      typeof listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  professionalId: string,
+  params?: ListQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGet
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGet>>,
+          Awaited<
+            ReturnType<
+              typeof listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGet
+            >
+          >,
           TError,
-          Awaited<ReturnType<typeof listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGet>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
-export function useListQualificationsApiV1ProfessionalsProfessionalIdQualificationsGet<TData = Awaited<ReturnType<typeof listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGet>>, TError = HTTPValidationError>(
- professionalId: string,
-    params?: ListQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
+          Awaited<
+            ReturnType<
+              typeof listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGet
+            >
+          >
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
+export function useListQualificationsApiV1ProfessionalsProfessionalIdQualificationsGet<
+  TData = Awaited<
+    ReturnType<
+      typeof listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  professionalId: string,
+  params?: ListQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGet
+          >
+        >,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
 /**
  * @summary List professional qualifications
  */
 
-export function useListQualificationsApiV1ProfessionalsProfessionalIdQualificationsGet<TData = Awaited<ReturnType<typeof listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGet>>, TError = HTTPValidationError>(
- professionalId: string,
-    params?: ListQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+export function useListQualificationsApiV1ProfessionalsProfessionalIdQualificationsGet<
+  TData = Awaited<
+    ReturnType<
+      typeof listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  professionalId: string,
+  params?: ListQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof listQualificationsApiV1ProfessionalsProfessionalIdQualificationsGet
+          >
+        >,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+  const queryOptions =
+    getListQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetQueryOptions(
+      professionalId,
+      params,
+      options,
+    );
 
-  const queryOptions = getListQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetQueryOptions(professionalId,params,options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData> };
 
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
-
-
-
 
 /**
  * Get a specific qualification by ID.
  * @summary Get a professional qualification
  */
-export type getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGetResponse200 = {
-  data: ProfessionalQualificationResponse
-  status: 200
-}
+export type getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGetResponse200 =
+  {
+    data: ProfessionalQualificationResponse;
+    status: 200;
+  };
 
-export type getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGetResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-    
-export type getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGetResponseSuccess = (getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGetResponse200) & {
-  headers: Headers;
-};
-export type getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGetResponseError = (getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGetResponse422) & {
-  headers: Headers;
-};
+export type getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGetResponse422 =
+  {
+    data: HTTPValidationError;
+    status: 422;
+  };
 
-export type getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGetResponse = (getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGetResponseSuccess | getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGetResponseError)
+export type getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGetResponseSuccess =
+  getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGetResponse200 & {
+    headers: Headers;
+  };
+export type getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGetResponseError =
+  getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGetResponse422 & {
+    headers: Headers;
+  };
 
-export const getGetQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGetUrl = (professionalId: string,
-    qualificationId: string,) => {
+export type getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGetResponse =
 
+    | getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGetResponseSuccess
+    | getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGetResponseError;
 
-  
+export const getGetQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGetUrl =
+  (professionalId: string, qualificationId: string) => {
+    return `/api/v1/professionals/${professionalId}/qualifications/${qualificationId}`;
+  };
 
-  return `/api/v1/professionals/${professionalId}/qualifications/${qualificationId}`
-}
+export const getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGet =
+  async (
+    professionalId: string,
+    qualificationId: string,
+    options?: RequestInit,
+  ): Promise<getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGetResponse> => {
+    return customFetch<getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGetResponse>(
+      getGetQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGetUrl(
+        professionalId,
+        qualificationId,
+      ),
+      {
+        ...options,
+        method: "GET",
+      },
+    );
+  };
 
-export const getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGet = async (professionalId: string,
-    qualificationId: string, options?: RequestInit): Promise<getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGetResponse> => {
-  
-  return customFetch<getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGetResponse>(getGetQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGetUrl(professionalId,qualificationId),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
-
-
-
-export const getGetQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGetQueryKey = (professionalId?: string,
-    qualificationId?: string,) => {
+export const getGetQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGetQueryKey =
+  (professionalId?: string, qualificationId?: string) => {
     return [
-    `/api/v1/professionals/${professionalId}/qualifications/${qualificationId}`
+      `/api/v1/professionals/${professionalId}/qualifications/${qualificationId}`,
     ] as const;
-    }
+  };
 
-    
-export const getGetQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGetQueryOptions = <TData = Awaited<ReturnType<typeof getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGet>>, TError = HTTPValidationError>(professionalId: string,
-    qualificationId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
-) => {
+export const getGetQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGetQueryOptions =
+  <
+    TData = Awaited<
+      ReturnType<
+        typeof getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGet
+      >
+    >,
+    TError = HTTPValidationError,
+  >(
+    professionalId: string,
+    qualificationId: string,
+    options?: {
+      query?: Partial<
+        UseQueryOptions<
+          Awaited<
+            ReturnType<
+              typeof getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGet
+            >
+          >,
+          TError,
+          TData
+        >
+      >;
+      request?: SecondParameter<typeof customFetch>;
+    },
+  ) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
 
-const {query: queryOptions, request: requestOptions} = options ?? {};
+    const queryKey =
+      queryOptions?.queryKey ??
+      getGetQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGetQueryKey(
+        professionalId,
+        qualificationId,
+      );
 
-  const queryKey =  queryOptions?.queryKey ?? getGetQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGetQueryKey(professionalId,qualificationId);
+    const queryFn: QueryFunction<
+      Awaited<
+        ReturnType<
+          typeof getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGet
+        >
+      >
+    > = ({ signal }) =>
+      getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGet(
+        professionalId,
+        qualificationId,
+        { signal, ...requestOptions },
+      );
 
-  
+    return {
+      queryKey,
+      queryFn,
+      enabled: !!(professionalId && qualificationId),
+      staleTime: 30000,
+      ...queryOptions,
+    } as UseQueryOptions<
+      Awaited<
+        ReturnType<
+          typeof getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGet
+        >
+      >,
+      TError,
+      TData
+    > & { queryKey: DataTag<QueryKey, TData> };
+  };
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGet>>> = ({ signal }) => getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGet(professionalId,qualificationId, { signal, ...requestOptions });
+export type GetQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGetQueryResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGet
+      >
+    >
+  >;
+export type GetQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGetQueryError =
+  HTTPValidationError;
 
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(professionalId && qualificationId),  staleTime: 30000,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData> }
-}
-
-export type GetQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGetQueryResult = NonNullable<Awaited<ReturnType<typeof getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGet>>>
-export type GetQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGetQueryError = HTTPValidationError
-
-
-export function useGetQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGet<TData = Awaited<ReturnType<typeof getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGet>>, TError = HTTPValidationError>(
- professionalId: string,
-    qualificationId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGet>>, TError, TData>> & Pick<
+export function useGetQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  professionalId: string,
+  qualificationId: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGet
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGet>>,
+          Awaited<
+            ReturnType<
+              typeof getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGet
+            >
+          >,
           TError,
-          Awaited<ReturnType<typeof getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGet>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
-export function useGetQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGet<TData = Awaited<ReturnType<typeof getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGet>>, TError = HTTPValidationError>(
- professionalId: string,
-    qualificationId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGet>>, TError, TData>> & Pick<
+          Awaited<
+            ReturnType<
+              typeof getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGet
+            >
+          >
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData>;
+};
+export function useGetQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  professionalId: string,
+  qualificationId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGet
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGet>>,
+          Awaited<
+            ReturnType<
+              typeof getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGet
+            >
+          >,
           TError,
-          Awaited<ReturnType<typeof getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGet>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
-export function useGetQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGet<TData = Awaited<ReturnType<typeof getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGet>>, TError = HTTPValidationError>(
- professionalId: string,
-    qualificationId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
+          Awaited<
+            ReturnType<
+              typeof getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGet
+            >
+          >
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
+export function useGetQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  professionalId: string,
+  qualificationId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGet
+          >
+        >,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
 /**
  * @summary Get a professional qualification
  */
 
-export function useGetQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGet<TData = Awaited<ReturnType<typeof getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGet>>, TError = HTTPValidationError>(
- professionalId: string,
-    qualificationId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+export function useGetQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  professionalId: string,
+  qualificationId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGet
+          >
+        >,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+  const queryOptions =
+    getGetQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGetQueryOptions(
+      professionalId,
+      qualificationId,
+      options,
+    );
 
-  const queryOptions = getGetQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdGetQueryOptions(professionalId,qualificationId,options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData> };
 
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
-
-
-
 
 /**
  * Partially update a qualification. Only provided fields will be updated.
  * @summary Update a professional qualification
  */
-export type updateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatchResponse200 = {
-  data: ProfessionalQualificationResponse
-  status: 200
-}
+export type updateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatchResponse200 =
+  {
+    data: ProfessionalQualificationResponse;
+    status: 200;
+  };
 
-export type updateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatchResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-    
-export type updateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatchResponseSuccess = (updateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatchResponse200) & {
-  headers: Headers;
-};
-export type updateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatchResponseError = (updateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatchResponse422) & {
-  headers: Headers;
-};
+export type updateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatchResponse422 =
+  {
+    data: HTTPValidationError;
+    status: 422;
+  };
 
-export type updateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatchResponse = (updateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatchResponseSuccess | updateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatchResponseError)
+export type updateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatchResponseSuccess =
+  updateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatchResponse200 & {
+    headers: Headers;
+  };
+export type updateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatchResponseError =
+  updateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatchResponse422 & {
+    headers: Headers;
+  };
 
-export const getUpdateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatchUrl = (professionalId: string,
-    qualificationId: string,) => {
+export type updateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatchResponse =
 
+    | updateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatchResponseSuccess
+    | updateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatchResponseError;
 
-  
+export const getUpdateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatchUrl =
+  (professionalId: string, qualificationId: string) => {
+    return `/api/v1/professionals/${professionalId}/qualifications/${qualificationId}`;
+  };
 
-  return `/api/v1/professionals/${professionalId}/qualifications/${qualificationId}`
-}
-
-export const updateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatch = async (professionalId: string,
+export const updateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatch =
+  async (
+    professionalId: string,
     qualificationId: string,
-    professionalQualificationUpdate: ProfessionalQualificationUpdate, options?: RequestInit): Promise<updateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatchResponse> => {
-  
-  return customFetch<updateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatchResponse>(getUpdateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatchUrl(professionalId,qualificationId),
-  {      
-    ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      professionalQualificationUpdate,)
-  }
-);}
+    professionalQualificationUpdate: ProfessionalQualificationUpdate,
+    options?: RequestInit,
+  ): Promise<updateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatchResponse> => {
+    return customFetch<updateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatchResponse>(
+      getUpdateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatchUrl(
+        professionalId,
+        qualificationId,
+      ),
+      {
+        ...options,
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", ...options?.headers },
+        body: JSON.stringify(professionalQualificationUpdate),
+      },
+    );
+  };
 
+export const getUpdateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatchMutationOptions =
+  <TError = HTTPValidationError, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<
+          typeof updateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatch
+        >
+      >,
+      TError,
+      {
+        professionalId: string;
+        qualificationId: string;
+        data: ProfessionalQualificationUpdate;
+      },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  }): UseMutationOptions<
+    Awaited<
+      ReturnType<
+        typeof updateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatch
+      >
+    >,
+    TError,
+    {
+      professionalId: string;
+      qualificationId: string;
+      data: ProfessionalQualificationUpdate;
+    },
+    TContext
+  > => {
+    const mutationKey = [
+      "updateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatch",
+    ];
+    const { mutation: mutationOptions, request: requestOptions } = options
+      ? options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+        ? options
+        : { ...options, mutation: { ...options.mutation, mutationKey } }
+      : { mutation: { mutationKey }, request: undefined };
 
+    const mutationFn: MutationFunction<
+      Awaited<
+        ReturnType<
+          typeof updateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatch
+        >
+      >,
+      {
+        professionalId: string;
+        qualificationId: string;
+        data: ProfessionalQualificationUpdate;
+      }
+    > = (props) => {
+      const { professionalId, qualificationId, data } = props ?? {};
 
+      return updateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatch(
+        professionalId,
+        qualificationId,
+        data,
+        requestOptions,
+      );
+    };
 
-export const getUpdateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatchMutationOptions = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatch>>, TError,{professionalId: string;qualificationId: string;data: ProfessionalQualificationUpdate}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof updateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatch>>, TError,{professionalId: string;qualificationId: string;data: ProfessionalQualificationUpdate}, TContext> => {
+    return { mutationFn, ...mutationOptions };
+  };
 
-const mutationKey = ['updateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatch'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+export type UpdateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatchMutationResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof updateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatch
+      >
+    >
+  >;
+export type UpdateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatchMutationBody =
+  ProfessionalQualificationUpdate;
+export type UpdateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatchMutationError =
+  HTTPValidationError;
 
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatch>>, {professionalId: string;qualificationId: string;data: ProfessionalQualificationUpdate}> = (props) => {
-          const {professionalId,qualificationId,data} = props ?? {};
-
-          return  updateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatch(professionalId,qualificationId,data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type UpdateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatchMutationResult = NonNullable<Awaited<ReturnType<typeof updateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatch>>>
-    export type UpdateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatchMutationBody = ProfessionalQualificationUpdate
-    export type UpdateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatchMutationError = HTTPValidationError
-
-    /**
+/**
  * @summary Update a professional qualification
  */
-export const useUpdateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatch = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatch>>, TError,{professionalId: string;qualificationId: string;data: ProfessionalQualificationUpdate}, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof updateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatch>>,
+export const useUpdateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatch =
+  <TError = HTTPValidationError, TContext = unknown>(
+    options?: {
+      mutation?: UseMutationOptions<
+        Awaited<
+          ReturnType<
+            typeof updateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatch
+          >
+        >,
         TError,
-        {professionalId: string;qualificationId: string;data: ProfessionalQualificationUpdate},
+        {
+          professionalId: string;
+          qualificationId: string;
+          data: ProfessionalQualificationUpdate;
+        },
         TContext
-      > => {
+      >;
+      request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+  ): UseMutationResult<
+    Awaited<
+      ReturnType<
+        typeof updateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatch
+      >
+    >,
+    TError,
+    {
+      professionalId: string;
+      qualificationId: string;
+      data: ProfessionalQualificationUpdate;
+    },
+    TContext
+  > => {
+    const mutationOptions =
+      getUpdateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatchMutationOptions(
+        options,
+      );
 
-      const mutationOptions = getUpdateQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdPatchMutationOptions(options);
-
-      return useMutation(mutationOptions, queryClient);
-    }
-    /**
+    return useMutation(mutationOptions, queryClient);
+  };
+/**
  * Soft delete a qualification.
  * @summary Delete a professional qualification
  */
-export type deleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDeleteResponse204 = {
-  data: void
-  status: 204
-}
+export type deleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDeleteResponse204 =
+  {
+    data: void;
+    status: 204;
+  };
 
-export type deleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDeleteResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-    
-export type deleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDeleteResponseSuccess = (deleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDeleteResponse204) & {
-  headers: Headers;
-};
-export type deleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDeleteResponseError = (deleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDeleteResponse422) & {
-  headers: Headers;
-};
+export type deleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDeleteResponse422 =
+  {
+    data: HTTPValidationError;
+    status: 422;
+  };
 
-export type deleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDeleteResponse = (deleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDeleteResponseSuccess | deleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDeleteResponseError)
+export type deleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDeleteResponseSuccess =
+  deleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDeleteResponse204 & {
+    headers: Headers;
+  };
+export type deleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDeleteResponseError =
+  deleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDeleteResponse422 & {
+    headers: Headers;
+  };
 
-export const getDeleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDeleteUrl = (professionalId: string,
-    qualificationId: string,) => {
+export type deleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDeleteResponse =
 
+    | deleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDeleteResponseSuccess
+    | deleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDeleteResponseError;
 
-  
+export const getDeleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDeleteUrl =
+  (professionalId: string, qualificationId: string) => {
+    return `/api/v1/professionals/${professionalId}/qualifications/${qualificationId}`;
+  };
 
-  return `/api/v1/professionals/${professionalId}/qualifications/${qualificationId}`
-}
+export const deleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDelete =
+  async (
+    professionalId: string,
+    qualificationId: string,
+    options?: RequestInit,
+  ): Promise<deleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDeleteResponse> => {
+    return customFetch<deleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDeleteResponse>(
+      getDeleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDeleteUrl(
+        professionalId,
+        qualificationId,
+      ),
+      {
+        ...options,
+        method: "DELETE",
+      },
+    );
+  };
 
-export const deleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDelete = async (professionalId: string,
-    qualificationId: string, options?: RequestInit): Promise<deleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDeleteResponse> => {
-  
-  return customFetch<deleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDeleteResponse>(getDeleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDeleteUrl(professionalId,qualificationId),
-  {      
-    ...options,
-    method: 'DELETE'
-    
-    
-  }
-);}
+export const getDeleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDeleteMutationOptions =
+  <TError = HTTPValidationError, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<
+          typeof deleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDelete
+        >
+      >,
+      TError,
+      { professionalId: string; qualificationId: string },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  }): UseMutationOptions<
+    Awaited<
+      ReturnType<
+        typeof deleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDelete
+      >
+    >,
+    TError,
+    { professionalId: string; qualificationId: string },
+    TContext
+  > => {
+    const mutationKey = [
+      "deleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDelete",
+    ];
+    const { mutation: mutationOptions, request: requestOptions } = options
+      ? options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+        ? options
+        : { ...options, mutation: { ...options.mutation, mutationKey } }
+      : { mutation: { mutationKey }, request: undefined };
 
+    const mutationFn: MutationFunction<
+      Awaited<
+        ReturnType<
+          typeof deleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDelete
+        >
+      >,
+      { professionalId: string; qualificationId: string }
+    > = (props) => {
+      const { professionalId, qualificationId } = props ?? {};
 
+      return deleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDelete(
+        professionalId,
+        qualificationId,
+        requestOptions,
+      );
+    };
 
+    return { mutationFn, ...mutationOptions };
+  };
 
-export const getDeleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDeleteMutationOptions = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDelete>>, TError,{professionalId: string;qualificationId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof deleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDelete>>, TError,{professionalId: string;qualificationId: string}, TContext> => {
+export type DeleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDeleteMutationResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof deleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDelete
+      >
+    >
+  >;
 
-const mutationKey = ['deleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDelete'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+export type DeleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDeleteMutationError =
+  HTTPValidationError;
 
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDelete>>, {professionalId: string;qualificationId: string}> = (props) => {
-          const {professionalId,qualificationId} = props ?? {};
-
-          return  deleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDelete(professionalId,qualificationId,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type DeleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDeleteMutationResult = NonNullable<Awaited<ReturnType<typeof deleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDelete>>>
-    
-    export type DeleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDeleteMutationError = HTTPValidationError
-
-    /**
+/**
  * @summary Delete a professional qualification
  */
-export const useDeleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDelete = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDelete>>, TError,{professionalId: string;qualificationId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof deleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDelete>>,
+export const useDeleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDelete =
+  <TError = HTTPValidationError, TContext = unknown>(
+    options?: {
+      mutation?: UseMutationOptions<
+        Awaited<
+          ReturnType<
+            typeof deleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDelete
+          >
+        >,
         TError,
-        {professionalId: string;qualificationId: string},
+        { professionalId: string; qualificationId: string },
         TContext
-      > => {
+      >;
+      request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+  ): UseMutationResult<
+    Awaited<
+      ReturnType<
+        typeof deleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDelete
+      >
+    >,
+    TError,
+    { professionalId: string; qualificationId: string },
+    TContext
+  > => {
+    const mutationOptions =
+      getDeleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDeleteMutationOptions(
+        options,
+      );
 
-      const mutationOptions = getDeleteQualificationApiV1ProfessionalsProfessionalIdQualificationsQualificationIdDeleteMutationOptions(options);
-
-      return useMutation(mutationOptions, queryClient);
-    }
-    /**
+    return useMutation(mutationOptions, queryClient);
+  };
+/**
  * Link a specialty to a professional.
  * @summary Add a specialty to a professional
  */
-export type createSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPostResponse201 = {
-  data: ProfessionalSpecialtyResponse
-  status: 201
-}
+export type createSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPostResponse201 =
+  {
+    data: ProfessionalSpecialtyResponse;
+    status: 201;
+  };
 
-export type createSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPostResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-    
-export type createSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPostResponseSuccess = (createSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPostResponse201) & {
-  headers: Headers;
-};
-export type createSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPostResponseError = (createSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPostResponse422) & {
-  headers: Headers;
-};
+export type createSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPostResponse422 =
+  {
+    data: HTTPValidationError;
+    status: 422;
+  };
 
-export type createSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPostResponse = (createSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPostResponseSuccess | createSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPostResponseError)
+export type createSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPostResponseSuccess =
+  createSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPostResponse201 & {
+    headers: Headers;
+  };
+export type createSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPostResponseError =
+  createSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPostResponse422 & {
+    headers: Headers;
+  };
 
-export const getCreateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPostUrl = (professionalId: string,) => {
+export type createSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPostResponse =
 
+    | createSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPostResponseSuccess
+    | createSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPostResponseError;
 
-  
+export const getCreateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPostUrl =
+  (professionalId: string) => {
+    return `/api/v1/professionals/${professionalId}/specialties/`;
+  };
 
-  return `/api/v1/professionals/${professionalId}/specialties/`
-}
+export const createSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPost =
+  async (
+    professionalId: string,
+    professionalSpecialtyCreate: ProfessionalSpecialtyCreate,
+    options?: RequestInit,
+  ): Promise<createSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPostResponse> => {
+    return customFetch<createSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPostResponse>(
+      getCreateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPostUrl(
+        professionalId,
+      ),
+      {
+        ...options,
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...options?.headers },
+        body: JSON.stringify(professionalSpecialtyCreate),
+      },
+    );
+  };
 
-export const createSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPost = async (professionalId: string,
-    professionalSpecialtyCreate: ProfessionalSpecialtyCreate, options?: RequestInit): Promise<createSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPostResponse> => {
-  
-  return customFetch<createSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPostResponse>(getCreateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPostUrl(professionalId),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      professionalSpecialtyCreate,)
-  }
-);}
+export const getCreateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPostMutationOptions =
+  <TError = HTTPValidationError, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<
+          typeof createSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPost
+        >
+      >,
+      TError,
+      { professionalId: string; data: ProfessionalSpecialtyCreate },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  }): UseMutationOptions<
+    Awaited<
+      ReturnType<
+        typeof createSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPost
+      >
+    >,
+    TError,
+    { professionalId: string; data: ProfessionalSpecialtyCreate },
+    TContext
+  > => {
+    const mutationKey = [
+      "createSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPost",
+    ];
+    const { mutation: mutationOptions, request: requestOptions } = options
+      ? options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+        ? options
+        : { ...options, mutation: { ...options.mutation, mutationKey } }
+      : { mutation: { mutationKey }, request: undefined };
 
+    const mutationFn: MutationFunction<
+      Awaited<
+        ReturnType<
+          typeof createSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPost
+        >
+      >,
+      { professionalId: string; data: ProfessionalSpecialtyCreate }
+    > = (props) => {
+      const { professionalId, data } = props ?? {};
 
+      return createSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPost(
+        professionalId,
+        data,
+        requestOptions,
+      );
+    };
 
+    return { mutationFn, ...mutationOptions };
+  };
 
-export const getCreateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPostMutationOptions = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPost>>, TError,{professionalId: string;data: ProfessionalSpecialtyCreate}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof createSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPost>>, TError,{professionalId: string;data: ProfessionalSpecialtyCreate}, TContext> => {
+export type CreateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPostMutationResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof createSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPost
+      >
+    >
+  >;
+export type CreateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPostMutationBody =
+  ProfessionalSpecialtyCreate;
+export type CreateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPostMutationError =
+  HTTPValidationError;
 
-const mutationKey = ['createSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPost'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPost>>, {professionalId: string;data: ProfessionalSpecialtyCreate}> = (props) => {
-          const {professionalId,data} = props ?? {};
-
-          return  createSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPost(professionalId,data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type CreateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPostMutationResult = NonNullable<Awaited<ReturnType<typeof createSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPost>>>
-    export type CreateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPostMutationBody = ProfessionalSpecialtyCreate
-    export type CreateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPostMutationError = HTTPValidationError
-
-    /**
+/**
  * @summary Add a specialty to a professional
  */
-export const useCreateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPost = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPost>>, TError,{professionalId: string;data: ProfessionalSpecialtyCreate}, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof createSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPost>>,
+export const useCreateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPost =
+  <TError = HTTPValidationError, TContext = unknown>(
+    options?: {
+      mutation?: UseMutationOptions<
+        Awaited<
+          ReturnType<
+            typeof createSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPost
+          >
+        >,
         TError,
-        {professionalId: string;data: ProfessionalSpecialtyCreate},
+        { professionalId: string; data: ProfessionalSpecialtyCreate },
         TContext
-      > => {
+      >;
+      request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+  ): UseMutationResult<
+    Awaited<
+      ReturnType<
+        typeof createSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPost
+      >
+    >,
+    TError,
+    { professionalId: string; data: ProfessionalSpecialtyCreate },
+    TContext
+  > => {
+    const mutationOptions =
+      getCreateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPostMutationOptions(
+        options,
+      );
 
-      const mutationOptions = getCreateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesPostMutationOptions(options);
-
-      return useMutation(mutationOptions, queryClient);
-    }
-    /**
+    return useMutation(mutationOptions, queryClient);
+  };
+/**
  * List all specialties for a professional with pagination, filtering and sorting.
  * @summary List professional specialties
  */
-export type listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetResponse200 = {
-  data: PaginatedResponseProfessionalSpecialtyResponse
-  status: 200
-}
+export type listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetResponse200 =
+  {
+    data: PaginatedResponseProfessionalSpecialtyResponse;
+    status: 200;
+  };
 
-export type listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-    
-export type listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetResponseSuccess = (listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetResponse200) & {
-  headers: Headers;
-};
-export type listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetResponseError = (listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetResponse422) & {
-  headers: Headers;
-};
+export type listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetResponse422 =
+  {
+    data: HTTPValidationError;
+    status: 422;
+  };
 
-export type listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetResponse = (listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetResponseSuccess | listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetResponseError)
+export type listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetResponseSuccess =
+  listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetResponse200 & {
+    headers: Headers;
+  };
+export type listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetResponseError =
+  listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetResponse422 & {
+    headers: Headers;
+  };
 
-export const getListSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetUrl = (professionalId: string,
-    params?: ListSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetParams,) => {
-  const normalizedParams = new URLSearchParams();
+export type listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetResponse =
 
-  Object.entries(params || {}).forEach(([key, value]) => {
-    
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString())
-    }
-  });
+    | listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetResponseSuccess
+    | listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetResponseError;
 
-  const stringifiedParams = normalizedParams.toString();
+export const getListSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetUrl =
+  (
+    professionalId: string,
+    params?: ListSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetParams,
+  ) => {
+    const normalizedParams = new URLSearchParams();
 
-  return stringifiedParams.length > 0 ? `/api/v1/professionals/${professionalId}/specialties/?${stringifiedParams}` : `/api/v1/professionals/${professionalId}/specialties/`
-}
+    Object.entries(params || {}).forEach(([key, value]) => {
+      if (value !== undefined) {
+        normalizedParams.append(
+          key,
+          value === null ? "null" : value.toString(),
+        );
+      }
+    });
 
-export const listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGet = async (professionalId: string,
-    params?: ListSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetParams, options?: RequestInit): Promise<listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetResponse> => {
-  
-  return customFetch<listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetResponse>(getListSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetUrl(professionalId,params),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
+    const stringifiedParams = normalizedParams.toString();
 
+    return stringifiedParams.length > 0
+      ? `/api/v1/professionals/${professionalId}/specialties/?${stringifiedParams}`
+      : `/api/v1/professionals/${professionalId}/specialties/`;
+  };
 
+export const listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGet =
+  async (
+    professionalId: string,
+    params?: ListSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetParams,
+    options?: RequestInit,
+  ): Promise<listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetResponse> => {
+    return customFetch<listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetResponse>(
+      getListSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetUrl(
+        professionalId,
+        params,
+      ),
+      {
+        ...options,
+        method: "GET",
+      },
+    );
+  };
 
-
-
-export const getListSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetQueryKey = (professionalId?: string,
-    params?: ListSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetParams,) => {
+export const getListSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetQueryKey =
+  (
+    professionalId?: string,
+    params?: ListSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetParams,
+  ) => {
     return [
-    `/api/v1/professionals/${professionalId}/specialties/`, ...(params ? [params]: [])
+      `/api/v1/professionals/${professionalId}/specialties/`,
+      ...(params ? [params] : []),
     ] as const;
-    }
+  };
 
-    
-export const getListSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetQueryOptions = <TData = Awaited<ReturnType<typeof listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGet>>, TError = HTTPValidationError>(professionalId: string,
-    params?: ListSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
-) => {
+export const getListSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetQueryOptions =
+  <
+    TData = Awaited<
+      ReturnType<
+        typeof listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGet
+      >
+    >,
+    TError = HTTPValidationError,
+  >(
+    professionalId: string,
+    params?: ListSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetParams,
+    options?: {
+      query?: Partial<
+        UseQueryOptions<
+          Awaited<
+            ReturnType<
+              typeof listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGet
+            >
+          >,
+          TError,
+          TData
+        >
+      >;
+      request?: SecondParameter<typeof customFetch>;
+    },
+  ) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
 
-const {query: queryOptions, request: requestOptions} = options ?? {};
+    const queryKey =
+      queryOptions?.queryKey ??
+      getListSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetQueryKey(
+        professionalId,
+        params,
+      );
 
-  const queryKey =  queryOptions?.queryKey ?? getListSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetQueryKey(professionalId,params);
+    const queryFn: QueryFunction<
+      Awaited<
+        ReturnType<
+          typeof listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGet
+        >
+      >
+    > = ({ signal }) =>
+      listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGet(
+        professionalId,
+        params,
+        { signal, ...requestOptions },
+      );
 
-  
+    return {
+      queryKey,
+      queryFn,
+      enabled: !!professionalId,
+      staleTime: 30000,
+      ...queryOptions,
+    } as UseQueryOptions<
+      Awaited<
+        ReturnType<
+          typeof listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGet
+        >
+      >,
+      TError,
+      TData
+    > & { queryKey: DataTag<QueryKey, TData> };
+  };
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGet>>> = ({ signal }) => listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGet(professionalId,params, { signal, ...requestOptions });
+export type ListSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetQueryResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGet
+      >
+    >
+  >;
+export type ListSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetQueryError =
+  HTTPValidationError;
 
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(professionalId),  staleTime: 30000,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData> }
-}
-
-export type ListSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetQueryResult = NonNullable<Awaited<ReturnType<typeof listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGet>>>
-export type ListSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetQueryError = HTTPValidationError
-
-
-export function useListSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGet<TData = Awaited<ReturnType<typeof listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGet>>, TError = HTTPValidationError>(
- professionalId: string,
-    params: undefined |  ListSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGet>>, TError, TData>> & Pick<
+export function useListSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGet<
+  TData = Awaited<
+    ReturnType<
+      typeof listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  professionalId: string,
+  params:
+    | undefined
+    | ListSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGet
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGet>>,
+          Awaited<
+            ReturnType<
+              typeof listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGet
+            >
+          >,
           TError,
-          Awaited<ReturnType<typeof listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGet>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
-export function useListSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGet<TData = Awaited<ReturnType<typeof listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGet>>, TError = HTTPValidationError>(
- professionalId: string,
-    params?: ListSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGet>>, TError, TData>> & Pick<
+          Awaited<
+            ReturnType<
+              typeof listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGet
+            >
+          >
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData>;
+};
+export function useListSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGet<
+  TData = Awaited<
+    ReturnType<
+      typeof listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  professionalId: string,
+  params?: ListSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGet
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGet>>,
+          Awaited<
+            ReturnType<
+              typeof listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGet
+            >
+          >,
           TError,
-          Awaited<ReturnType<typeof listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGet>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
-export function useListSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGet<TData = Awaited<ReturnType<typeof listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGet>>, TError = HTTPValidationError>(
- professionalId: string,
-    params?: ListSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
+          Awaited<
+            ReturnType<
+              typeof listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGet
+            >
+          >
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
+export function useListSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGet<
+  TData = Awaited<
+    ReturnType<
+      typeof listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  professionalId: string,
+  params?: ListSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGet
+          >
+        >,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
 /**
  * @summary List professional specialties
  */
 
-export function useListSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGet<TData = Awaited<ReturnType<typeof listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGet>>, TError = HTTPValidationError>(
- professionalId: string,
-    params?: ListSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+export function useListSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGet<
+  TData = Awaited<
+    ReturnType<
+      typeof listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  professionalId: string,
+  params?: ListSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof listSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGet
+          >
+        >,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+  const queryOptions =
+    getListSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetQueryOptions(
+      professionalId,
+      params,
+      options,
+    );
 
-  const queryOptions = getListSpecialtiesApiV1ProfessionalsProfessionalIdSpecialtiesGetQueryOptions(professionalId,params,options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData> };
 
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
-
-
-
 
 /**
  * Get a specific specialty link by ID.
  * @summary Get a professional specialty link
  */
-export type getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGetResponse200 = {
-  data: ProfessionalSpecialtyResponse
-  status: 200
-}
+export type getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGetResponse200 =
+  {
+    data: ProfessionalSpecialtyResponse;
+    status: 200;
+  };
 
-export type getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGetResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-    
-export type getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGetResponseSuccess = (getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGetResponse200) & {
-  headers: Headers;
-};
-export type getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGetResponseError = (getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGetResponse422) & {
-  headers: Headers;
-};
+export type getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGetResponse422 =
+  {
+    data: HTTPValidationError;
+    status: 422;
+  };
 
-export type getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGetResponse = (getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGetResponseSuccess | getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGetResponseError)
+export type getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGetResponseSuccess =
+  getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGetResponse200 & {
+    headers: Headers;
+  };
+export type getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGetResponseError =
+  getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGetResponse422 & {
+    headers: Headers;
+  };
 
-export const getGetSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGetUrl = (professionalId: string,
-    specialtyLinkId: string,) => {
+export type getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGetResponse =
 
+    | getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGetResponseSuccess
+    | getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGetResponseError;
 
-  
+export const getGetSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGetUrl =
+  (professionalId: string, specialtyLinkId: string) => {
+    return `/api/v1/professionals/${professionalId}/specialties/${specialtyLinkId}`;
+  };
 
-  return `/api/v1/professionals/${professionalId}/specialties/${specialtyLinkId}`
-}
+export const getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGet =
+  async (
+    professionalId: string,
+    specialtyLinkId: string,
+    options?: RequestInit,
+  ): Promise<getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGetResponse> => {
+    return customFetch<getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGetResponse>(
+      getGetSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGetUrl(
+        professionalId,
+        specialtyLinkId,
+      ),
+      {
+        ...options,
+        method: "GET",
+      },
+    );
+  };
 
-export const getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGet = async (professionalId: string,
-    specialtyLinkId: string, options?: RequestInit): Promise<getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGetResponse> => {
-  
-  return customFetch<getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGetResponse>(getGetSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGetUrl(professionalId,specialtyLinkId),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
-
-
-
-export const getGetSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGetQueryKey = (professionalId?: string,
-    specialtyLinkId?: string,) => {
+export const getGetSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGetQueryKey =
+  (professionalId?: string, specialtyLinkId?: string) => {
     return [
-    `/api/v1/professionals/${professionalId}/specialties/${specialtyLinkId}`
+      `/api/v1/professionals/${professionalId}/specialties/${specialtyLinkId}`,
     ] as const;
-    }
+  };
 
-    
-export const getGetSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGetQueryOptions = <TData = Awaited<ReturnType<typeof getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGet>>, TError = HTTPValidationError>(professionalId: string,
-    specialtyLinkId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
-) => {
+export const getGetSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGetQueryOptions =
+  <
+    TData = Awaited<
+      ReturnType<
+        typeof getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGet
+      >
+    >,
+    TError = HTTPValidationError,
+  >(
+    professionalId: string,
+    specialtyLinkId: string,
+    options?: {
+      query?: Partial<
+        UseQueryOptions<
+          Awaited<
+            ReturnType<
+              typeof getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGet
+            >
+          >,
+          TError,
+          TData
+        >
+      >;
+      request?: SecondParameter<typeof customFetch>;
+    },
+  ) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
 
-const {query: queryOptions, request: requestOptions} = options ?? {};
+    const queryKey =
+      queryOptions?.queryKey ??
+      getGetSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGetQueryKey(
+        professionalId,
+        specialtyLinkId,
+      );
 
-  const queryKey =  queryOptions?.queryKey ?? getGetSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGetQueryKey(professionalId,specialtyLinkId);
+    const queryFn: QueryFunction<
+      Awaited<
+        ReturnType<
+          typeof getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGet
+        >
+      >
+    > = ({ signal }) =>
+      getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGet(
+        professionalId,
+        specialtyLinkId,
+        { signal, ...requestOptions },
+      );
 
-  
+    return {
+      queryKey,
+      queryFn,
+      enabled: !!(professionalId && specialtyLinkId),
+      staleTime: 30000,
+      ...queryOptions,
+    } as UseQueryOptions<
+      Awaited<
+        ReturnType<
+          typeof getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGet
+        >
+      >,
+      TError,
+      TData
+    > & { queryKey: DataTag<QueryKey, TData> };
+  };
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGet>>> = ({ signal }) => getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGet(professionalId,specialtyLinkId, { signal, ...requestOptions });
+export type GetSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGetQueryResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGet
+      >
+    >
+  >;
+export type GetSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGetQueryError =
+  HTTPValidationError;
 
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(professionalId && specialtyLinkId),  staleTime: 30000,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData> }
-}
-
-export type GetSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGetQueryResult = NonNullable<Awaited<ReturnType<typeof getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGet>>>
-export type GetSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGetQueryError = HTTPValidationError
-
-
-export function useGetSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGet<TData = Awaited<ReturnType<typeof getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGet>>, TError = HTTPValidationError>(
- professionalId: string,
-    specialtyLinkId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGet>>, TError, TData>> & Pick<
+export function useGetSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  professionalId: string,
+  specialtyLinkId: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGet
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGet>>,
+          Awaited<
+            ReturnType<
+              typeof getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGet
+            >
+          >,
           TError,
-          Awaited<ReturnType<typeof getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGet>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
-export function useGetSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGet<TData = Awaited<ReturnType<typeof getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGet>>, TError = HTTPValidationError>(
- professionalId: string,
-    specialtyLinkId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGet>>, TError, TData>> & Pick<
+          Awaited<
+            ReturnType<
+              typeof getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGet
+            >
+          >
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData>;
+};
+export function useGetSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  professionalId: string,
+  specialtyLinkId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGet
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGet>>,
+          Awaited<
+            ReturnType<
+              typeof getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGet
+            >
+          >,
           TError,
-          Awaited<ReturnType<typeof getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGet>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
-export function useGetSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGet<TData = Awaited<ReturnType<typeof getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGet>>, TError = HTTPValidationError>(
- professionalId: string,
-    specialtyLinkId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
+          Awaited<
+            ReturnType<
+              typeof getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGet
+            >
+          >
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
+export function useGetSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  professionalId: string,
+  specialtyLinkId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGet
+          >
+        >,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
 /**
  * @summary Get a professional specialty link
  */
 
-export function useGetSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGet<TData = Awaited<ReturnType<typeof getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGet>>, TError = HTTPValidationError>(
- professionalId: string,
-    specialtyLinkId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+export function useGetSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGet
+    >
+  >,
+  TError = HTTPValidationError,
+>(
+  professionalId: string,
+  specialtyLinkId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGet
+          >
+        >,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+  const queryOptions =
+    getGetSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGetQueryOptions(
+      professionalId,
+      specialtyLinkId,
+      options,
+    );
 
-  const queryOptions = getGetSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdGetQueryOptions(professionalId,specialtyLinkId,options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData> };
 
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
-
-
-
 
 /**
  * Partially update a specialty link. Only provided fields will be updated.
  * @summary Update a professional specialty link
  */
-export type updateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatchResponse200 = {
-  data: ProfessionalSpecialtyResponse
-  status: 200
-}
+export type updateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatchResponse200 =
+  {
+    data: ProfessionalSpecialtyResponse;
+    status: 200;
+  };
 
-export type updateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatchResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-    
-export type updateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatchResponseSuccess = (updateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatchResponse200) & {
-  headers: Headers;
-};
-export type updateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatchResponseError = (updateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatchResponse422) & {
-  headers: Headers;
-};
+export type updateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatchResponse422 =
+  {
+    data: HTTPValidationError;
+    status: 422;
+  };
 
-export type updateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatchResponse = (updateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatchResponseSuccess | updateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatchResponseError)
+export type updateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatchResponseSuccess =
+  updateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatchResponse200 & {
+    headers: Headers;
+  };
+export type updateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatchResponseError =
+  updateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatchResponse422 & {
+    headers: Headers;
+  };
 
-export const getUpdateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatchUrl = (professionalId: string,
-    specialtyLinkId: string,) => {
+export type updateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatchResponse =
 
+    | updateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatchResponseSuccess
+    | updateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatchResponseError;
 
-  
+export const getUpdateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatchUrl =
+  (professionalId: string, specialtyLinkId: string) => {
+    return `/api/v1/professionals/${professionalId}/specialties/${specialtyLinkId}`;
+  };
 
-  return `/api/v1/professionals/${professionalId}/specialties/${specialtyLinkId}`
-}
-
-export const updateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatch = async (professionalId: string,
+export const updateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatch =
+  async (
+    professionalId: string,
     specialtyLinkId: string,
-    professionalSpecialtyUpdate: ProfessionalSpecialtyUpdate, options?: RequestInit): Promise<updateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatchResponse> => {
-  
-  return customFetch<updateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatchResponse>(getUpdateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatchUrl(professionalId,specialtyLinkId),
-  {      
-    ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      professionalSpecialtyUpdate,)
-  }
-);}
+    professionalSpecialtyUpdate: ProfessionalSpecialtyUpdate,
+    options?: RequestInit,
+  ): Promise<updateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatchResponse> => {
+    return customFetch<updateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatchResponse>(
+      getUpdateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatchUrl(
+        professionalId,
+        specialtyLinkId,
+      ),
+      {
+        ...options,
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", ...options?.headers },
+        body: JSON.stringify(professionalSpecialtyUpdate),
+      },
+    );
+  };
 
+export const getUpdateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatchMutationOptions =
+  <TError = HTTPValidationError, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<
+          typeof updateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatch
+        >
+      >,
+      TError,
+      {
+        professionalId: string;
+        specialtyLinkId: string;
+        data: ProfessionalSpecialtyUpdate;
+      },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  }): UseMutationOptions<
+    Awaited<
+      ReturnType<
+        typeof updateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatch
+      >
+    >,
+    TError,
+    {
+      professionalId: string;
+      specialtyLinkId: string;
+      data: ProfessionalSpecialtyUpdate;
+    },
+    TContext
+  > => {
+    const mutationKey = [
+      "updateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatch",
+    ];
+    const { mutation: mutationOptions, request: requestOptions } = options
+      ? options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+        ? options
+        : { ...options, mutation: { ...options.mutation, mutationKey } }
+      : { mutation: { mutationKey }, request: undefined };
 
+    const mutationFn: MutationFunction<
+      Awaited<
+        ReturnType<
+          typeof updateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatch
+        >
+      >,
+      {
+        professionalId: string;
+        specialtyLinkId: string;
+        data: ProfessionalSpecialtyUpdate;
+      }
+    > = (props) => {
+      const { professionalId, specialtyLinkId, data } = props ?? {};
 
+      return updateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatch(
+        professionalId,
+        specialtyLinkId,
+        data,
+        requestOptions,
+      );
+    };
 
-export const getUpdateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatchMutationOptions = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatch>>, TError,{professionalId: string;specialtyLinkId: string;data: ProfessionalSpecialtyUpdate}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof updateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatch>>, TError,{professionalId: string;specialtyLinkId: string;data: ProfessionalSpecialtyUpdate}, TContext> => {
+    return { mutationFn, ...mutationOptions };
+  };
 
-const mutationKey = ['updateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatch'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+export type UpdateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatchMutationResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof updateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatch
+      >
+    >
+  >;
+export type UpdateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatchMutationBody =
+  ProfessionalSpecialtyUpdate;
+export type UpdateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatchMutationError =
+  HTTPValidationError;
 
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatch>>, {professionalId: string;specialtyLinkId: string;data: ProfessionalSpecialtyUpdate}> = (props) => {
-          const {professionalId,specialtyLinkId,data} = props ?? {};
-
-          return  updateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatch(professionalId,specialtyLinkId,data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type UpdateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatchMutationResult = NonNullable<Awaited<ReturnType<typeof updateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatch>>>
-    export type UpdateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatchMutationBody = ProfessionalSpecialtyUpdate
-    export type UpdateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatchMutationError = HTTPValidationError
-
-    /**
+/**
  * @summary Update a professional specialty link
  */
-export const useUpdateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatch = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatch>>, TError,{professionalId: string;specialtyLinkId: string;data: ProfessionalSpecialtyUpdate}, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof updateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatch>>,
+export const useUpdateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatch =
+  <TError = HTTPValidationError, TContext = unknown>(
+    options?: {
+      mutation?: UseMutationOptions<
+        Awaited<
+          ReturnType<
+            typeof updateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatch
+          >
+        >,
         TError,
-        {professionalId: string;specialtyLinkId: string;data: ProfessionalSpecialtyUpdate},
+        {
+          professionalId: string;
+          specialtyLinkId: string;
+          data: ProfessionalSpecialtyUpdate;
+        },
         TContext
-      > => {
+      >;
+      request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+  ): UseMutationResult<
+    Awaited<
+      ReturnType<
+        typeof updateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatch
+      >
+    >,
+    TError,
+    {
+      professionalId: string;
+      specialtyLinkId: string;
+      data: ProfessionalSpecialtyUpdate;
+    },
+    TContext
+  > => {
+    const mutationOptions =
+      getUpdateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatchMutationOptions(
+        options,
+      );
 
-      const mutationOptions = getUpdateSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdPatchMutationOptions(options);
-
-      return useMutation(mutationOptions, queryClient);
-    }
-    /**
+    return useMutation(mutationOptions, queryClient);
+  };
+/**
  * Soft delete a specialty link.
  * @summary Remove a specialty from a professional
  */
-export type deleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDeleteResponse204 = {
-  data: void
-  status: 204
-}
+export type deleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDeleteResponse204 =
+  {
+    data: void;
+    status: 204;
+  };
 
-export type deleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDeleteResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-    
-export type deleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDeleteResponseSuccess = (deleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDeleteResponse204) & {
-  headers: Headers;
-};
-export type deleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDeleteResponseError = (deleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDeleteResponse422) & {
-  headers: Headers;
-};
+export type deleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDeleteResponse422 =
+  {
+    data: HTTPValidationError;
+    status: 422;
+  };
 
-export type deleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDeleteResponse = (deleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDeleteResponseSuccess | deleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDeleteResponseError)
+export type deleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDeleteResponseSuccess =
+  deleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDeleteResponse204 & {
+    headers: Headers;
+  };
+export type deleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDeleteResponseError =
+  deleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDeleteResponse422 & {
+    headers: Headers;
+  };
 
-export const getDeleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDeleteUrl = (professionalId: string,
-    specialtyLinkId: string,) => {
+export type deleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDeleteResponse =
 
+    | deleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDeleteResponseSuccess
+    | deleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDeleteResponseError;
 
-  
+export const getDeleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDeleteUrl =
+  (professionalId: string, specialtyLinkId: string) => {
+    return `/api/v1/professionals/${professionalId}/specialties/${specialtyLinkId}`;
+  };
 
-  return `/api/v1/professionals/${professionalId}/specialties/${specialtyLinkId}`
-}
+export const deleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDelete =
+  async (
+    professionalId: string,
+    specialtyLinkId: string,
+    options?: RequestInit,
+  ): Promise<deleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDeleteResponse> => {
+    return customFetch<deleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDeleteResponse>(
+      getDeleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDeleteUrl(
+        professionalId,
+        specialtyLinkId,
+      ),
+      {
+        ...options,
+        method: "DELETE",
+      },
+    );
+  };
 
-export const deleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDelete = async (professionalId: string,
-    specialtyLinkId: string, options?: RequestInit): Promise<deleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDeleteResponse> => {
-  
-  return customFetch<deleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDeleteResponse>(getDeleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDeleteUrl(professionalId,specialtyLinkId),
-  {      
-    ...options,
-    method: 'DELETE'
-    
-    
-  }
-);}
+export const getDeleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDeleteMutationOptions =
+  <TError = HTTPValidationError, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<
+          typeof deleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDelete
+        >
+      >,
+      TError,
+      { professionalId: string; specialtyLinkId: string },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  }): UseMutationOptions<
+    Awaited<
+      ReturnType<
+        typeof deleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDelete
+      >
+    >,
+    TError,
+    { professionalId: string; specialtyLinkId: string },
+    TContext
+  > => {
+    const mutationKey = [
+      "deleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDelete",
+    ];
+    const { mutation: mutationOptions, request: requestOptions } = options
+      ? options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+        ? options
+        : { ...options, mutation: { ...options.mutation, mutationKey } }
+      : { mutation: { mutationKey }, request: undefined };
 
+    const mutationFn: MutationFunction<
+      Awaited<
+        ReturnType<
+          typeof deleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDelete
+        >
+      >,
+      { professionalId: string; specialtyLinkId: string }
+    > = (props) => {
+      const { professionalId, specialtyLinkId } = props ?? {};
 
+      return deleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDelete(
+        professionalId,
+        specialtyLinkId,
+        requestOptions,
+      );
+    };
 
+    return { mutationFn, ...mutationOptions };
+  };
 
-export const getDeleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDeleteMutationOptions = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDelete>>, TError,{professionalId: string;specialtyLinkId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof deleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDelete>>, TError,{professionalId: string;specialtyLinkId: string}, TContext> => {
+export type DeleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDeleteMutationResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof deleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDelete
+      >
+    >
+  >;
 
-const mutationKey = ['deleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDelete'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+export type DeleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDeleteMutationError =
+  HTTPValidationError;
 
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDelete>>, {professionalId: string;specialtyLinkId: string}> = (props) => {
-          const {professionalId,specialtyLinkId} = props ?? {};
-
-          return  deleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDelete(professionalId,specialtyLinkId,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type DeleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDeleteMutationResult = NonNullable<Awaited<ReturnType<typeof deleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDelete>>>
-    
-    export type DeleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDeleteMutationError = HTTPValidationError
-
-    /**
+/**
  * @summary Remove a specialty from a professional
  */
-export const useDeleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDelete = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDelete>>, TError,{professionalId: string;specialtyLinkId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof deleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDelete>>,
+export const useDeleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDelete =
+  <TError = HTTPValidationError, TContext = unknown>(
+    options?: {
+      mutation?: UseMutationOptions<
+        Awaited<
+          ReturnType<
+            typeof deleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDelete
+          >
+        >,
         TError,
-        {professionalId: string;specialtyLinkId: string},
+        { professionalId: string; specialtyLinkId: string },
         TContext
-      > => {
+      >;
+      request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+  ): UseMutationResult<
+    Awaited<
+      ReturnType<
+        typeof deleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDelete
+      >
+    >,
+    TError,
+    { professionalId: string; specialtyLinkId: string },
+    TContext
+  > => {
+    const mutationOptions =
+      getDeleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDeleteMutationOptions(
+        options,
+      );
 
-      const mutationOptions = getDeleteSpecialtyApiV1ProfessionalsProfessionalIdSpecialtiesSpecialtyLinkIdDeleteMutationOptions(options);
-
-      return useMutation(mutationOptions, queryClient);
-    }
-    /**
+    return useMutation(mutationOptions, queryClient);
+  };
+/**
  * Create a new version for a professional. For DIRECT source type, the version is applied immediately. For SCREENING or other sources, the version remains pending until explicitly applied.
  * @summary Create a professional version
  */
-export type createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostResponse201 = {
-  data: ProfessionalVersionResponse
-  status: 201
-}
+export type createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostResponse201 =
+  {
+    data: ProfessionalVersionResponse;
+    status: 201;
+  };
 
-export type createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostResponse404 = {
-  data: ErrorResponse
-  status: 404
-}
+export type createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostResponse404 =
+  {
+    data: ErrorResponse;
+    status: 404;
+  };
 
-export type createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostResponse409 = {
-  data: ErrorResponse
-  status: 409
-}
+export type createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostResponse409 =
+  {
+    data: ErrorResponse;
+    status: 409;
+  };
 
-export type createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
+export type createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostResponse422 =
+  {
+    data: HTTPValidationError;
+    status: 422;
+  };
 
-export type createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostResponse501 = {
-  data: ErrorResponse
-  status: 501
-}
-    
-export type createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostResponseSuccess = (createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostResponse201) & {
-  headers: Headers;
-};
-export type createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostResponseError = (createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostResponse404 | createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostResponse409 | createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostResponse422 | createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostResponse501) & {
-  headers: Headers;
-};
+export type createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostResponse501 =
+  {
+    data: ErrorResponse;
+    status: 501;
+  };
 
-export type createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostResponse = (createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostResponseSuccess | createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostResponseError)
+export type createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostResponseSuccess =
+  createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostResponse201 & {
+    headers: Headers;
+  };
+export type createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostResponseError =
+  (
+    | createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostResponse404
+    | createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostResponse409
+    | createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostResponse422
+    | createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostResponse501
+  ) & {
+    headers: Headers;
+  };
 
-export const getCreateProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostUrl = (professionalId: string,) => {
+export type createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostResponse =
 
+    | createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostResponseSuccess
+    | createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostResponseError;
 
-  
+export const getCreateProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostUrl =
+  (professionalId: string) => {
+    return `/api/v1/professionals/${professionalId}/versions`;
+  };
 
-  return `/api/v1/professionals/${professionalId}/versions`
-}
+export const createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPost =
+  async (
+    professionalId: string,
+    professionalVersionCreate: ProfessionalVersionCreate,
+    options?: RequestInit,
+  ): Promise<createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostResponse> => {
+    return customFetch<createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostResponse>(
+      getCreateProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostUrl(
+        professionalId,
+      ),
+      {
+        ...options,
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...options?.headers },
+        body: JSON.stringify(professionalVersionCreate),
+      },
+    );
+  };
 
-export const createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPost = async (professionalId: string,
-    professionalVersionCreate: ProfessionalVersionCreate, options?: RequestInit): Promise<createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostResponse> => {
-  
-  return customFetch<createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostResponse>(getCreateProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostUrl(professionalId),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      professionalVersionCreate,)
-  }
-);}
+export const getCreateProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostMutationOptions =
+  <TError = ErrorResponse | HTTPValidationError, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<
+          typeof createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPost
+        >
+      >,
+      TError,
+      { professionalId: string; data: ProfessionalVersionCreate },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  }): UseMutationOptions<
+    Awaited<
+      ReturnType<
+        typeof createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPost
+      >
+    >,
+    TError,
+    { professionalId: string; data: ProfessionalVersionCreate },
+    TContext
+  > => {
+    const mutationKey = [
+      "createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPost",
+    ];
+    const { mutation: mutationOptions, request: requestOptions } = options
+      ? options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+        ? options
+        : { ...options, mutation: { ...options.mutation, mutationKey } }
+      : { mutation: { mutationKey }, request: undefined };
 
+    const mutationFn: MutationFunction<
+      Awaited<
+        ReturnType<
+          typeof createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPost
+        >
+      >,
+      { professionalId: string; data: ProfessionalVersionCreate }
+    > = (props) => {
+      const { professionalId, data } = props ?? {};
 
+      return createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPost(
+        professionalId,
+        data,
+        requestOptions,
+      );
+    };
 
+    return { mutationFn, ...mutationOptions };
+  };
 
-export const getCreateProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostMutationOptions = <TError = ErrorResponse | HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPost>>, TError,{professionalId: string;data: ProfessionalVersionCreate}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPost>>, TError,{professionalId: string;data: ProfessionalVersionCreate}, TContext> => {
+export type CreateProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostMutationResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPost
+      >
+    >
+  >;
+export type CreateProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostMutationBody =
+  ProfessionalVersionCreate;
+export type CreateProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostMutationError =
+  ErrorResponse | HTTPValidationError;
 
-const mutationKey = ['createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPost'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPost>>, {professionalId: string;data: ProfessionalVersionCreate}> = (props) => {
-          const {professionalId,data} = props ?? {};
-
-          return  createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPost(professionalId,data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type CreateProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostMutationResult = NonNullable<Awaited<ReturnType<typeof createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPost>>>
-    export type CreateProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostMutationBody = ProfessionalVersionCreate
-    export type CreateProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostMutationError = ErrorResponse | HTTPValidationError
-
-    /**
+/**
  * @summary Create a professional version
  */
-export const useCreateProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPost = <TError = ErrorResponse | HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPost>>, TError,{professionalId: string;data: ProfessionalVersionCreate}, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPost>>,
+export const useCreateProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPost =
+  <TError = ErrorResponse | HTTPValidationError, TContext = unknown>(
+    options?: {
+      mutation?: UseMutationOptions<
+        Awaited<
+          ReturnType<
+            typeof createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPost
+          >
+        >,
         TError,
-        {professionalId: string;data: ProfessionalVersionCreate},
+        { professionalId: string; data: ProfessionalVersionCreate },
         TContext
-      > => {
+      >;
+      request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+  ): UseMutationResult<
+    Awaited<
+      ReturnType<
+        typeof createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPost
+      >
+    >,
+    TError,
+    { professionalId: string; data: ProfessionalVersionCreate },
+    TContext
+  > => {
+    const mutationOptions =
+      getCreateProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostMutationOptions(
+        options,
+      );
 
-      const mutationOptions = getCreateProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostMutationOptions(options);
-
-      return useMutation(mutationOptions, queryClient);
-    }
-    /**
+    return useMutation(mutationOptions, queryClient);
+  };
+/**
  * List version history for a professional with pagination.
  * @summary List professional versions
  */
-export type listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetResponse200 = {
-  data: PaginatedResponseProfessionalVersionListResponse
-  status: 200
-}
+export type listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetResponse200 =
+  {
+    data: PaginatedResponseProfessionalVersionListResponse;
+    status: 200;
+  };
 
-export type listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetResponse404 = {
-  data: ErrorResponse
-  status: 404
-}
+export type listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetResponse404 =
+  {
+    data: ErrorResponse;
+    status: 404;
+  };
 
-export type listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-    
-export type listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetResponseSuccess = (listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetResponse200) & {
-  headers: Headers;
-};
-export type listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetResponseError = (listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetResponse404 | listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetResponse422) & {
-  headers: Headers;
-};
+export type listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetResponse422 =
+  {
+    data: HTTPValidationError;
+    status: 422;
+  };
 
-export type listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetResponse = (listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetResponseSuccess | listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetResponseError)
+export type listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetResponseSuccess =
+  listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetResponse200 & {
+    headers: Headers;
+  };
+export type listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetResponseError =
+  (
+    | listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetResponse404
+    | listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetResponse422
+  ) & {
+    headers: Headers;
+  };
 
-export const getListProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetUrl = (professionalId: string,
-    params?: ListProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetParams,) => {
-  const normalizedParams = new URLSearchParams();
+export type listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetResponse =
 
-  Object.entries(params || {}).forEach(([key, value]) => {
-    
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString())
-    }
-  });
+    | listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetResponseSuccess
+    | listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetResponseError;
 
-  const stringifiedParams = normalizedParams.toString();
+export const getListProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetUrl =
+  (
+    professionalId: string,
+    params?: ListProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetParams,
+  ) => {
+    const normalizedParams = new URLSearchParams();
 
-  return stringifiedParams.length > 0 ? `/api/v1/professionals/${professionalId}/versions?${stringifiedParams}` : `/api/v1/professionals/${professionalId}/versions`
-}
+    Object.entries(params || {}).forEach(([key, value]) => {
+      if (value !== undefined) {
+        normalizedParams.append(
+          key,
+          value === null ? "null" : value.toString(),
+        );
+      }
+    });
 
-export const listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGet = async (professionalId: string,
-    params?: ListProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetParams, options?: RequestInit): Promise<listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetResponse> => {
-  
-  return customFetch<listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetResponse>(getListProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetUrl(professionalId,params),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
+    const stringifiedParams = normalizedParams.toString();
 
+    return stringifiedParams.length > 0
+      ? `/api/v1/professionals/${professionalId}/versions?${stringifiedParams}`
+      : `/api/v1/professionals/${professionalId}/versions`;
+  };
 
+export const listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGet =
+  async (
+    professionalId: string,
+    params?: ListProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetParams,
+    options?: RequestInit,
+  ): Promise<listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetResponse> => {
+    return customFetch<listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetResponse>(
+      getListProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetUrl(
+        professionalId,
+        params,
+      ),
+      {
+        ...options,
+        method: "GET",
+      },
+    );
+  };
 
-
-
-export const getListProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetQueryKey = (professionalId?: string,
-    params?: ListProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetParams,) => {
+export const getListProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetQueryKey =
+  (
+    professionalId?: string,
+    params?: ListProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetParams,
+  ) => {
     return [
-    `/api/v1/professionals/${professionalId}/versions`, ...(params ? [params]: [])
+      `/api/v1/professionals/${professionalId}/versions`,
+      ...(params ? [params] : []),
     ] as const;
-    }
+  };
 
-    
-export const getListProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetQueryOptions = <TData = Awaited<ReturnType<typeof listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGet>>, TError = ErrorResponse | HTTPValidationError>(professionalId: string,
-    params?: ListProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
-) => {
+export const getListProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetQueryOptions =
+  <
+    TData = Awaited<
+      ReturnType<
+        typeof listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGet
+      >
+    >,
+    TError = ErrorResponse | HTTPValidationError,
+  >(
+    professionalId: string,
+    params?: ListProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetParams,
+    options?: {
+      query?: Partial<
+        UseQueryOptions<
+          Awaited<
+            ReturnType<
+              typeof listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGet
+            >
+          >,
+          TError,
+          TData
+        >
+      >;
+      request?: SecondParameter<typeof customFetch>;
+    },
+  ) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
 
-const {query: queryOptions, request: requestOptions} = options ?? {};
+    const queryKey =
+      queryOptions?.queryKey ??
+      getListProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetQueryKey(
+        professionalId,
+        params,
+      );
 
-  const queryKey =  queryOptions?.queryKey ?? getListProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetQueryKey(professionalId,params);
+    const queryFn: QueryFunction<
+      Awaited<
+        ReturnType<
+          typeof listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGet
+        >
+      >
+    > = ({ signal }) =>
+      listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGet(
+        professionalId,
+        params,
+        { signal, ...requestOptions },
+      );
 
-  
+    return {
+      queryKey,
+      queryFn,
+      enabled: !!professionalId,
+      staleTime: 30000,
+      ...queryOptions,
+    } as UseQueryOptions<
+      Awaited<
+        ReturnType<
+          typeof listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGet
+        >
+      >,
+      TError,
+      TData
+    > & { queryKey: DataTag<QueryKey, TData> };
+  };
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGet>>> = ({ signal }) => listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGet(professionalId,params, { signal, ...requestOptions });
+export type ListProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetQueryResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGet
+      >
+    >
+  >;
+export type ListProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetQueryError =
+  ErrorResponse | HTTPValidationError;
 
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(professionalId),  staleTime: 30000,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData> }
-}
-
-export type ListProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetQueryResult = NonNullable<Awaited<ReturnType<typeof listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGet>>>
-export type ListProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetQueryError = ErrorResponse | HTTPValidationError
-
-
-export function useListProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGet<TData = Awaited<ReturnType<typeof listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGet>>, TError = ErrorResponse | HTTPValidationError>(
- professionalId: string,
-    params: undefined |  ListProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGet>>, TError, TData>> & Pick<
+export function useListProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGet<
+  TData = Awaited<
+    ReturnType<
+      typeof listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGet
+    >
+  >,
+  TError = ErrorResponse | HTTPValidationError,
+>(
+  professionalId: string,
+  params:
+    | undefined
+    | ListProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGet
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGet>>,
+          Awaited<
+            ReturnType<
+              typeof listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGet
+            >
+          >,
           TError,
-          Awaited<ReturnType<typeof listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGet>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
-export function useListProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGet<TData = Awaited<ReturnType<typeof listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGet>>, TError = ErrorResponse | HTTPValidationError>(
- professionalId: string,
-    params?: ListProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGet>>, TError, TData>> & Pick<
+          Awaited<
+            ReturnType<
+              typeof listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGet
+            >
+          >
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData>;
+};
+export function useListProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGet<
+  TData = Awaited<
+    ReturnType<
+      typeof listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGet
+    >
+  >,
+  TError = ErrorResponse | HTTPValidationError,
+>(
+  professionalId: string,
+  params?: ListProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGet
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGet>>,
+          Awaited<
+            ReturnType<
+              typeof listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGet
+            >
+          >,
           TError,
-          Awaited<ReturnType<typeof listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGet>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
-export function useListProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGet<TData = Awaited<ReturnType<typeof listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGet>>, TError = ErrorResponse | HTTPValidationError>(
- professionalId: string,
-    params?: ListProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
+          Awaited<
+            ReturnType<
+              typeof listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGet
+            >
+          >
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
+export function useListProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGet<
+  TData = Awaited<
+    ReturnType<
+      typeof listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGet
+    >
+  >,
+  TError = ErrorResponse | HTTPValidationError,
+>(
+  professionalId: string,
+  params?: ListProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGet
+          >
+        >,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
 /**
  * @summary List professional versions
  */
 
-export function useListProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGet<TData = Awaited<ReturnType<typeof listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGet>>, TError = ErrorResponse | HTTPValidationError>(
- professionalId: string,
-    params?: ListProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+export function useListProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGet<
+  TData = Awaited<
+    ReturnType<
+      typeof listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGet
+    >
+  >,
+  TError = ErrorResponse | HTTPValidationError,
+>(
+  professionalId: string,
+  params?: ListProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof listProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGet
+          >
+        >,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+  const queryOptions =
+    getListProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetQueryOptions(
+      professionalId,
+      params,
+      options,
+    );
 
-  const queryOptions = getListProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetQueryOptions(professionalId,params,options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData> };
 
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
-
-
-
 
 /**
  * Get a specific version with full details including diffs.
  * @summary Get professional version
  */
-export type getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGetResponse200 = {
-  data: ProfessionalVersionDetailResponse
-  status: 200
-}
+export type getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGetResponse200 =
+  {
+    data: ProfessionalVersionDetailResponse;
+    status: 200;
+  };
 
-export type getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGetResponse404 = {
-  data: ErrorResponse
-  status: 404
-}
+export type getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGetResponse404 =
+  {
+    data: ErrorResponse;
+    status: 404;
+  };
 
-export type getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGetResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-    
-export type getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGetResponseSuccess = (getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGetResponse200) & {
-  headers: Headers;
-};
-export type getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGetResponseError = (getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGetResponse404 | getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGetResponse422) & {
-  headers: Headers;
-};
+export type getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGetResponse422 =
+  {
+    data: HTTPValidationError;
+    status: 422;
+  };
 
-export type getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGetResponse = (getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGetResponseSuccess | getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGetResponseError)
+export type getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGetResponseSuccess =
+  getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGetResponse200 & {
+    headers: Headers;
+  };
+export type getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGetResponseError =
+  (
+    | getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGetResponse404
+    | getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGetResponse422
+  ) & {
+    headers: Headers;
+  };
 
-export const getGetProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGetUrl = (professionalId: string,
-    versionId: string,) => {
+export type getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGetResponse =
 
+    | getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGetResponseSuccess
+    | getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGetResponseError;
 
-  
+export const getGetProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGetUrl =
+  (professionalId: string, versionId: string) => {
+    return `/api/v1/professionals/${professionalId}/versions/${versionId}`;
+  };
 
-  return `/api/v1/professionals/${professionalId}/versions/${versionId}`
-}
+export const getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGet =
+  async (
+    professionalId: string,
+    versionId: string,
+    options?: RequestInit,
+  ): Promise<getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGetResponse> => {
+    return customFetch<getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGetResponse>(
+      getGetProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGetUrl(
+        professionalId,
+        versionId,
+      ),
+      {
+        ...options,
+        method: "GET",
+      },
+    );
+  };
 
-export const getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGet = async (professionalId: string,
-    versionId: string, options?: RequestInit): Promise<getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGetResponse> => {
-  
-  return customFetch<getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGetResponse>(getGetProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGetUrl(professionalId,versionId),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
-
-
-
-export const getGetProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGetQueryKey = (professionalId?: string,
-    versionId?: string,) => {
+export const getGetProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGetQueryKey =
+  (professionalId?: string, versionId?: string) => {
     return [
-    `/api/v1/professionals/${professionalId}/versions/${versionId}`
+      `/api/v1/professionals/${professionalId}/versions/${versionId}`,
     ] as const;
-    }
+  };
 
-    
-export const getGetProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGetQueryOptions = <TData = Awaited<ReturnType<typeof getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGet>>, TError = ErrorResponse | HTTPValidationError>(professionalId: string,
-    versionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
-) => {
+export const getGetProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGetQueryOptions =
+  <
+    TData = Awaited<
+      ReturnType<
+        typeof getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGet
+      >
+    >,
+    TError = ErrorResponse | HTTPValidationError,
+  >(
+    professionalId: string,
+    versionId: string,
+    options?: {
+      query?: Partial<
+        UseQueryOptions<
+          Awaited<
+            ReturnType<
+              typeof getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGet
+            >
+          >,
+          TError,
+          TData
+        >
+      >;
+      request?: SecondParameter<typeof customFetch>;
+    },
+  ) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
 
-const {query: queryOptions, request: requestOptions} = options ?? {};
+    const queryKey =
+      queryOptions?.queryKey ??
+      getGetProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGetQueryKey(
+        professionalId,
+        versionId,
+      );
 
-  const queryKey =  queryOptions?.queryKey ?? getGetProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGetQueryKey(professionalId,versionId);
+    const queryFn: QueryFunction<
+      Awaited<
+        ReturnType<
+          typeof getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGet
+        >
+      >
+    > = ({ signal }) =>
+      getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGet(
+        professionalId,
+        versionId,
+        { signal, ...requestOptions },
+      );
 
-  
+    return {
+      queryKey,
+      queryFn,
+      enabled: !!(professionalId && versionId),
+      staleTime: 30000,
+      ...queryOptions,
+    } as UseQueryOptions<
+      Awaited<
+        ReturnType<
+          typeof getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGet
+        >
+      >,
+      TError,
+      TData
+    > & { queryKey: DataTag<QueryKey, TData> };
+  };
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGet>>> = ({ signal }) => getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGet(professionalId,versionId, { signal, ...requestOptions });
+export type GetProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGetQueryResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGet
+      >
+    >
+  >;
+export type GetProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGetQueryError =
+  ErrorResponse | HTTPValidationError;
 
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(professionalId && versionId),  staleTime: 30000,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData> }
-}
-
-export type GetProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGetQueryResult = NonNullable<Awaited<ReturnType<typeof getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGet>>>
-export type GetProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGetQueryError = ErrorResponse | HTTPValidationError
-
-
-export function useGetProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGet<TData = Awaited<ReturnType<typeof getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGet>>, TError = ErrorResponse | HTTPValidationError>(
- professionalId: string,
-    versionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGet>>, TError, TData>> & Pick<
+export function useGetProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGet
+    >
+  >,
+  TError = ErrorResponse | HTTPValidationError,
+>(
+  professionalId: string,
+  versionId: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGet
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGet>>,
+          Awaited<
+            ReturnType<
+              typeof getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGet
+            >
+          >,
           TError,
-          Awaited<ReturnType<typeof getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGet>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
-export function useGetProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGet<TData = Awaited<ReturnType<typeof getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGet>>, TError = ErrorResponse | HTTPValidationError>(
- professionalId: string,
-    versionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGet>>, TError, TData>> & Pick<
+          Awaited<
+            ReturnType<
+              typeof getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGet
+            >
+          >
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData>;
+};
+export function useGetProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGet
+    >
+  >,
+  TError = ErrorResponse | HTTPValidationError,
+>(
+  professionalId: string,
+  versionId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGet
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGet>>,
+          Awaited<
+            ReturnType<
+              typeof getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGet
+            >
+          >,
           TError,
-          Awaited<ReturnType<typeof getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGet>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
-export function useGetProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGet<TData = Awaited<ReturnType<typeof getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGet>>, TError = ErrorResponse | HTTPValidationError>(
- professionalId: string,
-    versionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
+          Awaited<
+            ReturnType<
+              typeof getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGet
+            >
+          >
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
+export function useGetProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGet
+    >
+  >,
+  TError = ErrorResponse | HTTPValidationError,
+>(
+  professionalId: string,
+  versionId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGet
+          >
+        >,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
 /**
  * @summary Get professional version
  */
 
-export function useGetProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGet<TData = Awaited<ReturnType<typeof getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGet>>, TError = ErrorResponse | HTTPValidationError>(
- professionalId: string,
-    versionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+export function useGetProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGet
+    >
+  >,
+  TError = ErrorResponse | HTTPValidationError,
+>(
+  professionalId: string,
+  versionId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGet
+          >
+        >,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+  const queryOptions =
+    getGetProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGetQueryOptions(
+      professionalId,
+      versionId,
+      options,
+    );
 
-  const queryOptions = getGetProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdGetQueryOptions(professionalId,versionId,options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData> };
 
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
-
-
-
 
 /**
  * Apply a pending version to the professional. The version's snapshot data will be synced to the actual entities.
  * @summary Apply a pending version
  */
-export type applyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPostResponse200 = {
-  data: ProfessionalVersionResponse
-  status: 200
-}
+export type applyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPostResponse200 =
+  {
+    data: ProfessionalVersionResponse;
+    status: 200;
+  };
 
-export type applyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPostResponse404 = {
-  data: ErrorResponse
-  status: 404
-}
+export type applyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPostResponse404 =
+  {
+    data: ErrorResponse;
+    status: 404;
+  };
 
-export type applyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPostResponse409 = {
-  data: ErrorResponse
-  status: 409
-}
+export type applyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPostResponse409 =
+  {
+    data: ErrorResponse;
+    status: 409;
+  };
 
-export type applyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPostResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-    
-export type applyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPostResponseSuccess = (applyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPostResponse200) & {
-  headers: Headers;
-};
-export type applyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPostResponseError = (applyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPostResponse404 | applyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPostResponse409 | applyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPostResponse422) & {
-  headers: Headers;
-};
+export type applyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPostResponse422 =
+  {
+    data: HTTPValidationError;
+    status: 422;
+  };
 
-export type applyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPostResponse = (applyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPostResponseSuccess | applyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPostResponseError)
+export type applyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPostResponseSuccess =
+  applyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPostResponse200 & {
+    headers: Headers;
+  };
+export type applyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPostResponseError =
+  (
+    | applyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPostResponse404
+    | applyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPostResponse409
+    | applyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPostResponse422
+  ) & {
+    headers: Headers;
+  };
 
-export const getApplyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPostUrl = (professionalId: string,
-    versionId: string,) => {
+export type applyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPostResponse =
 
+    | applyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPostResponseSuccess
+    | applyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPostResponseError;
 
-  
+export const getApplyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPostUrl =
+  (professionalId: string, versionId: string) => {
+    return `/api/v1/professionals/${professionalId}/versions/${versionId}/apply`;
+  };
 
-  return `/api/v1/professionals/${professionalId}/versions/${versionId}/apply`
-}
+export const applyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPost =
+  async (
+    professionalId: string,
+    versionId: string,
+    options?: RequestInit,
+  ): Promise<applyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPostResponse> => {
+    return customFetch<applyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPostResponse>(
+      getApplyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPostUrl(
+        professionalId,
+        versionId,
+      ),
+      {
+        ...options,
+        method: "POST",
+      },
+    );
+  };
 
-export const applyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPost = async (professionalId: string,
-    versionId: string, options?: RequestInit): Promise<applyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPostResponse> => {
-  
-  return customFetch<applyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPostResponse>(getApplyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPostUrl(professionalId,versionId),
-  {      
-    ...options,
-    method: 'POST'
-    
-    
-  }
-);}
+export const getApplyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPostMutationOptions =
+  <TError = ErrorResponse | HTTPValidationError, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<
+          typeof applyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPost
+        >
+      >,
+      TError,
+      { professionalId: string; versionId: string },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  }): UseMutationOptions<
+    Awaited<
+      ReturnType<
+        typeof applyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPost
+      >
+    >,
+    TError,
+    { professionalId: string; versionId: string },
+    TContext
+  > => {
+    const mutationKey = [
+      "applyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPost",
+    ];
+    const { mutation: mutationOptions, request: requestOptions } = options
+      ? options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+        ? options
+        : { ...options, mutation: { ...options.mutation, mutationKey } }
+      : { mutation: { mutationKey }, request: undefined };
 
+    const mutationFn: MutationFunction<
+      Awaited<
+        ReturnType<
+          typeof applyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPost
+        >
+      >,
+      { professionalId: string; versionId: string }
+    > = (props) => {
+      const { professionalId, versionId } = props ?? {};
 
+      return applyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPost(
+        professionalId,
+        versionId,
+        requestOptions,
+      );
+    };
 
+    return { mutationFn, ...mutationOptions };
+  };
 
-export const getApplyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPostMutationOptions = <TError = ErrorResponse | HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof applyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPost>>, TError,{professionalId: string;versionId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof applyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPost>>, TError,{professionalId: string;versionId: string}, TContext> => {
+export type ApplyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPostMutationResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof applyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPost
+      >
+    >
+  >;
 
-const mutationKey = ['applyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPost'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+export type ApplyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPostMutationError =
+  ErrorResponse | HTTPValidationError;
 
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof applyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPost>>, {professionalId: string;versionId: string}> = (props) => {
-          const {professionalId,versionId} = props ?? {};
-
-          return  applyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPost(professionalId,versionId,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ApplyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPostMutationResult = NonNullable<Awaited<ReturnType<typeof applyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPost>>>
-    
-    export type ApplyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPostMutationError = ErrorResponse | HTTPValidationError
-
-    /**
+/**
  * @summary Apply a pending version
  */
-export const useApplyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPost = <TError = ErrorResponse | HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof applyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPost>>, TError,{professionalId: string;versionId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof applyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPost>>,
+export const useApplyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPost =
+  <TError = ErrorResponse | HTTPValidationError, TContext = unknown>(
+    options?: {
+      mutation?: UseMutationOptions<
+        Awaited<
+          ReturnType<
+            typeof applyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPost
+          >
+        >,
         TError,
-        {professionalId: string;versionId: string},
+        { professionalId: string; versionId: string },
         TContext
-      > => {
+      >;
+      request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+  ): UseMutationResult<
+    Awaited<
+      ReturnType<
+        typeof applyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPost
+      >
+    >,
+    TError,
+    { professionalId: string; versionId: string },
+    TContext
+  > => {
+    const mutationOptions =
+      getApplyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPostMutationOptions(
+        options,
+      );
 
-      const mutationOptions = getApplyProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdApplyPostMutationOptions(options);
-
-      return useMutation(mutationOptions, queryClient);
-    }
-    /**
+    return useMutation(mutationOptions, queryClient);
+  };
+/**
  * Reject a pending version with a reason. Rejected versions cannot be applied.
  * @summary Reject a pending version
  */
-export type rejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPostResponse200 = {
-  data: ProfessionalVersionResponse
-  status: 200
-}
+export type rejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPostResponse200 =
+  {
+    data: ProfessionalVersionResponse;
+    status: 200;
+  };
 
-export type rejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPostResponse404 = {
-  data: ErrorResponse
-  status: 404
-}
+export type rejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPostResponse404 =
+  {
+    data: ErrorResponse;
+    status: 404;
+  };
 
-export type rejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPostResponse409 = {
-  data: ErrorResponse
-  status: 409
-}
+export type rejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPostResponse409 =
+  {
+    data: ErrorResponse;
+    status: 409;
+  };
 
-export type rejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPostResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-    
-export type rejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPostResponseSuccess = (rejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPostResponse200) & {
-  headers: Headers;
-};
-export type rejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPostResponseError = (rejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPostResponse404 | rejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPostResponse409 | rejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPostResponse422) & {
-  headers: Headers;
-};
+export type rejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPostResponse422 =
+  {
+    data: HTTPValidationError;
+    status: 422;
+  };
 
-export type rejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPostResponse = (rejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPostResponseSuccess | rejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPostResponseError)
+export type rejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPostResponseSuccess =
+  rejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPostResponse200 & {
+    headers: Headers;
+  };
+export type rejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPostResponseError =
+  (
+    | rejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPostResponse404
+    | rejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPostResponse409
+    | rejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPostResponse422
+  ) & {
+    headers: Headers;
+  };
 
-export const getRejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPostUrl = (professionalId: string,
-    versionId: string,) => {
+export type rejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPostResponse =
 
+    | rejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPostResponseSuccess
+    | rejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPostResponseError;
 
-  
+export const getRejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPostUrl =
+  (professionalId: string, versionId: string) => {
+    return `/api/v1/professionals/${professionalId}/versions/${versionId}/reject`;
+  };
 
-  return `/api/v1/professionals/${professionalId}/versions/${versionId}/reject`
-}
-
-export const rejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPost = async (professionalId: string,
+export const rejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPost =
+  async (
+    professionalId: string,
     versionId: string,
-    professionalVersionReject: ProfessionalVersionReject, options?: RequestInit): Promise<rejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPostResponse> => {
-  
-  return customFetch<rejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPostResponse>(getRejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPostUrl(professionalId,versionId),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      professionalVersionReject,)
-  }
-);}
+    professionalVersionReject: ProfessionalVersionReject,
+    options?: RequestInit,
+  ): Promise<rejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPostResponse> => {
+    return customFetch<rejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPostResponse>(
+      getRejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPostUrl(
+        professionalId,
+        versionId,
+      ),
+      {
+        ...options,
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...options?.headers },
+        body: JSON.stringify(professionalVersionReject),
+      },
+    );
+  };
 
+export const getRejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPostMutationOptions =
+  <TError = ErrorResponse | HTTPValidationError, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<
+          typeof rejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPost
+        >
+      >,
+      TError,
+      {
+        professionalId: string;
+        versionId: string;
+        data: ProfessionalVersionReject;
+      },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  }): UseMutationOptions<
+    Awaited<
+      ReturnType<
+        typeof rejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPost
+      >
+    >,
+    TError,
+    {
+      professionalId: string;
+      versionId: string;
+      data: ProfessionalVersionReject;
+    },
+    TContext
+  > => {
+    const mutationKey = [
+      "rejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPost",
+    ];
+    const { mutation: mutationOptions, request: requestOptions } = options
+      ? options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+        ? options
+        : { ...options, mutation: { ...options.mutation, mutationKey } }
+      : { mutation: { mutationKey }, request: undefined };
 
+    const mutationFn: MutationFunction<
+      Awaited<
+        ReturnType<
+          typeof rejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPost
+        >
+      >,
+      {
+        professionalId: string;
+        versionId: string;
+        data: ProfessionalVersionReject;
+      }
+    > = (props) => {
+      const { professionalId, versionId, data } = props ?? {};
 
+      return rejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPost(
+        professionalId,
+        versionId,
+        data,
+        requestOptions,
+      );
+    };
 
-export const getRejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPostMutationOptions = <TError = ErrorResponse | HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof rejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPost>>, TError,{professionalId: string;versionId: string;data: ProfessionalVersionReject}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof rejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPost>>, TError,{professionalId: string;versionId: string;data: ProfessionalVersionReject}, TContext> => {
+    return { mutationFn, ...mutationOptions };
+  };
 
-const mutationKey = ['rejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPost'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+export type RejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPostMutationResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof rejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPost
+      >
+    >
+  >;
+export type RejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPostMutationBody =
+  ProfessionalVersionReject;
+export type RejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPostMutationError =
+  ErrorResponse | HTTPValidationError;
 
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof rejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPost>>, {professionalId: string;versionId: string;data: ProfessionalVersionReject}> = (props) => {
-          const {professionalId,versionId,data} = props ?? {};
-
-          return  rejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPost(professionalId,versionId,data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type RejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPostMutationResult = NonNullable<Awaited<ReturnType<typeof rejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPost>>>
-    export type RejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPostMutationBody = ProfessionalVersionReject
-    export type RejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPostMutationError = ErrorResponse | HTTPValidationError
-
-    /**
+/**
  * @summary Reject a pending version
  */
-export const useRejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPost = <TError = ErrorResponse | HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof rejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPost>>, TError,{professionalId: string;versionId: string;data: ProfessionalVersionReject}, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof rejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPost>>,
+export const useRejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPost =
+  <TError = ErrorResponse | HTTPValidationError, TContext = unknown>(
+    options?: {
+      mutation?: UseMutationOptions<
+        Awaited<
+          ReturnType<
+            typeof rejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPost
+          >
+        >,
         TError,
-        {professionalId: string;versionId: string;data: ProfessionalVersionReject},
+        {
+          professionalId: string;
+          versionId: string;
+          data: ProfessionalVersionReject;
+        },
         TContext
-      > => {
+      >;
+      request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+  ): UseMutationResult<
+    Awaited<
+      ReturnType<
+        typeof rejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPost
+      >
+    >,
+    TError,
+    {
+      professionalId: string;
+      versionId: string;
+      data: ProfessionalVersionReject;
+    },
+    TContext
+  > => {
+    const mutationOptions =
+      getRejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPostMutationOptions(
+        options,
+      );
 
-      const mutationOptions = getRejectProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsVersionIdRejectPostMutationOptions(options);
-
-      return useMutation(mutationOptions, queryClient);
-    }
-    
+    return useMutation(mutationOptions, queryClient);
+  };

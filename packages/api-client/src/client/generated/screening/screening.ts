@@ -5,10 +5,7 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import {
-  useMutation,
-  useQuery
-} from '@tanstack/react-query';
+import { useMutation, useQuery } from "@tanstack/react-query";
 import type {
   DataTag,
   DefinedInitialDataOptions,
@@ -21,8 +18,8 @@ import type {
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
-  UseQueryResult
-} from '@tanstack/react-query';
+  UseQueryResult,
+} from "@tanstack/react-query";
 
 import type {
   ConfigureDocumentsRequest,
@@ -46,15 +43,12 @@ import type {
   ScreeningProcessDetailResponse,
   ScreeningProcessResponse,
   ScreeningProcessStepResponse,
-  UploadDocumentRequest
-} from '../../models';
+  UploadDocumentRequest,
+} from "../../models";
 
-import { customFetch } from '../../custom-fetch';
-
+import { customFetch } from "../../custom-fetch";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
-
-
 
 /**
  * Cria um novo processo de triagem para um profissional (Etapa 1 - Conversa/Criação).
@@ -72,98 +66,130 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
  * @summary Criar triagem
  */
 export type createScreeningProcessApiV1ScreeningsPostResponse201 = {
-  data: ScreeningProcessDetailResponse
-  status: 201
-}
+  data: ScreeningProcessDetailResponse;
+  status: 201;
+};
 
 export type createScreeningProcessApiV1ScreeningsPostResponse409 = {
-  data: ErrorResponse
-  status: 409
-}
+  data: ErrorResponse;
+  status: 409;
+};
 
 export type createScreeningProcessApiV1ScreeningsPostResponse422 = {
-  data: ErrorResponse
-  status: 422
-}
-    
-export type createScreeningProcessApiV1ScreeningsPostResponseSuccess = (createScreeningProcessApiV1ScreeningsPostResponse201) & {
-  headers: Headers;
+  data: ErrorResponse;
+  status: 422;
 };
-export type createScreeningProcessApiV1ScreeningsPostResponseError = (createScreeningProcessApiV1ScreeningsPostResponse409 | createScreeningProcessApiV1ScreeningsPostResponse422) & {
+
+export type createScreeningProcessApiV1ScreeningsPostResponseSuccess =
+  createScreeningProcessApiV1ScreeningsPostResponse201 & {
+    headers: Headers;
+  };
+export type createScreeningProcessApiV1ScreeningsPostResponseError = (
+  | createScreeningProcessApiV1ScreeningsPostResponse409
+  | createScreeningProcessApiV1ScreeningsPostResponse422
+) & {
   headers: Headers;
 };
 
-export type createScreeningProcessApiV1ScreeningsPostResponse = (createScreeningProcessApiV1ScreeningsPostResponseSuccess | createScreeningProcessApiV1ScreeningsPostResponseError)
+export type createScreeningProcessApiV1ScreeningsPostResponse =
+  | createScreeningProcessApiV1ScreeningsPostResponseSuccess
+  | createScreeningProcessApiV1ScreeningsPostResponseError;
 
 export const getCreateScreeningProcessApiV1ScreeningsPostUrl = () => {
+  return `/api/v1/screenings/`;
+};
 
+export const createScreeningProcessApiV1ScreeningsPost = async (
+  screeningProcessCreate: ScreeningProcessCreate,
+  options?: RequestInit,
+): Promise<createScreeningProcessApiV1ScreeningsPostResponse> => {
+  return customFetch<createScreeningProcessApiV1ScreeningsPostResponse>(
+    getCreateScreeningProcessApiV1ScreeningsPostUrl(),
+    {
+      ...options,
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...options?.headers },
+      body: JSON.stringify(screeningProcessCreate),
+    },
+  );
+};
 
-  
+export const getCreateScreeningProcessApiV1ScreeningsPostMutationOptions = <
+  TError = ErrorResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createScreeningProcessApiV1ScreeningsPost>>,
+    TError,
+    { data: ScreeningProcessCreate },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof createScreeningProcessApiV1ScreeningsPost>>,
+  TError,
+  { data: ScreeningProcessCreate },
+  TContext
+> => {
+  const mutationKey = ["createScreeningProcessApiV1ScreeningsPost"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
 
-  return `/api/v1/screenings/`
-}
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof createScreeningProcessApiV1ScreeningsPost>>,
+    { data: ScreeningProcessCreate }
+  > = (props) => {
+    const { data } = props ?? {};
 
-export const createScreeningProcessApiV1ScreeningsPost = async (screeningProcessCreate: ScreeningProcessCreate, options?: RequestInit): Promise<createScreeningProcessApiV1ScreeningsPostResponse> => {
-  
-  return customFetch<createScreeningProcessApiV1ScreeningsPostResponse>(getCreateScreeningProcessApiV1ScreeningsPostUrl(),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      screeningProcessCreate,)
-  }
-);}
+    return createScreeningProcessApiV1ScreeningsPost(data, requestOptions);
+  };
 
+  return { mutationFn, ...mutationOptions };
+};
 
+export type CreateScreeningProcessApiV1ScreeningsPostMutationResult =
+  NonNullable<
+    Awaited<ReturnType<typeof createScreeningProcessApiV1ScreeningsPost>>
+  >;
+export type CreateScreeningProcessApiV1ScreeningsPostMutationBody =
+  ScreeningProcessCreate;
+export type CreateScreeningProcessApiV1ScreeningsPostMutationError =
+  ErrorResponse;
 
-
-export const getCreateScreeningProcessApiV1ScreeningsPostMutationOptions = <TError = ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createScreeningProcessApiV1ScreeningsPost>>, TError,{data: ScreeningProcessCreate}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof createScreeningProcessApiV1ScreeningsPost>>, TError,{data: ScreeningProcessCreate}, TContext> => {
-
-const mutationKey = ['createScreeningProcessApiV1ScreeningsPost'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createScreeningProcessApiV1ScreeningsPost>>, {data: ScreeningProcessCreate}> = (props) => {
-          const {data} = props ?? {};
-
-          return  createScreeningProcessApiV1ScreeningsPost(data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type CreateScreeningProcessApiV1ScreeningsPostMutationResult = NonNullable<Awaited<ReturnType<typeof createScreeningProcessApiV1ScreeningsPost>>>
-    export type CreateScreeningProcessApiV1ScreeningsPostMutationBody = ScreeningProcessCreate
-    export type CreateScreeningProcessApiV1ScreeningsPostMutationError = ErrorResponse
-
-    /**
+/**
  * @summary Criar triagem
  */
-export const useCreateScreeningProcessApiV1ScreeningsPost = <TError = ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createScreeningProcessApiV1ScreeningsPost>>, TError,{data: ScreeningProcessCreate}, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof createScreeningProcessApiV1ScreeningsPost>>,
-        TError,
-        {data: ScreeningProcessCreate},
-        TContext
-      > => {
+export const useCreateScreeningProcessApiV1ScreeningsPost = <
+  TError = ErrorResponse,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof createScreeningProcessApiV1ScreeningsPost>>,
+      TError,
+      { data: ScreeningProcessCreate },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof createScreeningProcessApiV1ScreeningsPost>>,
+  TError,
+  { data: ScreeningProcessCreate },
+  TContext
+> => {
+  const mutationOptions =
+    getCreateScreeningProcessApiV1ScreeningsPostMutationOptions(options);
 
-      const mutationOptions = getCreateScreeningProcessApiV1ScreeningsPostMutationOptions(options);
-
-      return useMutation(mutationOptions, queryClient);
-    }
-    /**
+  return useMutation(mutationOptions, queryClient);
+};
+/**
  * Lista todos os processos de triagem da organização.
 
 **Filtros disponíveis:**
@@ -179,127 +205,217 @@ export const useCreateScreeningProcessApiV1ScreeningsPost = <TError = ErrorRespo
  * @summary Listar triagens
  */
 export type listScreeningProcessesApiV1ScreeningsGetResponse200 = {
-  data: PaginatedResponseScreeningProcessResponse
-  status: 200
-}
+  data: PaginatedResponseScreeningProcessResponse;
+  status: 200;
+};
 
 export type listScreeningProcessesApiV1ScreeningsGetResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-    
-export type listScreeningProcessesApiV1ScreeningsGetResponseSuccess = (listScreeningProcessesApiV1ScreeningsGetResponse200) & {
-  headers: Headers;
-};
-export type listScreeningProcessesApiV1ScreeningsGetResponseError = (listScreeningProcessesApiV1ScreeningsGetResponse422) & {
-  headers: Headers;
+  data: HTTPValidationError;
+  status: 422;
 };
 
-export type listScreeningProcessesApiV1ScreeningsGetResponse = (listScreeningProcessesApiV1ScreeningsGetResponseSuccess | listScreeningProcessesApiV1ScreeningsGetResponseError)
+export type listScreeningProcessesApiV1ScreeningsGetResponseSuccess =
+  listScreeningProcessesApiV1ScreeningsGetResponse200 & {
+    headers: Headers;
+  };
+export type listScreeningProcessesApiV1ScreeningsGetResponseError =
+  listScreeningProcessesApiV1ScreeningsGetResponse422 & {
+    headers: Headers;
+  };
 
-export const getListScreeningProcessesApiV1ScreeningsGetUrl = (params?: ListScreeningProcessesApiV1ScreeningsGetParams,) => {
+export type listScreeningProcessesApiV1ScreeningsGetResponse =
+  | listScreeningProcessesApiV1ScreeningsGetResponseSuccess
+  | listScreeningProcessesApiV1ScreeningsGetResponseError;
+
+export const getListScreeningProcessesApiV1ScreeningsGetUrl = (
+  params?: ListScreeningProcessesApiV1ScreeningsGetParams,
+) => {
   const normalizedParams = new URLSearchParams();
 
   Object.entries(params || {}).forEach(([key, value]) => {
-    
     if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString())
+      normalizedParams.append(key, value === null ? "null" : value.toString());
     }
   });
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/v1/screenings/?${stringifiedParams}` : `/api/v1/screenings/`
-}
+  return stringifiedParams.length > 0
+    ? `/api/v1/screenings/?${stringifiedParams}`
+    : `/api/v1/screenings/`;
+};
 
-export const listScreeningProcessesApiV1ScreeningsGet = async (params?: ListScreeningProcessesApiV1ScreeningsGetParams, options?: RequestInit): Promise<listScreeningProcessesApiV1ScreeningsGetResponse> => {
-  
-  return customFetch<listScreeningProcessesApiV1ScreeningsGetResponse>(getListScreeningProcessesApiV1ScreeningsGetUrl(params),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
+export const listScreeningProcessesApiV1ScreeningsGet = async (
+  params?: ListScreeningProcessesApiV1ScreeningsGetParams,
+  options?: RequestInit,
+): Promise<listScreeningProcessesApiV1ScreeningsGetResponse> => {
+  return customFetch<listScreeningProcessesApiV1ScreeningsGetResponse>(
+    getListScreeningProcessesApiV1ScreeningsGetUrl(params),
+    {
+      ...options,
+      method: "GET",
+    },
+  );
+};
 
-
-
-
-
-export const getListScreeningProcessesApiV1ScreeningsGetQueryKey = (params?: ListScreeningProcessesApiV1ScreeningsGetParams,) => {
-    return [
-    `/api/v1/screenings/`, ...(params ? [params]: [])
-    ] as const;
-    }
-
-    
-export const getListScreeningProcessesApiV1ScreeningsGetQueryOptions = <TData = Awaited<ReturnType<typeof listScreeningProcessesApiV1ScreeningsGet>>, TError = HTTPValidationError>(params?: ListScreeningProcessesApiV1ScreeningsGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listScreeningProcessesApiV1ScreeningsGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getListScreeningProcessesApiV1ScreeningsGetQueryKey = (
+  params?: ListScreeningProcessesApiV1ScreeningsGetParams,
 ) => {
+  return [`/api/v1/screenings/`, ...(params ? [params] : [])] as const;
+};
 
-const {query: queryOptions, request: requestOptions} = options ?? {};
+export const getListScreeningProcessesApiV1ScreeningsGetQueryOptions = <
+  TData = Awaited<ReturnType<typeof listScreeningProcessesApiV1ScreeningsGet>>,
+  TError = HTTPValidationError,
+>(
+  params?: ListScreeningProcessesApiV1ScreeningsGetParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof listScreeningProcessesApiV1ScreeningsGet>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getListScreeningProcessesApiV1ScreeningsGetQueryKey(params);
+  const queryKey =
+    queryOptions?.queryKey ??
+    getListScreeningProcessesApiV1ScreeningsGetQueryKey(params);
 
-  
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof listScreeningProcessesApiV1ScreeningsGet>>
+  > = ({ signal }) =>
+    listScreeningProcessesApiV1ScreeningsGet(params, {
+      signal,
+      ...requestOptions,
+    });
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof listScreeningProcessesApiV1ScreeningsGet>>> = ({ signal }) => listScreeningProcessesApiV1ScreeningsGet(params, { signal, ...requestOptions });
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 30000,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof listScreeningProcessesApiV1ScreeningsGet>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData> };
+};
 
-      
+export type ListScreeningProcessesApiV1ScreeningsGetQueryResult = NonNullable<
+  Awaited<ReturnType<typeof listScreeningProcessesApiV1ScreeningsGet>>
+>;
+export type ListScreeningProcessesApiV1ScreeningsGetQueryError =
+  HTTPValidationError;
 
-      
-
-   return  { queryKey, queryFn,   staleTime: 30000,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listScreeningProcessesApiV1ScreeningsGet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData> }
-}
-
-export type ListScreeningProcessesApiV1ScreeningsGetQueryResult = NonNullable<Awaited<ReturnType<typeof listScreeningProcessesApiV1ScreeningsGet>>>
-export type ListScreeningProcessesApiV1ScreeningsGetQueryError = HTTPValidationError
-
-
-export function useListScreeningProcessesApiV1ScreeningsGet<TData = Awaited<ReturnType<typeof listScreeningProcessesApiV1ScreeningsGet>>, TError = HTTPValidationError>(
- params: undefined |  ListScreeningProcessesApiV1ScreeningsGetParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listScreeningProcessesApiV1ScreeningsGet>>, TError, TData>> & Pick<
+export function useListScreeningProcessesApiV1ScreeningsGet<
+  TData = Awaited<ReturnType<typeof listScreeningProcessesApiV1ScreeningsGet>>,
+  TError = HTTPValidationError,
+>(
+  params: undefined | ListScreeningProcessesApiV1ScreeningsGetParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof listScreeningProcessesApiV1ScreeningsGet>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof listScreeningProcessesApiV1ScreeningsGet>>,
           TError,
           Awaited<ReturnType<typeof listScreeningProcessesApiV1ScreeningsGet>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
-export function useListScreeningProcessesApiV1ScreeningsGet<TData = Awaited<ReturnType<typeof listScreeningProcessesApiV1ScreeningsGet>>, TError = HTTPValidationError>(
- params?: ListScreeningProcessesApiV1ScreeningsGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listScreeningProcessesApiV1ScreeningsGet>>, TError, TData>> & Pick<
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData>;
+};
+export function useListScreeningProcessesApiV1ScreeningsGet<
+  TData = Awaited<ReturnType<typeof listScreeningProcessesApiV1ScreeningsGet>>,
+  TError = HTTPValidationError,
+>(
+  params?: ListScreeningProcessesApiV1ScreeningsGetParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof listScreeningProcessesApiV1ScreeningsGet>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof listScreeningProcessesApiV1ScreeningsGet>>,
           TError,
           Awaited<ReturnType<typeof listScreeningProcessesApiV1ScreeningsGet>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
-export function useListScreeningProcessesApiV1ScreeningsGet<TData = Awaited<ReturnType<typeof listScreeningProcessesApiV1ScreeningsGet>>, TError = HTTPValidationError>(
- params?: ListScreeningProcessesApiV1ScreeningsGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listScreeningProcessesApiV1ScreeningsGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
+export function useListScreeningProcessesApiV1ScreeningsGet<
+  TData = Awaited<ReturnType<typeof listScreeningProcessesApiV1ScreeningsGet>>,
+  TError = HTTPValidationError,
+>(
+  params?: ListScreeningProcessesApiV1ScreeningsGetParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof listScreeningProcessesApiV1ScreeningsGet>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
 /**
  * @summary Listar triagens
  */
 
-export function useListScreeningProcessesApiV1ScreeningsGet<TData = Awaited<ReturnType<typeof listScreeningProcessesApiV1ScreeningsGet>>, TError = HTTPValidationError>(
- params?: ListScreeningProcessesApiV1ScreeningsGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listScreeningProcessesApiV1ScreeningsGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+export function useListScreeningProcessesApiV1ScreeningsGet<
+  TData = Awaited<ReturnType<typeof listScreeningProcessesApiV1ScreeningsGet>>,
+  TError = HTTPValidationError,
+>(
+  params?: ListScreeningProcessesApiV1ScreeningsGetParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof listScreeningProcessesApiV1ScreeningsGet>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+  const queryOptions = getListScreeningProcessesApiV1ScreeningsGetQueryOptions(
+    params,
+    options,
+  );
 
-  const queryOptions = getListScreeningProcessesApiV1ScreeningsGetQueryOptions(params,options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData> };
 
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
-
-
-
 
 /**
  * Lista as triagens atribuídas ao usuário atual como `current_actor_id`.
@@ -308,127 +424,247 @@ export function useListScreeningProcessesApiV1ScreeningsGet<TData = Awaited<Retu
  * @summary Minhas triagens
  */
 export type listMyScreeningProcessesApiV1ScreeningsMeGetResponse200 = {
-  data: PaginatedResponseScreeningProcessResponse
-  status: 200
-}
+  data: PaginatedResponseScreeningProcessResponse;
+  status: 200;
+};
 
 export type listMyScreeningProcessesApiV1ScreeningsMeGetResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-    
-export type listMyScreeningProcessesApiV1ScreeningsMeGetResponseSuccess = (listMyScreeningProcessesApiV1ScreeningsMeGetResponse200) & {
-  headers: Headers;
-};
-export type listMyScreeningProcessesApiV1ScreeningsMeGetResponseError = (listMyScreeningProcessesApiV1ScreeningsMeGetResponse422) & {
-  headers: Headers;
+  data: HTTPValidationError;
+  status: 422;
 };
 
-export type listMyScreeningProcessesApiV1ScreeningsMeGetResponse = (listMyScreeningProcessesApiV1ScreeningsMeGetResponseSuccess | listMyScreeningProcessesApiV1ScreeningsMeGetResponseError)
+export type listMyScreeningProcessesApiV1ScreeningsMeGetResponseSuccess =
+  listMyScreeningProcessesApiV1ScreeningsMeGetResponse200 & {
+    headers: Headers;
+  };
+export type listMyScreeningProcessesApiV1ScreeningsMeGetResponseError =
+  listMyScreeningProcessesApiV1ScreeningsMeGetResponse422 & {
+    headers: Headers;
+  };
 
-export const getListMyScreeningProcessesApiV1ScreeningsMeGetUrl = (params?: ListMyScreeningProcessesApiV1ScreeningsMeGetParams,) => {
+export type listMyScreeningProcessesApiV1ScreeningsMeGetResponse =
+  | listMyScreeningProcessesApiV1ScreeningsMeGetResponseSuccess
+  | listMyScreeningProcessesApiV1ScreeningsMeGetResponseError;
+
+export const getListMyScreeningProcessesApiV1ScreeningsMeGetUrl = (
+  params?: ListMyScreeningProcessesApiV1ScreeningsMeGetParams,
+) => {
   const normalizedParams = new URLSearchParams();
 
   Object.entries(params || {}).forEach(([key, value]) => {
-    
     if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString())
+      normalizedParams.append(key, value === null ? "null" : value.toString());
     }
   });
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/v1/screenings/me?${stringifiedParams}` : `/api/v1/screenings/me`
-}
+  return stringifiedParams.length > 0
+    ? `/api/v1/screenings/me?${stringifiedParams}`
+    : `/api/v1/screenings/me`;
+};
 
-export const listMyScreeningProcessesApiV1ScreeningsMeGet = async (params?: ListMyScreeningProcessesApiV1ScreeningsMeGetParams, options?: RequestInit): Promise<listMyScreeningProcessesApiV1ScreeningsMeGetResponse> => {
-  
-  return customFetch<listMyScreeningProcessesApiV1ScreeningsMeGetResponse>(getListMyScreeningProcessesApiV1ScreeningsMeGetUrl(params),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
+export const listMyScreeningProcessesApiV1ScreeningsMeGet = async (
+  params?: ListMyScreeningProcessesApiV1ScreeningsMeGetParams,
+  options?: RequestInit,
+): Promise<listMyScreeningProcessesApiV1ScreeningsMeGetResponse> => {
+  return customFetch<listMyScreeningProcessesApiV1ScreeningsMeGetResponse>(
+    getListMyScreeningProcessesApiV1ScreeningsMeGetUrl(params),
+    {
+      ...options,
+      method: "GET",
+    },
+  );
+};
 
-
-
-
-
-export const getListMyScreeningProcessesApiV1ScreeningsMeGetQueryKey = (params?: ListMyScreeningProcessesApiV1ScreeningsMeGetParams,) => {
-    return [
-    `/api/v1/screenings/me`, ...(params ? [params]: [])
-    ] as const;
-    }
-
-    
-export const getListMyScreeningProcessesApiV1ScreeningsMeGetQueryOptions = <TData = Awaited<ReturnType<typeof listMyScreeningProcessesApiV1ScreeningsMeGet>>, TError = HTTPValidationError>(params?: ListMyScreeningProcessesApiV1ScreeningsMeGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listMyScreeningProcessesApiV1ScreeningsMeGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getListMyScreeningProcessesApiV1ScreeningsMeGetQueryKey = (
+  params?: ListMyScreeningProcessesApiV1ScreeningsMeGetParams,
 ) => {
+  return [`/api/v1/screenings/me`, ...(params ? [params] : [])] as const;
+};
 
-const {query: queryOptions, request: requestOptions} = options ?? {};
+export const getListMyScreeningProcessesApiV1ScreeningsMeGetQueryOptions = <
+  TData = Awaited<
+    ReturnType<typeof listMyScreeningProcessesApiV1ScreeningsMeGet>
+  >,
+  TError = HTTPValidationError,
+>(
+  params?: ListMyScreeningProcessesApiV1ScreeningsMeGetParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof listMyScreeningProcessesApiV1ScreeningsMeGet>
+        >,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getListMyScreeningProcessesApiV1ScreeningsMeGetQueryKey(params);
+  const queryKey =
+    queryOptions?.queryKey ??
+    getListMyScreeningProcessesApiV1ScreeningsMeGetQueryKey(params);
 
-  
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof listMyScreeningProcessesApiV1ScreeningsMeGet>>
+  > = ({ signal }) =>
+    listMyScreeningProcessesApiV1ScreeningsMeGet(params, {
+      signal,
+      ...requestOptions,
+    });
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof listMyScreeningProcessesApiV1ScreeningsMeGet>>> = ({ signal }) => listMyScreeningProcessesApiV1ScreeningsMeGet(params, { signal, ...requestOptions });
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 30000,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof listMyScreeningProcessesApiV1ScreeningsMeGet>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData> };
+};
 
-      
+export type ListMyScreeningProcessesApiV1ScreeningsMeGetQueryResult =
+  NonNullable<
+    Awaited<ReturnType<typeof listMyScreeningProcessesApiV1ScreeningsMeGet>>
+  >;
+export type ListMyScreeningProcessesApiV1ScreeningsMeGetQueryError =
+  HTTPValidationError;
 
-      
-
-   return  { queryKey, queryFn,   staleTime: 30000,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listMyScreeningProcessesApiV1ScreeningsMeGet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData> }
-}
-
-export type ListMyScreeningProcessesApiV1ScreeningsMeGetQueryResult = NonNullable<Awaited<ReturnType<typeof listMyScreeningProcessesApiV1ScreeningsMeGet>>>
-export type ListMyScreeningProcessesApiV1ScreeningsMeGetQueryError = HTTPValidationError
-
-
-export function useListMyScreeningProcessesApiV1ScreeningsMeGet<TData = Awaited<ReturnType<typeof listMyScreeningProcessesApiV1ScreeningsMeGet>>, TError = HTTPValidationError>(
- params: undefined |  ListMyScreeningProcessesApiV1ScreeningsMeGetParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listMyScreeningProcessesApiV1ScreeningsMeGet>>, TError, TData>> & Pick<
+export function useListMyScreeningProcessesApiV1ScreeningsMeGet<
+  TData = Awaited<
+    ReturnType<typeof listMyScreeningProcessesApiV1ScreeningsMeGet>
+  >,
+  TError = HTTPValidationError,
+>(
+  params: undefined | ListMyScreeningProcessesApiV1ScreeningsMeGetParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof listMyScreeningProcessesApiV1ScreeningsMeGet>
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof listMyScreeningProcessesApiV1ScreeningsMeGet>>,
+          Awaited<
+            ReturnType<typeof listMyScreeningProcessesApiV1ScreeningsMeGet>
+          >,
           TError,
-          Awaited<ReturnType<typeof listMyScreeningProcessesApiV1ScreeningsMeGet>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
-export function useListMyScreeningProcessesApiV1ScreeningsMeGet<TData = Awaited<ReturnType<typeof listMyScreeningProcessesApiV1ScreeningsMeGet>>, TError = HTTPValidationError>(
- params?: ListMyScreeningProcessesApiV1ScreeningsMeGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listMyScreeningProcessesApiV1ScreeningsMeGet>>, TError, TData>> & Pick<
+          Awaited<
+            ReturnType<typeof listMyScreeningProcessesApiV1ScreeningsMeGet>
+          >
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData>;
+};
+export function useListMyScreeningProcessesApiV1ScreeningsMeGet<
+  TData = Awaited<
+    ReturnType<typeof listMyScreeningProcessesApiV1ScreeningsMeGet>
+  >,
+  TError = HTTPValidationError,
+>(
+  params?: ListMyScreeningProcessesApiV1ScreeningsMeGetParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof listMyScreeningProcessesApiV1ScreeningsMeGet>
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof listMyScreeningProcessesApiV1ScreeningsMeGet>>,
+          Awaited<
+            ReturnType<typeof listMyScreeningProcessesApiV1ScreeningsMeGet>
+          >,
           TError,
-          Awaited<ReturnType<typeof listMyScreeningProcessesApiV1ScreeningsMeGet>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
-export function useListMyScreeningProcessesApiV1ScreeningsMeGet<TData = Awaited<ReturnType<typeof listMyScreeningProcessesApiV1ScreeningsMeGet>>, TError = HTTPValidationError>(
- params?: ListMyScreeningProcessesApiV1ScreeningsMeGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listMyScreeningProcessesApiV1ScreeningsMeGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
+          Awaited<
+            ReturnType<typeof listMyScreeningProcessesApiV1ScreeningsMeGet>
+          >
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
+export function useListMyScreeningProcessesApiV1ScreeningsMeGet<
+  TData = Awaited<
+    ReturnType<typeof listMyScreeningProcessesApiV1ScreeningsMeGet>
+  >,
+  TError = HTTPValidationError,
+>(
+  params?: ListMyScreeningProcessesApiV1ScreeningsMeGetParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof listMyScreeningProcessesApiV1ScreeningsMeGet>
+        >,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
 /**
  * @summary Minhas triagens
  */
 
-export function useListMyScreeningProcessesApiV1ScreeningsMeGet<TData = Awaited<ReturnType<typeof listMyScreeningProcessesApiV1ScreeningsMeGet>>, TError = HTTPValidationError>(
- params?: ListMyScreeningProcessesApiV1ScreeningsMeGetParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listMyScreeningProcessesApiV1ScreeningsMeGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+export function useListMyScreeningProcessesApiV1ScreeningsMeGet<
+  TData = Awaited<
+    ReturnType<typeof listMyScreeningProcessesApiV1ScreeningsMeGet>
+  >,
+  TError = HTTPValidationError,
+>(
+  params?: ListMyScreeningProcessesApiV1ScreeningsMeGetParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof listMyScreeningProcessesApiV1ScreeningsMeGet>
+        >,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+  const queryOptions =
+    getListMyScreeningProcessesApiV1ScreeningsMeGetQueryOptions(
+      params,
+      options,
+    );
 
-  const queryOptions = getListMyScreeningProcessesApiV1ScreeningsMeGetQueryOptions(params,options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData> };
 
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
-
-
-
 
 /**
  * Obtém detalhes completos de um processo de triagem específico.
@@ -441,125 +677,246 @@ export function useListMyScreeningProcessesApiV1ScreeningsMeGet<TData = Awaited<
  * @summary Obter triagem
  */
 export type getScreeningProcessApiV1ScreeningsScreeningIdGetResponse200 = {
-  data: ScreeningProcessDetailResponse
-  status: 200
-}
+  data: ScreeningProcessDetailResponse;
+  status: 200;
+};
 
 export type getScreeningProcessApiV1ScreeningsScreeningIdGetResponse404 = {
-  data: ErrorResponse
-  status: 404
-}
+  data: ErrorResponse;
+  status: 404;
+};
 
 export type getScreeningProcessApiV1ScreeningsScreeningIdGetResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-    
-export type getScreeningProcessApiV1ScreeningsScreeningIdGetResponseSuccess = (getScreeningProcessApiV1ScreeningsScreeningIdGetResponse200) & {
-  headers: Headers;
-};
-export type getScreeningProcessApiV1ScreeningsScreeningIdGetResponseError = (getScreeningProcessApiV1ScreeningsScreeningIdGetResponse404 | getScreeningProcessApiV1ScreeningsScreeningIdGetResponse422) & {
-  headers: Headers;
+  data: HTTPValidationError;
+  status: 422;
 };
 
-export type getScreeningProcessApiV1ScreeningsScreeningIdGetResponse = (getScreeningProcessApiV1ScreeningsScreeningIdGetResponseSuccess | getScreeningProcessApiV1ScreeningsScreeningIdGetResponseError)
+export type getScreeningProcessApiV1ScreeningsScreeningIdGetResponseSuccess =
+  getScreeningProcessApiV1ScreeningsScreeningIdGetResponse200 & {
+    headers: Headers;
+  };
+export type getScreeningProcessApiV1ScreeningsScreeningIdGetResponseError = (
+  | getScreeningProcessApiV1ScreeningsScreeningIdGetResponse404
+  | getScreeningProcessApiV1ScreeningsScreeningIdGetResponse422
+) & {
+  headers: Headers;
+};
 
-export const getGetScreeningProcessApiV1ScreeningsScreeningIdGetUrl = (screeningId: string,) => {
+export type getScreeningProcessApiV1ScreeningsScreeningIdGetResponse =
+  | getScreeningProcessApiV1ScreeningsScreeningIdGetResponseSuccess
+  | getScreeningProcessApiV1ScreeningsScreeningIdGetResponseError;
 
-
-  
-
-  return `/api/v1/screenings/${screeningId}`
-}
-
-export const getScreeningProcessApiV1ScreeningsScreeningIdGet = async (screeningId: string, options?: RequestInit): Promise<getScreeningProcessApiV1ScreeningsScreeningIdGetResponse> => {
-  
-  return customFetch<getScreeningProcessApiV1ScreeningsScreeningIdGetResponse>(getGetScreeningProcessApiV1ScreeningsScreeningIdGetUrl(screeningId),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
-
-
-
-export const getGetScreeningProcessApiV1ScreeningsScreeningIdGetQueryKey = (screeningId?: string,) => {
-    return [
-    `/api/v1/screenings/${screeningId}`
-    ] as const;
-    }
-
-    
-export const getGetScreeningProcessApiV1ScreeningsScreeningIdGetQueryOptions = <TData = Awaited<ReturnType<typeof getScreeningProcessApiV1ScreeningsScreeningIdGet>>, TError = ErrorResponse | HTTPValidationError>(screeningId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getScreeningProcessApiV1ScreeningsScreeningIdGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getGetScreeningProcessApiV1ScreeningsScreeningIdGetUrl = (
+  screeningId: string,
 ) => {
+  return `/api/v1/screenings/${screeningId}`;
+};
 
-const {query: queryOptions, request: requestOptions} = options ?? {};
+export const getScreeningProcessApiV1ScreeningsScreeningIdGet = async (
+  screeningId: string,
+  options?: RequestInit,
+): Promise<getScreeningProcessApiV1ScreeningsScreeningIdGetResponse> => {
+  return customFetch<getScreeningProcessApiV1ScreeningsScreeningIdGetResponse>(
+    getGetScreeningProcessApiV1ScreeningsScreeningIdGetUrl(screeningId),
+    {
+      ...options,
+      method: "GET",
+    },
+  );
+};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetScreeningProcessApiV1ScreeningsScreeningIdGetQueryKey(screeningId);
+export const getGetScreeningProcessApiV1ScreeningsScreeningIdGetQueryKey = (
+  screeningId?: string,
+) => {
+  return [`/api/v1/screenings/${screeningId}`] as const;
+};
 
-  
+export const getGetScreeningProcessApiV1ScreeningsScreeningIdGetQueryOptions = <
+  TData = Awaited<
+    ReturnType<typeof getScreeningProcessApiV1ScreeningsScreeningIdGet>
+  >,
+  TError = ErrorResponse | HTTPValidationError,
+>(
+  screeningId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof getScreeningProcessApiV1ScreeningsScreeningIdGet>
+        >,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getScreeningProcessApiV1ScreeningsScreeningIdGet>>> = ({ signal }) => getScreeningProcessApiV1ScreeningsScreeningIdGet(screeningId, { signal, ...requestOptions });
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetScreeningProcessApiV1ScreeningsScreeningIdGetQueryKey(screeningId);
 
-      
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getScreeningProcessApiV1ScreeningsScreeningIdGet>>
+  > = ({ signal }) =>
+    getScreeningProcessApiV1ScreeningsScreeningIdGet(screeningId, {
+      signal,
+      ...requestOptions,
+    });
 
-      
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!screeningId,
+    staleTime: 30000,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<
+      ReturnType<typeof getScreeningProcessApiV1ScreeningsScreeningIdGet>
+    >,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData> };
+};
 
-   return  { queryKey, queryFn, enabled: !!(screeningId),  staleTime: 30000,  ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getScreeningProcessApiV1ScreeningsScreeningIdGet>>, TError, TData> & { queryKey: DataTag<QueryKey, TData> }
-}
+export type GetScreeningProcessApiV1ScreeningsScreeningIdGetQueryResult =
+  NonNullable<
+    Awaited<ReturnType<typeof getScreeningProcessApiV1ScreeningsScreeningIdGet>>
+  >;
+export type GetScreeningProcessApiV1ScreeningsScreeningIdGetQueryError =
+  | ErrorResponse
+  | HTTPValidationError;
 
-export type GetScreeningProcessApiV1ScreeningsScreeningIdGetQueryResult = NonNullable<Awaited<ReturnType<typeof getScreeningProcessApiV1ScreeningsScreeningIdGet>>>
-export type GetScreeningProcessApiV1ScreeningsScreeningIdGetQueryError = ErrorResponse | HTTPValidationError
-
-
-export function useGetScreeningProcessApiV1ScreeningsScreeningIdGet<TData = Awaited<ReturnType<typeof getScreeningProcessApiV1ScreeningsScreeningIdGet>>, TError = ErrorResponse | HTTPValidationError>(
- screeningId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getScreeningProcessApiV1ScreeningsScreeningIdGet>>, TError, TData>> & Pick<
+export function useGetScreeningProcessApiV1ScreeningsScreeningIdGet<
+  TData = Awaited<
+    ReturnType<typeof getScreeningProcessApiV1ScreeningsScreeningIdGet>
+  >,
+  TError = ErrorResponse | HTTPValidationError,
+>(
+  screeningId: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof getScreeningProcessApiV1ScreeningsScreeningIdGet>
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getScreeningProcessApiV1ScreeningsScreeningIdGet>>,
+          Awaited<
+            ReturnType<typeof getScreeningProcessApiV1ScreeningsScreeningIdGet>
+          >,
           TError,
-          Awaited<ReturnType<typeof getScreeningProcessApiV1ScreeningsScreeningIdGet>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
-export function useGetScreeningProcessApiV1ScreeningsScreeningIdGet<TData = Awaited<ReturnType<typeof getScreeningProcessApiV1ScreeningsScreeningIdGet>>, TError = ErrorResponse | HTTPValidationError>(
- screeningId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getScreeningProcessApiV1ScreeningsScreeningIdGet>>, TError, TData>> & Pick<
+          Awaited<
+            ReturnType<typeof getScreeningProcessApiV1ScreeningsScreeningIdGet>
+          >
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData>;
+};
+export function useGetScreeningProcessApiV1ScreeningsScreeningIdGet<
+  TData = Awaited<
+    ReturnType<typeof getScreeningProcessApiV1ScreeningsScreeningIdGet>
+  >,
+  TError = ErrorResponse | HTTPValidationError,
+>(
+  screeningId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof getScreeningProcessApiV1ScreeningsScreeningIdGet>
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getScreeningProcessApiV1ScreeningsScreeningIdGet>>,
+          Awaited<
+            ReturnType<typeof getScreeningProcessApiV1ScreeningsScreeningIdGet>
+          >,
           TError,
-          Awaited<ReturnType<typeof getScreeningProcessApiV1ScreeningsScreeningIdGet>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
-export function useGetScreeningProcessApiV1ScreeningsScreeningIdGet<TData = Awaited<ReturnType<typeof getScreeningProcessApiV1ScreeningsScreeningIdGet>>, TError = ErrorResponse | HTTPValidationError>(
- screeningId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getScreeningProcessApiV1ScreeningsScreeningIdGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> }
+          Awaited<
+            ReturnType<typeof getScreeningProcessApiV1ScreeningsScreeningIdGet>
+          >
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
+export function useGetScreeningProcessApiV1ScreeningsScreeningIdGet<
+  TData = Awaited<
+    ReturnType<typeof getScreeningProcessApiV1ScreeningsScreeningIdGet>
+  >,
+  TError = ErrorResponse | HTTPValidationError,
+>(
+  screeningId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof getScreeningProcessApiV1ScreeningsScreeningIdGet>
+        >,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
 /**
  * @summary Obter triagem
  */
 
-export function useGetScreeningProcessApiV1ScreeningsScreeningIdGet<TData = Awaited<ReturnType<typeof getScreeningProcessApiV1ScreeningsScreeningIdGet>>, TError = ErrorResponse | HTTPValidationError>(
- screeningId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getScreeningProcessApiV1ScreeningsScreeningIdGet>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+export function useGetScreeningProcessApiV1ScreeningsScreeningIdGet<
+  TData = Awaited<
+    ReturnType<typeof getScreeningProcessApiV1ScreeningsScreeningIdGet>
+  >,
+  TError = ErrorResponse | HTTPValidationError,
+>(
+  screeningId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof getScreeningProcessApiV1ScreeningsScreeningIdGet>
+        >,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+  const queryOptions =
+    getGetScreeningProcessApiV1ScreeningsScreeningIdGetQueryOptions(
+      screeningId,
+      options,
+    );
 
-  const queryOptions = getGetScreeningProcessApiV1ScreeningsScreeningIdGetQueryOptions(screeningId,options)
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData> };
 
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
-
-  query.queryKey = queryOptions.queryKey ;
+  query.queryKey = queryOptions.queryKey;
 
   return query;
 }
-
-
-
 
 /**
  * Cancela o processo de triagem com motivo obrigatório.
@@ -570,105 +927,177 @@ export function useGetScreeningProcessApiV1ScreeningsScreeningIdGet<TData = Awai
 - O motivo deve ter no mínimo 10 caracteres
  * @summary Cancelar triagem
  */
-export type cancelScreeningProcessApiV1ScreeningsScreeningIdCancelPostResponse200 = {
-  data: ScreeningProcessResponse
-  status: 200
-}
+export type cancelScreeningProcessApiV1ScreeningsScreeningIdCancelPostResponse200 =
+  {
+    data: ScreeningProcessResponse;
+    status: 200;
+  };
 
-export type cancelScreeningProcessApiV1ScreeningsScreeningIdCancelPostResponse404 = {
-  data: ErrorResponse
-  status: 404
-}
+export type cancelScreeningProcessApiV1ScreeningsScreeningIdCancelPostResponse404 =
+  {
+    data: ErrorResponse;
+    status: 404;
+  };
 
-export type cancelScreeningProcessApiV1ScreeningsScreeningIdCancelPostResponse409 = {
-  data: ErrorResponse
-  status: 409
-}
+export type cancelScreeningProcessApiV1ScreeningsScreeningIdCancelPostResponse409 =
+  {
+    data: ErrorResponse;
+    status: 409;
+  };
 
-export type cancelScreeningProcessApiV1ScreeningsScreeningIdCancelPostResponse422 = {
-  data: ErrorResponse
-  status: 422
-}
-    
-export type cancelScreeningProcessApiV1ScreeningsScreeningIdCancelPostResponseSuccess = (cancelScreeningProcessApiV1ScreeningsScreeningIdCancelPostResponse200) & {
-  headers: Headers;
-};
-export type cancelScreeningProcessApiV1ScreeningsScreeningIdCancelPostResponseError = (cancelScreeningProcessApiV1ScreeningsScreeningIdCancelPostResponse404 | cancelScreeningProcessApiV1ScreeningsScreeningIdCancelPostResponse409 | cancelScreeningProcessApiV1ScreeningsScreeningIdCancelPostResponse422) & {
-  headers: Headers;
-};
+export type cancelScreeningProcessApiV1ScreeningsScreeningIdCancelPostResponse422 =
+  {
+    data: ErrorResponse;
+    status: 422;
+  };
 
-export type cancelScreeningProcessApiV1ScreeningsScreeningIdCancelPostResponse = (cancelScreeningProcessApiV1ScreeningsScreeningIdCancelPostResponseSuccess | cancelScreeningProcessApiV1ScreeningsScreeningIdCancelPostResponseError)
+export type cancelScreeningProcessApiV1ScreeningsScreeningIdCancelPostResponseSuccess =
+  cancelScreeningProcessApiV1ScreeningsScreeningIdCancelPostResponse200 & {
+    headers: Headers;
+  };
+export type cancelScreeningProcessApiV1ScreeningsScreeningIdCancelPostResponseError =
+  (
+    | cancelScreeningProcessApiV1ScreeningsScreeningIdCancelPostResponse404
+    | cancelScreeningProcessApiV1ScreeningsScreeningIdCancelPostResponse409
+    | cancelScreeningProcessApiV1ScreeningsScreeningIdCancelPostResponse422
+  ) & {
+    headers: Headers;
+  };
 
-export const getCancelScreeningProcessApiV1ScreeningsScreeningIdCancelPostUrl = (screeningId: string,) => {
+export type cancelScreeningProcessApiV1ScreeningsScreeningIdCancelPostResponse =
+  | cancelScreeningProcessApiV1ScreeningsScreeningIdCancelPostResponseSuccess
+  | cancelScreeningProcessApiV1ScreeningsScreeningIdCancelPostResponseError;
 
+export const getCancelScreeningProcessApiV1ScreeningsScreeningIdCancelPostUrl =
+  (screeningId: string) => {
+    return `/api/v1/screenings/${screeningId}/cancel`;
+  };
 
-  
+export const cancelScreeningProcessApiV1ScreeningsScreeningIdCancelPost =
+  async (
+    screeningId: string,
+    screeningProcessCancel: ScreeningProcessCancel,
+    options?: RequestInit,
+  ): Promise<cancelScreeningProcessApiV1ScreeningsScreeningIdCancelPostResponse> => {
+    return customFetch<cancelScreeningProcessApiV1ScreeningsScreeningIdCancelPostResponse>(
+      getCancelScreeningProcessApiV1ScreeningsScreeningIdCancelPostUrl(
+        screeningId,
+      ),
+      {
+        ...options,
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...options?.headers },
+        body: JSON.stringify(screeningProcessCancel),
+      },
+    );
+  };
 
-  return `/api/v1/screenings/${screeningId}/cancel`
-}
+export const getCancelScreeningProcessApiV1ScreeningsScreeningIdCancelPostMutationOptions =
+  <TError = ErrorResponse, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<
+          typeof cancelScreeningProcessApiV1ScreeningsScreeningIdCancelPost
+        >
+      >,
+      TError,
+      { screeningId: string; data: ScreeningProcessCancel },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  }): UseMutationOptions<
+    Awaited<
+      ReturnType<
+        typeof cancelScreeningProcessApiV1ScreeningsScreeningIdCancelPost
+      >
+    >,
+    TError,
+    { screeningId: string; data: ScreeningProcessCancel },
+    TContext
+  > => {
+    const mutationKey = [
+      "cancelScreeningProcessApiV1ScreeningsScreeningIdCancelPost",
+    ];
+    const { mutation: mutationOptions, request: requestOptions } = options
+      ? options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+        ? options
+        : { ...options, mutation: { ...options.mutation, mutationKey } }
+      : { mutation: { mutationKey }, request: undefined };
 
-export const cancelScreeningProcessApiV1ScreeningsScreeningIdCancelPost = async (screeningId: string,
-    screeningProcessCancel: ScreeningProcessCancel, options?: RequestInit): Promise<cancelScreeningProcessApiV1ScreeningsScreeningIdCancelPostResponse> => {
-  
-  return customFetch<cancelScreeningProcessApiV1ScreeningsScreeningIdCancelPostResponse>(getCancelScreeningProcessApiV1ScreeningsScreeningIdCancelPostUrl(screeningId),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      screeningProcessCancel,)
-  }
-);}
+    const mutationFn: MutationFunction<
+      Awaited<
+        ReturnType<
+          typeof cancelScreeningProcessApiV1ScreeningsScreeningIdCancelPost
+        >
+      >,
+      { screeningId: string; data: ScreeningProcessCancel }
+    > = (props) => {
+      const { screeningId, data } = props ?? {};
 
+      return cancelScreeningProcessApiV1ScreeningsScreeningIdCancelPost(
+        screeningId,
+        data,
+        requestOptions,
+      );
+    };
 
+    return { mutationFn, ...mutationOptions };
+  };
 
+export type CancelScreeningProcessApiV1ScreeningsScreeningIdCancelPostMutationResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof cancelScreeningProcessApiV1ScreeningsScreeningIdCancelPost
+      >
+    >
+  >;
+export type CancelScreeningProcessApiV1ScreeningsScreeningIdCancelPostMutationBody =
+  ScreeningProcessCancel;
+export type CancelScreeningProcessApiV1ScreeningsScreeningIdCancelPostMutationError =
+  ErrorResponse;
 
-export const getCancelScreeningProcessApiV1ScreeningsScreeningIdCancelPostMutationOptions = <TError = ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof cancelScreeningProcessApiV1ScreeningsScreeningIdCancelPost>>, TError,{screeningId: string;data: ScreeningProcessCancel}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof cancelScreeningProcessApiV1ScreeningsScreeningIdCancelPost>>, TError,{screeningId: string;data: ScreeningProcessCancel}, TContext> => {
-
-const mutationKey = ['cancelScreeningProcessApiV1ScreeningsScreeningIdCancelPost'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof cancelScreeningProcessApiV1ScreeningsScreeningIdCancelPost>>, {screeningId: string;data: ScreeningProcessCancel}> = (props) => {
-          const {screeningId,data} = props ?? {};
-
-          return  cancelScreeningProcessApiV1ScreeningsScreeningIdCancelPost(screeningId,data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type CancelScreeningProcessApiV1ScreeningsScreeningIdCancelPostMutationResult = NonNullable<Awaited<ReturnType<typeof cancelScreeningProcessApiV1ScreeningsScreeningIdCancelPost>>>
-    export type CancelScreeningProcessApiV1ScreeningsScreeningIdCancelPostMutationBody = ScreeningProcessCancel
-    export type CancelScreeningProcessApiV1ScreeningsScreeningIdCancelPostMutationError = ErrorResponse
-
-    /**
+/**
  * @summary Cancelar triagem
  */
-export const useCancelScreeningProcessApiV1ScreeningsScreeningIdCancelPost = <TError = ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof cancelScreeningProcessApiV1ScreeningsScreeningIdCancelPost>>, TError,{screeningId: string;data: ScreeningProcessCancel}, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof cancelScreeningProcessApiV1ScreeningsScreeningIdCancelPost>>,
-        TError,
-        {screeningId: string;data: ScreeningProcessCancel},
-        TContext
-      > => {
+export const useCancelScreeningProcessApiV1ScreeningsScreeningIdCancelPost = <
+  TError = ErrorResponse,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<
+          typeof cancelScreeningProcessApiV1ScreeningsScreeningIdCancelPost
+        >
+      >,
+      TError,
+      { screeningId: string; data: ScreeningProcessCancel },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<
+    ReturnType<
+      typeof cancelScreeningProcessApiV1ScreeningsScreeningIdCancelPost
+    >
+  >,
+  TError,
+  { screeningId: string; data: ScreeningProcessCancel },
+  TContext
+> => {
+  const mutationOptions =
+    getCancelScreeningProcessApiV1ScreeningsScreeningIdCancelPostMutationOptions(
+      options,
+    );
 
-      const mutationOptions = getCancelScreeningProcessApiV1ScreeningsScreeningIdCancelPostMutationOptions(options);
-
-      return useMutation(mutationOptions, queryClient);
-    }
-    /**
+  return useMutation(mutationOptions, queryClient);
+};
+/**
  * Finaliza o processo de triagem e aprova o profissional.
 
 **Ações realizadas:**
@@ -688,98 +1117,164 @@ até a triagem ser finalizada. Isso permite que:
 - Todas as etapas obrigatórias devem estar COMPLETED ou APPROVED
  * @summary Finalizar triagem
  */
-export type finalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePostResponse200 = {
-  data: ScreeningProcessResponse
-  status: 200
-}
+export type finalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePostResponse200 =
+  {
+    data: ScreeningProcessResponse;
+    status: 200;
+  };
 
-export type finalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePostResponse404 = {
-  data: ErrorResponse
-  status: 404
-}
+export type finalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePostResponse404 =
+  {
+    data: ErrorResponse;
+    status: 404;
+  };
 
-export type finalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePostResponse422 = {
-  data: ErrorResponse
-  status: 422
-}
-    
-export type finalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePostResponseSuccess = (finalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePostResponse200) & {
-  headers: Headers;
-};
-export type finalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePostResponseError = (finalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePostResponse404 | finalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePostResponse422) & {
-  headers: Headers;
-};
+export type finalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePostResponse422 =
+  {
+    data: ErrorResponse;
+    status: 422;
+  };
 
-export type finalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePostResponse = (finalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePostResponseSuccess | finalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePostResponseError)
+export type finalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePostResponseSuccess =
+  finalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePostResponse200 & {
+    headers: Headers;
+  };
+export type finalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePostResponseError =
+  (
+    | finalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePostResponse404
+    | finalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePostResponse422
+  ) & {
+    headers: Headers;
+  };
 
-export const getFinalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePostUrl = (screeningId: string,) => {
+export type finalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePostResponse =
 
+    | finalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePostResponseSuccess
+    | finalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePostResponseError;
 
-  
+export const getFinalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePostUrl =
+  (screeningId: string) => {
+    return `/api/v1/screenings/${screeningId}/finalize`;
+  };
 
-  return `/api/v1/screenings/${screeningId}/finalize`
-}
+export const finalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePost =
+  async (
+    screeningId: string,
+    options?: RequestInit,
+  ): Promise<finalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePostResponse> => {
+    return customFetch<finalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePostResponse>(
+      getFinalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePostUrl(
+        screeningId,
+      ),
+      {
+        ...options,
+        method: "POST",
+      },
+    );
+  };
 
-export const finalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePost = async (screeningId: string, options?: RequestInit): Promise<finalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePostResponse> => {
-  
-  return customFetch<finalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePostResponse>(getFinalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePostUrl(screeningId),
-  {      
-    ...options,
-    method: 'POST'
-    
-    
-  }
-);}
+export const getFinalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePostMutationOptions =
+  <TError = ErrorResponse, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<
+          typeof finalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePost
+        >
+      >,
+      TError,
+      { screeningId: string },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  }): UseMutationOptions<
+    Awaited<
+      ReturnType<
+        typeof finalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePost
+      >
+    >,
+    TError,
+    { screeningId: string },
+    TContext
+  > => {
+    const mutationKey = [
+      "finalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePost",
+    ];
+    const { mutation: mutationOptions, request: requestOptions } = options
+      ? options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+        ? options
+        : { ...options, mutation: { ...options.mutation, mutationKey } }
+      : { mutation: { mutationKey }, request: undefined };
 
+    const mutationFn: MutationFunction<
+      Awaited<
+        ReturnType<
+          typeof finalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePost
+        >
+      >,
+      { screeningId: string }
+    > = (props) => {
+      const { screeningId } = props ?? {};
 
+      return finalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePost(
+        screeningId,
+        requestOptions,
+      );
+    };
 
+    return { mutationFn, ...mutationOptions };
+  };
 
-export const getFinalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePostMutationOptions = <TError = ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof finalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePost>>, TError,{screeningId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof finalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePost>>, TError,{screeningId: string}, TContext> => {
+export type FinalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePostMutationResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof finalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePost
+      >
+    >
+  >;
 
-const mutationKey = ['finalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePost'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+export type FinalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePostMutationError =
+  ErrorResponse;
 
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof finalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePost>>, {screeningId: string}> = (props) => {
-          const {screeningId} = props ?? {};
-
-          return  finalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePost(screeningId,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type FinalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePostMutationResult = NonNullable<Awaited<ReturnType<typeof finalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePost>>>
-    
-    export type FinalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePostMutationError = ErrorResponse
-
-    /**
+/**
  * @summary Finalizar triagem
  */
-export const useFinalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePost = <TError = ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof finalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePost>>, TError,{screeningId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof finalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePost>>,
+export const useFinalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePost =
+  <TError = ErrorResponse, TContext = unknown>(
+    options?: {
+      mutation?: UseMutationOptions<
+        Awaited<
+          ReturnType<
+            typeof finalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePost
+          >
+        >,
         TError,
-        {screeningId: string},
+        { screeningId: string },
         TContext
-      > => {
+      >;
+      request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+  ): UseMutationResult<
+    Awaited<
+      ReturnType<
+        typeof finalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePost
+      >
+    >,
+    TError,
+    { screeningId: string },
+    TContext
+  > => {
+    const mutationOptions =
+      getFinalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePostMutationOptions(
+        options,
+      );
 
-      const mutationOptions = getFinalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePostMutationOptions(options);
-
-      return useMutation(mutationOptions, queryClient);
-    }
-    /**
+    return useMutation(mutationOptions, queryClient);
+  };
+/**
  * Finaliza a etapa de conversa inicial com o profissional.
 
 **Outcomes:**
@@ -793,105 +1288,176 @@ export const useFinalizeScreeningProcessApiV1ScreeningsScreeningIdFinalizePost =
 - Usuário deve estar atribuído à etapa (se assigned_to estiver definido)
  * @summary Finalizar etapa de conversa
  */
-export type completeConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePostResponse200 = {
-  data: ConversationStepResponse
-  status: 200
-}
+export type completeConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePostResponse200 =
+  {
+    data: ConversationStepResponse;
+    status: 200;
+  };
 
-export type completeConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePostResponse403 = {
-  data: ErrorResponse
-  status: 403
-}
+export type completeConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePostResponse403 =
+  {
+    data: ErrorResponse;
+    status: 403;
+  };
 
-export type completeConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePostResponse404 = {
-  data: ErrorResponse
-  status: 404
-}
+export type completeConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePostResponse404 =
+  {
+    data: ErrorResponse;
+    status: 404;
+  };
 
-export type completeConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePostResponse422 = {
-  data: ErrorResponse
-  status: 422
-}
-    
-export type completeConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePostResponseSuccess = (completeConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePostResponse200) & {
-  headers: Headers;
-};
-export type completeConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePostResponseError = (completeConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePostResponse403 | completeConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePostResponse404 | completeConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePostResponse422) & {
-  headers: Headers;
-};
+export type completeConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePostResponse422 =
+  {
+    data: ErrorResponse;
+    status: 422;
+  };
 
-export type completeConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePostResponse = (completeConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePostResponseSuccess | completeConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePostResponseError)
+export type completeConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePostResponseSuccess =
+  completeConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePostResponse200 & {
+    headers: Headers;
+  };
+export type completeConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePostResponseError =
+  (
+    | completeConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePostResponse403
+    | completeConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePostResponse404
+    | completeConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePostResponse422
+  ) & {
+    headers: Headers;
+  };
 
-export const getCompleteConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePostUrl = (screeningId: string,) => {
+export type completeConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePostResponse =
 
+    | completeConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePostResponseSuccess
+    | completeConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePostResponseError;
 
-  
+export const getCompleteConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePostUrl =
+  (screeningId: string) => {
+    return `/api/v1/screenings/${screeningId}/steps/conversation/complete`;
+  };
 
-  return `/api/v1/screenings/${screeningId}/steps/conversation/complete`
-}
+export const completeConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePost =
+  async (
+    screeningId: string,
+    conversationStepCompleteRequest: ConversationStepCompleteRequest,
+    options?: RequestInit,
+  ): Promise<completeConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePostResponse> => {
+    return customFetch<completeConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePostResponse>(
+      getCompleteConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePostUrl(
+        screeningId,
+      ),
+      {
+        ...options,
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...options?.headers },
+        body: JSON.stringify(conversationStepCompleteRequest),
+      },
+    );
+  };
 
-export const completeConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePost = async (screeningId: string,
-    conversationStepCompleteRequest: ConversationStepCompleteRequest, options?: RequestInit): Promise<completeConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePostResponse> => {
-  
-  return customFetch<completeConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePostResponse>(getCompleteConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePostUrl(screeningId),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      conversationStepCompleteRequest,)
-  }
-);}
+export const getCompleteConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePostMutationOptions =
+  <TError = ErrorResponse, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<
+          typeof completeConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePost
+        >
+      >,
+      TError,
+      { screeningId: string; data: ConversationStepCompleteRequest },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  }): UseMutationOptions<
+    Awaited<
+      ReturnType<
+        typeof completeConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePost
+      >
+    >,
+    TError,
+    { screeningId: string; data: ConversationStepCompleteRequest },
+    TContext
+  > => {
+    const mutationKey = [
+      "completeConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePost",
+    ];
+    const { mutation: mutationOptions, request: requestOptions } = options
+      ? options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+        ? options
+        : { ...options, mutation: { ...options.mutation, mutationKey } }
+      : { mutation: { mutationKey }, request: undefined };
 
+    const mutationFn: MutationFunction<
+      Awaited<
+        ReturnType<
+          typeof completeConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePost
+        >
+      >,
+      { screeningId: string; data: ConversationStepCompleteRequest }
+    > = (props) => {
+      const { screeningId, data } = props ?? {};
 
+      return completeConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePost(
+        screeningId,
+        data,
+        requestOptions,
+      );
+    };
 
+    return { mutationFn, ...mutationOptions };
+  };
 
-export const getCompleteConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePostMutationOptions = <TError = ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof completeConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePost>>, TError,{screeningId: string;data: ConversationStepCompleteRequest}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof completeConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePost>>, TError,{screeningId: string;data: ConversationStepCompleteRequest}, TContext> => {
+export type CompleteConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePostMutationResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof completeConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePost
+      >
+    >
+  >;
+export type CompleteConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePostMutationBody =
+  ConversationStepCompleteRequest;
+export type CompleteConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePostMutationError =
+  ErrorResponse;
 
-const mutationKey = ['completeConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePost'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof completeConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePost>>, {screeningId: string;data: ConversationStepCompleteRequest}> = (props) => {
-          const {screeningId,data} = props ?? {};
-
-          return  completeConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePost(screeningId,data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type CompleteConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePostMutationResult = NonNullable<Awaited<ReturnType<typeof completeConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePost>>>
-    export type CompleteConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePostMutationBody = ConversationStepCompleteRequest
-    export type CompleteConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePostMutationError = ErrorResponse
-
-    /**
+/**
  * @summary Finalizar etapa de conversa
  */
-export const useCompleteConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePost = <TError = ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof completeConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePost>>, TError,{screeningId: string;data: ConversationStepCompleteRequest}, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof completeConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePost>>,
+export const useCompleteConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePost =
+  <TError = ErrorResponse, TContext = unknown>(
+    options?: {
+      mutation?: UseMutationOptions<
+        Awaited<
+          ReturnType<
+            typeof completeConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePost
+          >
+        >,
         TError,
-        {screeningId: string;data: ConversationStepCompleteRequest},
+        { screeningId: string; data: ConversationStepCompleteRequest },
         TContext
-      > => {
+      >;
+      request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+  ): UseMutationResult<
+    Awaited<
+      ReturnType<
+        typeof completeConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePost
+      >
+    >,
+    TError,
+    { screeningId: string; data: ConversationStepCompleteRequest },
+    TContext
+  > => {
+    const mutationOptions =
+      getCompleteConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePostMutationOptions(
+        options,
+      );
 
-      const mutationOptions = getCompleteConversationStepApiV1ScreeningsScreeningIdStepsConversationCompletePostMutationOptions(options);
-
-      return useMutation(mutationOptions, queryClient);
-    }
-    /**
+    return useMutation(mutationOptions, queryClient);
+  };
+/**
  * Finaliza a etapa de coleta de dados do profissional.
 
 Esta etapa valida que os dados do profissional estão completos.
@@ -910,778 +1476,1398 @@ antes de completar esta etapa.
 - Se expected_specialty_id estiver definido, profissional deve ter essa especialidade
  * @summary Finalizar etapa de dados do profissional
  */
-export type completeProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePostResponse200 = {
-  data: ProfessionalDataStepResponse
-  status: 200
-}
+export type completeProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePostResponse200 =
+  {
+    data: ProfessionalDataStepResponse;
+    status: 200;
+  };
 
-export type completeProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePostResponse403 = {
-  data: ErrorResponse
-  status: 403
-}
+export type completeProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePostResponse403 =
+  {
+    data: ErrorResponse;
+    status: 403;
+  };
 
-export type completeProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePostResponse404 = {
-  data: ErrorResponse
-  status: 404
-}
+export type completeProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePostResponse404 =
+  {
+    data: ErrorResponse;
+    status: 404;
+  };
 
-export type completeProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePostResponse422 = {
-  data: ErrorResponse
-  status: 422
-}
-    
-export type completeProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePostResponseSuccess = (completeProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePostResponse200) & {
-  headers: Headers;
-};
-export type completeProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePostResponseError = (completeProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePostResponse403 | completeProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePostResponse404 | completeProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePostResponse422) & {
-  headers: Headers;
-};
+export type completeProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePostResponse422 =
+  {
+    data: ErrorResponse;
+    status: 422;
+  };
 
-export type completeProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePostResponse = (completeProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePostResponseSuccess | completeProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePostResponseError)
+export type completeProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePostResponseSuccess =
+  completeProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePostResponse200 & {
+    headers: Headers;
+  };
+export type completeProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePostResponseError =
+  (
+    | completeProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePostResponse403
+    | completeProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePostResponse404
+    | completeProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePostResponse422
+  ) & {
+    headers: Headers;
+  };
 
-export const getCompleteProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePostUrl = (screeningId: string,) => {
+export type completeProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePostResponse =
 
+    | completeProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePostResponseSuccess
+    | completeProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePostResponseError;
 
-  
+export const getCompleteProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePostUrl =
+  (screeningId: string) => {
+    return `/api/v1/screenings/${screeningId}/steps/professional-data/complete`;
+  };
 
-  return `/api/v1/screenings/${screeningId}/steps/professional-data/complete`
-}
+export const completeProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePost =
+  async (
+    screeningId: string,
+    professionalDataStepCompleteRequest: ProfessionalDataStepCompleteRequest,
+    options?: RequestInit,
+  ): Promise<completeProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePostResponse> => {
+    return customFetch<completeProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePostResponse>(
+      getCompleteProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePostUrl(
+        screeningId,
+      ),
+      {
+        ...options,
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...options?.headers },
+        body: JSON.stringify(professionalDataStepCompleteRequest),
+      },
+    );
+  };
 
-export const completeProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePost = async (screeningId: string,
-    professionalDataStepCompleteRequest: ProfessionalDataStepCompleteRequest, options?: RequestInit): Promise<completeProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePostResponse> => {
-  
-  return customFetch<completeProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePostResponse>(getCompleteProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePostUrl(screeningId),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      professionalDataStepCompleteRequest,)
-  }
-);}
+export const getCompleteProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePostMutationOptions =
+  <TError = ErrorResponse, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<
+          typeof completeProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePost
+        >
+      >,
+      TError,
+      { screeningId: string; data: ProfessionalDataStepCompleteRequest },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  }): UseMutationOptions<
+    Awaited<
+      ReturnType<
+        typeof completeProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePost
+      >
+    >,
+    TError,
+    { screeningId: string; data: ProfessionalDataStepCompleteRequest },
+    TContext
+  > => {
+    const mutationKey = [
+      "completeProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePost",
+    ];
+    const { mutation: mutationOptions, request: requestOptions } = options
+      ? options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+        ? options
+        : { ...options, mutation: { ...options.mutation, mutationKey } }
+      : { mutation: { mutationKey }, request: undefined };
 
+    const mutationFn: MutationFunction<
+      Awaited<
+        ReturnType<
+          typeof completeProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePost
+        >
+      >,
+      { screeningId: string; data: ProfessionalDataStepCompleteRequest }
+    > = (props) => {
+      const { screeningId, data } = props ?? {};
 
+      return completeProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePost(
+        screeningId,
+        data,
+        requestOptions,
+      );
+    };
 
+    return { mutationFn, ...mutationOptions };
+  };
 
-export const getCompleteProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePostMutationOptions = <TError = ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof completeProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePost>>, TError,{screeningId: string;data: ProfessionalDataStepCompleteRequest}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof completeProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePost>>, TError,{screeningId: string;data: ProfessionalDataStepCompleteRequest}, TContext> => {
+export type CompleteProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePostMutationResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof completeProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePost
+      >
+    >
+  >;
+export type CompleteProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePostMutationBody =
+  ProfessionalDataStepCompleteRequest;
+export type CompleteProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePostMutationError =
+  ErrorResponse;
 
-const mutationKey = ['completeProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePost'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof completeProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePost>>, {screeningId: string;data: ProfessionalDataStepCompleteRequest}> = (props) => {
-          const {screeningId,data} = props ?? {};
-
-          return  completeProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePost(screeningId,data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type CompleteProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePostMutationResult = NonNullable<Awaited<ReturnType<typeof completeProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePost>>>
-    export type CompleteProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePostMutationBody = ProfessionalDataStepCompleteRequest
-    export type CompleteProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePostMutationError = ErrorResponse
-
-    /**
+/**
  * @summary Finalizar etapa de dados do profissional
  */
-export const useCompleteProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePost = <TError = ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof completeProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePost>>, TError,{screeningId: string;data: ProfessionalDataStepCompleteRequest}, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof completeProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePost>>,
+export const useCompleteProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePost =
+  <TError = ErrorResponse, TContext = unknown>(
+    options?: {
+      mutation?: UseMutationOptions<
+        Awaited<
+          ReturnType<
+            typeof completeProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePost
+          >
+        >,
         TError,
-        {screeningId: string;data: ProfessionalDataStepCompleteRequest},
+        { screeningId: string; data: ProfessionalDataStepCompleteRequest },
         TContext
-      > => {
+      >;
+      request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+  ): UseMutationResult<
+    Awaited<
+      ReturnType<
+        typeof completeProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePost
+      >
+    >,
+    TError,
+    { screeningId: string; data: ProfessionalDataStepCompleteRequest },
+    TContext
+  > => {
+    const mutationOptions =
+      getCompleteProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePostMutationOptions(
+        options,
+      );
 
-      const mutationOptions = getCompleteProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfessionalDataCompletePostMutationOptions(options);
-
-      return useMutation(mutationOptions, queryClient);
-    }
-    /**
+    return useMutation(mutationOptions, queryClient);
+  };
+/**
  * Finaliza a etapa de upload de documentos.
  * @summary Finalizar etapa de upload de documentos
  */
-export type completeDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePostResponse200 = {
-  data: ScreeningProcessStepResponse
-  status: 200
-}
+export type completeDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePostResponse200 =
+  {
+    data: ScreeningProcessStepResponse;
+    status: 200;
+  };
 
-export type completeDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePostResponse404 = {
-  data: ErrorResponse
-  status: 404
-}
+export type completeDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePostResponse404 =
+  {
+    data: ErrorResponse;
+    status: 404;
+  };
 
-export type completeDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePostResponse422 = {
-  data: ErrorResponse
-  status: 422
-}
-    
-export type completeDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePostResponseSuccess = (completeDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePostResponse200) & {
-  headers: Headers;
-};
-export type completeDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePostResponseError = (completeDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePostResponse404 | completeDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePostResponse422) & {
-  headers: Headers;
-};
+export type completeDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePostResponse422 =
+  {
+    data: ErrorResponse;
+    status: 422;
+  };
 
-export type completeDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePostResponse = (completeDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePostResponseSuccess | completeDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePostResponseError)
+export type completeDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePostResponseSuccess =
+  completeDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePostResponse200 & {
+    headers: Headers;
+  };
+export type completeDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePostResponseError =
+  (
+    | completeDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePostResponse404
+    | completeDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePostResponse422
+  ) & {
+    headers: Headers;
+  };
 
-export const getCompleteDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePostUrl = (screeningId: string,
-    stepId: string,) => {
+export type completeDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePostResponse =
 
+    | completeDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePostResponseSuccess
+    | completeDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePostResponseError;
 
-  
+export const getCompleteDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePostUrl =
+  (screeningId: string, stepId: string) => {
+    return `/api/v1/screenings/${screeningId}/steps/${stepId}/document-upload/complete`;
+  };
 
-  return `/api/v1/screenings/${screeningId}/steps/${stepId}/document-upload/complete`
-}
-
-export const completeDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePost = async (screeningId: string,
+export const completeDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePost =
+  async (
+    screeningId: string,
     stepId: string,
-    documentUploadStepCompleteRequest: DocumentUploadStepCompleteRequest, options?: RequestInit): Promise<completeDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePostResponse> => {
-  
-  return customFetch<completeDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePostResponse>(getCompleteDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePostUrl(screeningId,stepId),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      documentUploadStepCompleteRequest,)
-  }
-);}
+    documentUploadStepCompleteRequest: DocumentUploadStepCompleteRequest,
+    options?: RequestInit,
+  ): Promise<completeDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePostResponse> => {
+    return customFetch<completeDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePostResponse>(
+      getCompleteDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePostUrl(
+        screeningId,
+        stepId,
+      ),
+      {
+        ...options,
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...options?.headers },
+        body: JSON.stringify(documentUploadStepCompleteRequest),
+      },
+    );
+  };
 
+export const getCompleteDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePostMutationOptions =
+  <TError = ErrorResponse, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<
+          typeof completeDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePost
+        >
+      >,
+      TError,
+      {
+        screeningId: string;
+        stepId: string;
+        data: DocumentUploadStepCompleteRequest;
+      },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  }): UseMutationOptions<
+    Awaited<
+      ReturnType<
+        typeof completeDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePost
+      >
+    >,
+    TError,
+    {
+      screeningId: string;
+      stepId: string;
+      data: DocumentUploadStepCompleteRequest;
+    },
+    TContext
+  > => {
+    const mutationKey = [
+      "completeDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePost",
+    ];
+    const { mutation: mutationOptions, request: requestOptions } = options
+      ? options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+        ? options
+        : { ...options, mutation: { ...options.mutation, mutationKey } }
+      : { mutation: { mutationKey }, request: undefined };
 
+    const mutationFn: MutationFunction<
+      Awaited<
+        ReturnType<
+          typeof completeDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePost
+        >
+      >,
+      {
+        screeningId: string;
+        stepId: string;
+        data: DocumentUploadStepCompleteRequest;
+      }
+    > = (props) => {
+      const { screeningId, stepId, data } = props ?? {};
 
+      return completeDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePost(
+        screeningId,
+        stepId,
+        data,
+        requestOptions,
+      );
+    };
 
-export const getCompleteDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePostMutationOptions = <TError = ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof completeDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePost>>, TError,{screeningId: string;stepId: string;data: DocumentUploadStepCompleteRequest}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof completeDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePost>>, TError,{screeningId: string;stepId: string;data: DocumentUploadStepCompleteRequest}, TContext> => {
+    return { mutationFn, ...mutationOptions };
+  };
 
-const mutationKey = ['completeDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePost'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+export type CompleteDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePostMutationResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof completeDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePost
+      >
+    >
+  >;
+export type CompleteDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePostMutationBody =
+  DocumentUploadStepCompleteRequest;
+export type CompleteDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePostMutationError =
+  ErrorResponse;
 
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof completeDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePost>>, {screeningId: string;stepId: string;data: DocumentUploadStepCompleteRequest}> = (props) => {
-          const {screeningId,stepId,data} = props ?? {};
-
-          return  completeDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePost(screeningId,stepId,data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type CompleteDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePostMutationResult = NonNullable<Awaited<ReturnType<typeof completeDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePost>>>
-    export type CompleteDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePostMutationBody = DocumentUploadStepCompleteRequest
-    export type CompleteDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePostMutationError = ErrorResponse
-
-    /**
+/**
  * @summary Finalizar etapa de upload de documentos
  */
-export const useCompleteDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePost = <TError = ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof completeDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePost>>, TError,{screeningId: string;stepId: string;data: DocumentUploadStepCompleteRequest}, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof completeDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePost>>,
+export const useCompleteDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePost =
+  <TError = ErrorResponse, TContext = unknown>(
+    options?: {
+      mutation?: UseMutationOptions<
+        Awaited<
+          ReturnType<
+            typeof completeDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePost
+          >
+        >,
         TError,
-        {screeningId: string;stepId: string;data: DocumentUploadStepCompleteRequest},
+        {
+          screeningId: string;
+          stepId: string;
+          data: DocumentUploadStepCompleteRequest;
+        },
         TContext
-      > => {
+      >;
+      request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+  ): UseMutationResult<
+    Awaited<
+      ReturnType<
+        typeof completeDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePost
+      >
+    >,
+    TError,
+    {
+      screeningId: string;
+      stepId: string;
+      data: DocumentUploadStepCompleteRequest;
+    },
+    TContext
+  > => {
+    const mutationOptions =
+      getCompleteDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePostMutationOptions(
+        options,
+      );
 
-      const mutationOptions = getCompleteDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdDocumentUploadCompletePostMutationOptions(options);
-
-      return useMutation(mutationOptions, queryClient);
-    }
-    /**
+    return useMutation(mutationOptions, queryClient);
+  };
+/**
  * Finaliza a etapa de revisão de documentos. Todos os documentos devem estar aprovados ou rejeitados.
  * @summary Finalizar etapa de revisão de documentos
  */
-export type completeDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePostResponse200 = {
-  data: ScreeningProcessStepResponse
-  status: 200
-}
+export type completeDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePostResponse200 =
+  {
+    data: ScreeningProcessStepResponse;
+    status: 200;
+  };
 
-export type completeDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePostResponse404 = {
-  data: ErrorResponse
-  status: 404
-}
+export type completeDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePostResponse404 =
+  {
+    data: ErrorResponse;
+    status: 404;
+  };
 
-export type completeDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePostResponse422 = {
-  data: ErrorResponse
-  status: 422
-}
-    
-export type completeDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePostResponseSuccess = (completeDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePostResponse200) & {
-  headers: Headers;
-};
-export type completeDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePostResponseError = (completeDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePostResponse404 | completeDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePostResponse422) & {
-  headers: Headers;
-};
+export type completeDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePostResponse422 =
+  {
+    data: ErrorResponse;
+    status: 422;
+  };
 
-export type completeDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePostResponse = (completeDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePostResponseSuccess | completeDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePostResponseError)
+export type completeDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePostResponseSuccess =
+  completeDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePostResponse200 & {
+    headers: Headers;
+  };
+export type completeDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePostResponseError =
+  (
+    | completeDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePostResponse404
+    | completeDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePostResponse422
+  ) & {
+    headers: Headers;
+  };
 
-export const getCompleteDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePostUrl = (screeningId: string,
-    stepId: string,) => {
+export type completeDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePostResponse =
 
+    | completeDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePostResponseSuccess
+    | completeDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePostResponseError;
 
-  
+export const getCompleteDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePostUrl =
+  (screeningId: string, stepId: string) => {
+    return `/api/v1/screenings/${screeningId}/steps/${stepId}/document-review/complete`;
+  };
 
-  return `/api/v1/screenings/${screeningId}/steps/${stepId}/document-review/complete`
-}
-
-export const completeDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePost = async (screeningId: string,
+export const completeDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePost =
+  async (
+    screeningId: string,
     stepId: string,
-    documentReviewStepCompleteRequest: DocumentReviewStepCompleteRequest, options?: RequestInit): Promise<completeDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePostResponse> => {
-  
-  return customFetch<completeDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePostResponse>(getCompleteDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePostUrl(screeningId,stepId),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      documentReviewStepCompleteRequest,)
-  }
-);}
+    documentReviewStepCompleteRequest: DocumentReviewStepCompleteRequest,
+    options?: RequestInit,
+  ): Promise<completeDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePostResponse> => {
+    return customFetch<completeDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePostResponse>(
+      getCompleteDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePostUrl(
+        screeningId,
+        stepId,
+      ),
+      {
+        ...options,
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...options?.headers },
+        body: JSON.stringify(documentReviewStepCompleteRequest),
+      },
+    );
+  };
 
+export const getCompleteDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePostMutationOptions =
+  <TError = ErrorResponse, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<
+          typeof completeDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePost
+        >
+      >,
+      TError,
+      {
+        screeningId: string;
+        stepId: string;
+        data: DocumentReviewStepCompleteRequest;
+      },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  }): UseMutationOptions<
+    Awaited<
+      ReturnType<
+        typeof completeDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePost
+      >
+    >,
+    TError,
+    {
+      screeningId: string;
+      stepId: string;
+      data: DocumentReviewStepCompleteRequest;
+    },
+    TContext
+  > => {
+    const mutationKey = [
+      "completeDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePost",
+    ];
+    const { mutation: mutationOptions, request: requestOptions } = options
+      ? options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+        ? options
+        : { ...options, mutation: { ...options.mutation, mutationKey } }
+      : { mutation: { mutationKey }, request: undefined };
 
+    const mutationFn: MutationFunction<
+      Awaited<
+        ReturnType<
+          typeof completeDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePost
+        >
+      >,
+      {
+        screeningId: string;
+        stepId: string;
+        data: DocumentReviewStepCompleteRequest;
+      }
+    > = (props) => {
+      const { screeningId, stepId, data } = props ?? {};
 
+      return completeDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePost(
+        screeningId,
+        stepId,
+        data,
+        requestOptions,
+      );
+    };
 
-export const getCompleteDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePostMutationOptions = <TError = ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof completeDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePost>>, TError,{screeningId: string;stepId: string;data: DocumentReviewStepCompleteRequest}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof completeDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePost>>, TError,{screeningId: string;stepId: string;data: DocumentReviewStepCompleteRequest}, TContext> => {
+    return { mutationFn, ...mutationOptions };
+  };
 
-const mutationKey = ['completeDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePost'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+export type CompleteDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePostMutationResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof completeDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePost
+      >
+    >
+  >;
+export type CompleteDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePostMutationBody =
+  DocumentReviewStepCompleteRequest;
+export type CompleteDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePostMutationError =
+  ErrorResponse;
 
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof completeDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePost>>, {screeningId: string;stepId: string;data: DocumentReviewStepCompleteRequest}> = (props) => {
-          const {screeningId,stepId,data} = props ?? {};
-
-          return  completeDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePost(screeningId,stepId,data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type CompleteDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePostMutationResult = NonNullable<Awaited<ReturnType<typeof completeDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePost>>>
-    export type CompleteDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePostMutationBody = DocumentReviewStepCompleteRequest
-    export type CompleteDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePostMutationError = ErrorResponse
-
-    /**
+/**
  * @summary Finalizar etapa de revisão de documentos
  */
-export const useCompleteDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePost = <TError = ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof completeDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePost>>, TError,{screeningId: string;stepId: string;data: DocumentReviewStepCompleteRequest}, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof completeDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePost>>,
+export const useCompleteDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePost =
+  <TError = ErrorResponse, TContext = unknown>(
+    options?: {
+      mutation?: UseMutationOptions<
+        Awaited<
+          ReturnType<
+            typeof completeDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePost
+          >
+        >,
         TError,
-        {screeningId: string;stepId: string;data: DocumentReviewStepCompleteRequest},
+        {
+          screeningId: string;
+          stepId: string;
+          data: DocumentReviewStepCompleteRequest;
+        },
         TContext
-      > => {
+      >;
+      request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+  ): UseMutationResult<
+    Awaited<
+      ReturnType<
+        typeof completeDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePost
+      >
+    >,
+    TError,
+    {
+      screeningId: string;
+      stepId: string;
+      data: DocumentReviewStepCompleteRequest;
+    },
+    TContext
+  > => {
+    const mutationOptions =
+      getCompleteDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePostMutationOptions(
+        options,
+      );
 
-      const mutationOptions = getCompleteDocumentReviewStepApiV1ScreeningsScreeningIdStepsStepIdDocumentReviewCompletePostMutationOptions(options);
-
-      return useMutation(mutationOptions, queryClient);
-    }
-    /**
+    return useMutation(mutationOptions, queryClient);
+  };
+/**
  * Volta para uma etapa anterior, resetando as posteriores.
  * @summary Voltar para etapa anterior
  */
-export type goBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPostResponse200 = {
-  data: ScreeningProcessStepResponse
-  status: 200
-}
+export type goBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPostResponse200 =
+  {
+    data: ScreeningProcessStepResponse;
+    status: 200;
+  };
 
-export type goBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPostResponse404 = {
-  data: ErrorResponse
-  status: 404
-}
+export type goBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPostResponse404 =
+  {
+    data: ErrorResponse;
+    status: 404;
+  };
 
-export type goBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPostResponse422 = {
-  data: ErrorResponse
-  status: 422
-}
-    
-export type goBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPostResponseSuccess = (goBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPostResponse200) & {
-  headers: Headers;
-};
-export type goBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPostResponseError = (goBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPostResponse404 | goBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPostResponse422) & {
-  headers: Headers;
-};
+export type goBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPostResponse422 =
+  {
+    data: ErrorResponse;
+    status: 422;
+  };
 
-export type goBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPostResponse = (goBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPostResponseSuccess | goBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPostResponseError)
+export type goBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPostResponseSuccess =
+  goBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPostResponse200 & {
+    headers: Headers;
+  };
+export type goBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPostResponseError =
+  (
+    | goBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPostResponse404
+    | goBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPostResponse422
+  ) & {
+    headers: Headers;
+  };
 
-export const getGoBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPostUrl = (screeningId: string,
-    stepId: string,) => {
+export type goBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPostResponse =
 
+    | goBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPostResponseSuccess
+    | goBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPostResponseError;
 
-  
+export const getGoBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPostUrl =
+  (screeningId: string, stepId: string) => {
+    return `/api/v1/screenings/${screeningId}/steps/${stepId}/go-back`;
+  };
 
-  return `/api/v1/screenings/${screeningId}/steps/${stepId}/go-back`
-}
+export const goBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPost =
+  async (
+    screeningId: string,
+    stepId: string,
+    options?: RequestInit,
+  ): Promise<goBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPostResponse> => {
+    return customFetch<goBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPostResponse>(
+      getGoBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPostUrl(
+        screeningId,
+        stepId,
+      ),
+      {
+        ...options,
+        method: "POST",
+      },
+    );
+  };
 
-export const goBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPost = async (screeningId: string,
-    stepId: string, options?: RequestInit): Promise<goBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPostResponse> => {
-  
-  return customFetch<goBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPostResponse>(getGoBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPostUrl(screeningId,stepId),
-  {      
-    ...options,
-    method: 'POST'
-    
-    
-  }
-);}
+export const getGoBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPostMutationOptions =
+  <TError = ErrorResponse, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<
+          typeof goBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPost
+        >
+      >,
+      TError,
+      { screeningId: string; stepId: string },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  }): UseMutationOptions<
+    Awaited<
+      ReturnType<
+        typeof goBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPost
+      >
+    >,
+    TError,
+    { screeningId: string; stepId: string },
+    TContext
+  > => {
+    const mutationKey = [
+      "goBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPost",
+    ];
+    const { mutation: mutationOptions, request: requestOptions } = options
+      ? options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+        ? options
+        : { ...options, mutation: { ...options.mutation, mutationKey } }
+      : { mutation: { mutationKey }, request: undefined };
 
+    const mutationFn: MutationFunction<
+      Awaited<
+        ReturnType<
+          typeof goBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPost
+        >
+      >,
+      { screeningId: string; stepId: string }
+    > = (props) => {
+      const { screeningId, stepId } = props ?? {};
 
+      return goBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPost(
+        screeningId,
+        stepId,
+        requestOptions,
+      );
+    };
 
+    return { mutationFn, ...mutationOptions };
+  };
 
-export const getGoBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPostMutationOptions = <TError = ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof goBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPost>>, TError,{screeningId: string;stepId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof goBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPost>>, TError,{screeningId: string;stepId: string}, TContext> => {
+export type GoBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPostMutationResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof goBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPost
+      >
+    >
+  >;
 
-const mutationKey = ['goBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPost'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+export type GoBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPostMutationError =
+  ErrorResponse;
 
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof goBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPost>>, {screeningId: string;stepId: string}> = (props) => {
-          const {screeningId,stepId} = props ?? {};
-
-          return  goBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPost(screeningId,stepId,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type GoBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPostMutationResult = NonNullable<Awaited<ReturnType<typeof goBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPost>>>
-    
-    export type GoBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPostMutationError = ErrorResponse
-
-    /**
+/**
  * @summary Voltar para etapa anterior
  */
-export const useGoBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPost = <TError = ErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof goBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPost>>, TError,{screeningId: string;stepId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof goBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPost>>,
-        TError,
-        {screeningId: string;stepId: string},
-        TContext
-      > => {
+export const useGoBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPost = <
+  TError = ErrorResponse,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<
+          typeof goBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPost
+        >
+      >,
+      TError,
+      { screeningId: string; stepId: string },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<
+    ReturnType<
+      typeof goBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPost
+    >
+  >,
+  TError,
+  { screeningId: string; stepId: string },
+  TContext
+> => {
+  const mutationOptions =
+    getGoBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPostMutationOptions(
+      options,
+    );
 
-      const mutationOptions = getGoBackToStepApiV1ScreeningsScreeningIdStepsStepIdGoBackPostMutationOptions(options);
-
-      return useMutation(mutationOptions, queryClient);
-    }
-    /**
+  return useMutation(mutationOptions, queryClient);
+};
+/**
  * Configura a lista de documentos necessários para a triagem. Transiciona o step de PENDING para IN_PROGRESS.
  * @summary Configurar documentos
  */
-export type configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePostResponse201 = {
-  data: DocumentUploadStepResponse
-  status: 201
-}
+export type configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePostResponse201 =
+  {
+    data: DocumentUploadStepResponse;
+    status: 201;
+  };
 
-export type configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePostResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-    
-export type configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePostResponseSuccess = (configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePostResponse201) & {
-  headers: Headers;
-};
-export type configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePostResponseError = (configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePostResponse422) & {
-  headers: Headers;
-};
+export type configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePostResponse422 =
+  {
+    data: HTTPValidationError;
+    status: 422;
+  };
 
-export type configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePostResponse = (configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePostResponseSuccess | configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePostResponseError)
+export type configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePostResponseSuccess =
+  configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePostResponse201 & {
+    headers: Headers;
+  };
+export type configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePostResponseError =
+  configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePostResponse422 & {
+    headers: Headers;
+  };
 
-export const getConfigureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePostUrl = (screeningId: string,) => {
+export type configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePostResponse =
 
+    | configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePostResponseSuccess
+    | configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePostResponseError;
 
-  
+export const getConfigureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePostUrl =
+  (screeningId: string) => {
+    return `/api/v1/screenings/${screeningId}/steps/document-upload/configure`;
+  };
 
-  return `/api/v1/screenings/${screeningId}/steps/document-upload/configure`
-}
+export const configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePost =
+  async (
+    screeningId: string,
+    configureDocumentsRequest: ConfigureDocumentsRequest,
+    options?: RequestInit,
+  ): Promise<configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePostResponse> => {
+    return customFetch<configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePostResponse>(
+      getConfigureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePostUrl(
+        screeningId,
+      ),
+      {
+        ...options,
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...options?.headers },
+        body: JSON.stringify(configureDocumentsRequest),
+      },
+    );
+  };
 
-export const configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePost = async (screeningId: string,
-    configureDocumentsRequest: ConfigureDocumentsRequest, options?: RequestInit): Promise<configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePostResponse> => {
-  
-  return customFetch<configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePostResponse>(getConfigureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePostUrl(screeningId),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      configureDocumentsRequest,)
-  }
-);}
+export const getConfigureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePostMutationOptions =
+  <TError = HTTPValidationError, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<
+          typeof configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePost
+        >
+      >,
+      TError,
+      { screeningId: string; data: ConfigureDocumentsRequest },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  }): UseMutationOptions<
+    Awaited<
+      ReturnType<
+        typeof configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePost
+      >
+    >,
+    TError,
+    { screeningId: string; data: ConfigureDocumentsRequest },
+    TContext
+  > => {
+    const mutationKey = [
+      "configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePost",
+    ];
+    const { mutation: mutationOptions, request: requestOptions } = options
+      ? options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+        ? options
+        : { ...options, mutation: { ...options.mutation, mutationKey } }
+      : { mutation: { mutationKey }, request: undefined };
 
+    const mutationFn: MutationFunction<
+      Awaited<
+        ReturnType<
+          typeof configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePost
+        >
+      >,
+      { screeningId: string; data: ConfigureDocumentsRequest }
+    > = (props) => {
+      const { screeningId, data } = props ?? {};
 
+      return configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePost(
+        screeningId,
+        data,
+        requestOptions,
+      );
+    };
 
+    return { mutationFn, ...mutationOptions };
+  };
 
-export const getConfigureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePostMutationOptions = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePost>>, TError,{screeningId: string;data: ConfigureDocumentsRequest}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePost>>, TError,{screeningId: string;data: ConfigureDocumentsRequest}, TContext> => {
+export type ConfigureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePostMutationResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePost
+      >
+    >
+  >;
+export type ConfigureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePostMutationBody =
+  ConfigureDocumentsRequest;
+export type ConfigureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePostMutationError =
+  HTTPValidationError;
 
-const mutationKey = ['configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePost'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePost>>, {screeningId: string;data: ConfigureDocumentsRequest}> = (props) => {
-          const {screeningId,data} = props ?? {};
-
-          return  configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePost(screeningId,data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ConfigureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePostMutationResult = NonNullable<Awaited<ReturnType<typeof configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePost>>>
-    export type ConfigureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePostMutationBody = ConfigureDocumentsRequest
-    export type ConfigureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePostMutationError = HTTPValidationError
-
-    /**
+/**
  * @summary Configurar documentos
  */
-export const useConfigureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePost = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePost>>, TError,{screeningId: string;data: ConfigureDocumentsRequest}, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePost>>,
+export const useConfigureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePost =
+  <TError = HTTPValidationError, TContext = unknown>(
+    options?: {
+      mutation?: UseMutationOptions<
+        Awaited<
+          ReturnType<
+            typeof configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePost
+          >
+        >,
         TError,
-        {screeningId: string;data: ConfigureDocumentsRequest},
+        { screeningId: string; data: ConfigureDocumentsRequest },
         TContext
-      > => {
+      >;
+      request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+  ): UseMutationResult<
+    Awaited<
+      ReturnType<
+        typeof configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePost
+      >
+    >,
+    TError,
+    { screeningId: string; data: ConfigureDocumentsRequest },
+    TContext
+  > => {
+    const mutationOptions =
+      getConfigureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePostMutationOptions(
+        options,
+      );
 
-      const mutationOptions = getConfigureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePostMutationOptions(options);
-
-      return useMutation(mutationOptions, queryClient);
-    }
-    /**
+    return useMutation(mutationOptions, queryClient);
+  };
+/**
  * Registra o upload de um documento. O arquivo deve ser previamente enviado ao Firebase pelo frontend. Após o upload, cria-se um ProfessionalDocument com screening_id para vincular o documento à triagem (is_pending=True).
  * @summary Upload de documento
  */
-export type uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPostResponse200 = {
-  data: ScreeningDocumentResponse
-  status: 200
-}
+export type uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPostResponse200 =
+  {
+    data: ScreeningDocumentResponse;
+    status: 200;
+  };
 
-export type uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPostResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-    
-export type uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPostResponseSuccess = (uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPostResponse200) & {
-  headers: Headers;
-};
-export type uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPostResponseError = (uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPostResponse422) & {
-  headers: Headers;
-};
+export type uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPostResponse422 =
+  {
+    data: HTTPValidationError;
+    status: 422;
+  };
 
-export type uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPostResponse = (uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPostResponseSuccess | uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPostResponseError)
+export type uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPostResponseSuccess =
+  uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPostResponse200 & {
+    headers: Headers;
+  };
+export type uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPostResponseError =
+  uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPostResponse422 & {
+    headers: Headers;
+  };
 
-export const getUploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPostUrl = (screeningId: string,
-    documentId: string,) => {
+export type uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPostResponse =
 
+    | uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPostResponseSuccess
+    | uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPostResponseError;
 
-  
+export const getUploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPostUrl =
+  (screeningId: string, documentId: string) => {
+    return `/api/v1/screenings/${screeningId}/documents/${documentId}/upload`;
+  };
 
-  return `/api/v1/screenings/${screeningId}/documents/${documentId}/upload`
-}
-
-export const uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPost = async (screeningId: string,
+export const uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPost =
+  async (
+    screeningId: string,
     documentId: string,
-    uploadDocumentRequest: UploadDocumentRequest, options?: RequestInit): Promise<uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPostResponse> => {
-  
-  return customFetch<uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPostResponse>(getUploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPostUrl(screeningId,documentId),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      uploadDocumentRequest,)
-  }
-);}
+    uploadDocumentRequest: UploadDocumentRequest,
+    options?: RequestInit,
+  ): Promise<uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPostResponse> => {
+    return customFetch<uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPostResponse>(
+      getUploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPostUrl(
+        screeningId,
+        documentId,
+      ),
+      {
+        ...options,
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...options?.headers },
+        body: JSON.stringify(uploadDocumentRequest),
+      },
+    );
+  };
 
+export const getUploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPostMutationOptions =
+  <TError = HTTPValidationError, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<
+          typeof uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPost
+        >
+      >,
+      TError,
+      { screeningId: string; documentId: string; data: UploadDocumentRequest },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  }): UseMutationOptions<
+    Awaited<
+      ReturnType<
+        typeof uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPost
+      >
+    >,
+    TError,
+    { screeningId: string; documentId: string; data: UploadDocumentRequest },
+    TContext
+  > => {
+    const mutationKey = [
+      "uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPost",
+    ];
+    const { mutation: mutationOptions, request: requestOptions } = options
+      ? options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+        ? options
+        : { ...options, mutation: { ...options.mutation, mutationKey } }
+      : { mutation: { mutationKey }, request: undefined };
 
+    const mutationFn: MutationFunction<
+      Awaited<
+        ReturnType<
+          typeof uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPost
+        >
+      >,
+      { screeningId: string; documentId: string; data: UploadDocumentRequest }
+    > = (props) => {
+      const { screeningId, documentId, data } = props ?? {};
 
+      return uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPost(
+        screeningId,
+        documentId,
+        data,
+        requestOptions,
+      );
+    };
 
-export const getUploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPostMutationOptions = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPost>>, TError,{screeningId: string;documentId: string;data: UploadDocumentRequest}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPost>>, TError,{screeningId: string;documentId: string;data: UploadDocumentRequest}, TContext> => {
+    return { mutationFn, ...mutationOptions };
+  };
 
-const mutationKey = ['uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPost'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+export type UploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPostMutationResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPost
+      >
+    >
+  >;
+export type UploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPostMutationBody =
+  UploadDocumentRequest;
+export type UploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPostMutationError =
+  HTTPValidationError;
 
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPost>>, {screeningId: string;documentId: string;data: UploadDocumentRequest}> = (props) => {
-          const {screeningId,documentId,data} = props ?? {};
-
-          return  uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPost(screeningId,documentId,data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type UploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPostMutationResult = NonNullable<Awaited<ReturnType<typeof uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPost>>>
-    export type UploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPostMutationBody = UploadDocumentRequest
-    export type UploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPostMutationError = HTTPValidationError
-
-    /**
+/**
  * @summary Upload de documento
  */
-export const useUploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPost = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPost>>, TError,{screeningId: string;documentId: string;data: UploadDocumentRequest}, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPost>>,
+export const useUploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPost =
+  <TError = HTTPValidationError, TContext = unknown>(
+    options?: {
+      mutation?: UseMutationOptions<
+        Awaited<
+          ReturnType<
+            typeof uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPost
+          >
+        >,
         TError,
-        {screeningId: string;documentId: string;data: UploadDocumentRequest},
+        {
+          screeningId: string;
+          documentId: string;
+          data: UploadDocumentRequest;
+        },
         TContext
-      > => {
+      >;
+      request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+  ): UseMutationResult<
+    Awaited<
+      ReturnType<
+        typeof uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPost
+      >
+    >,
+    TError,
+    { screeningId: string; documentId: string; data: UploadDocumentRequest },
+    TContext
+  > => {
+    const mutationOptions =
+      getUploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPostMutationOptions(
+        options,
+      );
 
-      const mutationOptions = getUploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPostMutationOptions(options);
-
-      return useMutation(mutationOptions, queryClient);
-    }
-    /**
+    return useMutation(mutationOptions, queryClient);
+  };
+/**
  * Reutiliza um documento já aprovado de triagens anteriores. Apenas documentos que não estão pendentes (is_pending=False) podem ser reutilizados. O documento reutilizado recebe status REUSED e não precisa de revisão.
  * @summary Reutilizar documento existente
  */
-export type reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostResponse200 = {
-  data: ScreeningDocumentResponse
-  status: 200
-}
+export type reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostResponse200 =
+  {
+    data: ScreeningDocumentResponse;
+    status: 200;
+  };
 
-export type reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-    
-export type reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostResponseSuccess = (reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostResponse200) & {
-  headers: Headers;
-};
-export type reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostResponseError = (reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostResponse422) & {
-  headers: Headers;
-};
+export type reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostResponse422 =
+  {
+    data: HTTPValidationError;
+    status: 422;
+  };
 
-export type reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostResponse = (reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostResponseSuccess | reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostResponseError)
+export type reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostResponseSuccess =
+  reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostResponse200 & {
+    headers: Headers;
+  };
+export type reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostResponseError =
+  reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostResponse422 & {
+    headers: Headers;
+  };
 
-export const getReuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostUrl = (screeningId: string,
+export type reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostResponse =
+
+    | reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostResponseSuccess
+    | reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostResponseError;
+
+export const getReuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostUrl =
+  (
+    screeningId: string,
     documentId: string,
-    params: ReuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostParams,) => {
-  const normalizedParams = new URLSearchParams();
+    params: ReuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostParams,
+  ) => {
+    const normalizedParams = new URLSearchParams();
 
-  Object.entries(params || {}).forEach(([key, value]) => {
-    
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString())
-    }
-  });
+    Object.entries(params || {}).forEach(([key, value]) => {
+      if (value !== undefined) {
+        normalizedParams.append(
+          key,
+          value === null ? "null" : value.toString(),
+        );
+      }
+    });
 
-  const stringifiedParams = normalizedParams.toString();
+    const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/v1/screenings/${screeningId}/documents/${documentId}/reuse?${stringifiedParams}` : `/api/v1/screenings/${screeningId}/documents/${documentId}/reuse`
-}
+    return stringifiedParams.length > 0
+      ? `/api/v1/screenings/${screeningId}/documents/${documentId}/reuse?${stringifiedParams}`
+      : `/api/v1/screenings/${screeningId}/documents/${documentId}/reuse`;
+  };
 
-export const reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePost = async (screeningId: string,
+export const reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePost =
+  async (
+    screeningId: string,
     documentId: string,
-    params: ReuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostParams, options?: RequestInit): Promise<reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostResponse> => {
-  
-  return customFetch<reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostResponse>(getReuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostUrl(screeningId,documentId,params),
-  {      
-    ...options,
-    method: 'POST'
-    
-    
-  }
-);}
+    params: ReuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostParams,
+    options?: RequestInit,
+  ): Promise<reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostResponse> => {
+    return customFetch<reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostResponse>(
+      getReuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostUrl(
+        screeningId,
+        documentId,
+        params,
+      ),
+      {
+        ...options,
+        method: "POST",
+      },
+    );
+  };
 
+export const getReuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostMutationOptions =
+  <TError = HTTPValidationError, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<
+          typeof reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePost
+        >
+      >,
+      TError,
+      {
+        screeningId: string;
+        documentId: string;
+        params: ReuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostParams;
+      },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  }): UseMutationOptions<
+    Awaited<
+      ReturnType<
+        typeof reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePost
+      >
+    >,
+    TError,
+    {
+      screeningId: string;
+      documentId: string;
+      params: ReuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostParams;
+    },
+    TContext
+  > => {
+    const mutationKey = [
+      "reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePost",
+    ];
+    const { mutation: mutationOptions, request: requestOptions } = options
+      ? options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+        ? options
+        : { ...options, mutation: { ...options.mutation, mutationKey } }
+      : { mutation: { mutationKey }, request: undefined };
 
+    const mutationFn: MutationFunction<
+      Awaited<
+        ReturnType<
+          typeof reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePost
+        >
+      >,
+      {
+        screeningId: string;
+        documentId: string;
+        params: ReuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostParams;
+      }
+    > = (props) => {
+      const { screeningId, documentId, params } = props ?? {};
 
+      return reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePost(
+        screeningId,
+        documentId,
+        params,
+        requestOptions,
+      );
+    };
 
-export const getReuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostMutationOptions = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePost>>, TError,{screeningId: string;documentId: string;params: ReuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostParams}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePost>>, TError,{screeningId: string;documentId: string;params: ReuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostParams}, TContext> => {
+    return { mutationFn, ...mutationOptions };
+  };
 
-const mutationKey = ['reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePost'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+export type ReuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostMutationResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePost
+      >
+    >
+  >;
 
-      
+export type ReuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostMutationError =
+  HTTPValidationError;
 
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePost>>, {screeningId: string;documentId: string;params: ReuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostParams}> = (props) => {
-          const {screeningId,documentId,params} = props ?? {};
-
-          return  reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePost(screeningId,documentId,params,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ReuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostMutationResult = NonNullable<Awaited<ReturnType<typeof reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePost>>>
-    
-    export type ReuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostMutationError = HTTPValidationError
-
-    /**
+/**
  * @summary Reutilizar documento existente
  */
-export const useReuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePost = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePost>>, TError,{screeningId: string;documentId: string;params: ReuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostParams}, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePost>>,
+export const useReuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePost =
+  <TError = HTTPValidationError, TContext = unknown>(
+    options?: {
+      mutation?: UseMutationOptions<
+        Awaited<
+          ReturnType<
+            typeof reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePost
+          >
+        >,
         TError,
-        {screeningId: string;documentId: string;params: ReuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostParams},
+        {
+          screeningId: string;
+          documentId: string;
+          params: ReuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostParams;
+        },
         TContext
-      > => {
+      >;
+      request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+  ): UseMutationResult<
+    Awaited<
+      ReturnType<
+        typeof reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePost
+      >
+    >,
+    TError,
+    {
+      screeningId: string;
+      documentId: string;
+      params: ReuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostParams;
+    },
+    TContext
+  > => {
+    const mutationOptions =
+      getReuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostMutationOptions(
+        options,
+      );
 
-      const mutationOptions = getReuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostMutationOptions(options);
-
-      return useMutation(mutationOptions, queryClient);
-    }
-    /**
+    return useMutation(mutationOptions, queryClient);
+  };
+/**
  * Revisa um documento individual. Define como APPROVED ou CORRECTION_NEEDED (com motivo).
  * @summary Revisar documento
  */
-export type reviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPostResponse200 = {
-  data: ScreeningDocumentResponse
-  status: 200
-}
+export type reviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPostResponse200 =
+  {
+    data: ScreeningDocumentResponse;
+    status: 200;
+  };
 
-export type reviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPostResponse422 = {
-  data: HTTPValidationError
-  status: 422
-}
-    
-export type reviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPostResponseSuccess = (reviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPostResponse200) & {
-  headers: Headers;
-};
-export type reviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPostResponseError = (reviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPostResponse422) & {
-  headers: Headers;
-};
+export type reviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPostResponse422 =
+  {
+    data: HTTPValidationError;
+    status: 422;
+  };
 
-export type reviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPostResponse = (reviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPostResponseSuccess | reviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPostResponseError)
+export type reviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPostResponseSuccess =
+  reviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPostResponse200 & {
+    headers: Headers;
+  };
+export type reviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPostResponseError =
+  reviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPostResponse422 & {
+    headers: Headers;
+  };
 
-export const getReviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPostUrl = (screeningId: string,
-    documentId: string,) => {
+export type reviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPostResponse =
 
+    | reviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPostResponseSuccess
+    | reviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPostResponseError;
 
-  
+export const getReviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPostUrl =
+  (screeningId: string, documentId: string) => {
+    return `/api/v1/screenings/${screeningId}/documents/${documentId}/review`;
+  };
 
-  return `/api/v1/screenings/${screeningId}/documents/${documentId}/review`
-}
-
-export const reviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPost = async (screeningId: string,
+export const reviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPost =
+  async (
+    screeningId: string,
     documentId: string,
-    reviewDocumentRequest: ReviewDocumentRequest, options?: RequestInit): Promise<reviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPostResponse> => {
-  
-  return customFetch<reviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPostResponse>(getReviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPostUrl(screeningId,documentId),
-  {      
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      reviewDocumentRequest,)
-  }
-);}
+    reviewDocumentRequest: ReviewDocumentRequest,
+    options?: RequestInit,
+  ): Promise<reviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPostResponse> => {
+    return customFetch<reviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPostResponse>(
+      getReviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPostUrl(
+        screeningId,
+        documentId,
+      ),
+      {
+        ...options,
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...options?.headers },
+        body: JSON.stringify(reviewDocumentRequest),
+      },
+    );
+  };
 
+export const getReviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPostMutationOptions =
+  <TError = HTTPValidationError, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<
+          typeof reviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPost
+        >
+      >,
+      TError,
+      { screeningId: string; documentId: string; data: ReviewDocumentRequest },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  }): UseMutationOptions<
+    Awaited<
+      ReturnType<
+        typeof reviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPost
+      >
+    >,
+    TError,
+    { screeningId: string; documentId: string; data: ReviewDocumentRequest },
+    TContext
+  > => {
+    const mutationKey = [
+      "reviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPost",
+    ];
+    const { mutation: mutationOptions, request: requestOptions } = options
+      ? options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+        ? options
+        : { ...options, mutation: { ...options.mutation, mutationKey } }
+      : { mutation: { mutationKey }, request: undefined };
 
+    const mutationFn: MutationFunction<
+      Awaited<
+        ReturnType<
+          typeof reviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPost
+        >
+      >,
+      { screeningId: string; documentId: string; data: ReviewDocumentRequest }
+    > = (props) => {
+      const { screeningId, documentId, data } = props ?? {};
 
+      return reviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPost(
+        screeningId,
+        documentId,
+        data,
+        requestOptions,
+      );
+    };
 
-export const getReviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPostMutationOptions = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof reviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPost>>, TError,{screeningId: string;documentId: string;data: ReviewDocumentRequest}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof reviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPost>>, TError,{screeningId: string;documentId: string;data: ReviewDocumentRequest}, TContext> => {
+    return { mutationFn, ...mutationOptions };
+  };
 
-const mutationKey = ['reviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPost'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
+export type ReviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPostMutationResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof reviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPost
+      >
+    >
+  >;
+export type ReviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPostMutationBody =
+  ReviewDocumentRequest;
+export type ReviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPostMutationError =
+  HTTPValidationError;
 
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof reviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPost>>, {screeningId: string;documentId: string;data: ReviewDocumentRequest}> = (props) => {
-          const {screeningId,documentId,data} = props ?? {};
-
-          return  reviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPost(screeningId,documentId,data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ReviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPostMutationResult = NonNullable<Awaited<ReturnType<typeof reviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPost>>>
-    export type ReviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPostMutationBody = ReviewDocumentRequest
-    export type ReviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPostMutationError = HTTPValidationError
-
-    /**
+/**
  * @summary Revisar documento
  */
-export const useReviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPost = <TError = HTTPValidationError,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof reviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPost>>, TError,{screeningId: string;documentId: string;data: ReviewDocumentRequest}, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof reviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPost>>,
+export const useReviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPost =
+  <TError = HTTPValidationError, TContext = unknown>(
+    options?: {
+      mutation?: UseMutationOptions<
+        Awaited<
+          ReturnType<
+            typeof reviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPost
+          >
+        >,
         TError,
-        {screeningId: string;documentId: string;data: ReviewDocumentRequest},
+        {
+          screeningId: string;
+          documentId: string;
+          data: ReviewDocumentRequest;
+        },
         TContext
-      > => {
+      >;
+      request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+  ): UseMutationResult<
+    Awaited<
+      ReturnType<
+        typeof reviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPost
+      >
+    >,
+    TError,
+    { screeningId: string; documentId: string; data: ReviewDocumentRequest },
+    TContext
+  > => {
+    const mutationOptions =
+      getReviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPostMutationOptions(
+        options,
+      );
 
-      const mutationOptions = getReviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPostMutationOptions(options);
-
-      return useMutation(mutationOptions, queryClient);
-    }
-    
+    return useMutation(mutationOptions, queryClient);
+  };
