@@ -3,8 +3,8 @@
 Takes a ProfessionalDataSnapshot and applies the changes to the
 actual database entities.
 
-Phase 1: Only personal_info is supported.
-Phase 2: Will add qualifications with nested entities.
+Phase 1: personal_info supported.
+Phase 2: qualifications with nested entities (specialties, educations).
 Phase 3: Will add companies and bank_accounts.
 """
 
@@ -18,9 +18,18 @@ from src.modules.professionals.domain.models import OrganizationProfessional
 from src.modules.professionals.domain.models.version_snapshot import (
     PersonalInfoSnapshot,
     ProfessionalDataSnapshot,
+    QualificationSnapshot,
+)
+from src.modules.professionals.domain.schemas.professional_version import (
+    EducationInput,
+    QualificationInput,
+    SpecialtyInput,
 )
 from src.modules.professionals.infrastructure.repositories import (
     OrganizationProfessionalRepository,
+)
+from src.modules.professionals.use_cases.shared.services import (
+    QualificationSyncService,
 )
 
 
@@ -106,8 +115,14 @@ class SnapshotApplierService:
             )
 
         # Phase 2: Apply qualifications
-        # if "qualifications" in snapshot:
-        #     await self._apply_qualifications(...)
+        if "qualifications" in snapshot and snapshot["qualifications"]:
+            await self._apply_qualifications(
+                professional_id=professional_id,
+                organization_id=organization_id,
+                qualifications=snapshot["qualifications"],
+                applied_by=applied_by,
+                family_org_ids=family_org_ids,
+            )
 
         # Phase 3: Apply companies and bank accounts
         # if "companies" in snapshot:
@@ -130,8 +145,7 @@ class SnapshotApplierService:
         """
         unsupported_features = []
 
-        if snapshot.get("qualifications"):
-            unsupported_features.append("qualifications")
+        # Phase 2: qualifications now supported
 
         if snapshot.get("companies"):
             unsupported_features.append("companies")
@@ -187,3 +201,97 @@ class SnapshotApplierService:
         professional.updated_at = datetime.now(timezone.utc)
 
         self.session.add(professional)
+
+    async def _apply_qualifications(
+        self,
+        professional_id: UUID,
+        organization_id: UUID,
+        qualifications: list[QualificationSnapshot],
+        applied_by: UUID,
+        family_org_ids: list[UUID] | tuple[UUID, ...] | None = None,
+    ) -> None:
+        """
+        Apply qualifications from snapshot.
+
+        Converts QualificationSnapshot to QualificationInput and uses
+        QualificationSyncService for the actual sync.
+        """
+        # Convert snapshots to input schemas
+        qualifications_input = [
+            self._convert_qualification_snapshot(q) for q in qualifications
+        ]
+
+        # Use sync service
+        sync_service = QualificationSyncService(self.session)
+        await sync_service.sync_qualifications(
+            professional_id=professional_id,
+            organization_id=organization_id,
+            qualifications_data=qualifications_input,
+            family_org_ids=family_org_ids or [],
+            updated_by=applied_by,
+        )
+
+    def _convert_qualification_snapshot(
+        self,
+        snapshot: QualificationSnapshot,
+    ) -> QualificationInput:
+        """Convert a QualificationSnapshot to QualificationInput."""
+        from uuid import UUID as UUIDType
+
+        from src.modules.professionals.domain.models.enums import (
+            CouncilType,
+            EducationLevel,
+            ProfessionalType,
+            ResidencyStatus,
+        )
+        from src.shared.domain.value_objects import StateUF
+
+        # Convert specialties
+        specialties_input: list[SpecialtyInput] = []
+        for spec in snapshot.get("specialties", []):
+            rqe_state_val = spec.get("rqe_state")
+            specialty_input = SpecialtyInput(
+                id=UUIDType(spec["id"]) if spec.get("id") else None,
+                specialty_id=UUIDType(spec["specialty_id"]),
+                is_primary=spec.get("is_primary", False),
+                rqe_number=spec.get("rqe_number"),
+                rqe_state=StateUF(rqe_state_val) if rqe_state_val else None,
+                residency_status=(
+                    ResidencyStatus(spec["residency_status"])
+                    if spec.get("residency_status")
+                    else None
+                ),
+                residency_institution=spec.get("residency_institution"),
+                residency_expected_completion=None,  # Date parsing handled separately
+                certificate_url=spec.get("certificate_url"),
+            )
+            specialties_input.append(specialty_input)
+
+        # Convert educations
+        educations_input: list[EducationInput] = []
+        for edu in snapshot.get("educations", []):
+            education_input = EducationInput(
+                id=UUIDType(edu["id"]) if edu.get("id") else None,
+                level=EducationLevel(edu["level"]),
+                course_name=edu["course_name"],
+                institution=edu["institution"],
+                start_year=edu.get("start_year"),
+                end_year=edu.get("end_year"),
+                is_completed=edu.get("is_completed", False),
+                workload_hours=edu.get("workload_hours"),
+                certificate_url=edu.get("certificate_url"),
+                notes=edu.get("notes"),
+            )
+            educations_input.append(education_input)
+
+        return QualificationInput(
+            id=UUIDType(snapshot["id"]) if snapshot.get("id") else None,
+            professional_type=ProfessionalType(snapshot["professional_type"]),
+            is_primary=snapshot.get("is_primary", False),
+            graduation_year=snapshot.get("graduation_year"),
+            council_type=CouncilType(snapshot["council_type"]),
+            council_number=snapshot["council_number"],
+            council_state=StateUF(snapshot["council_state"]),
+            specialties=specialties_input,
+            educations=educations_input,
+        )

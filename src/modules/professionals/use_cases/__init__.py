@@ -71,6 +71,11 @@ from src.modules.professionals.use_cases.professional_version import (
     SnapshotBuilderService,
 )
 
+# Shared services
+from src.modules.professionals.use_cases.shared import (
+    QualificationSyncService,
+)
+
 # Specialty use cases (read-only for tenants)
 from src.shared.use_cases.specialty import (
     GetSpecialtyByCodeUseCase,
@@ -128,6 +133,8 @@ __all__ = [
     "DiffCalculatorService",
     "SnapshotApplierService",
     "SnapshotBuilderService",
+    # Shared services
+    "QualificationSyncService",
     # Specialty (read-only)
     "GetSpecialtyUseCase",
     "GetSpecialtyByCodeUseCase",
