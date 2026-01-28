@@ -24,9 +24,10 @@
         "dist"
     ],
     "scripts": {
-        "generate": "orval && node scripts/transform-types.js",
+        "generate": "orval && node scripts/transform-types.js && node scripts/fix-esm-imports.js",
         "transform:types": "node scripts/transform-types.js",
-        "build": "tsc",
+        "fix:esm": "node scripts/fix-esm-imports.js",
+        "build": "node scripts/fix-esm-imports.js && tsc",
         "clean": "rm -rf dist",
         "prepublishOnly": "npm run clean && npm run build",
         "version:patch": "npm version patch --no-git-tag-version",

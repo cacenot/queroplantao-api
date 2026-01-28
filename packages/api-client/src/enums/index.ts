@@ -5,6 +5,6 @@
  * DO NOT EDIT MANUALLY
  */
 
-export * from "./professionals";
-export * from "./screening";
-export * from "./organizations";
+export * from "./professionals.js";
+export * from "./screening.js";
+export * from "./organizations.js";

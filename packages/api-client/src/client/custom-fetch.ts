@@ -12,9 +12,9 @@ import {
     buildRequestHeaders,
     buildUrl,
     getApiClientConfig,
-} from "../utils/client-config";
-import { ApiClientError, extractApiError } from "../utils/errors";
-import { toCamelCase, toSnakeCase } from "./case-transformer";
+} from "../utils/client-config.js";
+import { ApiClientError, extractApiError } from "../utils/errors.js";
+import { toCamelCase, toSnakeCase } from "./case-transformer.js";
 
 /**
  * Request options for customFetch.

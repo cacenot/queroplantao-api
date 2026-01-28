@@ -5,5 +5,5 @@
  * DO NOT EDIT MANUALLY
  */
 
-export * from "./error-codes";
-export * from "./error-messages";
+export * from "./error-codes.js";
+export * from "./error-messages.js";

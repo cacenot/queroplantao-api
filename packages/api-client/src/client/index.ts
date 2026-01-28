@@ -5,21 +5,21 @@
  */
 
 // Re-export all generated services (hooks, queries, mutations)
-export * from "./generated/auth/auth";
+export * from "./generated/auth/auth.js";
 // Skip enums - we have our own with labels in src/enums/
 // export * from "./generated/enums/enums";
-export * from "./generated/health/health";
-export * from "./generated/invitations/invitations";
-export * from "./generated/organization-users/organization-users";
-export * from "./generated/professionals/professionals";
-export * from "./generated/screening/screening";
-export * from "./generated/screening-public/screening-public";
-export * from "./generated/specialties/specialties";
+export * from "./generated/health/health.js";
+export * from "./generated/invitations/invitations.js";
+export * from "./generated/organization-users/organization-users.js";
+export * from "./generated/professionals/professionals.js";
+export * from "./generated/screening/screening.js";
+export * from "./generated/screening-public/screening-public.js";
+export * from "./generated/specialties/specialties.js";
 
 // Re-export all models (interfaces, types)
-export * from "./models";
+export * from "./models/index.js";
 
 // Re-export custom fetch
-export { customFetch } from "./custom-fetch";
+export { customFetch } from "./custom-fetch.js";
 
 export const CLIENT_VERSION = "0.1.0";

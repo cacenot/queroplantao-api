@@ -2,6 +2,6 @@
  * Utility types and functions for the API client.
  */
 
-export * from "./pagination";
-export * from "./errors";
-export * from "./client-config";
+export * from "./pagination.js";
+export * from "./errors.js";
+export * from "./client-config.js";
