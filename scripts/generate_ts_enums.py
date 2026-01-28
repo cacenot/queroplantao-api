@@ -60,6 +60,19 @@ ENUM_SOURCES: list[tuple[str, Path]] = [
         / "models"
         / "enums.py",
     ),
+    (
+        "shared",
+        PROJECT_ROOT / "src" / "shared" / "domain" / "models" / "enums.py",
+    ),
+    (
+        "shared",
+        PROJECT_ROOT
+        / "src"
+        / "shared"
+        / "domain"
+        / "models"
+        / "document_type.py",
+    ),
 ]
 
 # Manual PT-BR labels for enums (sync with backend when needed)
@@ -205,6 +218,25 @@ ENUM_LABELS: dict[str, dict[str, str]] = {
     "DataScopePolicy": {
         "ORGANIZATION_ONLY": "Somente Organização",
         "FAMILY": "Família",
+    },
+    # Pix key type
+    "PixKeyType": {
+        "CPF": "CPF",
+        "CNPJ": "CNPJ",
+        "EMAIL": "E-mail",
+        "PHONE": "Telefone",
+        "RANDOM": "Chave Aleatória",
+    },
+    # Account type
+    "AccountType": {
+        "CHECKING": "Conta Corrente",
+        "SAVINGS": "Conta Poupança",
+    },
+    # Document category
+    "DocumentCategory": {
+        "PROFILE": "Perfil",
+        "QUALIFICATION": "Qualificação",
+        "SPECIALTY": "Especialidade",
     },
 }
 
@@ -352,7 +384,7 @@ def generate_index_file(modules: list[str]) -> str:
     ]
 
     for module in modules:
-        lines.append(f'export * from "./{module}";')
+        lines.append(f'export * from "./{module}.js";')
 
     return "\n".join(lines)
 
@@ -365,6 +397,7 @@ def main() -> None:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     modules_generated: list[str] = []
+    module_enums: dict[str, list[EnumDefinition]] = {}
 
     for module_name, file_path in ENUM_SOURCES:
         print(f"  📄 Processing {module_name}...")
@@ -374,13 +407,15 @@ def main() -> None:
             print(f"    ⚠️  No enums found in {file_path}")
             continue
 
-        # Generate module file
+        module_enums.setdefault(module_name, []).extend(enums)
+        print(f"    ✅ Collected {len(enums)} enums from {file_path.name}")
+
+    for module_name, enums in module_enums.items():
         content = generate_module_file(module_name, enums)
         output_file = OUTPUT_DIR / f"{module_name}.ts"
         output_file.write_text(content)
-
         modules_generated.append(module_name)
-        print(f"    ✅ Generated {len(enums)} enums -> {output_file.name}")
+        print(f"    📦 Generated {len(enums)} enums -> {output_file.name}")
 
     # Generate index file
     if modules_generated:
