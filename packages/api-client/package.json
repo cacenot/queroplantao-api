@@ -1,6 +1,6 @@
 {
     "name": "@queroplantao/api-client",
-    "version": "1.1.0",
+    "version": "1.1.2",
     "description": "TypeScript API client for Quero Plantão API with React Query hooks",
     "type": "module",
     "main": "dist/index.js",

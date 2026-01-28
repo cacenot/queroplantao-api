@@ -22,4 +22,4 @@ export * from "./models";
 // Re-export custom fetch
 export { customFetch } from "./custom-fetch";
 
-export const CLIENT_VERSION = "1.0.1";
+export const CLIENT_VERSION = "1.1.2";

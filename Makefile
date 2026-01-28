@@ -122,19 +122,19 @@ client-release:
 client-version-patch:
 	@cd $(CLIENT_DIR) && pnpm run version:patch
 	@bash scripts/sync_client_version.sh
-	@echo "✅ Version bumped to $$(cd $(CLIENT_DIR) && node -p 'require(\"./package.json\").version')"
+	@echo "✅ Version bumped to $$(cd $(CLIENT_DIR) && node -p "require('./package.json').version")"
 
 ## Bump API client minor version (0.1.0 -> 0.2.0)
 client-version-minor:
 	@cd $(CLIENT_DIR) && pnpm run version:minor
 	@bash scripts/sync_client_version.sh
-	@echo "✅ Version bumped to $$(cd $(CLIENT_DIR) && node -p 'require(\"./package.json\").version')"
+	@echo "✅ Version bumped to $$(cd $(CLIENT_DIR) && node -p "require('./package.json').version")"
 
 ## Bump API client major version (0.1.0 -> 1.0.0)
 client-version-major:
 	@cd $(CLIENT_DIR) && pnpm run version:major
 	@bash scripts/sync_client_version.sh
-	@echo "✅ Version bumped to $$(cd $(CLIENT_DIR) && node -p 'require(\"./package.json\").version')"
+	@echo "✅ Version bumped to $$(cd $(CLIENT_DIR) && node -p "require('./package.json').version")"
 
 ## Show this help message
 help:
