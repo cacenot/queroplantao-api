@@ -118,12 +118,22 @@ Roles do sistema.
 | Campo | Tipo | Nullable | Descrição |
 |-------|------|----------|-----------|
 | id | UUID (v7) | ❌ | Primary key |
-| code | VARCHAR(50) | ❌ | Código único (ex: 'doctor', 'admin') |
+| code | VARCHAR(50) | ❌ | Código único (ex: 'ORG_ADMIN') |
 | name | VARCHAR(100) | ❌ | Nome legível |
 | description | TEXT | ✅ | Descrição da role |
 | is_system | BOOLEAN | ❌ | Se é role do sistema (não pode deletar) |
 | created_at | TIMESTAMP | ❌ | Timestamp de criação |
 | updated_at | TIMESTAMP | ✅ | Timestamp de atualização |
+
+**Roles Seeded (is_system=true):**
+
+| Code | Name | Descrição |
+|------|------|-----------|
+| ORG_OWNER | Organization Owner | Acesso total, pode deletar org |
+| ORG_ADMIN | Organization Admin | Gerencia membros e configurações |
+| ORG_MANAGER | Organization Manager | Gerencia escalas e plantões |
+| ORG_SCHEDULER | Organization Scheduler | Cria/edita escalas |
+| ORG_VIEWER | Organization Viewer | Apenas leitura |
 
 ### role_permissions
 

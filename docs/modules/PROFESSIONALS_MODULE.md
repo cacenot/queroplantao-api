@@ -4,6 +4,59 @@
 
 O módulo de profissionais gerencia dados de profissionais de saúde (médicos, enfermeiros, técnicos, etc.) **com escopo de organização (multi-tenant)**. Cada organização mantém seus próprios registros de profissionais, isolados de outras organizações. A mesma pessoa (por CPF) pode existir em múltiplas organizações com dados diferentes.
 
+### Principais Funcionalidades
+
+- **Multi-tenancy com escopo de família**: Profissionais compartilhados entre organizações pai/filhas
+- **Versionamento de dados**: Histórico completo de alterações via Event Sourcing simplificado
+- **Qualificações múltiplas**: Um profissional pode ter CRM + COREN, por exemplo
+- **Especialidades com residência**: Tracking de status de residência (R1-R6, COMPLETED)
+- **Documentos categorizados**: PROFILE, QUALIFICATION, SPECIALTY
+
+## Versionamento de Dados (Event Sourcing)
+
+O módulo implementa um sistema de versionamento simplificado para rastrear todas as alterações feitas nos dados do profissional.
+
+### Conceito
+
+1. **Toda alteração cria uma versão**: Ao modificar dados do profissional, uma nova `ProfessionalVersion` é criada
+2. **Snapshot completo**: Cada versão contém todos os dados, não apenas os alterados
+3. **Diffs calculados automaticamente**: O use case calcula as diferenças e popula `ProfessionalChangeDiff`
+4. **Aplicação controlada**: A versão pode ser aplicada imediatamente ou aguardar aprovação
+5. **Rastreabilidade**: `source_type` + `source_id` indicam a origem da alteração
+
+### Fluxo de Versionamento
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────────────┐
+│                           VERSIONAMENTO DE PROFISSIONAL                                 │
+├─────────────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                         │
+│  ┌──────────────────────────┐                                                           │
+│  │ OrganizationProfessional │                                                           │
+│  └──────────────────────────┘                                                           │
+│              │                                                                          │
+│             1:N                                                                         │
+│              │                                                                          │
+│              ▼                                                                          │
+│  ┌─────────────────────────────────────────────────────────────────────────────┐        │
+│  │                        professional_versions                                │        │
+│  │                                                                             │        │
+│  │  ┌───────────┐   ┌───────────┐   ┌───────────┐   ┌───────────┐              │        │
+│  │  │ Version 1 │ → │ Version 2 │ → │ Version 3 │ → │ Version 4 │ (is_current) │        │
+│  │  │ SCREENING │   │  DIRECT   │   │ SCREENING │   │    API    │              │        │
+│  │  └───────────┘   └───────────┘   └───────────┘   └───────────┘              │        │
+│  │       │               │               │               │                     │        │
+│  │      1:N             1:N             1:N             1:N                    │        │
+│  │       │               │               │               │                     │        │
+│  │       ▼               ▼               ▼               ▼                     │        │
+│  │  ┌─────────────────────────────────────────────────────────────────┐        │        │
+│  │  │                 professional_change_diffs                        │        │        │
+│  │  │  (field_path, old_value, new_value, change_type)                │        │        │
+│  │  └─────────────────────────────────────────────────────────────────┘        │        │
+│  └─────────────────────────────────────────────────────────────────────────────┘        │
+└─────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
 ## Diagrama ER
 
 ```
@@ -470,6 +523,152 @@ Contas bancárias para pagamentos.
 - UNIQUE(bank_id, agency, account_number, organization_professional_id)
 - UNIQUE(bank_id, agency, account_number, company_id)
 
+### professional_versions
+
+Versionamento de dados do profissional (Event Sourcing simplificado).
+
+| Campo | Tipo | Nullable | Descrição |
+|-------|------|----------|-----------|
+| id | UUID (v7) | ❌ | Primary key |
+| professional_id | UUID | ✅ | FK para organization_professionals (null = novo) |
+| organization_id | UUID | ❌ | FK para organizations |
+| version_number | INTEGER | ❌ | Número sequencial (DB sequence) |
+| data_snapshot | JSONB | ❌ | Snapshot completo dos dados |
+| is_current | BOOLEAN | ❌ | Se é a versão ativa |
+| **Origem** | | | |
+| source_type | SourceType | ❌ | DIRECT/SCREENING/IMPORT/API |
+| source_id | UUID | ✅ | ID da origem (screening_process_id, etc.) |
+| **Aplicação** | | | |
+| applied_at | TIMESTAMP | ✅ | Quando foi aplicada |
+| applied_by | UUID | ✅ | Quem aplicou |
+| rejected_at | TIMESTAMP | ✅ | Quando foi rejeitada |
+| rejected_by | UUID | ✅ | Quem rejeitou |
+| rejection_reason | TEXT | ✅ | Motivo da rejeição |
+| **Mixins** | | | |
+| created_by, updated_by | UUID | ✅ | Tracking |
+| created_at, updated_at | TIMESTAMP | | Timestamps |
+
+**Índices:**
+- `ix_professional_versions_professional_id`
+- `ix_professional_versions_organization_id`
+- `ix_professional_versions_current WHERE is_current = TRUE`
+- `ix_professional_versions_pending WHERE applied_at IS NULL AND rejected_at IS NULL`
+- `ix_professional_versions_source (source_type, source_id)`
+
+**Estrutura do data_snapshot:**
+```json
+{
+  "personal_info": {
+    "full_name": "João Silva",
+    "email": "joao@email.com",
+    "phone": "+5511999999999",
+    "cpf": "12345678901",
+    "birth_date": "1990-01-15",
+    "gender": "MALE",
+    "address": "Rua Example, 123",
+    "city": "São Paulo",
+    "state_code": "SP",
+    "postal_code": "01234567"
+  },
+  "qualifications": [
+    {
+      "id": "uuid",
+      "professional_type": "DOCTOR",
+      "council_type": "CRM",
+      "council_number": "123456",
+      "council_state": "SP",
+      "is_primary": true
+    }
+  ],
+  "specialties": [
+    {
+      "id": "uuid",
+      "qualification_id": "uuid",
+      "specialty_id": "uuid",
+      "specialty_code": "CARDIOLOGIA",
+      "specialty_name": "Cardiologia",
+      "is_primary": true,
+      "rqe_number": "12345",
+      "residency_status": "COMPLETED"
+    }
+  ],
+  "educations": [
+    {
+      "id": "uuid",
+      "qualification_id": "uuid",
+      "level": "SPECIALIZATION",
+      "course_name": "Residência em Cardiologia",
+      "institution": "USP",
+      "is_completed": true
+    }
+  ],
+  "companies": [
+    {
+      "id": "uuid",
+      "company_id": "uuid",
+      "cnpj": "12345678000199",
+      "legal_name": "Empresa Médica LTDA"
+    }
+  ],
+  "bank_accounts": [
+    {
+      "id": "uuid",
+      "bank_code": "001",
+      "agency": "1234",
+      "account_number": "12345-6",
+      "is_primary": true,
+      "pix_key": "joao@email.com"
+    }
+  ]
+}
+```
+
+### professional_change_diffs
+
+Registro granular de cada alteração feita em uma versão.
+
+| Campo | Tipo | Nullable | Descrição |
+|-------|------|----------|-----------|
+| id | UUID (v7) | ❌ | Primary key |
+| version_id | UUID | ❌ | FK para professional_versions |
+| field_path | VARCHAR(255) | ❌ | Caminho do campo alterado |
+| old_value | JSONB | ✅ | Valor anterior |
+| new_value | JSONB | ✅ | Novo valor |
+| change_type | ChangeType | ❌ | ADDED/MODIFIED/REMOVED |
+| created_at | TIMESTAMP | ❌ | Timestamp de criação |
+
+**Exemplos de field_path:**
+- `personal_info.full_name`
+- `qualifications[0].council_number`
+- `specialties[1]` (quando adicionado/removido)
+- `bank_accounts[0].pix_key`
+
+**Índices:**
+- `ix_professional_change_diffs_version_id`
+- `ix_professional_change_diffs_field_path`
+- `ix_professional_change_diffs_version_field (version_id, field_path)`
+
+### Enums de Versionamento
+
+#### SourceType
+Origem de uma alteração nos dados do profissional.
+
+| Valor | Descrição |
+|-------|-----------|
+| DIRECT | Alteração direta via API/admin |
+| SCREENING | Alteração via processo de triagem |
+| IMPORT | Importação em lote |
+| API | Integração externa |
+
+#### ChangeType
+Tipo de mudança em um campo específico.
+
+| Valor | Descrição |
+|-------|-----------|
+| ADDED | Campo/entidade adicionado |
+| MODIFIED | Campo/entidade modificado |
+| REMOVED | Campo/entidade removido |
+
 ### Enums Financeiros (shared module)
 
 #### AccountType
@@ -537,16 +736,19 @@ Contas bancárias para pagamentos.
 src/modules/professionals/domain/models/
 ├── __init__.py
 ├── enums.py                        # Enums do módulo
-├── specialty.py                    # Catálogo de especialidades
 ├── organization_professional.py    # Profissional por organização (multi-tenant)
 ├── professional_qualification.py   # Qualificações (com conselho)
 ├── professional_specialty.py       # Especialidades do profissional
 ├── professional_education.py       # Histórico educacional
 ├── professional_document.py        # Documentos do profissional
-└── professional_company.py         # Junção profissional-empresa
+├── professional_company.py         # Junção profissional-empresa
+├── professional_version.py         # Versionamento de dados (Event Sourcing)
+├── professional_change_diff.py     # Diffs granulares de alterações
+└── version_snapshot.py             # TypedDict para estrutura do data_snapshot
 
 src/shared/domain/models/
 ├── enums.py                        # AccountType, PixKeyType
+├── specialty.py                    # Catálogo de especialidades
 ├── company.py                      # Empresas (PJ)
 ├── bank.py                         # Catálogo de bancos
 └── bank_account.py                 # Contas bancárias

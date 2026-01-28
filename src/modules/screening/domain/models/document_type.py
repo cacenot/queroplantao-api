@@ -17,8 +17,8 @@ from src.shared.domain.models.mixins import (
 )
 
 if TYPE_CHECKING:
-    from src.modules.screening.domain.models.screening_required_document import (
-        ScreeningRequiredDocument,
+    from src.modules.screening.domain.models.screening_document import (
+        ScreeningDocument,
     )
 
 
@@ -143,6 +143,6 @@ class DocumentTypeConfig(
     )
 
     # Relationships
-    required_documents: list["ScreeningRequiredDocument"] = Relationship(
+    screening_documents: list["ScreeningDocument"] = Relationship(
         back_populates="document_type_config",
     )

@@ -30,6 +30,9 @@ if TYPE_CHECKING:
     from src.modules.professionals.domain.models.professional_qualification import (
         ProfessionalQualification,
     )
+    from src.modules.professionals.domain.models.professional_version import (
+        ProfessionalVersion,
+    )
     from src.shared.domain.models.bank_account import BankAccount
 
 
@@ -170,5 +173,11 @@ class OrganizationProfessional(
         back_populates="professional"
     )
     bank_accounts: list["BankAccount"] = Relationship(back_populates="professional")
+    versions: list["ProfessionalVersion"] = Relationship(
+        back_populates="professional",
+        sa_relationship_kwargs={
+            "order_by": "ProfessionalVersion.version_number.desc()"
+        },
+    )
     # Note: contracts and screening_processes relationships are defined on ProfessionalContract and ScreeningProcess
     # to avoid circular import issues

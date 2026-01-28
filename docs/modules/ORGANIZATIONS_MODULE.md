@@ -28,15 +28,21 @@ O módulo de organizações gerencia a estrutura hierárquica de hospitais, clí
 │          ├──────────────────1:N──────────────────┐                                      │
 │          │                                       │                                      │
 │          ▼                                       ▼                                      │
-│  ┌──────────────────┐                  ┌──────────────────────────┐                     │
-│  │ OrganizationMember│                 │ OrganizationProfessional │                     │
-│  │   (User + Role)   │                 │     (multi-tenant)       │                     │
-│  └──────────────────┘                  └──────────────────────────┘                     │
+│  ┌───────────────────────┐             ┌──────────────────────────┐                     │
+│  │OrganizationMembership │             │ OrganizationProfessional │                     │
+│  │  (User + Role + FK)   │             │     (multi-tenant)       │                     │
+│  └───────────────────────┘             └──────────────────────────┘                     │
 │          │                                                                              │
 │         N:1                                                                             │
 │          ▼                                                                              │
 │  ┌──────────────────┐                                                                   │
 │  │       User       │                                                                   │
+│  └──────────────────┘                                                                   │
+│          │                                                                              │
+│         N:1                                                                             │
+│          ▼                                                                              │
+│  ┌──────────────────┐                                                                   │
+│  │       Role       │                                                                   │
 │  └──────────────────┘                                                                   │
 │                                                                                         │
 │  ┌──────────────────────────────────────────────────────────────────────────────────┐   │
@@ -67,16 +73,16 @@ Tipos de organizações de saúde.
 | OUTSOURCING_COMPANY | Empresa Terceirizadora / Licitadora |
 | OTHER | Outros |
 
-### MemberRole
-Papéis para membros da organização.
+### Organization Roles (Seeded)
+Papéis para membros da organização. Definidos na tabela `roles` com `is_system = true`.
 
-| Valor | Descrição | Permissões |
-|-------|-----------|------------|
-| OWNER | Proprietário | Acesso total, pode deletar org |
-| ADMIN | Administrador | Gerencia membros e configurações |
-| MANAGER | Gestor | Gerencia escalas e plantões |
-| SCHEDULER | Escalista | Cria/edita escalas |
-| VIEWER | Visualizador | Apenas leitura |
+| Code | Name | Descrição |
+|------|------|-----------|
+| ORG_OWNER | Organization Owner | Acesso total, pode deletar org |
+| ORG_ADMIN | Organization Admin | Gerencia membros e configurações |
+| ORG_MANAGER | Organization Manager | Gerencia escalas e plantões |
+| ORG_SCHEDULER | Organization Scheduler | Cria/edita escalas |
+| ORG_VIEWER | Organization Viewer | Apenas leitura |
 
 ### DataScopePolicy (Runtime)
 Define o escopo de busca de dados entre organizações da mesma família. Este enum é usado no nível de aplicação (não armazenado em banco).
@@ -125,18 +131,21 @@ Organizações de saúde (hospitais, clínicas, terceirizadoras).
 - Se `parent_id IS NOT NULL` → organização filha (NÃO pode ter filhas)
 - Validação no application layer: `parent.parent_id` deve ser NULL
 
-### organization_members
+### organization_memberships
 
-Membros (usuários) vinculados a organizações.
+Membros (usuários) vinculados a organizações com roles específicas.
 
 | Campo | Tipo | Nullable | Descrição |
 |-------|------|----------|-----------|
 | id | UUID (v7) | ❌ | Primary key |
 | user_id | UUID | ❌ | FK para users |
 | organization_id | UUID | ❌ | FK para organizations |
-| role | MemberRole | ❌ | Papel do membro |
+| role_id | UUID | ❌ | FK para roles |
+| granted_by | UUID | ✅ | FK para users (quem concedeu) |
 | invited_at | TIMESTAMP | ✅ | Quando foi convidado |
 | accepted_at | TIMESTAMP | ✅ | Quando aceitou |
+| granted_at | TIMESTAMP | ❌ | Quando a role foi concedida (default: now) |
+| expires_at | TIMESTAMP | ✅ | Quando a role expira (null = permanente) |
 | is_active | BOOLEAN | ❌ | Status ativo/inativo |
 | **Tracking (TrackingMixin)** | | | |
 | created_by, updated_by | | ✅ | |
@@ -144,11 +153,10 @@ Membros (usuários) vinculados a organizações.
 | created_at, updated_at | | | |
 
 **Constraints:**
-- UNIQUE(user_id, organization_id)
+- UNIQUE(user_id, organization_id, role_id)
 
 **Índices de Performance:**
-- `ix_organization_members_user_id` - busca por membros de um usuário
-- `ix_organization_members_organization_id` - busca por membros de uma organização
+- Índices padrão para FKs
 
 ## Tabelas Relacionadas (Outros Módulos)
 
@@ -177,9 +185,11 @@ Membros (usuários) vinculados a organizações.
 ### Membros e Permissões
 
 1. Um usuário pode ser membro de múltiplas organizações
-2. O `role` define o que o membro pode fazer (OWNER > ADMIN > MANAGER > SCHEDULER > VIEWER)
-3. `invited_at` + `accepted_at` = NULL → acesso imediato (adicionado diretamente)
-4. `invited_at` NOT NULL + `accepted_at` = NULL → convite pendente
+2. Um usuário pode ter múltiplas roles na mesma organização
+3. Roles são definidas na tabela `roles` e vinculadas via `role_id` (não mais enum)
+4. `invited_at` + `accepted_at` = NULL → acesso imediato (adicionado diretamente)
+5. `invited_at` NOT NULL + `accepted_at` = NULL → convite pendente
+6. `expires_at` permite roles temporárias (ex: acesso por projeto)
 
 ### Company vs Organization
 
@@ -192,9 +202,9 @@ Membros (usuários) vinculados a organizações.
 ```
 src/modules/organizations/domain/models/
 ├── __init__.py
-├── enums.py                  # OrganizationType, MemberRole, SharingScope
-├── organization.py           # Organization model
-└── organization_member.py    # OrganizationMember model
+├── enums.py                      # OrganizationType, DataScopePolicy
+├── organization.py               # Organization model
+└── organization_membership.py    # OrganizationMembership model (roles via FK)
 ```
 
 ## Mixins Utilizados

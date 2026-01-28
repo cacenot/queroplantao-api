@@ -2,7 +2,7 @@ import os
 import sys
 from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config
+from sqlalchemy import engine_from_config, text
 from sqlalchemy import pool
 
 from alembic import context
@@ -27,16 +27,17 @@ config.set_main_option("sqlalchemy.url", settings.database_url_sync)
 
 # Import models for autogenerate support
 # Order matters! Import modules with dependencies after their dependents
+# Use direct model imports to avoid loading presentation/routes that may have broken schemas
 
-from src.modules.users.domain import models as users_models  # noqa: E402, F401
-from src.modules.professionals.domain import models as professionals_models  # noqa: E402, F401
-from src.modules.organizations.domain import models as organizations_models  # noqa: E402, F401
-from src.modules.units.domain import models as units_models  # noqa: E402, F401
-from src.modules.contracts.domain import models as contracts_models  # noqa: E402, F401
-from src.modules.screening.domain import models as screening_models  # noqa: E402, F401
+from src.modules.users.domain.models import *  # noqa: E402, F401, F403
+from src.modules.professionals.domain.models import *  # noqa: E402, F401, F403
+from src.modules.organizations.domain.models import *  # noqa: E402, F401, F403
+from src.modules.units.domain.models import *  # noqa: E402, F401, F403
+from src.modules.contracts.domain.models import *  # noqa: E402, F401, F403
+from src.modules.screening.domain.models import *  # noqa: E402, F401, F403
 
 # Import shared models AFTER contracts (BankAccount references ProfessionalContract)
-from src.shared.domain import models as shared_models  # noqa: E402, F401
+from src.shared.domain.models import *  # noqa: E402, F401, F403
 
 # Import SQLModel metadata
 from sqlmodel import SQLModel  # noqa: E402
@@ -88,6 +89,20 @@ def run_migrations_online() -> None:
     )
 
     with connectable.connect() as connection:
+        # Create required extensions BEFORE transactional migrations
+        # These need to be committed separately to be visible in the same session
+        connection.execute(text("CREATE EXTENSION IF NOT EXISTS unaccent"))
+        connection.execute(text("CREATE EXTENSION IF NOT EXISTS pg_trgm"))
+        connection.execute(
+            text("""
+            CREATE OR REPLACE FUNCTION f_unaccent(text)
+            RETURNS text AS $$
+            SELECT unaccent($1)
+            $$ LANGUAGE SQL IMMUTABLE PARALLEL SAFE STRICT
+        """)
+        )
+        connection.commit()
+
         context.configure(connection=connection, target_metadata=target_metadata)
 
         with context.begin_transaction():

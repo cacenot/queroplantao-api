@@ -9,26 +9,60 @@ class StepType(str, Enum):
 
     Each step corresponds to a specific data collection or review phase
     in the professional screening process.
+
+    Order (fixed for MVP):
+    1. CONVERSATION - Initial phone call (required)
+    2. PROFESSIONAL_DATA - Personal + qualification + specialties + education (required)
+    3. DOCUMENT_UPLOAD - Upload documents (required)
+    4. DOCUMENT_REVIEW - Review uploaded documents (required)
+    5. PAYMENT_INFO - Bank account + company if PJ (optional)
+    6. SUPERVISOR_REVIEW - Escalated review (optional)
+    7. CLIENT_VALIDATION - Client approval (optional)
     """
 
-    # Initial conversation phase
-    CONVERSATION = "CONVERSATION"  # Pre-screening phone call
+    # Initial conversation phase (required)
+    CONVERSATION = "CONVERSATION"
 
-    # Data collection phases (can be separate or grouped)
-    PROFESSIONAL_DATA = "PROFESSIONAL_DATA"  # Personal data (CPF, address, etc.)
-    QUALIFICATION = "QUALIFICATION"  # Professional license/council registration
-    SPECIALTY = "SPECIALTY"  # Medical specialties
-    EDUCATION = "EDUCATION"  # Complementary education
-    DOCUMENT_UPLOAD = "DOCUMENT_UPLOAD"  # Document uploads by professional
-    COMPANY = "COMPANY"  # PJ company data
-    BANK_ACCOUNT = "BANK_ACCOUNT"  # Bank account data
+    # Professional data collection (required)
+    # Includes: personal info, qualification, specialties, education
+    PROFESSIONAL_DATA = "PROFESSIONAL_DATA"
 
-    # Review phases
-    DOCUMENT_REVIEW = "DOCUMENT_REVIEW"  # Document verification by reviewer
-    SUPERVISOR_REVIEW = "SUPERVISOR_REVIEW"  # Escalated review by supervisor
+    # Document phases (required)
+    DOCUMENT_UPLOAD = "DOCUMENT_UPLOAD"
+    DOCUMENT_REVIEW = "DOCUMENT_REVIEW"
 
-    # Client validation (optional)
-    CLIENT_VALIDATION = "CLIENT_VALIDATION"  # Client company approval step
+    # Payment info (optional)
+    # Includes: bank account + company (if PJ)
+    PAYMENT_INFO = "PAYMENT_INFO"
+
+    # Review phases (optional)
+    SUPERVISOR_REVIEW = "SUPERVISOR_REVIEW"
+    CLIENT_VALIDATION = "CLIENT_VALIDATION"
+
+
+class SourceType(str, Enum):
+    """
+    Source of a professional version change.
+
+    Tracks how/where the change originated for audit purposes.
+    """
+
+    DIRECT = "DIRECT"  # Direct API call (update endpoint)
+    SCREENING = "SCREENING"  # Change via screening process
+    IMPORT = "IMPORT"  # Bulk import
+    API = "API"  # External API integration
+
+
+class ChangeType(str, Enum):
+    """
+    Type of change in a professional version diff.
+
+    Used in ProfessionalChangeDiff to categorize field changes.
+    """
+
+    ADDED = "ADDED"  # New field/entity added
+    MODIFIED = "MODIFIED"  # Existing field/entity modified
+    REMOVED = "REMOVED"  # Field/entity removed
 
 
 class ScreeningStatus(str, Enum):
@@ -36,7 +70,7 @@ class ScreeningStatus(str, Enum):
     Status of a screening process throughout its lifecycle.
 
     Tracks the overall macro state of the screening from creation to completion.
-    Detailed progress is tracked via current_step_type + StepStatus.
+    Detailed progress is tracked via the status of each configured step.
     """
 
     DRAFT = "DRAFT"  # Created but not started
@@ -63,17 +97,27 @@ class StepStatus(str, Enum):
     CORRECTION_NEEDED = "CORRECTION_NEEDED"  # Needs correction after review
 
 
-class DocumentReviewStatus(str, Enum):
+class ScreeningDocumentStatus(str, Enum):
     """
-    Status of an individual document review.
+    Status of a document in the screening workflow.
 
-    Each uploaded document is reviewed individually with one of these statuses.
+    Tracks the full lifecycle from requirement to approval.
     """
 
-    PENDING = "PENDING"  # Awaiting verification
+    # Initial state - waiting for professional to upload
+    PENDING_UPLOAD = "PENDING_UPLOAD"
+
+    # Uploaded, waiting for review
+    PENDING_REVIEW = "PENDING_REVIEW"
+
+    # Review outcomes
     APPROVED = "APPROVED"  # Document approved
     REJECTED = "REJECTED"  # Document rejected, needs re-upload
-    ALERT = "ALERT"  # Alert flag, requires supervisor attention
+    ALERT = "ALERT"  # Requires supervisor attention
+
+    # Special states
+    REUSED = "REUSED"  # Document reused from a previous screening
+    SKIPPED = "SKIPPED"  # Optional document explicitly skipped
 
 
 class ConversationOutcome(str, Enum):
@@ -96,17 +140,3 @@ class ClientValidationOutcome(str, Enum):
 
     APPROVED = "APPROVED"  # Client approved the professional
     REJECTED = "REJECTED"  # Client rejected the professional
-
-
-class RequiredDocumentStatus(str, Enum):
-    """
-    Status of a required document in the screening process.
-
-    Tracks the lifecycle of each document from upload request to approval.
-    """
-
-    PENDING_UPLOAD = "PENDING_UPLOAD"  # Waiting for document upload
-    UPLOADED = "UPLOADED"  # Document uploaded, awaiting review
-    APPROVED = "APPROVED"  # Document approved by reviewer
-    REJECTED = "REJECTED"  # Document rejected, needs re-upload
-    CORRECTION_NEEDED = "CORRECTION_NEEDED"  # Returned for correction after rejection

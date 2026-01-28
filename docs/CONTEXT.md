@@ -173,9 +173,9 @@ Organização (Organization)
 
 > **Nota:** O esquema detalhado de cada módulo está nos documentos específicos:
 > - [AUTH_MODULE.md](modules/AUTH_MODULE.md) - Tabelas: users, permissions, roles, role_permissions, user_roles, user_permissions
-> - [PROFESSIONALS_MODULE.md](modules/PROFESSIONALS_MODULE.md) - Tabelas: specialties, organization_professionals, professional_qualifications, professional_specialties, professional_educations, professional_documents, professional_companies
-> - [ORGANIZATIONS_MODULE.md](modules/ORGANIZATIONS_MODULE.md) - Tabelas: organizations, organization_members, companies, banks, bank_accounts
-> - [SCREENING_MODULE.md](modules/SCREENING_MODULE.md) - Tabelas: screening_templates, screening_template_steps, screening_processes, screening_process_steps, screening_required_documents, screening_document_reviews
+> - [PROFESSIONALS_MODULE.md](modules/PROFESSIONALS_MODULE.md) - Tabelas: specialties, organization_professionals, professional_qualifications, professional_specialties, professional_educations, professional_documents, professional_companies, professional_versions, professional_change_diffs
+> - [ORGANIZATIONS_MODULE.md](modules/ORGANIZATIONS_MODULE.md) - Tabelas: organizations, organization_memberships, companies, banks, bank_accounts
+> - [SCREENING_MODULE.md](modules/SCREENING_MODULE.md) - Tabelas: screening_processes, 7 step tables (conversation, professional_data, document_upload, document_review, payment_info, supervisor_review, client_validation), screening_documents, document_type_configs, organization_screening_settings
 
 Os demais módulos (Shifts, Job Postings, etc.) serão documentados conforme forem implementados.
 
@@ -339,5 +339,9 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";  -- UUID (fallback)
 | Geofence | Cerca Virtual | Área permitida para ponto |
 | Multi-Tenant | Multi-Inquilino | Isolamento de dados por organização |
 | Screening | Triagem | Processo de coleta e validação de dados/documentos de profissionais |
-| Screening Template | Modelo de Triagem | Template configurável com etapas para triagem |
+| Screening Process | Processo de Triagem | Instância de uma triagem para um profissional |
+| Screening Step | Etapa de Triagem | Uma das 7 etapas fixas do fluxo de triagem |
 | Document Review | Verificação de Documento | Revisão individual de documentos enviados |
+| Professional Version | Versão do Profissional | Snapshot completo dos dados em um momento no tempo |
+| Change Diff | Diferença de Alteração | Registro granular de uma mudança específica |
+| Event Sourcing | Sourcing de Eventos | Padrão de armazenar histórico como sequência de eventos/versões |

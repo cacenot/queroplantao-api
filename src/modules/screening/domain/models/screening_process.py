@@ -26,14 +26,26 @@ if TYPE_CHECKING:
     from src.modules.professionals.domain.models.organization_professional import (
         OrganizationProfessional,
     )
-    from src.modules.screening.domain.models.screening_document_review import (
-        ScreeningDocumentReview,
+    from src.modules.screening.domain.models.steps.client_validation_step import (
+        ClientValidationStep,
     )
-    from src.modules.screening.domain.models.screening_process_step import (
-        ScreeningProcessStep,
+    from src.modules.screening.domain.models.steps.conversation_step import (
+        ConversationStep,
     )
-    from src.modules.screening.domain.models.screening_required_document import (
-        ScreeningRequiredDocument,
+    from src.modules.screening.domain.models.steps.document_review_step import (
+        DocumentReviewStep,
+    )
+    from src.modules.screening.domain.models.steps.document_upload_step import (
+        DocumentUploadStep,
+    )
+    from src.modules.screening.domain.models.steps.payment_info_step import (
+        PaymentInfoStep,
+    )
+    from src.modules.screening.domain.models.steps.professional_data_step import (
+        ProfessionalDataStep,
+    )
+    from src.modules.screening.domain.models.steps.supervisor_review_step import (
+        SupervisorReviewStep,
     )
     from src.shared.domain.models.company import Company
 
@@ -84,18 +96,13 @@ class ScreeningProcessBase(BaseModel):
     )
 
     # Process management
-    current_step_type: Optional[StepType] = Field(
-        default=None,
-        sa_type=SAEnum(StepType, name="step_type", create_constraint=True),
-        description="Current active step type",
-    )
     expires_at: Optional[AwareDatetime] = AwareDatetimeField(
         default=None,
         nullable=True,
         description="When this screening process expires",
     )
 
-    # Assignment
+    # Assignment (no FK - follows TrackingMixin pattern)
     owner_id: Optional[UUID] = Field(
         default=None,
         nullable=True,
@@ -128,7 +135,7 @@ class ScreeningProcessBase(BaseModel):
         description="Expected specialty ID (for doctors)",
     )
 
-    # Current actor tracking for "my pending screenings" filter
+    # Current actor tracking for "my pending screenings" filter (no FK)
     current_actor_id: Optional[UUID] = Field(
         default=None,
         nullable=True,
@@ -148,12 +155,14 @@ class ScreeningProcess(
     ScreeningProcess table model.
 
     Represents an individual screening instance for a professional.
+    Now with modular steps - only configured steps are created.
 
     Key behaviors:
     - If professional doesn't exist (by CPF in org), one is created automatically
     - Professional can access via secure token link (no auth required)
     - Internal users (gestores/escalistas) can also fill on behalf of professional
     - Can be linked to contracts for tracking which screening led to which contract
+    - Steps are optional 1:1 relationships - only exist if configured for this screening
 
     Workflow timestamps:
     - completed_at: When screening was approved/finalized
@@ -237,7 +246,9 @@ class ScreeningProcess(
         description="When screening was approved/finalized",
     )
 
-    # Relationships
+    # === Relationships ===
+
+    # Core entity relationships
     organization: "Organization" = Relationship()
     organization_professional: Optional["OrganizationProfessional"] = Relationship()
     professional_contract: Optional["ProfessionalContract"] = Relationship()
@@ -249,16 +260,112 @@ class ScreeningProcess(
             "foreign_keys": "[ScreeningProcess.client_company_id]",
         },
     )
-    steps: list["ScreeningProcessStep"] = Relationship(
+
+    # Step relationships (optional 1:1 - only exist if step is configured)
+    # Order: CONVERSATION -> PROFESSIONAL_DATA -> DOCUMENT_UPLOAD -> DOCUMENT_REVIEW
+    #        -> PAYMENT_INFO -> SUPERVISOR_REVIEW -> CLIENT_VALIDATION
+    conversation_step: Optional["ConversationStep"] = Relationship(
         back_populates="process",
-        sa_relationship_kwargs={"order_by": "ScreeningProcessStep.order"},
+        sa_relationship_kwargs={"uselist": False},
     )
-    required_documents: list["ScreeningRequiredDocument"] = Relationship(
+    professional_data_step: Optional["ProfessionalDataStep"] = Relationship(
         back_populates="process",
+        sa_relationship_kwargs={"uselist": False},
     )
-    document_reviews: list["ScreeningDocumentReview"] = Relationship(
+    document_upload_step: Optional["DocumentUploadStep"] = Relationship(
         back_populates="process",
+        sa_relationship_kwargs={"uselist": False},
     )
+    document_review_step: Optional["DocumentReviewStep"] = Relationship(
+        back_populates="process",
+        sa_relationship_kwargs={"uselist": False},
+    )
+    payment_info_step: Optional["PaymentInfoStep"] = Relationship(
+        back_populates="process",
+        sa_relationship_kwargs={"uselist": False},
+    )
+    supervisor_review_step: Optional["SupervisorReviewStep"] = Relationship(
+        back_populates="process",
+        sa_relationship_kwargs={"uselist": False},
+    )
+    client_validation_step: Optional["ClientValidationStep"] = Relationship(
+        back_populates="process",
+        sa_relationship_kwargs={"uselist": False},
+    )
+
+    # === Properties ===
+
+    @property
+    def active_steps(self) -> list:
+        """
+        Get list of steps that exist for this process, sorted by order.
+
+        Only returns steps that were actually configured/created for this screening.
+        Steps are returned in fixed order:
+        1. CONVERSATION (required)
+        2. PROFESSIONAL_DATA (required)
+        3. DOCUMENT_UPLOAD (required)
+        4. DOCUMENT_REVIEW (required)
+        5. PAYMENT_INFO (optional)
+        6. SUPERVISOR_REVIEW (optional)
+        7. CLIENT_VALIDATION (optional)
+        """
+        steps = []
+        if self.conversation_step:
+            steps.append(self.conversation_step)
+        if self.professional_data_step:
+            steps.append(self.professional_data_step)
+        if self.document_upload_step:
+            steps.append(self.document_upload_step)
+        if self.document_review_step:
+            steps.append(self.document_review_step)
+        if self.payment_info_step:
+            steps.append(self.payment_info_step)
+        if self.supervisor_review_step:
+            steps.append(self.supervisor_review_step)
+        if self.client_validation_step:
+            steps.append(self.client_validation_step)
+        return sorted(steps, key=lambda s: s.order)
+
+    @property
+    def step_types(self) -> list[StepType]:
+        """Get list of step types configured for this process."""
+        return [step.step_type for step in self.active_steps]
+
+    @property
+    def current_step(self):
+        """
+        Get the current active step (first non-completed step in order).
+
+        Returns None if all steps are completed.
+        """
+        for step in self.active_steps:
+            if not step.is_completed:
+                return step
+        return None
+
+    @property
+    def current_step_type(self) -> Optional[StepType]:
+        """Get the type of the current active step."""
+        step = self.current_step
+        return step.step_type if step else None
+
+    @property
+    def step_count(self) -> int:
+        """Get total number of configured steps."""
+        return len(self.active_steps)
+
+    @property
+    def completed_step_count(self) -> int:
+        """Get number of completed steps."""
+        return sum(1 for step in self.active_steps if step.is_completed)
+
+    @property
+    def progress_percentage(self) -> float:
+        """Get overall progress as percentage (0-100)."""
+        if self.step_count == 0:
+            return 100.0
+        return (self.completed_step_count / self.step_count) * 100
 
     @property
     def is_expired(self) -> bool:
@@ -291,3 +398,8 @@ class ScreeningProcess(
     def can_be_filled(self) -> bool:
         """Check if screening can still accept input."""
         return self.status == ScreeningStatus.IN_PROGRESS and not self.is_expired
+
+    @property
+    def all_steps_completed(self) -> bool:
+        """Check if all configured steps are completed."""
+        return all(step.is_completed for step in self.active_steps)
