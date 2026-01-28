@@ -87,12 +87,20 @@ export async function customFetch<T>(
 
         // Handle empty responses (204 No Content)
         if (response.status === 204) {
-            return undefined as T;
+            return {
+                data: undefined,
+                status: response.status,
+                headers: response.headers,
+            } as T;
         }
 
         // Parse JSON response and transform to camelCase
         const data = await response.json();
-        return toCamelCase<T>(data);
+        return {
+            data: toCamelCase(data),
+            status: response.status,
+            headers: response.headers,
+        } as T;
     } catch (error) {
         clearTimeout(timeoutId);
 
