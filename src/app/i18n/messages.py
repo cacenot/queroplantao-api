@@ -123,6 +123,7 @@ class ScreeningMessages(StrEnum):
     STEP_ALREADY_COMPLETED = "screening.step.already_completed"
     STEP_SKIPPED = "screening.step.skipped"
     STEP_NOT_IN_PROGRESS = "screening.step.not_in_progress"
+    STEP_NOT_PENDING = "screening.step.not_pending"
     STEP_INVALID_TYPE = "screening.step.invalid_type"
     STEP_CANNOT_GO_BACK = "screening.step.cannot_go_back"
     STEP_NOT_ASSIGNED_TO_USER = "screening.step.not_assigned_to_user"

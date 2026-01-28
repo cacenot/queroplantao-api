@@ -193,15 +193,16 @@ class ScreeningProcessDetailResponse(ScreeningProcessResponse):
     steps: Optional[list["StepSummaryResponse"]] = None
 
     # Documents (if needed for display)
-    required_documents: Optional[list["ScreeningRequiredDocumentResponse"]] = None
+    # NOTE: ScreeningRequiredDocumentResponse was renamed to ScreeningDocumentResponse
+    required_documents: Optional[list["ScreeningDocumentResponse"]] = None
 
 
 # Forward references
 from src.modules.screening.domain.schemas.screening_process_step import (  # noqa: E402
     StepSummaryResponse,
 )
-from src.modules.screening.domain.schemas.screening_required_document import (  # noqa: E402
-    ScreeningRequiredDocumentResponse,
+from src.modules.screening.domain.schemas.screening_document import (  # noqa: E402
+    ScreeningDocumentResponse,
 )
 
 ScreeningProcessDetailResponse.model_rebuild()

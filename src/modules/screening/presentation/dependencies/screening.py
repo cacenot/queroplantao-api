@@ -6,23 +6,27 @@ from fastapi import Depends
 
 from src.app.dependencies import SessionDep
 from src.modules.screening.use_cases import (
-    ApproveDocumentUseCase,
     CancelScreeningProcessUseCase,
     CreateScreeningProcessUseCase,
     FinalizeScreeningProcessUseCase,
     GetScreeningProcessByTokenUseCase,
     GetScreeningProcessUseCase,
-    KeepExistingDocumentUseCase,
     ListMyScreeningProcessesUseCase,
     ListScreeningProcessesUseCase,
-    RejectDocumentUseCase,
-    RemoveRequiredDocumentUseCase,
     ReuseDocumentUseCase,
     ReviewDocumentUseCase,
-    SelectDocumentsUseCase,
-    SkipClientValidationUseCase,
-    UploadScreeningDocumentUseCase,
 )
+
+# =============================================================================
+# NOTE: The following use cases don't exist and were never implemented:
+# - ApproveDocumentUseCase
+# - KeepExistingDocumentUseCase
+# - RejectDocumentUseCase
+# - RemoveRequiredDocumentUseCase
+# - SelectDocumentsUseCase
+# - UploadScreeningDocumentUseCase
+# - SkipClientValidationUseCase
+# =============================================================================
 
 
 # Process use case factories
@@ -74,46 +78,8 @@ def get_reuse_document_use_case(
     return ReuseDocumentUseCase(session)
 
 
-# Document use case factories
-def get_select_documents_use_case(session: SessionDep) -> SelectDocumentsUseCase:
-    return SelectDocumentsUseCase(session)
-
-
-def get_remove_required_document_use_case(
-    session: SessionDep,
-) -> RemoveRequiredDocumentUseCase:
-    return RemoveRequiredDocumentUseCase(session)
-
-
-def get_upload_screening_document_use_case(
-    session: SessionDep,
-) -> UploadScreeningDocumentUseCase:
-    return UploadScreeningDocumentUseCase(session)
-
-
-def get_keep_existing_document_use_case(
-    session: SessionDep,
-) -> KeepExistingDocumentUseCase:
-    return KeepExistingDocumentUseCase(session)
-
-
 def get_review_document_use_case(session: SessionDep) -> ReviewDocumentUseCase:
     return ReviewDocumentUseCase(session)
-
-
-def get_approve_document_use_case(session: SessionDep) -> ApproveDocumentUseCase:
-    return ApproveDocumentUseCase(session)
-
-
-def get_reject_document_use_case(session: SessionDep) -> RejectDocumentUseCase:
-    return RejectDocumentUseCase(session)
-
-
-# Validation use case factories
-def get_skip_client_validation_use_case(
-    session: SessionDep,
-) -> SkipClientValidationUseCase:
-    return SkipClientValidationUseCase(session)
 
 
 # Type aliases for dependency injection
@@ -140,27 +106,6 @@ FinalizeScreeningProcessUC = Annotated[
     FinalizeScreeningProcessUseCase, Depends(get_finalize_screening_process_use_case)
 ]
 ReuseDocumentUC = Annotated[ReuseDocumentUseCase, Depends(get_reuse_document_use_case)]
-SelectDocumentsUC = Annotated[
-    SelectDocumentsUseCase, Depends(get_select_documents_use_case)
-]
-RemoveRequiredDocumentUC = Annotated[
-    RemoveRequiredDocumentUseCase, Depends(get_remove_required_document_use_case)
-]
-UploadScreeningDocumentUC = Annotated[
-    UploadScreeningDocumentUseCase, Depends(get_upload_screening_document_use_case)
-]
-KeepExistingDocumentUC = Annotated[
-    KeepExistingDocumentUseCase, Depends(get_keep_existing_document_use_case)
-]
 ReviewDocumentUC = Annotated[
     ReviewDocumentUseCase, Depends(get_review_document_use_case)
-]
-ApproveDocumentUC = Annotated[
-    ApproveDocumentUseCase, Depends(get_approve_document_use_case)
-]
-RejectDocumentUC = Annotated[
-    RejectDocumentUseCase, Depends(get_reject_document_use_case)
-]
-SkipClientValidationUC = Annotated[
-    SkipClientValidationUseCase, Depends(get_skip_client_validation_use_case)
 ]

@@ -155,6 +155,20 @@ class ScreeningStepNotInProgressError(AppException):
         )
 
 
+class ScreeningStepNotPendingError(AppException):
+    """Raised when step is not pending (expected PENDING status)."""
+
+    def __init__(self, step_id: str, current_status: str) -> None:
+        super().__init__(
+            message=get_message(
+                ScreeningMessages.STEP_NOT_PENDING, status=current_status
+            ),
+            code=ScreeningErrorCodes.SCREENING_STEP_NOT_PENDING,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            details={"step_id": step_id, "current_status": current_status},
+        )
+
+
 class ScreeningStepInvalidTypeError(AppException):
     """Raised when step type doesn't match expected type for operation."""
 

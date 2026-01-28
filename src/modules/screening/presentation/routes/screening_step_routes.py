@@ -7,7 +7,7 @@ from fastapi import APIRouter, status
 from src.app.constants.error_codes import ScreeningErrorCodes
 from src.app.dependencies import OrganizationContext
 from src.modules.screening.domain.schemas import (
-    ClientValidationStepCompleteRequest,
+    # ClientValidationStepCompleteRequest,  # BROKEN - commented out
     ConversationStepCompleteRequest,
     DocumentReviewStepCompleteRequest,
     DocumentUploadStepCompleteRequest,
@@ -19,13 +19,13 @@ from src.modules.screening.domain.schemas.steps import (
     ProfessionalDataStepResponse,
 )
 from src.modules.screening.presentation.dependencies import (
-    CompleteClientValidationStepUC,
+    # CompleteClientValidationStepUC,  # BROKEN - commented out
     CompleteConversationStepUC,
     CompleteDocumentReviewStepUC,
     CompleteDocumentUploadStepUC,
     CompleteProfessionalDataStepUC,
     GoBackToStepUC,
-    SkipClientValidationUC,
+    # SkipClientValidationUC,  # BROKEN - commented out
 )
 from src.shared.domain.schemas import ErrorResponse
 
@@ -376,35 +376,17 @@ async def complete_document_review_step(
 
 
 # =============================================================================
-# CLIENT VALIDATION STEP (New endpoint)
+# CLIENT VALIDATION STEP - REMOVED (broken due to refactoring)
 # =============================================================================
-
-
-@router.post(
-    "/{screening_id}/steps/{step_id}/client-validation/complete",
-    response_model=ScreeningProcessStepResponse,
-    status_code=status.HTTP_200_OK,
-    summary="Finalizar validação do cliente (via step)",
-    description="Finaliza a etapa de validação pelo cliente com step_id específico.",
-    responses={
-        404: {"model": ErrorResponse, "description": "Não encontrado"},
-    },
-)
-async def complete_client_validation_step(
-    screening_id: UUID,
-    step_id: UUID,
-    data: ClientValidationStepCompleteRequest,
-    ctx: OrganizationContext,
-    use_case: CompleteClientValidationStepUC,
-) -> ScreeningProcessStepResponse:
-    """Complete the client validation step."""
-    return await use_case.execute(
-        organization_id=ctx.organization,
-        screening_id=screening_id,
-        step_id=step_id,
-        data=data,
-        completed_by=ctx.user,
-    )
+# The following endpoints have been removed because the underlying use cases
+# are broken and need reimplementation:
+# - POST /{screening_id}/steps/{step_id}/client-validation/complete
+# - POST /{screening_id}/client-validation/skip
+#
+# See the use case files for details on what needs to be reimplemented:
+# - src/modules/screening/use_cases/screening_step/client_validation_step_complete_use_case.py
+# - src/modules/screening/use_cases/screening_validation/screening_client_validation_use_case.py
+# =============================================================================
 
 
 # =============================================================================
@@ -451,31 +433,4 @@ async def go_back_to_step(
         screening_id=screening_id,
         target_step_id=step_id,
         requested_by=ctx.user,
-    )
-
-
-# =============================================================================
-# CLIENT VALIDATION SKIP
-# =============================================================================
-
-
-@router.post(
-    "/{screening_id}/client-validation/skip",
-    response_model=ScreeningProcessStepResponse,
-    status_code=status.HTTP_200_OK,
-    summary="Pular validação do cliente",
-    description="Pula a etapa de validação do cliente (quando não é obrigatória)",
-)
-async def skip_client_validation(
-    screening_id: UUID,
-    ctx: OrganizationContext,
-    use_case: SkipClientValidationUC,
-    reason: str | None = None,
-) -> ScreeningProcessStepResponse:
-    """Skip the client validation step."""
-    return await use_case.execute(
-        organization_id=ctx.organization,
-        screening_id=screening_id,
-        skipped_by=ctx.user,
-        reason=reason,
     )

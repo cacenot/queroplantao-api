@@ -5,13 +5,13 @@ from uuid import UUID
 from fastapi import APIRouter
 
 from src.modules.screening.domain.schemas import (
-    ScreeningDocumentUpload,
+    ScreeningDocumentResponse,
     ScreeningProcessDetailResponse,
-    ScreeningRequiredDocumentResponse,
+    UploadDocumentRequest,
 )
 from src.modules.screening.presentation.dependencies import (
     GetScreeningProcessByTokenUC,
-    UploadScreeningDocumentUC,
+    UploadDocumentUC,
 )
 
 router = APIRouter()
@@ -33,17 +33,17 @@ async def get_screening_by_token(
 
 @router.post(
     "/{token}/documents/{document_id}/upload",
-    response_model=ScreeningRequiredDocumentResponse,
+    response_model=ScreeningDocumentResponse,
     summary="Upload de documento (público)",
     description="Faz upload de um documento usando o token público",
 )
 async def upload_document_by_token(
     token: str,
     document_id: UUID,
-    data: ScreeningDocumentUpload,
+    data: UploadDocumentRequest,
     get_screening_use_case: GetScreeningProcessByTokenUC,
-    upload_use_case: UploadScreeningDocumentUC,
-) -> ScreeningRequiredDocumentResponse:
+    upload_use_case: UploadDocumentUC,
+) -> ScreeningDocumentResponse:
     """Upload a document using public token."""
     # First validate the token and get screening
     screening = await get_screening_use_case.execute(token=token)

@@ -1,8 +1,14 @@
 """Screening step use cases."""
 
-from src.modules.screening.use_cases.screening_step.client_validation_step_complete_use_case import (
-    CompleteClientValidationStepUseCase,
-)
+# =============================================================================
+# COMMENTED OUT - BROKEN DUE TO REFACTORING
+# CompleteClientValidationStepUseCase requires reimplementation
+# =============================================================================
+# from src.modules.screening.use_cases.screening_step.client_validation_step_complete_use_case import (
+#     CompleteClientValidationStepUseCase,
+# )
+# =============================================================================
+
 from src.modules.screening.use_cases.screening_step.conversation import (
     CompleteConversationStepUseCase,
 )
@@ -27,8 +33,8 @@ from src.modules.screening.use_cases.screening_step.step_go_back_use_case import
 CompleteSimpleStepUseCase = CompleteProfessionalDataStepUseCase
 
 __all__ = [
-    # Client Validation
-    "CompleteClientValidationStepUseCase",
+    # Client Validation - COMMENTED OUT (broken)
+    # "CompleteClientValidationStepUseCase",
     # Conversation
     "CompleteConversationStepUseCase",
     # Document Review

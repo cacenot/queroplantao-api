@@ -6,7 +6,7 @@ from fastapi import Depends
 
 from src.app.dependencies import SessionDep
 from src.modules.screening.use_cases.screening_step import (
-    CompleteClientValidationStepUseCase,
+    # CompleteClientValidationStepUseCase,  # BROKEN - commented out
     CompleteDocumentReviewStepUseCase,
     CompleteDocumentUploadStepUseCase,
     GoBackToStepUseCase,
@@ -47,11 +47,16 @@ def get_complete_document_review_step_use_case(
     return CompleteDocumentReviewStepUseCase(session)
 
 
-def get_complete_client_validation_step_use_case(
-    session: SessionDep,
-) -> CompleteClientValidationStepUseCase:
-    """Factory for CompleteClientValidationStepUseCase."""
-    return CompleteClientValidationStepUseCase(session)
+# =============================================================================
+# COMMENTED OUT - BROKEN DUE TO REFACTORING
+# CompleteClientValidationStepUseCase needs reimplementation
+# =============================================================================
+# def get_complete_client_validation_step_use_case(
+#     session: SessionDep,
+# ) -> CompleteClientValidationStepUseCase:
+#     """Factory for CompleteClientValidationStepUseCase."""
+#     return CompleteClientValidationStepUseCase(session)
+# =============================================================================
 
 
 def get_go_back_to_step_use_case(session: SessionDep) -> GoBackToStepUseCase:
@@ -80,10 +85,14 @@ CompleteDocumentReviewStepUC = Annotated[
     Depends(get_complete_document_review_step_use_case),
 ]
 
-CompleteClientValidationStepUC = Annotated[
-    CompleteClientValidationStepUseCase,
-    Depends(get_complete_client_validation_step_use_case),
-]
+# =============================================================================
+# COMMENTED OUT - BROKEN DUE TO REFACTORING
+# =============================================================================
+# CompleteClientValidationStepUC = Annotated[
+#     CompleteClientValidationStepUseCase,
+#     Depends(get_complete_client_validation_step_use_case),
+# ]
+# =============================================================================
 
 GoBackToStepUC = Annotated[
     GoBackToStepUseCase,

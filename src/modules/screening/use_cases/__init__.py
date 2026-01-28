@@ -11,32 +11,32 @@ from src.modules.screening.use_cases.screening_process import (
     ListScreeningProcessesUseCase,
 )
 
-# Screening Step use cases (new specific use cases)
+# Screening Step use cases
+# NOTE: CompleteClientValidationStepUseCase is commented out (broken - needs reimplementation)
 from src.modules.screening.use_cases.screening_step import (
-    CompleteClientValidationStepUseCase,
+    # CompleteClientValidationStepUseCase,  # BROKEN
     CompleteConversationStepUseCase,
     CompleteDocumentReviewStepUseCase,
     CompleteDocumentUploadStepUseCase,
     CompleteSimpleStepUseCase,
+    ConfigureDocumentsUseCase,
     GoBackToStepUseCase,
     ReuseDocumentUseCase,
-)
-
-# Screening Document use cases
-from src.modules.screening.use_cases.screening_document import (
-    ApproveDocumentUseCase,
-    KeepExistingDocumentUseCase,
-    RejectDocumentUseCase,
-    RemoveRequiredDocumentUseCase,
     ReviewDocumentUseCase,
-    SelectDocumentsUseCase,
-    UploadScreeningDocumentUseCase,
+    UploadDocumentUseCase,
 )
 
-# Screening Client Validation use cases
-from src.modules.screening.use_cases.screening_validation import (
-    SkipClientValidationUseCase,
-)
+# =============================================================================
+# COMMENTED OUT - Module does not exist yet
+# These use cases were planned but never implemented:
+# - ApproveDocumentUseCase
+# - KeepExistingDocumentUseCase
+# - RejectDocumentUseCase
+# - RemoveRequiredDocumentUseCase
+# - SelectDocumentsUseCase
+# - UploadScreeningDocumentUseCase
+# - SkipClientValidationUseCase
+# =============================================================================
 
 __all__ = [
     # Process
@@ -48,21 +48,14 @@ __all__ = [
     "ListMyScreeningProcessesUseCase",
     "ListScreeningProcessesUseCase",
     # Steps (specific use cases)
-    "CompleteClientValidationStepUseCase",
+    # "CompleteClientValidationStepUseCase",  # BROKEN
     "CompleteConversationStepUseCase",
     "CompleteDocumentReviewStepUseCase",
     "CompleteDocumentUploadStepUseCase",
     "CompleteSimpleStepUseCase",
+    "ConfigureDocumentsUseCase",
     "GoBackToStepUseCase",
     "ReuseDocumentUseCase",
-    # Documents
-    "ApproveDocumentUseCase",
-    "KeepExistingDocumentUseCase",
-    "RejectDocumentUseCase",
-    "RemoveRequiredDocumentUseCase",
     "ReviewDocumentUseCase",
-    "SelectDocumentsUseCase",
-    "UploadScreeningDocumentUseCase",
-    # Validation
-    "SkipClientValidationUseCase",
+    "UploadDocumentUseCase",
 ]

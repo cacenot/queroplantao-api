@@ -1,22 +1,15 @@
 """Screening dependencies."""
 
 from src.modules.screening.presentation.dependencies.screening import (
-    ApproveDocumentUC,
     CancelScreeningProcessUC,
     CreateScreeningProcessUC,
     FinalizeScreeningProcessUC,
     GetScreeningProcessByTokenUC,
     GetScreeningProcessUC,
-    KeepExistingDocumentUC,
     ListMyScreeningProcessesUC,
     ListScreeningProcessesUC,
-    RejectDocumentUC,
-    RemoveRequiredDocumentUC,
     ReuseDocumentUC,
     ReviewDocumentUC,
-    SelectDocumentsUC,
-    SkipClientValidationUC,
-    UploadScreeningDocumentUC,
 )
 from src.modules.screening.presentation.dependencies.screening_document import (
     ConfigureDocumentsUC,
@@ -24,7 +17,7 @@ from src.modules.screening.presentation.dependencies.screening_document import (
     UploadDocumentUC,
 )
 from src.modules.screening.presentation.dependencies.screening_step import (
-    CompleteClientValidationStepUC,
+    # CompleteClientValidationStepUC,  # BROKEN - commented out
     CompleteConversationStepUC,
     CompleteDocumentReviewStepUC,
     CompleteDocumentUploadStepUC,
@@ -32,25 +25,29 @@ from src.modules.screening.presentation.dependencies.screening_step import (
     GoBackToStepUC,
 )
 
+# =============================================================================
+# NOTE: The following type aliases don't exist (use cases never implemented):
+# - ApproveDocumentUC
+# - KeepExistingDocumentUC
+# - RejectDocumentUC
+# - RemoveRequiredDocumentUC
+# - SelectDocumentsUC
+# - SkipClientValidationUC
+# - UploadScreeningDocumentUC
+# =============================================================================
+
 __all__ = [
-    "ApproveDocumentUC",
     "CancelScreeningProcessUC",
     "CreateScreeningProcessUC",
     "FinalizeScreeningProcessUC",
     "GetScreeningProcessByTokenUC",
     "GetScreeningProcessUC",
-    "KeepExistingDocumentUC",
     "ListMyScreeningProcessesUC",
     "ListScreeningProcessesUC",
-    "RejectDocumentUC",
-    "RemoveRequiredDocumentUC",
     "ReuseDocumentUC",
     "ReviewDocumentUC",
-    "SelectDocumentsUC",
-    "SkipClientValidationUC",
-    "UploadScreeningDocumentUC",
     # Step-specific dependencies
-    "CompleteClientValidationStepUC",
+    # "CompleteClientValidationStepUC",  # BROKEN - commented out
     "CompleteConversationStepUC",
     "CompleteDocumentReviewStepUC",
     "CompleteDocumentUploadStepUC",

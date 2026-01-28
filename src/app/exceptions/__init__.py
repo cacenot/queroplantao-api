@@ -71,6 +71,7 @@ from src.app.exceptions.screening_exceptions import (
     ScreeningStepNotAssignedToUserError,
     ScreeningStepNotFoundError,
     ScreeningStepNotInProgressError,
+    ScreeningStepNotPendingError,
     ScreeningStepSkippedError,
 )
 from src.app.exceptions.user_exceptions import (
@@ -158,6 +159,7 @@ __all__ = [
     "ScreeningStepNotAssignedToUserError",
     "ScreeningStepNotFoundError",
     "ScreeningStepNotInProgressError",
+    "ScreeningStepNotPendingError",
     "ScreeningStepSkippedError",
     # User exceptions
     "CannotRemoveOwnerError",
