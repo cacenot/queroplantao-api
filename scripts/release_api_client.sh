@@ -98,7 +98,14 @@ if [[ ! $confirm =~ ^[Yy]$ ]]; then
 fi
 
 # Commit and tag
-git add packages/api-client/package.json
+git add packages/api-client
+
+if git diff --cached --quiet; then
+  echo -e "${RED}No changes to commit in packages/api-client.${NC}"
+  echo "Canceling release to avoid tagging without a commit."
+  exit 1
+fi
+
 git commit -m "chore(api-client): release v$NEW_VERSION"
 
 TAG_NAME="api-client-v$NEW_VERSION"
