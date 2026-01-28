@@ -8,6 +8,8 @@
  * - Timeout support
  */
 
+import humps from "humps";
+
 import {
     buildRequestHeaders,
     buildUrl,
@@ -15,6 +17,31 @@ import {
 } from "../utils/client-config.js";
 import { ApiClientError, extractApiError } from "../utils/errors.js";
 import { toCamelCase, toSnakeCase } from "./case-transformer.js";
+
+/**
+ * Transform query parameter names in a URL from camelCase to snake_case.
+ *
+ * @param url - URL with query parameters in camelCase
+ * @returns URL with query parameters in snake_case
+ */
+function transformQueryParamsToSnakeCase(url: string): string {
+    const [path, queryString] = url.split("?");
+
+    if (!queryString) {
+        return url;
+    }
+
+    const params = new URLSearchParams(queryString);
+    const transformedParams = new URLSearchParams();
+
+    params.forEach((value, key) => {
+        // Transform key to snake_case
+        const snakeKey = humps.decamelize(key);
+        transformedParams.append(snakeKey, value);
+    });
+
+    return `${path}?${transformedParams.toString()}`;
+}
 
 /**
  * Request options for customFetch.
@@ -40,10 +67,13 @@ export async function customFetch<T>(
     const config = getApiClientConfig();
     const { baseUrl: overrideBaseUrl, ...fetchOptions } = options;
 
+    // Transform query parameter names from camelCase to snake_case
+    const transformedUrl = transformQueryParamsToSnakeCase(url);
+
     // Build full URL
     const fullUrl = overrideBaseUrl
-        ? `${overrideBaseUrl}${url}`
-        : buildUrl(url);
+        ? `${overrideBaseUrl}${transformedUrl}`
+        : buildUrl(transformedUrl);
 
     // Build headers
     const configHeaders = await buildRequestHeaders();
