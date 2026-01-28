@@ -401,3 +401,92 @@ class CompanyAlreadyLinkedError(ProfessionalException):
             status_code=409,
             details=details,
         )
+
+
+# =============================================================================
+# Version Exceptions
+# =============================================================================
+
+
+class VersionNotFoundError(ProfessionalException):
+    """Professional version not found."""
+
+    def __init__(
+        self,
+        message: str | None = None,
+        details: dict[str, Any] | None = None,
+    ) -> None:
+        super().__init__(
+            message=message or get_message(ProfessionalMessages.VERSION_NOT_FOUND),
+            code=ProfessionalErrorCodes.VERSION_NOT_FOUND,
+            status_code=404,
+            details=details,
+        )
+
+
+class VersionAlreadyAppliedError(ProfessionalException):
+    """Version has already been applied."""
+
+    def __init__(
+        self,
+        message: str | None = None,
+        details: dict[str, Any] | None = None,
+    ) -> None:
+        super().__init__(
+            message=message
+            or get_message(ProfessionalMessages.VERSION_ALREADY_APPLIED),
+            code=ProfessionalErrorCodes.VERSION_ALREADY_APPLIED,
+            status_code=409,
+            details=details,
+        )
+
+
+class VersionAlreadyRejectedError(ProfessionalException):
+    """Version has already been rejected."""
+
+    def __init__(
+        self,
+        message: str | None = None,
+        details: dict[str, Any] | None = None,
+    ) -> None:
+        super().__init__(
+            message=message
+            or get_message(ProfessionalMessages.VERSION_ALREADY_REJECTED),
+            code=ProfessionalErrorCodes.VERSION_ALREADY_REJECTED,
+            status_code=409,
+            details=details,
+        )
+
+
+class VersionNotPendingError(ProfessionalException):
+    """Version is not in pending state."""
+
+    def __init__(
+        self,
+        message: str | None = None,
+        details: dict[str, Any] | None = None,
+    ) -> None:
+        super().__init__(
+            message=message or get_message(ProfessionalMessages.VERSION_NOT_PENDING),
+            code=ProfessionalErrorCodes.VERSION_NOT_PENDING,
+            status_code=422,
+            details=details,
+        )
+
+
+class VersionFeatureNotSupportedError(ProfessionalException):
+    """Snapshot feature is not yet supported."""
+
+    def __init__(
+        self,
+        feature: str,
+        details: dict[str, Any] | None = None,
+    ) -> None:
+        super().__init__(
+            message=get_message(
+                ProfessionalMessages.VERSION_FEATURE_NOT_SUPPORTED, feature=feature
+            ),
+            code=ProfessionalErrorCodes.VERSION_FEATURE_NOT_SUPPORTED,
+            status_code=501,
+            details=details,
+        )

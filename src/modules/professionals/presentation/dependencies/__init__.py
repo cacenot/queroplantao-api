@@ -63,6 +63,15 @@ from src.modules.professionals.presentation.dependencies.professional_specialty 
     UpdateProfessionalSpecialtyUC,
 )
 
+# ProfessionalVersion use case dependencies
+from src.modules.professionals.presentation.dependencies.professional_version import (
+    ApplyProfessionalVersionUC,
+    CreateProfessionalVersionUC,
+    GetProfessionalVersionUC,
+    ListProfessionalVersionsUC,
+    RejectProfessionalVersionUC,
+)
+
 
 __all__ = [
     # Context
@@ -107,4 +116,10 @@ __all__ = [
     "DeleteProfessionalSpecialtyUC",
     "GetProfessionalSpecialtyUC",
     "ListProfessionalSpecialtiesUC",
+    # ProfessionalVersion
+    "CreateProfessionalVersionUC",
+    "ApplyProfessionalVersionUC",
+    "RejectProfessionalVersionUC",
+    "GetProfessionalVersionUC",
+    "ListProfessionalVersionsUC",
 ]

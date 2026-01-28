@@ -43,6 +43,10 @@ from src.app.exceptions.professional_exceptions import (
     QualificationNotFoundError,
     SpecialtyAlreadyAssignedError,
     SpecialtyNotFoundError,
+    VersionAlreadyAppliedError,
+    VersionAlreadyRejectedError,
+    VersionFeatureNotSupportedError,
+    VersionNotFoundError,
 )
 from src.app.exceptions.screening_exceptions import (
     ScreeningConversationRejectedError,
@@ -121,6 +125,10 @@ __all__ = [
     "QualificationNotFoundError",
     "SpecialtyAlreadyAssignedError",
     "SpecialtyNotFoundError",
+    "VersionAlreadyAppliedError",
+    "VersionAlreadyRejectedError",
+    "VersionFeatureNotSupportedError",
+    "VersionNotFoundError",
     # Screening exceptions
     "ScreeningConversationRejectedError",
     "ScreeningDocumentsMissingRequiredError",

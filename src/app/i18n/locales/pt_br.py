@@ -79,6 +79,12 @@ MESSAGES: dict[str, str] = {
     ProfessionalMessages.SPECIALTY_NOT_FOUND: "Especialidade não encontrada",
     ProfessionalMessages.COMPANY_NOT_FOUND: "Empresa não encontrada",
     ProfessionalMessages.EDUCATION_NOT_FOUND: "Formação não encontrada",
+    # Version errors
+    ProfessionalMessages.VERSION_NOT_FOUND: "Versão do profissional não encontrada",
+    ProfessionalMessages.VERSION_ALREADY_APPLIED: "Esta versão já foi aplicada",
+    ProfessionalMessages.VERSION_ALREADY_REJECTED: "Esta versão já foi rejeitada",
+    ProfessionalMessages.VERSION_NOT_PENDING: "Esta versão não está pendente de aprovação",
+    ProfessionalMessages.VERSION_FEATURE_NOT_SUPPORTED: "Funcionalidade do snapshot ainda não suportada: {feature}",
     # ==========================================================================
     # User messages
     # ==========================================================================
@@ -167,6 +173,7 @@ RESOURCE_NAMES: dict[str, str] = {
     "ProfessionalDocument": "Documento",
     "ProfessionalEducation": "Formação",
     "ProfessionalCompany": "Vínculo com empresa",
+    "ProfessionalVersion": "Versão do profissional",
     "Specialty": "Especialidade",
     # Contracts module
     "ProfessionalContract": "Contrato de profissional",

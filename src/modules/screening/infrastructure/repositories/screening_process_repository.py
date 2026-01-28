@@ -8,8 +8,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from src.modules.screening.domain.models import (
+    DocumentUploadStep,
+    ScreeningDocument,
     ScreeningProcess,
-    ScreeningRequiredDocument,
     ScreeningStatus,
 )
 from src.modules.screening.infrastructure.filters import (
@@ -81,7 +82,7 @@ class ScreeningProcessRepository(
         organization_id: UUID,
     ) -> ScreeningProcess | None:
         """
-        Get screening process with all related data (steps, documents, reviews).
+        Get screening process with all related data (steps, documents).
 
         Args:
             id: The screening process UUID.
@@ -94,10 +95,19 @@ class ScreeningProcessRepository(
             self._base_query_for_organization(organization_id)
             .where(ScreeningProcess.id == id)
             .options(
-                selectinload(ScreeningProcess.steps),
-                selectinload(ScreeningProcess.required_documents).selectinload(
-                    ScreeningRequiredDocument.reviews
+                # Load all step relationships
+                selectinload(ScreeningProcess.conversation_step),
+                selectinload(ScreeningProcess.professional_data_step),
+                selectinload(ScreeningProcess.document_upload_step).options(
+                    selectinload(DocumentUploadStep.documents).options(
+                        selectinload(ScreeningDocument.document_type),
+                    ),
                 ),
+                selectinload(ScreeningProcess.document_review_step),
+                selectinload(ScreeningProcess.payment_info_step),
+                selectinload(ScreeningProcess.supervisor_review_step),
+                selectinload(ScreeningProcess.client_validation_step),
+                # Load other relationships
                 selectinload(ScreeningProcess.client_company),
             )
         )
@@ -233,10 +243,19 @@ class ScreeningProcessRepository(
             self._exclude_deleted()
             .where(ScreeningProcess.access_token == access_token)
             .options(
-                selectinload(ScreeningProcess.steps),
-                selectinload(ScreeningProcess.required_documents).selectinload(
-                    ScreeningRequiredDocument.reviews
+                # Load all step relationships
+                selectinload(ScreeningProcess.conversation_step),
+                selectinload(ScreeningProcess.professional_data_step),
+                selectinload(ScreeningProcess.document_upload_step).options(
+                    selectinload(DocumentUploadStep.documents).options(
+                        selectinload(ScreeningDocument.document_type),
+                    ),
                 ),
+                selectinload(ScreeningProcess.document_review_step),
+                selectinload(ScreeningProcess.payment_info_step),
+                selectinload(ScreeningProcess.supervisor_review_step),
+                selectinload(ScreeningProcess.client_validation_step),
+                # Load other relationships
                 selectinload(ScreeningProcess.client_company),
             )
         )

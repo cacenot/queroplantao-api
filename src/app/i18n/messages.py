@@ -96,6 +96,13 @@ class ProfessionalMessages(StrEnum):
     COMPANY_NOT_FOUND = "professional.company_not_found"
     EDUCATION_NOT_FOUND = "professional.education_not_found"
 
+    # Version errors
+    VERSION_NOT_FOUND = "professional.version_not_found"
+    VERSION_ALREADY_APPLIED = "professional.version_already_applied"
+    VERSION_ALREADY_REJECTED = "professional.version_already_rejected"
+    VERSION_NOT_PENDING = "professional.version_not_pending"
+    VERSION_FEATURE_NOT_SUPPORTED = "professional.version_feature_not_supported"
+
 
 class ScreeningMessages(StrEnum):
     """Message keys for Screening module."""

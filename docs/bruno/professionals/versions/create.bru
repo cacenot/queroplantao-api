@@ -1,0 +1,76 @@
+meta {
+  name: Create Version
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/v1/professionals/{{professional_id}}/versions
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  "personal_info": {
+    "full_name": "Dr. João Silva Atualizado",
+    "email": "joao.silva.novo@example.com",
+    "phone": "+5511999999999",
+    "cpf": "12345678901",
+    "birth_date": "1985-05-15",
+    "nationality": "Brasileiro",
+    "gender": "MALE",
+    "marital_status": "MARRIED",
+    "city": "São Paulo",
+    "state_code": "SP",
+    "postal_code": "01310-100",
+    "is_verified": false
+  },
+  "source_type": "DIRECT",
+  "notes": "Atualização de dados pessoais"
+}
+
+docs {
+  # Create Professional Version
+  
+  Cria uma nova versão para um profissional. A versão contém um snapshot completo
+  dos dados que podem ser aplicados ao profissional.
+  
+  ## Comportamento por source_type
+  
+  - `DIRECT`: Versão é criada e aplicada imediatamente
+  - `SCREENING`: Versão fica pendente até ser aprovada
+  - `IMPORT`: Versão fica pendente até ser aplicada
+  - `API`: Versão fica pendente até ser aplicada
+  
+  ## Campos do personal_info
+  
+  - `full_name` (obrigatório): Nome completo
+  - `email`: Email
+  - `phone`: Telefone (E.164)
+  - `cpf`: CPF (11 dígitos)
+  - `birth_date`: Data de nascimento
+  - `nationality`: Nacionalidade
+  - `gender`: MALE ou FEMALE
+  - `marital_status`: Estado civil
+  - `avatar_url`: URL da foto
+  - `address`, `number`, `complement`, `neighborhood`, `city`, `state_code`, `postal_code`: Endereço
+  - `is_verified`: Status de verificação
+  
+  ## Fase 1 - Limitações
+  
+  Atualmente apenas `personal_info` é suportado. Os campos `qualifications`,
+  `companies` e `bank_accounts` serão implementados nas próximas fases.
+  
+  ## Error Codes
+  
+  | Status | Code | Descrição |
+  |--------|------|-----------|
+  | 404 | `PROF_NOT_FOUND` | Profissional não encontrado |
+  | 409 | `PROF_CPF_ALREADY_EXISTS` | CPF já existe na família de organizações |
+  | 409 | `PROF_EMAIL_ALREADY_EXISTS` | Email já existe na família de organizações |
+  | 501 | `PROF_VERSION_FEATURE_NOT_SUPPORTED` | Feature do snapshot ainda não suportada |
+}

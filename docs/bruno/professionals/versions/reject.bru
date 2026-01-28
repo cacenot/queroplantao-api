@@ -1,0 +1,50 @@
+meta {
+  name: Reject Version
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/api/v1/professionals/{{professional_id}}/versions/{{version_id}}/reject
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  "rejection_reason": "Dados inconsistentes - CPF não confere com documento"
+}
+
+docs {
+  # Reject Professional Version
+  
+  Rejeita uma versão pendente com um motivo. Versões rejeitadas não podem
+  ser aplicadas posteriormente.
+  
+  ## Request Body
+  
+  - `rejection_reason` (obrigatório): Motivo da rejeição (max 2000 caracteres)
+  
+  ## Comportamento
+  
+  1. Valida que a versão está pendente
+  2. Marca a versão como rejeitada com `rejected_at`, `rejected_by` e `rejection_reason`
+  
+  ## Uso típico
+  
+  Este endpoint é utilizado quando:
+  - Dados de triagem são inconsistentes
+  - Documentos não conferem com as informações
+  - Profissional desistiu do processo
+  
+  ## Error Codes
+  
+  | Status | Code | Descrição |
+  |--------|------|-----------|
+  | 404 | `PROF_VERSION_NOT_FOUND` | Versão não encontrada |
+  | 409 | `PROF_VERSION_ALREADY_APPLIED` | Versão já foi aplicada |
+  | 409 | `PROF_VERSION_ALREADY_REJECTED` | Versão já foi rejeitada |
+}

@@ -1,0 +1,60 @@
+meta {
+  name: List Versions
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/v1/professionals/{{professional_id}}/versions
+  body: none
+  auth: inherit
+}
+
+query {
+  ~page: 1
+  ~size: 20
+  ~is_current: 
+  ~is_applied: 
+  ~is_rejected: 
+  ~version_number: desc
+}
+
+docs {
+  # List Professional Versions
+  
+  Lista o histórico de versões de um profissional com paginação.
+  
+  ## Query Parameters
+  
+  ### Paginação
+  - `page`: Número da página (default: 1)
+  - `size`: Itens por página (default: 20, max: 100)
+  
+  ### Filtros
+  - `is_current`: Filtrar por versão atual (true/false)
+  - `is_applied`: Filtrar por versões aplicadas
+  - `is_rejected`: Filtrar por versões rejeitadas
+  
+  ### Ordenação
+  - `version_number`: asc ou desc (default: desc)
+  - `created_at`: asc ou desc
+  - `applied_at`: asc ou desc
+  
+  ## Response
+  
+  Retorna uma lista paginada com:
+  - `id`: UUID da versão
+  - `version_number`: Número sequencial da versão
+  - `is_current`: Se é a versão atual
+  - `source_type`: Origem da versão
+  - `applied_at`: Data/hora de aplicação
+  - `rejected_at`: Data/hora de rejeição
+  - `is_applied`, `is_rejected`, `is_pending`: Status computados
+  - `changes_count`: Número de alterações na versão
+  
+  ## Error Codes
+  
+  | Status | Code | Descrição |
+  |--------|------|-----------|
+  | 404 | `PROF_NOT_FOUND` | Profissional não encontrado |
+}

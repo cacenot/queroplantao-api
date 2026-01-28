@@ -28,6 +28,10 @@ from src.modules.professionals.infrastructure.filters.professional_company impor
     ProfessionalCompanyFilter,
     ProfessionalCompanySorting,
 )
+from src.modules.professionals.infrastructure.filters.professional_version_filters import (
+    ProfessionalVersionFilter,
+    ProfessionalVersionSorting,
+)
 from src.shared.infrastructure.filters.specialty import (
     SpecialtyFilter,
     SpecialtySorting,
@@ -52,6 +56,9 @@ __all__ = [
     # ProfessionalCompany
     "ProfessionalCompanyFilter",
     "ProfessionalCompanySorting",
+    # ProfessionalVersion
+    "ProfessionalVersionFilter",
+    "ProfessionalVersionSorting",
     # Specialty
     "SpecialtyFilter",
     "SpecialtySorting",

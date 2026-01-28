@@ -1,0 +1,46 @@
+meta {
+  name: Get Version
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/v1/professionals/{{professional_id}}/versions/{{version_id}}
+  body: none
+  auth: inherit
+}
+
+docs {
+  # Get Professional Version
+  
+  Obtém os detalhes de uma versão específica, incluindo os diffs (alterações).
+  
+  ## Response
+  
+  Retorna a versão completa com:
+  - `id`: UUID da versão
+  - `organization_id`: Organização
+  - `professional_id`: Profissional
+  - `version_number`: Número sequencial
+  - `data_snapshot`: Snapshot completo dos dados
+  - `is_current`: Se é a versão atual
+  - `source_type`: Origem (DIRECT, SCREENING, IMPORT, API)
+  - `source_id`: ID da origem (ex: ID do processo de triagem)
+  - `applied_at`, `applied_by`: Dados de aplicação
+  - `rejected_at`, `rejected_by`, `rejection_reason`: Dados de rejeição
+  - `diffs`: Lista de alterações campo a campo
+  
+  ## Diffs
+  
+  Cada diff contém:
+  - `field_path`: Caminho do campo (ex: "personal_info.email")
+  - `change_type`: ADDED, MODIFIED ou REMOVED
+  - `old_value`: Valor anterior
+  - `new_value`: Novo valor
+  
+  ## Error Codes
+  
+  | Status | Code | Descrição |
+  |--------|------|-----------|
+  | 404 | `PROF_VERSION_NOT_FOUND` | Versão não encontrada |
+}

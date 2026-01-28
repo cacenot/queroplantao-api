@@ -5,6 +5,9 @@ Repositories for the professionals module.
 from src.modules.professionals.infrastructure.repositories.organization_professional_repository import (
     OrganizationProfessionalRepository,
 )
+from src.modules.professionals.infrastructure.repositories.professional_change_diff_repository import (
+    ProfessionalChangeDiffRepository,
+)
 from src.modules.professionals.infrastructure.repositories.professional_company_repository import (
     ProfessionalCompanyRepository,
 )
@@ -20,16 +23,21 @@ from src.modules.professionals.infrastructure.repositories.professional_qualific
 from src.modules.professionals.infrastructure.repositories.professional_specialty_repository import (
     ProfessionalSpecialtyRepository,
 )
+from src.modules.professionals.infrastructure.repositories.professional_version_repository import (
+    ProfessionalVersionRepository,
+)
 from src.shared.infrastructure.repositories.specialty_repository import (
     SpecialtyRepository,
 )
 
 __all__ = [
     "OrganizationProfessionalRepository",
+    "ProfessionalChangeDiffRepository",
     "ProfessionalCompanyRepository",
     "ProfessionalDocumentRepository",
     "ProfessionalEducationRepository",
     "ProfessionalQualificationRepository",
     "ProfessionalSpecialtyRepository",
+    "ProfessionalVersionRepository",
     "SpecialtyRepository",
 ]

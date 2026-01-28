@@ -21,6 +21,7 @@ from src.modules.professionals.infrastructure.filters import (
     OrganizationProfessionalFilter,
     OrganizationProfessionalSorting,
 )
+from src.modules.organizations.domain.models.enums import DataScopePolicy
 from src.shared.domain.models.bank_account import BankAccount
 from src.shared.domain.models.company import Company
 from src.shared.domain.models.specialty import Specialty

@@ -20,6 +20,9 @@ from src.modules.professionals.presentation.routes.professional_qualification_ro
 from src.modules.professionals.presentation.routes.professional_specialty_routes import (
     router as professional_specialty_router,
 )
+from src.modules.professionals.presentation.routes.professional_version_routes import (
+    router as professional_version_router,
+)
 
 # Create main professionals router
 router = APIRouter(prefix="/professionals", tags=["Professionals"])
@@ -31,6 +34,7 @@ router.include_router(professional_document_router)
 router.include_router(professional_education_router)
 router.include_router(professional_qualification_router)
 router.include_router(professional_specialty_router)
+router.include_router(professional_version_router)
 
 
 __all__ = [
@@ -41,4 +45,5 @@ __all__ = [
     "professional_education_router",
     "professional_qualification_router",
     "professional_specialty_router",
+    "professional_version_router",
 ]

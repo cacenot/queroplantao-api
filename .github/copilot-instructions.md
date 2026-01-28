@@ -386,8 +386,11 @@ src/app/i18n/
 - Async-first: all DB operations use `await`
 
 ## Value Objects & Validation
-Use typed value objects for data validation in schemas:
+**ALWAYS use typed value objects for data validation in schemas. NEVER use raw `str` for these fields:**
+
 - **CPF**: Use `CPF` from `src.shared.domain.value_objects` (auto-validates and normalizes to 11 digits)
+- **CNPJ**: Use `CNPJ` from `src.shared.domain.value_objects` (auto-validates and normalizes to 14 digits)
+- **CPFOrCNPJ**: Use `CPFOrCNPJ` from `src.shared.domain.value_objects` (accepts either CPF or CNPJ)
 - **Phone**: Use `Phone` from `src.shared.domain.value_objects` (auto-validates and normalizes to E.164 format)
 - **StateUF**: Use `StateUF` from `src.shared.domain.value_objects` (validates Brazilian state codes, normalizes to uppercase)
 - **PostalCode**: Use `PostalCode` from `src.shared.domain.value_objects` (validates CEP with 8 digits)
@@ -396,13 +399,16 @@ Use typed value objects for data validation in schemas:
 
 ```python
 from pydantic import BaseModel, EmailStr, HttpUrl
-from src.shared.domain.value_objects import CPF, Phone, StateUF
+from src.shared.domain.value_objects import CNPJ, CPF, CPFOrCNPJ, Phone, PostalCode, StateUF
 
 class ExampleCreate(BaseModel):
     email: Optional[EmailStr] = None
     phone: Optional[Phone] = None
     cpf: Optional[CPF] = None
+    cnpj: Optional[CNPJ] = None
+    document: Optional[CPFOrCNPJ] = None  # When field accepts either CPF or CNPJ
     state_code: Optional[StateUF] = None  # e.g., "SP", "RJ"
+    postal_code: Optional[PostalCode] = None
     avatar_url: Optional[HttpUrl] = None
 ```
 

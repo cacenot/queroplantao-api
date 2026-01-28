@@ -20,10 +20,6 @@ from src.modules.screening.domain.models.screening_document import (
     ScreeningDocument,
     ScreeningDocumentBase,
 )
-from src.modules.screening.domain.models.screening_document_review import (
-    ScreeningDocumentReview,
-    ScreeningDocumentReviewBase,
-)
 from src.modules.screening.domain.models.screening_process import (
     ScreeningProcess,
     ScreeningProcessBase,
@@ -64,13 +60,10 @@ __all__ = [
     # Process model
     "ScreeningProcess",
     "ScreeningProcessBase",
-    # Document model
+    # Document model (unified requirement + review)
     "ScreeningDocument",
     "ScreeningDocumentBase",
-    # Document review model
-    "ScreeningDocumentReview",
-    "ScreeningDocumentReviewBase",
-    # Step base
+    # Step base mixin
     "ScreeningStepMixin",
     # Conversation step (required)
     "ConversationStep",

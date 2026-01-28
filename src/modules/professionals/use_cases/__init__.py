@@ -59,6 +59,18 @@ from src.modules.professionals.use_cases.professional_specialty import (
     UpdateProfessionalSpecialtyUseCase,
 )
 
+# ProfessionalVersion use cases
+from src.modules.professionals.use_cases.professional_version import (
+    ApplyProfessionalVersionUseCase,
+    CreateProfessionalVersionUseCase,
+    DiffCalculatorService,
+    GetProfessionalVersionUseCase,
+    ListProfessionalVersionsUseCase,
+    RejectProfessionalVersionUseCase,
+    SnapshotApplierService,
+    SnapshotBuilderService,
+)
+
 # Specialty use cases (read-only for tenants)
 from src.shared.use_cases.specialty import (
     GetSpecialtyByCodeUseCase,
@@ -107,6 +119,15 @@ __all__ = [
     "DeleteProfessionalCompanyUseCase",
     "GetProfessionalCompanyUseCase",
     "ListProfessionalCompaniesUseCase",
+    # ProfessionalVersion
+    "CreateProfessionalVersionUseCase",
+    "ApplyProfessionalVersionUseCase",
+    "RejectProfessionalVersionUseCase",
+    "GetProfessionalVersionUseCase",
+    "ListProfessionalVersionsUseCase",
+    "DiffCalculatorService",
+    "SnapshotApplierService",
+    "SnapshotBuilderService",
     # Specialty (read-only)
     "GetSpecialtyUseCase",
     "GetSpecialtyByCodeUseCase",

@@ -19,7 +19,7 @@ test-cov:
 ## Lint code
 lint:
 	uv run ruff check .
-	uv run mypy app
+	uv run mypy src
 
 ## Format code
 format:

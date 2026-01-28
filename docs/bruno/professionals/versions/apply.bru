@@ -1,0 +1,39 @@
+meta {
+  name: Apply Version
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/api/v1/professionals/{{professional_id}}/versions/{{version_id}}/apply
+  body: none
+  auth: inherit
+}
+
+docs {
+  # Apply Professional Version
+  
+  Aplica uma versão pendente ao profissional. Os dados do snapshot serão
+  sincronizados com as entidades reais.
+  
+  ## Pré-requisitos
+  
+  - A versão deve estar pendente (não aplicada e não rejeitada)
+  - O snapshot deve conter apenas features suportadas (atualmente: personal_info)
+  
+  ## Comportamento
+  
+  1. Valida que a versão está pendente
+  2. Aplica os dados do snapshot às entidades do profissional
+  3. Marca versões anteriores como `is_current = false`
+  4. Marca esta versão como `is_current = true` e `applied_at = now()`
+  
+  ## Error Codes
+  
+  | Status | Code | Descrição |
+  |--------|------|-----------|
+  | 404 | `PROF_VERSION_NOT_FOUND` | Versão não encontrada |
+  | 409 | `PROF_VERSION_ALREADY_APPLIED` | Versão já foi aplicada |
+  | 409 | `PROF_VERSION_ALREADY_REJECTED` | Versão já foi rejeitada |
+  | 501 | `PROF_VERSION_FEATURE_NOT_SUPPORTED` | Feature do snapshot ainda não suportada |
+}

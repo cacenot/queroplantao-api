@@ -61,6 +61,21 @@ from src.shared.domain.schemas.specialty import (
     SpecialtyResponse,
 )
 
+from src.modules.professionals.domain.schemas.professional_version import (
+    BankAccountInput,
+    CompanyInput,
+    EducationInput,
+    PersonalInfoInput,
+    ProfessionalChangeDiffResponse,
+    ProfessionalVersionCreate,
+    ProfessionalVersionDetailResponse,
+    ProfessionalVersionListResponse,
+    ProfessionalVersionReject,
+    ProfessionalVersionResponse,
+    QualificationInput,
+    SpecialtyInput,
+)
+
 __all__ = [
     # OrganizationProfessional
     "OrganizationProfessionalCreate",
@@ -111,4 +126,17 @@ __all__ = [
     # Specialty
     "SpecialtyResponse",
     "SpecialtyListResponse",
+    # ProfessionalVersion
+    "PersonalInfoInput",
+    "SpecialtyInput",
+    "EducationInput",
+    "QualificationInput",
+    "CompanyInput",
+    "BankAccountInput",
+    "ProfessionalVersionCreate",
+    "ProfessionalVersionReject",
+    "ProfessionalChangeDiffResponse",
+    "ProfessionalVersionResponse",
+    "ProfessionalVersionDetailResponse",
+    "ProfessionalVersionListResponse",
 ]
