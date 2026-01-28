@@ -66,12 +66,7 @@ ENUM_SOURCES: list[tuple[str, Path]] = [
     ),
     (
         "shared",
-        PROJECT_ROOT
-        / "src"
-        / "shared"
-        / "domain"
-        / "models"
-        / "document_type.py",
+        PROJECT_ROOT / "src" / "shared" / "domain" / "models" / "document_type.py",
     ),
 ]
 
