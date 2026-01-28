@@ -18,13 +18,13 @@
 // Re-export generated client (services, hooks, models)
 // Note: This also exports enum types from models - use @queroplantao/api-client/enums
 // for enums with PT-BR labels
-export * from "./client.js";
+export * from "./client/index.js";
 
 // Re-export i18n utilities (error codes and messages)
-export * from "./i18n.js";
+export * from "./i18n/index.js";
 
 // Re-export utilities
-export * from "./utils.js";
+export * from "./utils/index.js";
 
 // Note: Enums with labels are available via '@queroplantao/api-client/enums'
 // They are not re-exported here to avoid conflicts with generated model enums
