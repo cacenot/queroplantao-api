@@ -65,7 +65,21 @@ jobs:
         working-directory: packages/api-client
         run: npm version ${{ steps.version.outputs.version }} --no-git-tag-version --allow-same-version
 
+      - name: Check if version already published
+        id: published
+        working-directory: packages/api-client
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if pnpm view @cacenot/queroplantao-api-client@${{ steps.version.outputs.version }} version --registry https://npm.pkg.github.com >/dev/null 2>&1; then
+            echo "published=true" >> $GITHUB_OUTPUT
+            echo "Version already published. Skipping publish step."
+          else
+            echo "published=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Publish to GitHub Packages
+        if: steps.published.outputs.published != 'true'
         working-directory: packages/api-client
         run: pnpm publish --access restricted --no-git-checks
         env:
