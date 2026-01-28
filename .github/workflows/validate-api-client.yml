@@ -1,0 +1,141 @@
+name: Validate API Client
+
+on:
+  pull_request:
+    paths:
+      - "src/modules/**/schemas/**"
+      - "src/modules/**/routes/**"
+      - "src/modules/**/models/enums.py"
+      - "src/shared/domain/schemas/**"
+      - "src/app/constants/error_codes.py"
+      - "src/app/i18n/**"
+      - "packages/api-client/**"
+      - "scripts/generate_ts_*.py"
+
+env:
+  NODE_VERSION: "20"
+  PYTHON_VERSION: "3.14"
+
+jobs:
+  validate:
+    name: Validate API Client Build
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: queroplantao
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Install Python dependencies
+        run: uv sync
+
+      - name: Install Node dependencies
+        working-directory: packages/api-client
+        run: pnpm install
+
+      - name: Run database migrations
+        env:
+          DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/queroplantao
+          REDIS_URL: redis://localhost:6379/0
+          ENVIRONMENT: development
+          FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_CREDENTIALS }}
+        run: uv run alembic upgrade head
+
+      - name: Generate TypeScript enums
+        run: make client-enums
+
+      - name: Generate TypeScript error codes
+        run: make client-errors
+
+      - name: Start API server
+        env:
+          DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/queroplantao
+          REDIS_URL: redis://localhost:6379/0
+          ENVIRONMENT: development
+          FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_CREDENTIALS }}
+        run: |
+          uv run uvicorn src.app.main:app --port 8099 &
+          echo $! > .server.pid
+          for i in {1..30}; do
+            if curl -s http://localhost:8099/health > /dev/null; then
+              echo "Server is ready"
+              break
+            fi
+            echo "Waiting for server... ($i)"
+            sleep 1
+          done
+
+      - name: Fetch OpenAPI schema
+        run: curl -s http://localhost:8099/openapi.json > packages/api-client/openapi.json
+
+      - name: Stop API server
+        if: always()
+        run: |
+          if [ -f .server.pid ]; then
+            kill $(cat .server.pid) 2>/dev/null || true
+            rm -f .server.pid
+          fi
+
+      - name: Generate API client
+        working-directory: packages/api-client
+        run: pnpm run generate
+
+      - name: Build package
+        working-directory: packages/api-client
+        run: pnpm run build
+
+      - name: Validation summary
+        run: |
+          echo "## ✅ API Client Validation Passed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "The API client was successfully generated and built." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Generated files:**" >> $GITHUB_STEP_SUMMARY
+          echo "- Enums: $(ls packages/api-client/src/enums/*.ts | wc -l) files" >> $GITHUB_STEP_SUMMARY
+          echo "- i18n: $(ls packages/api-client/src/i18n/*.ts | wc -l) files" >> $GITHUB_STEP_SUMMARY
+          echo "- Services: $(ls packages/api-client/src/client/generated/*/*.ts 2>/dev/null | wc -l) files" >> $GITHUB_STEP_SUMMARY
+          echo "- Models: $(ls packages/api-client/src/client/models/*.ts | wc -l) files" >> $GITHUB_STEP_SUMMARY

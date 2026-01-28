@@ -38,6 +38,15 @@ make pre-commit       # Run all pre-commit hooks
 make migrate-create msg="description"  # Generate migration
 make migrate                            # Apply all pending
 make migrate-rollback                   # Revert last
+
+# API Client Generation (TypeScript)
+make client-enums     # Generate TypeScript enums from Python
+make client-errors    # Generate error codes and i18n messages
+make client-generate  # Generate API client from OpenAPI (requires running API)
+make client-all       # Generate everything (enums + errors + client)
+
+# API Client Release
+make client-release   # Interactive release tool (creates tag and triggers publish)
 ```
 
 ## Architecture

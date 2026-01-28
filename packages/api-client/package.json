@@ -1,64 +1,67 @@
 {
-  "name": "@queroplantao/api-client",
-  "version": "1.0.1",
-  "description": "TypeScript API client for Quero Plantão API with React Query hooks",
-  "type": "module",
-  "main": "dist/index.js",
-  "module": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+    "name": "@queroplantao/api-client",
+    "version": "1.0.1",
+    "description": "TypeScript API client for Quero Plantão API with React Query hooks",
+    "type": "module",
+    "main": "dist/index.js",
+    "module": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "exports": {
+        ".": {
+            "import": "./dist/index.js",
+            "types": "./dist/index.d.ts"
+        },
+        "./enums": {
+            "import": "./dist/enums/index.js",
+            "types": "./dist/enums/index.d.ts"
+        },
+        "./i18n": {
+            "import": "./dist/i18n/index.js",
+            "types": "./dist/i18n/index.d.ts"
+        }
     },
-    "./enums": {
-      "import": "./dist/enums/index.js",
-      "types": "./dist/enums/index.d.ts"
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "generate": "orval && node scripts/transform-types.js",
+        "transform:types": "node scripts/transform-types.js",
+        "build": "tsc",
+        "clean": "rm -rf dist",
+        "prepublishOnly": "npm run clean && npm run build",
+        "version:patch": "npm version patch --no-git-tag-version",
+        "version:minor": "npm version minor --no-git-tag-version",
+        "version:major": "npm version major --no-git-tag-version"
     },
-    "./i18n": {
-      "import": "./dist/i18n/index.js",
-      "types": "./dist/i18n/index.d.ts"
+    "dependencies": {
+        "@tanstack/react-query": "^5.0.0",
+        "humps": "^2.0.1"
+    },
+    "devDependencies": {
+        "@types/humps": "^2.0.2",
+        "@types/node": "^20.0.0",
+        "orval": "^7.0.0",
+        "prettier": "^3.0.0",
+        "typescript": "^5.0.0"
+    },
+    "peerDependencies": {
+        "@tanstack/react-query": ">=5.0.0",
+        "react": ">=18.0.0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/queroplantao/queroplantao-api.git",
+        "directory": "packages/api-client"
+    },
+    "keywords": [
+        "queroplantao",
+        "api-client",
+        "react-query",
+        "typescript"
+    ],
+    "license": "UNLICENSED",
+    "publishConfig": {
+        "registry": "https://npm.pkg.github.com",
+        "access": "restricted"
     }
-  },
-  "files": [
-    "dist"
-  ],
-  "scripts": {
-    "generate": "orval",
-    "build": "tsc",
-    "clean": "rm -rf dist",
-    "prepublishOnly": "npm run clean && npm run build",
-    "version:patch": "npm version patch --no-git-tag-version",
-    "version:minor": "npm version minor --no-git-tag-version",
-    "version:major": "npm version major --no-git-tag-version"
-  },
-  "dependencies": {
-    "@tanstack/react-query": "^5.0.0"
-  },
-  "devDependencies": {
-    "@types/node": "^20.0.0",
-    "orval": "^7.0.0",
-    "prettier": "^3.0.0",
-    "typescript": "^5.0.0"
-  },
-  "peerDependencies": {
-    "@tanstack/react-query": ">=5.0.0",
-    "react": ">=18.0.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/queroplantao/queroplantao-api.git",
-    "directory": "packages/api-client"
-  },
-  "keywords": [
-    "queroplantao",
-    "api-client",
-    "react-query",
-    "typescript"
-  ],
-  "license": "UNLICENSED",
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com",
-    "access": "restricted"
-  }
 }
