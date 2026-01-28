@@ -1,10 +1,10 @@
 """Screening module schemas."""
 
 from src.modules.screening.domain.schemas.document_type import (
-    DocumentTypeConfigCreate,
-    DocumentTypeConfigListResponse,
-    DocumentTypeConfigResponse,
-    DocumentTypeConfigUpdate,
+    DocumentTypeCreate,
+    DocumentTypeListResponse,
+    DocumentTypeResponse,
+    DocumentTypeUpdate,
 )
 from src.modules.screening.domain.schemas.organization_screening_settings import (
     OrganizationScreeningSettingsCreate,
@@ -55,11 +55,11 @@ from src.modules.screening.domain.schemas.screening_step_complete import (
 )
 
 __all__ = [
-    # Document Type Config
-    "DocumentTypeConfigCreate",
-    "DocumentTypeConfigListResponse",
-    "DocumentTypeConfigResponse",
-    "DocumentTypeConfigUpdate",
+    # Document Type
+    "DocumentTypeCreate",
+    "DocumentTypeListResponse",
+    "DocumentTypeResponse",
+    "DocumentTypeUpdate",
     # Organization Screening Settings
     "OrganizationScreeningSettingsCreate",
     "OrganizationScreeningSettingsResponse",

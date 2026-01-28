@@ -65,6 +65,19 @@ class ChangeType(str, Enum):
     REMOVED = "REMOVED"  # Field/entity removed
 
 
+class DocumentReviewStatus(str, Enum):
+    """
+    Status of an individual document review.
+
+    Tracks the review outcome for a specific document.
+    """
+
+    PENDING = "PENDING"  # Not yet reviewed
+    APPROVED = "APPROVED"  # Document approved
+    REJECTED = "REJECTED"  # Document rejected, needs re-upload
+    ALERT = "ALERT"  # Requires supervisor attention
+
+
 class ScreeningStatus(str, Enum):
     """
     Status of a screening process throughout its lifecycle.
@@ -79,6 +92,20 @@ class ScreeningStatus(str, Enum):
     REJECTED = "REJECTED"  # Screening rejected
     EXPIRED = "EXPIRED"  # Screening expired before completion
     CANCELLED = "CANCELLED"  # Screening cancelled by organization
+
+
+class RequiredDocumentStatus(str, Enum):
+    """
+    Status of a required document in the screening workflow.
+
+    Tracks document upload and review lifecycle.
+    """
+
+    PENDING_UPLOAD = "PENDING_UPLOAD"  # Waiting for professional to upload
+    UPLOADED = "UPLOADED"  # Uploaded, waiting for review
+    APPROVED = "APPROVED"  # Document approved
+    REJECTED = "REJECTED"  # Document rejected, needs re-upload
+    CORRECTION_NEEDED = "CORRECTION_NEEDED"  # Needs correction after review
 
 
 class StepStatus(str, Enum):

@@ -15,10 +15,10 @@ from src.modules.screening.domain.schemas import (
     ScreeningRequiredDocumentResponse,
 )
 from src.modules.screening.infrastructure.repositories import (
-    DocumentTypeConfigRepository,
     ScreeningProcessRepository,
     ScreeningRequiredDocumentRepository,
 )
+from src.shared.infrastructure.repositories import DocumentTypeRepository
 
 
 class SelectDocumentsUseCase:
@@ -33,7 +33,7 @@ class SelectDocumentsUseCase:
         self.session = session
         self.process_repository = ScreeningProcessRepository(session)
         self.document_repository = ScreeningRequiredDocumentRepository(session)
-        self.doc_type_repository = DocumentTypeConfigRepository(session)
+        self.doc_type_repository = DocumentTypeRepository(session)
 
     async def execute(
         self,

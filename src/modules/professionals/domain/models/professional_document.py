@@ -4,16 +4,13 @@ from typing import TYPE_CHECKING, Optional
 from uuid import UUID
 
 from pydantic import AwareDatetime
-from sqlalchemy import Enum as SAEnum, Index, text
+from sqlalchemy import Index, text
 from sqlmodel import Field, Relationship
 
-from src.modules.professionals.domain.models.enums import (
-    DocumentCategory,
-    DocumentType,
-)
 from src.shared.domain.models import (
     AwareDatetimeField,
     BaseModel,
+    DocumentCategory,
     PrimaryKeyMixin,
     SoftDeleteMixin,
     TimestampMixin,
@@ -30,21 +27,11 @@ if TYPE_CHECKING:
     from src.modules.professionals.domain.models.professional_specialty import (
         ProfessionalSpecialty,
     )
+    from src.shared.domain.models import DocumentType
 
 
 class ProfessionalDocumentBase(BaseModel):
     """Base fields for ProfessionalDocument."""
-
-    document_type: DocumentType = Field(
-        sa_type=SAEnum(DocumentType, name="document_type", create_constraint=True),
-        description="Type of document (ID_DOCUMENT, DIPLOMA, etc.)",
-    )
-    document_category: DocumentCategory = Field(
-        sa_type=SAEnum(
-            DocumentCategory, name="document_category", create_constraint=True
-        ),
-        description="Category: PROFILE, QUALIFICATION, or SPECIALTY",
-    )
 
     # File information
     file_url: str = Field(
@@ -108,16 +95,10 @@ class ProfessionalDocument(
             postgresql_ops={"": "gin_trgm_ops"},
             postgresql_where=text("deleted_at IS NULL"),
         ),
-        # B-tree index for document_type filtering
+        # B-tree index for document_type_id filtering
         Index(
-            "idx_professional_documents_type",
-            "document_type",
-            postgresql_where=text("deleted_at IS NULL"),
-        ),
-        # B-tree index for document_category filtering
-        Index(
-            "idx_professional_documents_category",
-            "document_category",
+            "idx_professional_documents_type_id",
+            "document_type_id",
             postgresql_where=text("deleted_at IS NULL"),
         ),
         # B-tree index for expires_at filtering (only where not null)
@@ -126,6 +107,13 @@ class ProfessionalDocument(
             "expires_at",
             postgresql_where=text("deleted_at IS NULL AND expires_at IS NOT NULL"),
         ),
+    )
+
+    # Document type reference
+    document_type_id: UUID = Field(
+        foreign_key="document_types.id",
+        nullable=False,
+        description="Reference to the document type configuration",
     )
 
     # Always linked to organization professional (required for listing all docs)
@@ -150,6 +138,9 @@ class ProfessionalDocument(
     )
 
     # Relationships
+    document_type: "DocumentType" = Relationship(
+        back_populates="professional_documents",
+    )
     professional: "OrganizationProfessional" = Relationship(back_populates="documents")
     qualification: Optional["ProfessionalQualification"] = Relationship(
         back_populates="documents"
@@ -158,3 +149,10 @@ class ProfessionalDocument(
         back_populates="documents"
     )
     # Note: screening_reviews relationship is defined on ScreeningDocumentReview to avoid circular imports
+
+    # === Properties ===
+
+    @property
+    def document_category(self) -> DocumentCategory:
+        """Get document category from the document type."""
+        return self.document_type.category

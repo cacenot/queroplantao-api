@@ -91,54 +91,6 @@ class EducationLevel(str, Enum):
     FELLOWSHIP = "FELLOWSHIP"  # Fellowship
 
 
-class DocumentCategory(str, Enum):
-    """
-    Document category based on which entity it relates to.
-
-    Used to group documents by their relation to professional data.
-    """
-
-    PROFILE = "PROFILE"  # Documentos pessoais do profissional
-    QUALIFICATION = "QUALIFICATION"  # Documentos da qualificação/conselho
-    SPECIALTY = "SPECIALTY"  # Documentos da especialidade
-
-
-class DocumentType(str, Enum):
-    """
-    Types of documents that can be uploaded by professionals.
-
-    Each document type has a specific purpose and may or may not
-    require an expiration date.
-    """
-
-    # Profile documents (PROFILE category)
-    ID_DOCUMENT = "ID_DOCUMENT"  # Documento oficial com foto (RG ou CNH)
-    PHOTO = "PHOTO"  # Foto do profissional (3x4 ou similar)
-    CRIMINAL_RECORD = "CRIMINAL_RECORD"  # Antecedentes criminais
-    ADDRESS_PROOF = "ADDRESS_PROOF"  # Comprovante de endereço
-    CV = "CV"  # Currículo
-
-    # Qualification documents (QUALIFICATION category)
-    DIPLOMA = "DIPLOMA"  # Diploma de Medicina/Enfermagem/etc
-    CRM_REGISTRATION_CERTIFICATE = (
-        "CRM_REGISTRATION_CERTIFICATE"  # Certidão de Regularidade de Inscrição
-    )
-    CRM_FINANCIAL_CERTIFICATE = (
-        "CRM_FINANCIAL_CERTIFICATE"  # Certidão de Regularidade Financeira
-    )
-    CRM_ETHICS_CERTIFICATE = "CRM_ETHICS_CERTIFICATE"  # Certidão Ética
-
-    # Specialty documents (SPECIALTY category)
-    RESIDENCY_CERTIFICATE = (
-        "RESIDENCY_CERTIFICATE"  # Certificado de Conclusão de Residência
-    )
-    SPECIALIST_TITLE = "SPECIALIST_TITLE"  # Título de Especialista da Sociedade
-    SBA_DIPLOMA = "SBA_DIPLOMA"  # Diploma da SBA (anestesiologia)
-
-    # Generic
-    OTHER = "OTHER"  # Outros documentos
-
-
 # ============================================================================
 # COUNCIL ↔ PROFESSIONAL TYPE VALIDATION
 # ============================================================================
@@ -224,25 +176,4 @@ PROFESSIONAL_TYPE_LABELS: dict[ProfessionalType, str] = {
     ProfessionalType.PSYCHOLOGIST: "Psicólogo(a)",
     ProfessionalType.NUTRITIONIST: "Nutricionista",
     ProfessionalType.BIOMEDIC: "Biomédico(a)",
-}
-
-# Human-readable PT-BR labels for DocumentType
-DOCUMENT_TYPE_LABELS: dict[DocumentType, str] = {
-    # Profile documents
-    DocumentType.ID_DOCUMENT: "Documento de Identidade (RG ou CNH)",
-    DocumentType.PHOTO: "Foto 3x4",
-    DocumentType.CRIMINAL_RECORD: "Certidão de Antecedentes Criminais",
-    DocumentType.ADDRESS_PROOF: "Comprovante de Endereço",
-    DocumentType.CV: "Currículo",
-    # Qualification documents
-    DocumentType.DIPLOMA: "Diploma de Graduação",
-    DocumentType.CRM_REGISTRATION_CERTIFICATE: "Certidão de Regularidade de Inscrição",
-    DocumentType.CRM_FINANCIAL_CERTIFICATE: "Certidão de Regularidade Financeira",
-    DocumentType.CRM_ETHICS_CERTIFICATE: "Certidão Ética",
-    # Specialty documents
-    DocumentType.RESIDENCY_CERTIFICATE: "Certificado de Conclusão de Residência",
-    DocumentType.SPECIALIST_TITLE: "Título de Especialista",
-    DocumentType.SBA_DIPLOMA: "Diploma da SBA (Anestesiologia)",
-    # Generic
-    DocumentType.OTHER: "Outro Documento",
 }

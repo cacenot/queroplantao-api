@@ -3,6 +3,9 @@ Base repository e interfaces compartilhadas.
 """
 
 from src.shared.infrastructure.repositories.base import BaseRepository
+from src.shared.infrastructure.repositories.document_type_repository import (
+    DocumentTypeRepository,
+)
 from src.shared.infrastructure.repositories.mixins import (
     PaginationMixin,
     SoftDeleteMixin,
@@ -24,5 +27,6 @@ __all__ = [
     "OrganizationScopeMixin",
     "ScopePolicy",
     # Entity repositories
+    "DocumentTypeRepository",
     "SpecialtyRepository",
 ]

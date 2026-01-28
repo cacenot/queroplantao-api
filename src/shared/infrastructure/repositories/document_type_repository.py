@@ -1,30 +1,27 @@
-"""DocumentTypeConfig repository for database operations."""
+"""DocumentType repository for database operations."""
 
 from uuid import UUID
 
 from sqlalchemy import Select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.modules.professionals.domain.models.enums import DocumentCategory
-from src.modules.screening.domain.models import DocumentTypeConfig
-from src.shared.infrastructure.repositories import (
-    BaseRepository,
-    SoftDeletePaginationMixin,
-)
+from src.shared.domain.models import DocumentCategory, DocumentType
+from src.shared.infrastructure.repositories.base import BaseRepository
+from src.shared.infrastructure.repositories.mixins import SoftDeletePaginationMixin
 
 
-class DocumentTypeConfigRepository(
-    SoftDeletePaginationMixin[DocumentTypeConfig],
-    BaseRepository[DocumentTypeConfig],
+class DocumentTypeRepository(
+    SoftDeletePaginationMixin[DocumentType],
+    BaseRepository[DocumentType],
 ):
     """
-    Repository for DocumentTypeConfig model.
+    Repository for DocumentType model.
 
     Provides CRUD operations with soft delete support.
     Document types can be global (organization_id=None) or org-specific.
     """
 
-    model = DocumentTypeConfig
+    model = DocumentType
 
     def __init__(self, session: AsyncSession) -> None:
         super().__init__(session)
@@ -32,7 +29,7 @@ class DocumentTypeConfigRepository(
     def _base_query_for_organization(
         self,
         organization_id: UUID | None,
-    ) -> Select[tuple[DocumentTypeConfig]]:
+    ) -> Select[tuple[DocumentType]]:
         """
         Get base query for available document types.
 
@@ -47,17 +44,17 @@ class DocumentTypeConfigRepository(
         """
         base = self._exclude_deleted()
         if organization_id is None:
-            return base.where(DocumentTypeConfig.organization_id.is_(None))
+            return base.where(DocumentType.organization_id.is_(None))
         return base.where(
-            (DocumentTypeConfig.organization_id.is_(None))
-            | (DocumentTypeConfig.organization_id == organization_id)
+            (DocumentType.organization_id.is_(None))
+            | (DocumentType.organization_id == organization_id)
         )
 
     async def list_available(
         self,
         organization_id: UUID | None = None,
         category: DocumentCategory | None = None,
-    ) -> list[DocumentTypeConfig]:
+    ) -> list[DocumentType]:
         """
         List available document types for an organization.
 
@@ -71,12 +68,12 @@ class DocumentTypeConfigRepository(
             List of available document types.
         """
         query = self._base_query_for_organization(organization_id)
-        query = query.where(DocumentTypeConfig.is_active == True)  # noqa: E712
+        query = query.where(DocumentType.is_active == True)  # noqa: E712
 
         if category is not None:
-            query = query.where(DocumentTypeConfig.category == category)
+            query = query.where(DocumentType.category == category)
 
-        query = query.order_by(DocumentTypeConfig.display_order)
+        query = query.order_by(DocumentType.display_order)
 
         result = await self.session.execute(query)
         return list(result.scalars().all())
@@ -84,17 +81,21 @@ class DocumentTypeConfigRepository(
     async def get_by_code(
         self,
         code: str,
-    ) -> DocumentTypeConfig | None:
+        organization_id: UUID | None = None,
+    ) -> DocumentType | None:
         """
         Get document type by code.
 
         Args:
             code: The unique document type code.
+            organization_id: Optional organization to check org-specific types.
 
         Returns:
-            DocumentTypeConfig if found, None otherwise.
+            DocumentType if found, None otherwise.
         """
-        query = self._exclude_deleted().where(DocumentTypeConfig.code == code)
+        query = self._base_query_for_organization(organization_id).where(
+            DocumentType.code == code
+        )
         result = await self.session.execute(query)
         return result.scalar_one_or_none()
 
@@ -102,7 +103,7 @@ class DocumentTypeConfigRepository(
         self,
         category: DocumentCategory,
         organization_id: UUID | None = None,
-    ) -> list[DocumentTypeConfig]:
+    ) -> list[DocumentType]:
         """
         List document types by category.
 
@@ -115,9 +116,9 @@ class DocumentTypeConfigRepository(
         """
         query = (
             self._base_query_for_organization(organization_id)
-            .where(DocumentTypeConfig.category == category)
-            .where(DocumentTypeConfig.is_active == True)  # noqa: E712
-            .order_by(DocumentTypeConfig.display_order)
+            .where(DocumentType.category == category)
+            .where(DocumentType.is_active == True)  # noqa: E712
+            .order_by(DocumentType.display_order)
         )
         result = await self.session.execute(query)
         return list(result.scalars().all())
@@ -126,7 +127,7 @@ class DocumentTypeConfigRepository(
         self,
         professional_type: str,
         organization_id: UUID | None = None,
-    ) -> list[DocumentTypeConfig]:
+    ) -> list[DocumentType]:
         """
         List document types applicable to a professional type.
 

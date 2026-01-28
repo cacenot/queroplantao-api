@@ -5,16 +5,14 @@ from uuid import UUID
 from fastapi_restkit.pagination import PaginatedResponse, PaginationParams
 from sqlalchemy import Select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
-from src.modules.professionals.domain.models import (
-    DocumentCategory,
-    DocumentType,
-    ProfessionalDocument,
-)
+from src.modules.professionals.domain.models import ProfessionalDocument
 from src.modules.professionals.infrastructure.filters import (
     ProfessionalDocumentFilter,
     ProfessionalDocumentSorting,
 )
+from src.shared.domain.models import DocumentCategory, DocumentType
 from src.shared.infrastructure.repositories import (
     BaseRepository,
     SoftDeletePaginationMixin,
@@ -185,8 +183,11 @@ class ProfessionalDocumentRepository(
         Returns:
             Paginated list of documents.
         """
-        query = self._base_query_for_professional(professional_id).where(
-            ProfessionalDocument.document_category == category
+        query = (
+            self._base_query_for_professional(professional_id)
+            .join(DocumentType)
+            .where(DocumentType.category == category)
+            .options(selectinload(ProfessionalDocument.document_type))
         )
         return await self.list_paginated(
             pagination,
@@ -198,21 +199,21 @@ class ProfessionalDocumentRepository(
     async def get_by_type_for_professional(
         self,
         professional_id: UUID,
-        document_type: DocumentType,
+        document_type_id: UUID,
     ) -> list[ProfessionalDocument]:
         """
         Get all documents of a specific type for a professional.
 
         Args:
             professional_id: The organization professional UUID.
-            document_type: The document type.
+            document_type_id: The document type UUID.
 
         Returns:
             List of documents (may have multiple versions).
         """
         result = await self.session.execute(
-            self._base_query_for_professional(professional_id).where(
-                ProfessionalDocument.document_type == document_type
-            )
+            self._base_query_for_professional(professional_id)
+            .where(ProfessionalDocument.document_type_id == document_type_id)
+            .options(selectinload(ProfessionalDocument.document_type))
         )
         return list(result.scalars().all())

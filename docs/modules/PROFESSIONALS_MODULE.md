@@ -209,25 +209,59 @@ Categoria do documento baseada na entidade relacionada.
 | QUALIFICATION | Documentos da qualificação/conselho |
 | SPECIALTY | Documentos da especialidade |
 
-### DocumentType
-Tipos de documentos que podem ser enviados.
+### DocumentType (Tabela)
 
-| Valor | Categoria | Descrição |
-|-------|-----------|-----------|
-| ID_DOCUMENT | PROFILE | Documento oficial com foto (RG ou CNH) |
-| CRIMINAL_RECORD | PROFILE | Antecedentes criminais |
-| ADDRESS_PROOF | PROFILE | Comprovante de endereço |
-| CV | PROFILE | Currículo |
-| DIPLOMA | QUALIFICATION | Diploma de Medicina/Enfermagem/etc |
-| CRM_REGISTRATION_CERTIFICATE | QUALIFICATION | Certidão de Regularidade de Inscrição |
-| CRM_FINANCIAL_CERTIFICATE | QUALIFICATION | Certidão de Regularidade Financeira |
-| CRM_ETHICS_CERTIFICATE | QUALIFICATION | Certidão Ética |
-| RESIDENCY_CERTIFICATE | SPECIALTY | Certificado de Conclusão de Residência |
-| SPECIALIST_TITLE | SPECIALTY | Título de Especialista da Sociedade |
-| SBA_DIPLOMA | SPECIALTY | Diploma da SBA (anestesiologia) |
-| OTHER | - | Outros documentos |
+> **Nota**: `DocumentType` é uma tabela configurável localizada em `src/shared/domain/models/document_type.py`. 
+> Não é mais um enum - agora os tipos de documento são configuráveis por organização.
+
+Os tipos padrão (seed) incluem:
+
+| Código | Categoria | Nome | Requer Validade |
+|--------|-----------|------|-----------------|
+| ID_DOCUMENT | PROFILE | Documento de Identidade (RG ou CNH) | Não |
+| PHOTO | PROFILE | Foto 3x4 | Não |
+| CRIMINAL_RECORD | PROFILE | Certidão de Antecedentes Criminais | Sim (90 dias) |
+| ADDRESS_PROOF | PROFILE | Comprovante de Endereço | Sim (90 dias) |
+| CV | PROFILE | Currículo | Não |
+| DIPLOMA | QUALIFICATION | Diploma de Graduação | Não |
+| CRM_REGISTRATION_CERTIFICATE | QUALIFICATION | Certidão de Regularidade de Inscrição | Sim (30 dias) |
+| CRM_FINANCIAL_CERTIFICATE | QUALIFICATION | Certidão de Regularidade Financeira | Sim (30 dias) |
+| CRM_ETHICS_CERTIFICATE | QUALIFICATION | Certidão Ética | Sim (30 dias) |
+| RESIDENCY_CERTIFICATE | SPECIALTY | Certificado de Conclusão de Residência | Não |
+| SPECIALIST_TITLE | SPECIALTY | Título de Especialista | Não |
+| SBA_DIPLOMA | SPECIALTY | Diploma da SBA (Anestesiologia) | Não |
+| OTHER | PROFILE | Outro Documento | Não |
 
 ## Tabelas
+
+### document_types
+
+Tipos de documentos configuráveis. Compartilhado entre módulos (shared).
+
+| Campo | Tipo | Nullable | Descrição |
+|-------|------|----------|-----------|
+| id | UUID (v7) | ❌ | Primary key |
+| code | VARCHAR(50) | ❌ | Código único do tipo (ex: CRM_REGISTRATION_CERTIFICATE) |
+| name | VARCHAR(255) | ❌ | Nome em português (ex: Certidão de Regularidade) |
+| category | DocumentCategory | ❌ | Categoria: PROFILE, QUALIFICATION, SPECIALTY |
+| description | VARCHAR(500) | ✅ | Descrição breve |
+| help_text | TEXT | ✅ | Instruções de como obter o documento |
+| validation_instructions | TEXT | ✅ | Instruções para revisor validar |
+| validation_url | VARCHAR(500) | ✅ | URL para validação online |
+| requires_expiration | BOOLEAN | ❌ | Se requer data de validade |
+| default_validity_days | INTEGER | ✅ | Validade padrão em dias |
+| required_for_professional_types | JSONB | ✅ | Lista de ProfessionalType (null = todos) |
+| is_active | BOOLEAN | ❌ | Status ativo/inativo |
+| display_order | INTEGER | ❌ | Ordem de exibição |
+| organization_id | UUID | ✅ | FK para organizations (null = global) |
+| created_by | UUID | ✅ | FK para users (quem criou) |
+| updated_by | UUID | ✅ | FK para users (quem atualizou) |
+| created_at | TIMESTAMP | ❌ | Timestamp de criação |
+| updated_at | TIMESTAMP | ✅ | Timestamp de atualização |
+| deleted_at | TIMESTAMP | ✅ | Soft delete |
+
+**Constraints:**
+- UNIQUE: `(code, organization_id)` - Código único por organização
 
 ### specialties
 
@@ -380,11 +414,10 @@ Documentos enviados pelo/para o profissional.
 | Campo | Tipo | Nullable | Descrição |
 |-------|------|----------|-----------|
 | id | UUID (v7) | ❌ | Primary key |
+| document_type_id | UUID | ❌ | FK para document_types |
 | organization_professional_id | UUID | ❌ | FK para organization_professionals |
 | qualification_id | UUID | ✅ | FK para professional_qualifications |
 | specialty_id | UUID | ✅ | FK para professional_specialties |
-| document_type | DocumentType | ❌ | Tipo do documento |
-| document_category | DocumentCategory | ❌ | Categoria do documento |
 | **Arquivo** | | | |
 | file_url | VARCHAR(2048) | ❌ | URL do arquivo |
 | file_name | VARCHAR(255) | ❌ | Nome original do arquivo |
@@ -399,8 +432,11 @@ Documentos enviados pelo/para o profissional.
 | **Timestamps** | | | |
 | created_at | TIMESTAMP | ❌ | Timestamp de criação |
 | updated_at | TIMESTAMP | ✅ | Timestamp de atualização |
+| deleted_at | TIMESTAMP | ✅ | Soft delete |
 
 **Nota:** Múltiplas versões do mesmo tipo de documento podem existir. O documento válido atual é determinado por: `verified_at IS NOT NULL` + `(expires_at IS NULL OR expires_at > NOW())` + ordenado por `created_at DESC`.
+
+**Nota:** A categoria do documento (`PROFILE`, `QUALIFICATION`, `SPECIALTY`) é obtida via relacionamento com `document_types.category`.
 
 ### companies
 

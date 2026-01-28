@@ -3,13 +3,14 @@ Filters and sorting for ProfessionalDocument entity.
 """
 
 from typing import Optional
+from uuid import UUID
 
 from pydantic import Field
 from fastapi_restkit.filters import BooleanFilter, ListFilter, SearchFilter
 from fastapi_restkit.filterset import FilterSet
 from fastapi_restkit.sortingset import SortableField, SortingSet
 
-from src.modules.professionals.domain.models import DocumentCategory, DocumentType
+from src.shared.domain.models import DocumentCategory
 
 
 class ProfessionalDocumentFilter(FilterSet):
@@ -18,7 +19,7 @@ class ProfessionalDocumentFilter(FilterSet):
 
     Supports:
     - search: Search across file_name
-    - document_type: Filter by document type (ID_DOCUMENT, DIPLOMA, etc.)
+    - document_type_id: Filter by document type ID (UUID)
     - document_category: Filter by category (PROFILE, QUALIFICATION, SPECIALTY)
     - is_verified: Filter by verification status
     """
@@ -28,9 +29,9 @@ class ProfessionalDocumentFilter(FilterSet):
         description="Search by file name (partial, case-insensitive)",
     )
 
-    document_type: Optional[ListFilter[DocumentType]] = Field(
+    document_type_id: Optional[ListFilter[UUID]] = Field(
         default=None,
-        description="Filter by document type",
+        description="Filter by document type ID",
     )
 
     document_category: Optional[ListFilter[DocumentCategory]] = Field(

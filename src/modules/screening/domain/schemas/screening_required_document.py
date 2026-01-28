@@ -6,7 +6,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from src.modules.professionals.domain.models.enums import DocumentCategory, DocumentType
+from src.shared.domain.models import DocumentCategory
 from src.modules.screening.domain.models.enums import RequiredDocumentStatus
 
 
@@ -36,17 +36,9 @@ class ScreeningRequiredDocumentCreate(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-    # Use either document_type (legacy enum) or document_type_config_id (new system)
-    document_type: Optional[DocumentType] = Field(
-        default=None,
-        description="Document type (legacy enum)",
-    )
-    document_type_config_id: Optional[UUID] = Field(
-        default=None,
+    # Use document_type_id to reference the configurable document type
+    document_type_id: UUID = Field(
         description="Reference to configurable document type",
-    )
-    document_category: DocumentCategory = Field(
-        description="Document category (PROFILE, QUALIFICATION, SPECIALTY)",
     )
     is_required: bool = Field(
         default=True,
@@ -96,9 +88,7 @@ class ScreeningRequiredDocumentResponse(BaseModel):
 
     id: UUID
     process_id: UUID
-    document_type: Optional[DocumentType]
-    document_type_config_id: Optional[UUID]
-    document_category: DocumentCategory
+    document_type_id: UUID
     is_required: bool
     description: Optional[str]
     status: RequiredDocumentStatus
@@ -109,8 +99,13 @@ class ScreeningRequiredDocumentResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-    # Nested document type config (when loaded)
-    document_type_config: Optional["DocumentTypeConfigListResponse"] = None
+    # Document type info (from relationship)
+    document_type_code: Optional[str] = None
+    document_type_name: Optional[str] = None
+    document_category: Optional[DocumentCategory] = None
+
+    # Nested document type (when loaded)
+    document_type: Optional["DocumentTypeListResponse"] = None
 
 
 class ScreeningRequiredDocumentDetailResponse(ScreeningRequiredDocumentResponse):
@@ -121,7 +116,7 @@ class ScreeningRequiredDocumentDetailResponse(ScreeningRequiredDocumentResponse)
 
 # Forward references
 from src.modules.screening.domain.schemas.document_type import (  # noqa: E402
-    DocumentTypeConfigListResponse,
+    DocumentTypeListResponse,
 )
 from src.modules.screening.domain.schemas.screening_document_review import (  # noqa: E402
     ScreeningDocumentReviewResponse,

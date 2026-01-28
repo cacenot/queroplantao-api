@@ -337,19 +337,19 @@ Documento unificado que combina requisito + upload + revisão.
 |-------|------|----------|-----------|
 | id | UUID (v7) | ❌ | Primary key |
 | upload_step_id | UUID | ❌ | FK para screening_document_upload_steps |
-| document_type_config_id | UUID | ❌ | FK para document_type_configs |
+| document_type_id | UUID | ❌ | FK para document_types (shared) |
 | professional_document_id | UUID | ✅ | FK para professional_documents (após upload) |
 | **Configuração** | | | |
-| document_category | DocumentCategory | ❌ | PROFILE/QUALIFICATION/SPECIALTY |
 | is_required | BOOLEAN | ❌ | Se é obrigatório |
-| description | VARCHAR(500) | ✅ | Descrição/instruções |
+| order | INTEGER | ❌ | Ordem de exibição |
+| description | VARCHAR(500) | ✅ | Descrição/instruções customizadas |
 | **Status** | | | |
 | status | ScreeningDocumentStatus | ❌ | Status atual |
 | **Revisão** | | | |
 | review_notes | VARCHAR(2000) | ✅ | Notas do revisor |
 | rejection_reason | VARCHAR(1000) | ✅ | Motivo da rejeição |
 | alert_reason | VARCHAR(1000) | ✅ | Motivo do alerta |
-| status_history | JSONB | ❌ | Histórico de mudanças de status |
+| review_history | JSONB | ❌ | Histórico de ações de revisão |
 | **Upload Tracking** | | | |
 | uploaded_at | TIMESTAMP | ✅ | Quando foi enviado |
 | uploaded_by | UUID | ✅ | Quem enviou |
@@ -359,6 +359,8 @@ Documento unificado que combina requisito + upload + revisão.
 | **Mixins** | | | |
 | created_by, updated_by | UUID | ✅ | Tracking |
 | created_at, updated_at | TIMESTAMP | | Timestamps |
+
+**Nota:** A categoria do documento (`PROFILE`, `QUALIFICATION`, `SPECIALTY`) é obtida via relacionamento com `document_types.category`.
 
 ### professional_versions
 

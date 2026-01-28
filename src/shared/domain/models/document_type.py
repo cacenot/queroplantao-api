@@ -1,13 +1,14 @@
 """DocumentType model - configurable document types with help text."""
 
+from enum import Enum
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID
 
 from sqlalchemy import Index, Text, UniqueConstraint, text
+from sqlalchemy import Enum as SAEnum
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Column, Field, Relationship
 
-from src.modules.professionals.domain.models.enums import DocumentCategory
 from src.shared.domain.models.base import BaseModel
 from src.shared.domain.models.mixins import (
     PrimaryKeyMixin,
@@ -17,13 +18,28 @@ from src.shared.domain.models.mixins import (
 )
 
 if TYPE_CHECKING:
+    from src.modules.professionals.domain.models.professional_document import (
+        ProfessionalDocument,
+    )
     from src.modules.screening.domain.models.screening_document import (
         ScreeningDocument,
     )
 
 
-class DocumentTypeConfigBase(BaseModel):
-    """Base fields for DocumentTypeConfig."""
+class DocumentCategory(str, Enum):
+    """
+    Document category based on which entity it relates to.
+
+    Used to group documents by their relation to professional data.
+    """
+
+    PROFILE = "PROFILE"  # Documentos pessoais do profissional
+    QUALIFICATION = "QUALIFICATION"  # Documentos da qualificação/conselho
+    SPECIALTY = "SPECIALTY"  # Documentos da especialidade
+
+
+class DocumentTypeBase(BaseModel):
+    """Base fields for DocumentType."""
 
     # Identification
     code: str = Field(
@@ -35,6 +51,9 @@ class DocumentTypeConfigBase(BaseModel):
         description="Display name in Portuguese (e.g., 'Documento de Identidade')",
     )
     category: DocumentCategory = Field(
+        sa_type=SAEnum(
+            DocumentCategory, name="document_category", create_constraint=True
+        ),
         description="Document category (PROFILE, QUALIFICATION, SPECIALTY)",
     )
 
@@ -90,8 +109,8 @@ class DocumentTypeConfigBase(BaseModel):
     )
 
 
-class DocumentTypeConfig(
-    DocumentTypeConfigBase,
+class DocumentType(
+    DocumentTypeBase,
     TrackingMixin,
     PrimaryKeyMixin,
     TimestampMixin,
@@ -99,14 +118,14 @@ class DocumentTypeConfig(
     table=True,
 ):
     """
-    DocumentTypeConfig table model.
+    DocumentType table model.
 
     Stores configurable document types with help text and validation instructions.
-    Replaces the DocumentType enum to allow runtime configuration.
+    This is a global table with optional organization-specific customizations.
 
-    This is a global table (not organization-scoped) to maintain consistency
-    across the platform. Organizations can customize which documents they require
-    per screening via ScreeningRequiredDocument.
+    Document types can be:
+    - Global (organization_id=None): Available to all organizations, system-defined
+    - Organization-specific: Custom types created by an organization
 
     Example entries:
     - code: "CRM_REGISTRATION_CERTIFICATE"
@@ -115,23 +134,27 @@ class DocumentTypeConfig(
       validation_url: "https://portal.cfm.org.br"
     """
 
-    __tablename__ = "document_type_configs"
+    __tablename__ = "document_types"
     __table_args__ = (
-        # Unique code (soft delete aware)
+        # Unique code per organization (null org = global)
         UniqueConstraint(
             "code",
-            name="uq_document_type_configs_code",
+            "organization_id",
+            name="uq_document_types_code_org",
         ),
+        # Unique index for active global types
         Index(
-            "ix_document_type_configs_code_active",
+            "ix_document_types_code_global_active",
             "code",
             unique=True,
-            postgresql_where=text("deleted_at IS NULL"),
+            postgresql_where=text("deleted_at IS NULL AND organization_id IS NULL"),
         ),
         # Index for category filtering
-        Index("ix_document_type_configs_category", "category"),
+        Index("ix_document_types_category", "category"),
         # Index for active documents
-        Index("ix_document_type_configs_is_active", "is_active"),
+        Index("ix_document_types_is_active", "is_active"),
+        # Index for organization filtering
+        Index("ix_document_types_organization_id", "organization_id"),
     )
 
     # Organization scope (optional - null means global/system-defined)
@@ -143,6 +166,9 @@ class DocumentTypeConfig(
     )
 
     # Relationships
+    professional_documents: list["ProfessionalDocument"] = Relationship(
+        back_populates="document_type",
+    )
     screening_documents: list["ScreeningDocument"] = Relationship(
-        back_populates="document_type_config",
+        back_populates="document_type",
     )

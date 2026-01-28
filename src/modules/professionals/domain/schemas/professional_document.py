@@ -6,7 +6,7 @@ from uuid import UUID
 
 from pydantic import AwareDatetime, BaseModel, ConfigDict, Field
 
-from src.modules.professionals.domain.models import DocumentCategory, DocumentType
+from src.shared.domain.models import DocumentCategory
 
 
 class ProfessionalDocumentCreate(BaseModel):
@@ -14,11 +14,8 @@ class ProfessionalDocumentCreate(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-    document_type: DocumentType = Field(
-        description="Type of document (ID_DOCUMENT, DIPLOMA, etc.)",
-    )
-    document_category: DocumentCategory = Field(
-        description="Category: PROFILE, QUALIFICATION, or SPECIALTY",
+    document_type_id: UUID = Field(
+        description="Reference to the document type configuration",
     )
     file_url: str = Field(
         max_length=2048,
@@ -100,16 +97,20 @@ class ProfessionalDocumentResponse(BaseModel):
 
     id: UUID
     organization_professional_id: UUID
+    document_type_id: UUID
     qualification_id: Optional[UUID] = None
     specialty_id: Optional[UUID] = None
-    document_type: DocumentType
-    document_category: DocumentCategory
     file_url: str
     file_name: str
     file_size: Optional[int] = None
     mime_type: Optional[str] = None
     expires_at: Optional[str] = None
     notes: Optional[str] = None
+
+    # Document type info (from relationship)
+    document_type_code: Optional[str] = None
+    document_type_name: Optional[str] = None
+    document_category: Optional[DocumentCategory] = None
 
     # Verification
     is_verified: bool = False

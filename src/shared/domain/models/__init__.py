@@ -10,6 +10,11 @@ from src.shared.domain.models.base import (
 from src.shared.domain.models.bank import Bank, BankBase
 from src.shared.domain.models.bank_account import BankAccount, BankAccountBase
 from src.shared.domain.models.company import Company, CompanyBase
+from src.shared.domain.models.document_type import (
+    DocumentCategory,
+    DocumentType,
+    DocumentTypeBase,
+)
 from src.shared.domain.models.enums import AccountType, PixKeyType
 from src.shared.domain.models.fields import (
     AwareDatetimeField,
@@ -42,6 +47,9 @@ __all__ = [
     "BankAccountBase",
     "Company",
     "CompanyBase",
+    "DocumentCategory",
+    "DocumentType",
+    "DocumentTypeBase",
     "Specialty",
     "SpecialtyBase",
     # Shared enums

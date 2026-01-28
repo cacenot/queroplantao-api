@@ -1,8 +1,5 @@
 """Screening module repositories."""
 
-from src.modules.screening.infrastructure.repositories.document_type_config_repository import (
-    DocumentTypeConfigRepository,
-)
 from src.modules.screening.infrastructure.repositories.organization_screening_settings_repository import (
     OrganizationScreeningSettingsRepository,
 )
@@ -20,7 +17,6 @@ from src.modules.screening.infrastructure.repositories.screening_required_docume
 )
 
 __all__ = [
-    "DocumentTypeConfigRepository",
     "OrganizationScreeningSettingsRepository",
     "ScreeningDocumentReviewRepository",
     "ScreeningProcessRepository",

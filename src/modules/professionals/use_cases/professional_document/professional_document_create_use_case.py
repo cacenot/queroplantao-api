@@ -11,10 +11,7 @@ from src.app.exceptions import (
     QualificationNotFoundError,
     SpecialtyNotFoundError,
 )
-from src.modules.professionals.domain.models import (
-    DocumentCategory,
-    ProfessionalDocument,
-)
+from src.modules.professionals.domain.models import ProfessionalDocument
 from src.modules.professionals.domain.schemas import ProfessionalDocumentCreate
 from src.modules.professionals.infrastructure.repositories import (
     OrganizationProfessionalRepository,
@@ -22,6 +19,7 @@ from src.modules.professionals.infrastructure.repositories import (
     ProfessionalQualificationRepository,
     ProfessionalSpecialtyRepository,
 )
+from src.shared.domain.models import DocumentCategory
 
 
 class CreateProfessionalDocumentUseCase:

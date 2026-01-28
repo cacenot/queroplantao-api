@@ -4,11 +4,10 @@ from typing import TYPE_CHECKING, Any, Optional
 from uuid import UUID
 
 from pydantic import AwareDatetime
-from sqlalchemy import Enum as SAEnum, Index, UniqueConstraint
+from sqlalchemy import Index, UniqueConstraint
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, Relationship
 
-from src.modules.professionals.domain.models.enums import DocumentCategory
 from src.modules.screening.domain.models.enums import ScreeningDocumentStatus
 from src.shared.domain.models.base import BaseModel
 from src.shared.domain.models.fields import AwareDatetimeField
@@ -22,22 +21,14 @@ if TYPE_CHECKING:
     from src.modules.professionals.domain.models.professional_document import (
         ProfessionalDocument,
     )
-    from src.modules.screening.domain.models.document_type import DocumentTypeConfig
     from src.modules.screening.domain.models.steps.document_upload_step import (
         DocumentUploadStep,
     )
+    from src.shared.domain.models import DocumentType
 
 
 class ScreeningDocumentBase(BaseModel):
     """Base fields for ScreeningDocument."""
-
-    # What document is expected
-    document_category: DocumentCategory = Field(
-        sa_type=SAEnum(
-            DocumentCategory, name="document_category", create_constraint=True
-        ),
-        description="Category: PROFILE, QUALIFICATION, SPECIALTY",
-    )
 
     # Configuration
     is_required: bool = Field(
@@ -58,11 +49,6 @@ class ScreeningDocumentBase(BaseModel):
     # Current status
     status: ScreeningDocumentStatus = Field(
         default=ScreeningDocumentStatus.PENDING_UPLOAD,
-        sa_type=SAEnum(
-            ScreeningDocumentStatus,
-            name="screening_document_status",
-            create_constraint=True,
-        ),
         description="Current status in the workflow",
     )
 
@@ -123,18 +109,18 @@ class ScreeningDocument(
 
     __tablename__ = "screening_documents"
     __table_args__ = (
-        # Each document type config can only appear once per upload step
+        # Each document type can only appear once per upload step
         UniqueConstraint(
             "upload_step_id",
-            "document_type_config_id",
-            name="uq_screening_documents_step_doc_config",
+            "document_type_id",
+            name="uq_screening_documents_step_doc_type",
         ),
         # Index for listing by step
         Index("ix_screening_documents_upload_step_id", "upload_step_id"),
         # Index for filtering by status
         Index("ix_screening_documents_status", "status"),
-        # Index for filtering by category
-        Index("ix_screening_documents_category", "document_category"),
+        # Index for document type
+        Index("ix_screening_documents_document_type_id", "document_type_id"),
     )
 
     # Parent step reference (the DOCUMENT_UPLOAD step)
@@ -144,9 +130,9 @@ class ScreeningDocument(
         description="The document upload step this belongs to",
     )
 
-    # Document type configuration
-    document_type_config_id: UUID = Field(
-        foreign_key="document_type_configs.id",
+    # Document type reference
+    document_type_id: UUID = Field(
+        foreign_key="document_types.id",
         nullable=False,
         description="Reference to the document type configuration",
     )
@@ -187,7 +173,7 @@ class ScreeningDocument(
     upload_step: "DocumentUploadStep" = Relationship(
         back_populates="documents",
     )
-    document_type_config: "DocumentTypeConfig" = Relationship(
+    document_type: "DocumentType" = Relationship(
         back_populates="screening_documents",
     )
     professional_document: Optional["ProfessionalDocument"] = Relationship()

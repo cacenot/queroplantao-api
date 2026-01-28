@@ -1,14 +1,14 @@
-"""Schemas for DocumentTypeConfig."""
+"""Schemas for DocumentType."""
 
 from typing import Optional
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from src.modules.professionals.domain.models.enums import DocumentCategory
+from src.shared.domain.models import DocumentCategory
 
 
-class DocumentTypeConfigCreate(BaseModel):
+class DocumentTypeCreate(BaseModel):
     """Schema for creating a document type configuration."""
 
     model_config = ConfigDict(from_attributes=True)
@@ -62,7 +62,7 @@ class DocumentTypeConfigCreate(BaseModel):
     )
 
 
-class DocumentTypeConfigUpdate(BaseModel):
+class DocumentTypeUpdate(BaseModel):
     """Schema for updating a document type configuration (PATCH)."""
 
     model_config = ConfigDict(from_attributes=True)
@@ -94,7 +94,7 @@ class DocumentTypeConfigUpdate(BaseModel):
     )
 
 
-class DocumentTypeConfigResponse(BaseModel):
+class DocumentTypeResponse(BaseModel):
     """Schema for document type configuration response."""
 
     model_config = ConfigDict(from_attributes=True)
@@ -115,7 +115,7 @@ class DocumentTypeConfigResponse(BaseModel):
     organization_id: Optional[UUID]
 
 
-class DocumentTypeConfigListResponse(BaseModel):
+class DocumentTypeListResponse(BaseModel):
     """Schema for document type list with minimal fields."""
 
     model_config = ConfigDict(from_attributes=True)
