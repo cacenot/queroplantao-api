@@ -109,6 +109,7 @@ class ScreeningMessages(StrEnum):
 
     # Process messages
     PROCESS_NOT_FOUND = "screening.process.not_found"
+    PROCESS_ACTIVE_EXISTS = "screening.process.active_exists"
     PROCESS_INVALID_STATUS = "screening.process.invalid_status"
     PROCESS_ALREADY_COMPLETED = "screening.process.already_completed"
     PROCESS_CANNOT_APPROVE = "screening.process.cannot_approve"

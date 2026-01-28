@@ -21,20 +21,28 @@ headers {
 docs {
   # Obter Triagem
   
-  Retorna os detalhes de um processo de triagem específico.
+  Retorna os detalhes completos de um processo de triagem específico.
   
   ## Response
   
   Inclui:
-  - Dados do profissional
-  - Status atual
-  - Lista de etapas (steps) com status de cada uma
-  - Lista de documentos requeridos
-  - Token de acesso público
+  - Dados do profissional (CPF, nome, telefone, email)
+  - Status atual do processo
+  - Lista de steps com resumo:
+    - `id`: UUID do step
+    - `step_type`: Tipo do step (CONVERSATION, PROFESSIONAL_DATA, etc.)
+    - `order`: Ordem de execução
+    - `status`: Status (PENDING, IN_PROGRESS, COMPLETED, SKIPPED, CANCELLED)
+    - `is_current`: Se é o step atual
+  - Dados de cancelamento (se aplicável):
+    - `cancelled_at`: Data/hora do cancelamento
+    - `cancelled_by`: UUID do usuário que cancelou
+    - `cancellation_reason`: Motivo do cancelamento
+  - Token de acesso público para profissional
   
   ## Error Codes
   
   | Status | Code | Descrição |
   |--------|------|-----------|
-  | 404 | `SCREENING_NOT_FOUND` | Triagem não encontrada |
+  | 404 | `SCREENING_PROCESS_NOT_FOUND` | Triagem não encontrada |
 }

@@ -21,24 +21,34 @@ headers {
 params:query {
   page: 1
   size: 20
-  ~status: in_progress
+  ~status: IN_PROGRESS
 }
 
 docs {
   # Minhas Triagens
   
-  Lista os processos de triagem atribuídos ao usuário atual.
+  Lista os processos de triagem atribuídos ao usuário atual como `current_actor_id`.
   
   ## Query Parameters
   
-  | Parâmetro | Tipo | Descrição |
-  |-----------|------|-----------|
-  | page | int | Página (default: 1) |
-  | size | int | Itens por página (default: 20) |
-  | status | enum | Filtrar por status |
+  | Parâmetro | Tipo | Default | Descrição |
+  |-----------|------|---------|-----------|
+  | page | int | 1 | Número da página |
+  | size | int | 20 | Itens por página (max: 100) |
+  | status | enum | - | Filtrar por status |
+  
+  ## Status Values
+  
+  - `DRAFT` - Rascunho
+  - `IN_PROGRESS` - Em andamento
+  - `APPROVED` - Aprovado
+  - `REJECTED` - Rejeitado
+  - `CANCELLED` - Cancelado
   
   ## Uso
   
   Este endpoint é útil para mostrar a lista de triagens que o usuário
   precisa processar (sua "caixa de entrada" de trabalho).
+  
+  Filtra automaticamente por `current_actor_id = usuário logado`.
 }

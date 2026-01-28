@@ -135,6 +135,7 @@ MESSAGES: dict[str, str] = {
     # ==========================================================================
     # Process
     ScreeningMessages.PROCESS_NOT_FOUND: "Processo de triagem não encontrado",
+    ScreeningMessages.PROCESS_ACTIVE_EXISTS: "Já existe uma triagem ativa para este profissional",
     ScreeningMessages.PROCESS_INVALID_STATUS: "Processo de triagem não pode ser alterado no status {status}",
     ScreeningMessages.PROCESS_ALREADY_COMPLETED: "Processo de triagem já foi finalizado",
     ScreeningMessages.PROCESS_CANNOT_APPROVE: "Processo de triagem não pode ser aprovado no status {status}",

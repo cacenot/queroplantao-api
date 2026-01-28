@@ -1,9 +1,7 @@
 """Screening process use cases."""
 
-from src.modules.screening.use_cases.screening_process.screening_process_complete_use_case import (
-    ApproveScreeningProcessUseCase,
+from src.modules.screening.use_cases.screening_process.screening_process_cancel_use_case import (
     CancelScreeningProcessUseCase,
-    RejectScreeningProcessUseCase,
 )
 from src.modules.screening.use_cases.screening_process.screening_process_create_use_case import (
     CreateScreeningProcessUseCase,
@@ -18,12 +16,10 @@ from src.modules.screening.use_cases.screening_process.screening_process_list_us
 )
 
 __all__ = [
-    "ApproveScreeningProcessUseCase",
     "CancelScreeningProcessUseCase",
     "CreateScreeningProcessUseCase",
     "GetScreeningProcessByTokenUseCase",
     "GetScreeningProcessUseCase",
     "ListMyScreeningProcessesUseCase",
     "ListScreeningProcessesUseCase",
-    "RejectScreeningProcessUseCase",
 ]

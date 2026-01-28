@@ -1,7 +1,7 @@
 meta {
   name: Cancel Screening
   type: http
-  seq: 13
+  seq: 5
 }
 
 post {
@@ -20,37 +20,38 @@ headers {
 
 body:json {
   {
-    "reason": "Profissional desistiu do processo seletivo."
+    "reason": "Profissional desistiu do processo seletivo após conversa inicial."
   }
 }
 
 docs {
   # Cancelar Triagem
   
-  Cancela uma triagem em andamento.
+  Cancela um processo de triagem com motivo obrigatório.
   
   ## Campos
   
-  | Campo | Tipo | Obrigatório | Descrição |
-  |-------|------|-------------|-----------|
-  | reason | string | Não | Motivo do cancelamento |
+  | Campo | Tipo | Obrigatório | Validação | Descrição |
+  |-------|------|-------------|-----------|-----------|
+  | reason | string | Sim | min: 10, max: 2000 chars | Motivo do cancelamento |
   
   ## Comportamento
   
   - Atualiza o status da triagem para `CANCELLED`
-  - Marca a etapa atual como `CANCELLED`
+  - Registra `cancelled_at`, `cancelled_by` e `cancellation_reason`
+  - Todos os steps ativos (PENDING ou IN_PROGRESS) são marcados como `CANCELLED`
   - Triagens canceladas não podem ser reativadas
   
-  ## Permissões
+  ## Restrições
   
-  - Apenas usuários com permissão de gestão podem cancelar
-  - Triagens já concluídas não podem ser canceladas
+  - Não é possível cancelar triagens já finalizadas (APPROVED, REJECTED, CANCELLED)
+  - O motivo deve ter no mínimo 10 caracteres
   
   ## Error Codes
   
   | Status | Code | Descrição |
   |--------|------|-----------|
-  | 404 | `SCREENING_NOT_FOUND` | Triagem não encontrada |
-  | 422 | `SCREENING_ALREADY_COMPLETED` | Triagem já foi concluída |
-  | 422 | `SCREENING_ALREADY_CANCELLED` | Triagem já está cancelada |
+  | 404 | `SCREENING_PROCESS_NOT_FOUND` | Triagem não encontrada |
+  | 409 | `SCREENING_PROCESS_CANNOT_CANCEL` | Não é possível cancelar processo com status finalizado |
+  | 422 | - | Erro de validação (motivo muito curto) |
 }

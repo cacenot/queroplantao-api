@@ -24,6 +24,17 @@ class ScreeningProcessNotFoundError(AppException):
         )
 
 
+class ScreeningProcessActiveExistsError(AppException):
+    """Raised when trying to create screening for professional with active screening."""
+
+    def __init__(self) -> None:
+        super().__init__(
+            message=get_message(ScreeningMessages.PROCESS_ACTIVE_EXISTS),
+            code=ScreeningErrorCodes.SCREENING_PROCESS_ACTIVE_EXISTS,
+            status_code=status.HTTP_409_CONFLICT,
+        )
+
+
 class ScreeningProcessInvalidStatusError(AppException):
     """Raised when operation is invalid for current process status."""
 

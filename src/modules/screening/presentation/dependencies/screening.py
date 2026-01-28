@@ -7,7 +7,6 @@ from fastapi import Depends
 from src.app.dependencies import SessionDep
 from src.modules.screening.use_cases import (
     ApproveDocumentUseCase,
-    ApproveScreeningProcessUseCase,
     CancelScreeningProcessUseCase,
     CreateScreeningProcessUseCase,
     GetScreeningProcessByTokenUseCase,
@@ -16,7 +15,6 @@ from src.modules.screening.use_cases import (
     ListMyScreeningProcessesUseCase,
     ListScreeningProcessesUseCase,
     RejectDocumentUseCase,
-    RejectScreeningProcessUseCase,
     RemoveRequiredDocumentUseCase,
     ReviewDocumentUseCase,
     SelectDocumentsUseCase,
@@ -54,18 +52,6 @@ def get_list_my_screening_processes_use_case(
     session: SessionDep,
 ) -> ListMyScreeningProcessesUseCase:
     return ListMyScreeningProcessesUseCase(session)
-
-
-def get_approve_screening_process_use_case(
-    session: SessionDep,
-) -> ApproveScreeningProcessUseCase:
-    return ApproveScreeningProcessUseCase(session)
-
-
-def get_reject_screening_process_use_case(
-    session: SessionDep,
-) -> RejectScreeningProcessUseCase:
-    return RejectScreeningProcessUseCase(session)
 
 
 def get_cancel_screening_process_use_case(
@@ -132,12 +118,6 @@ ListScreeningProcessesUC = Annotated[
 ]
 ListMyScreeningProcessesUC = Annotated[
     ListMyScreeningProcessesUseCase, Depends(get_list_my_screening_processes_use_case)
-]
-ApproveScreeningProcessUC = Annotated[
-    ApproveScreeningProcessUseCase, Depends(get_approve_screening_process_use_case)
-]
-RejectScreeningProcessUC = Annotated[
-    RejectScreeningProcessUseCase, Depends(get_reject_screening_process_use_case)
 ]
 CancelScreeningProcessUC = Annotated[
     CancelScreeningProcessUseCase, Depends(get_cancel_screening_process_use_case)

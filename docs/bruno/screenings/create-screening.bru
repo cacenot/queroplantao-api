@@ -23,10 +23,15 @@ body:json {
     "professional_cpf": "12345678901",
     "professional_name": "Dr. João Silva",
     "professional_phone": "+5511999999999",
+    "professional_email": "joao.silva@email.com",
     "expected_professional_type": "MEDICO",
     "expected_specialty_id": "{{specialtyId}}",
+    "owner_id": null,
     "client_company_id": null,
-    "selected_document_type_ids": []
+    "include_payment_info": true,
+    "include_supervisor_review": false,
+    "include_client_validation": false,
+    "notes": "Profissional indicado por parceiro"
   }
 }
 
@@ -35,30 +40,56 @@ docs {
   
   Cria um novo processo de triagem para um profissional.
   
-  ## Campos
+  ## Campos Obrigatórios
   
-  | Campo | Tipo | Obrigatório | Descrição |
-  |-------|------|-------------|-----------|
-  | professional_cpf | string | Sim | CPF do profissional (11 dígitos) |
-  | professional_name | string | Sim | Nome completo do profissional |
-  | professional_phone | string | Não | Telefone no formato E.164 |
-  | expected_professional_type | enum | Não | Tipo esperado (MEDICO, ENFERMEIRO, etc.) |
-  | expected_specialty_id | UUID | Não | ID da especialidade esperada |
-  | client_company_id | UUID | Não | ID da empresa contratante |
-  | selected_document_type_ids | UUID[] | Não | IDs dos tipos de documento requeridos |
+  | Campo | Tipo | Descrição |
+  |-------|------|-----------|
+  | professional_cpf | string | CPF do profissional (11 dígitos) |
+  | professional_name | string | Nome completo do profissional |
+  | professional_phone | string | Telefone no formato E.164 |
+  | expected_professional_type | string | Tipo esperado (MEDICO, ENFERMEIRO, etc.) |
+  
+  ## Campos Opcionais
+  
+  | Campo | Tipo | Default | Descrição |
+  |-------|------|---------|-----------|
+  | professional_email | string | null | Email do profissional |
+  | expected_specialty_id | UUID | null | ID da especialidade esperada |
+  | owner_id | UUID | null | ID do responsável (default: usuário atual) |
+  | client_company_id | UUID | null | ID da empresa contratante |
+  | notes | string | null | Notas da conversa inicial |
+  
+  ## Configuração de Steps
+  
+  | Campo | Tipo | Default | Descrição |
+  |-------|------|---------|-----------|
+  | include_payment_info | bool | true | Incluir step de dados bancários |
+  | include_supervisor_review | bool | false | Incluir step de revisão por supervisor |
+  | include_client_validation | bool | false | Incluir step de validação do cliente (auto-habilitado se client_company_id fornecido) |
+  
+  ## Steps Criados
+  
+  **Obrigatórios (sempre criados):**
+  1. CONVERSATION - Conversa inicial
+  2. PROFESSIONAL_DATA - Dados pessoais e qualificações
+  3. DOCUMENT_UPLOAD - Upload de documentos
+  4. DOCUMENT_REVIEW - Revisão dos documentos
+  
+  **Opcionais (configuráveis):**
+  5. PAYMENT_INFO - Dados bancários
+  6. SUPERVISOR_REVIEW - Revisão por supervisor
+  7. CLIENT_VALIDATION - Validação pelo cliente
   
   ## Comportamento
   
   - Se o profissional não existe, será criado com dados mínimos
   - Se já existe triagem ativa para o CPF, retorna erro 409
-  - As etapas são geradas automaticamente com base no fluxo fixo
-  - Etapa de entrevista depende das configurações da organização
-  - Etapa de validação do cliente é opcional (controlado por `is_required` no step)
   - Um token de acesso público é gerado para o profissional
   
   ## Error Codes
   
   | Status | Code | Descrição |
   |--------|------|-----------|
-  | 409 | `SCREENING_ALREADY_EXISTS` | Profissional já possui triagem ativa |
+  | 409 | `SCREENING_PROCESS_ACTIVE_EXISTS` | Já existe uma triagem ativa para este CPF |
+  | 422 | - | Erro de validação nos campos |
 }

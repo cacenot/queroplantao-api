@@ -21,9 +21,9 @@ headers {
 params:query {
   page: 1
   size: 20
-  ~status: in_progress
-  ~assignee_id: 
-  ~client_company_id: 
+  ~status: IN_PROGRESS
+  ~owner_id: 
+  ~search: 
 }
 
 docs {
@@ -31,23 +31,35 @@ docs {
   
   Lista todos os processos de triagem da organização com paginação e filtros.
   
-  ## Query Parameters
+  ## Query Parameters - Paginação
+  
+  | Parâmetro | Tipo | Default | Descrição |
+  |-----------|------|---------|-----------|
+  | page | int | 1 | Número da página |
+  | size | int | 20 | Itens por página (max: 100) |
+  
+  ## Query Parameters - Filtros
   
   | Parâmetro | Tipo | Descrição |
   |-----------|------|-----------|
-  | page | int | Página (default: 1) |
-  | size | int | Itens por página (default: 20) |
   | status | enum | Filtrar por status |
-  | assignee_id | UUID | Filtrar por responsável |
-  | client_company_id | UUID | Filtrar por empresa contratante |
-  | search | string | Buscar por nome ou CPF |
+  | owner_id | UUID | Filtrar por responsável |
+  | search | string | Buscar por nome ou CPF do profissional |
+  | created_after | datetime | Filtrar por data de criação |
+  
+  ## Query Parameters - Ordenação
+  
+  | Parâmetro | Valores | Descrição |
+  |-----------|---------|-----------|
+  | id | asc, desc | Ordena por ID (UUID v7 = ordem temporal) |
+  | created_at | asc, desc | Ordena por data de criação |
+  | status | asc, desc | Ordena por status |
   
   ## Status Values
   
-  - `pending` - Pendente
-  - `in_progress` - Em andamento
-  - `awaiting_approval` - Aguardando aprovação
-  - `approved` - Aprovado
-  - `rejected` - Rejeitado
-  - `cancelled` - Cancelado
+  - `DRAFT` - Rascunho
+  - `IN_PROGRESS` - Em andamento
+  - `APPROVED` - Aprovado
+  - `REJECTED` - Rejeitado
+  - `CANCELLED` - Cancelado
 }

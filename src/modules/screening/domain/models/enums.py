@@ -121,6 +121,7 @@ class StepStatus(str, Enum):
     APPROVED = "APPROVED"  # Validated and approved
     REJECTED = "REJECTED"  # Rejected, needs correction
     SKIPPED = "SKIPPED"  # Skipped (for optional steps)
+    CANCELLED = "CANCELLED"  # Cancelled (when process is cancelled)
     CORRECTION_NEEDED = "CORRECTION_NEEDED"  # Needs correction after review
 
 

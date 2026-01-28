@@ -7,12 +7,12 @@ from fastapi_restkit.filterset import filter_as_query
 from fastapi_restkit.pagination import PaginatedResponse, PaginationParams
 from fastapi_restkit.sortingset import sorting_as_query
 
+from src.app.constants.error_codes import ScreeningErrorCodes
 from src.app.dependencies import OrganizationContext
 from src.modules.screening.domain.schemas import (
-    ScreeningProcessApprove,
+    ScreeningProcessCancel,
     ScreeningProcessCreate,
     ScreeningProcessDetailResponse,
-    ScreeningProcessReject,
     ScreeningProcessResponse,
 )
 from src.modules.screening.infrastructure.filters import (
@@ -20,14 +20,13 @@ from src.modules.screening.infrastructure.filters import (
     ScreeningProcessSorting,
 )
 from src.modules.screening.presentation.dependencies import (
-    ApproveScreeningProcessUC,
     CancelScreeningProcessUC,
     CreateScreeningProcessUC,
     GetScreeningProcessUC,
     ListMyScreeningProcessesUC,
     ListScreeningProcessesUC,
-    RejectScreeningProcessUC,
 )
+from src.shared.domain.schemas import ErrorResponse
 
 router = APIRouter()
 
@@ -37,7 +36,43 @@ router = APIRouter()
     response_model=ScreeningProcessDetailResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Criar triagem",
-    description="Cria um novo processo de triagem para um profissional (Etapa 1 - Conversa/Criação)",
+    description="""
+Cria um novo processo de triagem para um profissional (Etapa 1 - Conversa/Criação).
+
+**Steps obrigatórios (sempre criados):**
+- CONVERSATION: Conversa inicial por telefone
+- PROFESSIONAL_DATA: Dados pessoais, qualificações e especialidades
+- DOCUMENT_UPLOAD: Upload de documentos
+- DOCUMENT_REVIEW: Revisão dos documentos
+
+**Steps opcionais (configuráveis):**
+- PAYMENT_INFO: Dados bancários e de empresa (default: habilitado)
+- SUPERVISOR_REVIEW: Revisão por supervisor (default: desabilitado)
+- CLIENT_VALIDATION: Validação pelo cliente (default: desabilitado, auto-habilitado se client_company_id fornecido)
+""",
+    responses={
+        409: {
+            "model": ErrorResponse,
+            "description": "Conflito",
+            "content": {
+                "application/json": {
+                    "examples": {
+                        "active_exists": {
+                            "summary": "Triagem ativa já existe",
+                            "value": {
+                                "code": ScreeningErrorCodes.SCREENING_PROCESS_ACTIVE_EXISTS,
+                                "message": "Já existe uma triagem ativa para este CPF",
+                            },
+                        },
+                    }
+                }
+            },
+        },
+        422: {
+            "model": ErrorResponse,
+            "description": "Erro de validação",
+        },
+    },
 )
 async def create_screening_process(
     data: ScreeningProcessCreate,
@@ -57,7 +92,20 @@ async def create_screening_process(
     "/",
     response_model=PaginatedResponse[ScreeningProcessResponse],
     summary="Listar triagens",
-    description="Lista todos os processos de triagem da organização",
+    description="""
+Lista todos os processos de triagem da organização.
+
+**Filtros disponíveis:**
+- `status`: Filtra por status (DRAFT, IN_PROGRESS, APPROVED, REJECTED, CANCELLED)
+- `search`: Busca por nome ou CPF do profissional
+- `owner_id`: Filtra por responsável
+- `created_after`: Filtra por data de criação
+
+**Ordenação:**
+- `id`: Ordena por ID (UUID v7 = ordem temporal)
+- `created_at`: Ordena por data de criação
+- `status`: Ordena por status
+""",
 )
 async def list_screening_processes(
     ctx: OrganizationContext,
@@ -81,7 +129,11 @@ async def list_screening_processes(
     "/me",
     response_model=PaginatedResponse[ScreeningProcessResponse],
     summary="Minhas triagens",
-    description="Lista as triagens atribuídas ao usuário atual",
+    description="""
+Lista as triagens atribuídas ao usuário atual como `current_actor_id`.
+
+Útil para visualizar a fila de trabalho do usuário logado.
+""",
 )
 async def list_my_screening_processes(
     ctx: OrganizationContext,
@@ -106,7 +158,34 @@ async def list_my_screening_processes(
     "/{screening_id}",
     response_model=ScreeningProcessDetailResponse,
     summary="Obter triagem",
-    description="Obtém detalhes de um processo de triagem específico com etapas e documentos",
+    description="""
+Obtém detalhes completos de um processo de triagem específico.
+
+**Inclui:**
+- Dados do profissional
+- Lista de steps com status e ordem
+- Documentos associados
+- Histórico de atribuições
+""",
+    responses={
+        404: {
+            "model": ErrorResponse,
+            "description": "Não encontrado",
+            "content": {
+                "application/json": {
+                    "examples": {
+                        "not_found": {
+                            "summary": "Triagem não encontrada",
+                            "value": {
+                                "code": ScreeningErrorCodes.SCREENING_PROCESS_NOT_FOUND,
+                                "message": "Processo de triagem não encontrado",
+                            },
+                        },
+                    }
+                }
+            },
+        },
+    },
 )
 async def get_screening_process(
     screening_id: UUID,
@@ -121,63 +200,68 @@ async def get_screening_process(
 
 
 @router.post(
-    "/{screening_id}/approve",
-    response_model=ScreeningProcessResponse,
-    summary="Aprovar triagem",
-    description="Aprova o processo de triagem (após todas as etapas concluídas)",
-)
-async def approve_screening_process(
-    screening_id: UUID,
-    data: ScreeningProcessApprove,
-    ctx: OrganizationContext,
-    use_case: ApproveScreeningProcessUC,
-) -> ScreeningProcessResponse:
-    """Approve a screening process."""
-    return await use_case.execute(
-        organization_id=ctx.organization,
-        screening_id=screening_id,
-        approved_by=ctx.user,
-        notes=data.notes,
-    )
-
-
-@router.post(
-    "/{screening_id}/reject",
-    response_model=ScreeningProcessResponse,
-    summary="Rejeitar triagem",
-    description="Rejeita o processo de triagem com motivo",
-)
-async def reject_screening_process(
-    screening_id: UUID,
-    data: ScreeningProcessReject,
-    ctx: OrganizationContext,
-    use_case: RejectScreeningProcessUC,
-) -> ScreeningProcessResponse:
-    """Reject a screening process."""
-    return await use_case.execute(
-        organization_id=ctx.organization,
-        screening_id=screening_id,
-        rejected_by=ctx.user,
-        reason=data.reason,
-    )
-
-
-@router.post(
     "/{screening_id}/cancel",
     response_model=ScreeningProcessResponse,
     summary="Cancelar triagem",
-    description="Cancela o processo de triagem",
+    description="""
+Cancela o processo de triagem com motivo obrigatório.
+
+**Regras:**
+- Não é possível cancelar triagens já finalizadas (APPROVED, REJECTED, CANCELLED)
+- Todos os steps ativos (PENDING ou IN_PROGRESS) serão marcados como CANCELLED
+- O motivo deve ter no mínimo 10 caracteres
+""",
+    responses={
+        404: {
+            "model": ErrorResponse,
+            "description": "Não encontrado",
+            "content": {
+                "application/json": {
+                    "examples": {
+                        "not_found": {
+                            "summary": "Triagem não encontrada",
+                            "value": {
+                                "code": ScreeningErrorCodes.SCREENING_PROCESS_NOT_FOUND,
+                                "message": "Processo de triagem não encontrado",
+                            },
+                        },
+                    }
+                }
+            },
+        },
+        409: {
+            "model": ErrorResponse,
+            "description": "Conflito - Não é possível cancelar",
+            "content": {
+                "application/json": {
+                    "examples": {
+                        "cannot_cancel": {
+                            "summary": "Não é possível cancelar",
+                            "value": {
+                                "code": ScreeningErrorCodes.SCREENING_PROCESS_CANNOT_CANCEL,
+                                "message": "Não é possível cancelar um processo com status APPROVED",
+                            },
+                        },
+                    }
+                }
+            },
+        },
+        422: {
+            "model": ErrorResponse,
+            "description": "Erro de validação (motivo muito curto)",
+        },
+    },
 )
 async def cancel_screening_process(
     screening_id: UUID,
+    data: ScreeningProcessCancel,
     ctx: OrganizationContext,
     use_case: CancelScreeningProcessUC,
-    reason: str | None = None,
 ) -> ScreeningProcessResponse:
     """Cancel a screening process."""
     return await use_case.execute(
         organization_id=ctx.organization,
         screening_id=screening_id,
         cancelled_by=ctx.user,
-        reason=reason,
+        reason=data.reason,
     )

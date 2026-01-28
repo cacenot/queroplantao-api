@@ -2,7 +2,6 @@
 
 from src.modules.screening.presentation.dependencies.screening import (
     ApproveDocumentUC,
-    ApproveScreeningProcessUC,
     CancelScreeningProcessUC,
     CreateScreeningProcessUC,
     GetScreeningProcessByTokenUC,
@@ -11,7 +10,6 @@ from src.modules.screening.presentation.dependencies.screening import (
     ListMyScreeningProcessesUC,
     ListScreeningProcessesUC,
     RejectDocumentUC,
-    RejectScreeningProcessUC,
     RemoveRequiredDocumentUC,
     ReviewDocumentUC,
     SelectDocumentsUC,
@@ -29,7 +27,6 @@ from src.modules.screening.presentation.dependencies.screening_step import (
 
 __all__ = [
     "ApproveDocumentUC",
-    "ApproveScreeningProcessUC",
     "CancelScreeningProcessUC",
     "CreateScreeningProcessUC",
     "GetScreeningProcessByTokenUC",
@@ -38,7 +35,6 @@ __all__ = [
     "ListMyScreeningProcessesUC",
     "ListScreeningProcessesUC",
     "RejectDocumentUC",
-    "RejectScreeningProcessUC",
     "RemoveRequiredDocumentUC",
     "ReviewDocumentUC",
     "SelectDocumentsUC",

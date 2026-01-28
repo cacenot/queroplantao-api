@@ -99,6 +99,26 @@ class ScreeningProcessStepAdvance(BaseModel):
     )
 
 
+class StepSummaryResponse(BaseModel):
+    """
+    Minimal schema for step summary in process detail.
+
+    Used to show a list of steps without full details.
+    Ordered by 'order' field.
+    """
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    step_type: StepType
+    order: int
+    status: StepStatus
+    is_current: bool = Field(
+        default=False,
+        description="Whether this is the current active step",
+    )
+
+
 class ScreeningProcessStepResponse(BaseModel):
     """Schema for screening process step response."""
 

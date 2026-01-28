@@ -8,6 +8,7 @@ from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.app.exceptions import ScreeningProcessNotFoundError
 from src.modules.screening.domain.schemas import ScreeningProcessDetailResponse
 from src.modules.screening.infrastructure.repositories import ScreeningProcessRepository
 
@@ -32,20 +33,18 @@ class GetScreeningProcessUseCase:
             screening_id: The screening process ID.
 
         Returns:
-            The screening process response with steps and documents.
+            The screening process response with steps summary.
 
         Raises:
-            NotFoundError: If screening not found.
+            ScreeningProcessNotFoundError: If screening not found.
         """
         process = await self.repository.get_by_id_with_details(
-            id=screening_id,
+            entity_id=screening_id,
             organization_id=organization_id,
         )
 
         if not process:
-            from src.app.exceptions import NotFoundError
-
-            raise NotFoundError(resource="Triagem", identifier=str(screening_id))
+            raise ScreeningProcessNotFoundError(screening_id=str(screening_id))
 
         return ScreeningProcessDetailResponse.model_validate(process)
 
@@ -68,17 +67,14 @@ class GetScreeningProcessByTokenUseCase:
             token: The public access token.
 
         Returns:
-            The screening process response with steps and documents.
+            The screening process response with steps summary.
 
         Raises:
-            NotFoundError: If screening not found.
-            TokenExpiredError: If token has expired.
+            ScreeningProcessNotFoundError: If screening not found or token expired.
         """
         process = await self.repository.get_by_access_token_with_details(token)
 
         if not process:
-            from src.app.exceptions import NotFoundError
-
-            raise NotFoundError(resource="Triagem", identifier="token")
+            raise ScreeningProcessNotFoundError(screening_id="token")
 
         return ScreeningProcessDetailResponse.model_validate(process)

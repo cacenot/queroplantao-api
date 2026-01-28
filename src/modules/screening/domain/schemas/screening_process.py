@@ -58,6 +58,21 @@ class ScreeningProcessCreate(BaseModel):
         description="Client company (empresa contratante)",
     )
 
+    # Step configuration (optional steps)
+    include_payment_info: bool = Field(
+        default=True,
+        description="Include payment info step (bank account + company data)",
+    )
+    include_supervisor_review: bool = Field(
+        default=False,
+        description="Include supervisor review step (escalated review)",
+    )
+    include_client_validation: bool = Field(
+        default=False,
+        description="Include client validation step (client approval). "
+        "Automatically set to True if client_company_id is provided.",
+    )
+
     # Conversation notes
     notes: Optional[str] = Field(
         default=None,
@@ -90,26 +105,15 @@ class ScreeningProcessUpdate(BaseModel):
     )
 
 
-class ScreeningProcessApprove(BaseModel):
-    """Schema for approving a screening process."""
-
-    model_config = ConfigDict(from_attributes=True)
-
-    notes: Optional[str] = Field(
-        default=None,
-        max_length=2000,
-        description="Approval notes",
-    )
-
-
-class ScreeningProcessReject(BaseModel):
-    """Schema for rejecting a screening process."""
+class ScreeningProcessCancel(BaseModel):
+    """Schema for cancelling a screening process."""
 
     model_config = ConfigDict(from_attributes=True)
 
     reason: str = Field(
+        min_length=10,
         max_length=2000,
-        description="Rejection reason",
+        description="Cancellation reason (required)",
     )
 
 
@@ -185,14 +189,16 @@ class ScreeningProcessResponse(BaseModel):
 class ScreeningProcessDetailResponse(ScreeningProcessResponse):
     """Schema for detailed screening process response with nested data."""
 
-    # Nested relationships loaded on demand
-    steps: Optional[list["ScreeningProcessStepResponse"]] = None
+    # Steps summary (ordered by order field)
+    steps: Optional[list["StepSummaryResponse"]] = None
+
+    # Documents (if needed for display)
     required_documents: Optional[list["ScreeningRequiredDocumentResponse"]] = None
 
 
 # Forward references
 from src.modules.screening.domain.schemas.screening_process_step import (  # noqa: E402
-    ScreeningProcessStepResponse,
+    StepSummaryResponse,
 )
 from src.modules.screening.domain.schemas.screening_required_document import (  # noqa: E402
     ScreeningRequiredDocumentResponse,

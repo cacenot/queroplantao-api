@@ -2,14 +2,12 @@
 
 # Screening Process use cases
 from src.modules.screening.use_cases.screening_process import (
-    ApproveScreeningProcessUseCase,
     CancelScreeningProcessUseCase,
     CreateScreeningProcessUseCase,
     GetScreeningProcessByTokenUseCase,
     GetScreeningProcessUseCase,
     ListMyScreeningProcessesUseCase,
     ListScreeningProcessesUseCase,
-    RejectScreeningProcessUseCase,
 )
 
 # Screening Step use cases (new specific use cases)
@@ -40,14 +38,12 @@ from src.modules.screening.use_cases.screening_validation import (
 
 __all__ = [
     # Process
-    "ApproveScreeningProcessUseCase",
     "CancelScreeningProcessUseCase",
     "CreateScreeningProcessUseCase",
     "GetScreeningProcessByTokenUseCase",
     "GetScreeningProcessUseCase",
     "ListMyScreeningProcessesUseCase",
     "ListScreeningProcessesUseCase",
-    "RejectScreeningProcessUseCase",
     # Steps (specific use cases)
     "CompleteClientValidationStepUseCase",
     "CompleteConversationStepUseCase",

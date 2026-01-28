@@ -1,6 +1,6 @@
 """ScreeningProcess model - individual screening instances."""
 
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Any, Optional, Union
 from uuid import UUID
 
 from pydantic import AwareDatetime
@@ -48,6 +48,17 @@ if TYPE_CHECKING:
         SupervisorReviewStep,
     )
     from src.shared.domain.models.company import Company
+
+    # Union type for all step types
+    AnyStep = Union[
+        ConversationStep,
+        ProfessionalDataStep,
+        DocumentUploadStep,
+        DocumentReviewStep,
+        PaymentInfoStep,
+        SupervisorReviewStep,
+        ClientValidationStep,
+    ]
 
 
 class ScreeningProcessBase(BaseModel):
@@ -239,11 +250,28 @@ class ScreeningProcess(
         description="Client company (empresa contratante) for outsourcing scenarios",
     )
 
-    # Workflow timestamp
+    # Workflow timestamps
     completed_at: Optional[AwareDatetime] = AwareDatetimeField(
         default=None,
         nullable=True,
         description="When screening was approved/finalized",
+    )
+    cancelled_at: Optional[AwareDatetime] = AwareDatetimeField(
+        default=None,
+        nullable=True,
+        description="When screening was cancelled",
+    )
+
+    # Cancellation tracking
+    cancelled_by: Optional[UUID] = Field(
+        default=None,
+        nullable=True,
+        description="User who cancelled this screening",
+    )
+    cancellation_reason: Optional[str] = Field(
+        default=None,
+        max_length=2000,
+        description="Reason for cancellation (if cancelled)",
     )
 
     # === Relationships ===
@@ -296,7 +324,7 @@ class ScreeningProcess(
     # === Properties ===
 
     @property
-    def active_steps(self) -> list:
+    def active_steps(self) -> "list[AnyStep]":
         """
         Get list of steps that exist for this process, sorted by order.
 
@@ -310,7 +338,7 @@ class ScreeningProcess(
         6. SUPERVISOR_REVIEW (optional)
         7. CLIENT_VALIDATION (optional)
         """
-        steps = []
+        steps: list[AnyStep] = []
         if self.conversation_step:
             steps.append(self.conversation_step)
         if self.professional_data_step:
@@ -333,7 +361,7 @@ class ScreeningProcess(
         return [step.step_type for step in self.active_steps]
 
     @property
-    def current_step(self):
+    def current_step(self) -> "Optional[AnyStep]":
         """
         Get the current active step (first non-completed step in order).
 
@@ -354,6 +382,32 @@ class ScreeningProcess(
     def step_count(self) -> int:
         """Get total number of configured steps."""
         return len(self.active_steps)
+
+    @property
+    def steps(self) -> list[dict[str, Any]]:
+        """
+        Get list of step summaries for serialization.
+
+        Returns a list of dicts with fields matching StepSummaryResponse:
+        - id: UUID
+        - step_type: StepType
+        - order: int
+        - status: StepStatus
+        - is_current: bool
+        """
+        current = self.current_step
+        current_id = current.id if current else None
+
+        return [
+            {
+                "id": step.id,
+                "step_type": step.step_type,
+                "order": step.order,
+                "status": step.status,
+                "is_current": step.id == current_id,
+            }
+            for step in self.active_steps
+        ]
 
     @property
     def completed_step_count(self) -> int:
