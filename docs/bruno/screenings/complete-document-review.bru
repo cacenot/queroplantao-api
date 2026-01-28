@@ -1,0 +1,76 @@
+meta {
+  name: Complete Document Review Step
+  type: http
+  seq: 11
+}
+
+post {
+  url: {{baseUrl}}/screenings/{{screeningId}}/steps/{{stepId}}/document-review/complete
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  X-Organization-ID: {{organizationId}}
+}
+
+body:json {
+  {
+    "notes": "Revisão concluída"
+  }
+}
+
+docs {
+  # Completar Etapa de Revisão de Documentos (Etapa 4)
+  
+  Finaliza a etapa de revisão de documentos após todos terem sido revisados.
+  
+  ## Campos
+  
+  | Campo | Tipo | Obrigatório | Descrição |
+  |-------|------|-------------|-----------|
+  | notes | string | Não | Notas sobre a conclusão |
+  
+  ## Comportamento
+  
+  Depende do resultado das revisões:
+  
+  ### Todos APPROVED
+  - DocumentReviewStep → APPROVED
+  - Avança para próximo step (PAYMENT_INFO ou SUPERVISOR_REVIEW)
+  
+  ### Algum CORRECTION_NEEDED
+  - DocumentReviewStep → CORRECTION_NEEDED
+  - DocumentUploadStep → CORRECTION_NEEDED
+  - Profissional deve reenviar documentos marcados
+  - Após re-upload, chamar complete do upload step novamente
+  
+  ## Ciclo de Correção
+  
+  ```
+  DOCUMENT_REVIEW.complete (com correções)
+      ↓
+  Upload step → CORRECTION_NEEDED
+      ↓
+  Profissional reenvia documentos
+      ↓
+  Upload step.complete()
+      ↓
+  Review step → IN_PROGRESS
+      ↓
+  Revisor analisa novamente
+  ```
+  
+  ## Error Codes
+  
+  | Status | Code | Descrição |
+  |--------|------|-----------|
+  | 404 | `SCREENING_PROCESS_NOT_FOUND` | Processo não encontrado |
+  | 404 | `SCREENING_STEP_NOT_FOUND` | Step não encontrado |
+  | 422 | `SCREENING_STEP_NOT_IN_PROGRESS` | Step não está em andamento |
+  | 422 | `SCREENING_DOCUMENTS_NOT_REVIEWED` | Documentos pendentes de revisão |
+}

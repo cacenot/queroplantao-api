@@ -1,0 +1,57 @@
+meta {
+  name: Complete Document Upload Step
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{baseUrl}}/screenings/{{screeningId}}/steps/{{stepId}}/document-upload/complete
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  X-Organization-ID: {{organizationId}}
+}
+
+body:json {
+  {
+    "notes": "Todos os documentos enviados"
+  }
+}
+
+docs {
+  # Completar Etapa de Upload de Documentos (Etapa 3)
+  
+  Finaliza a etapa de upload de documentos após todos os documentos obrigatórios terem sido enviados.
+  
+  ## Campos
+  
+  | Campo | Tipo | Obrigatório | Descrição |
+  |-------|------|-------------|-----------|
+  | notes | string | Não | Notas sobre a conclusão |
+  
+  ## Comportamento
+  
+  1. Valida que todos os documentos obrigatórios foram enviados
+  2. Transiciona step de IN_PROGRESS para COMPLETED
+  3. Avança para o próximo step (DOCUMENT_REVIEW)
+  
+  ## Validações
+  
+  - Step deve estar em IN_PROGRESS ou CORRECTION_NEEDED
+  - Todos os documentos com is_required=true devem ter status != PENDING_UPLOAD
+  
+  ## Error Codes
+  
+  | Status | Code | Descrição |
+  |--------|------|-----------|
+  | 404 | `SCREENING_PROCESS_NOT_FOUND` | Processo não encontrado |
+  | 404 | `SCREENING_STEP_NOT_FOUND` | Step não encontrado |
+  | 422 | `SCREENING_STEP_NOT_IN_PROGRESS` | Step não está em andamento |
+  | 422 | `SCREENING_DOCUMENTS_NOT_UPLOADED` | Documentos obrigatórios não enviados |
+}

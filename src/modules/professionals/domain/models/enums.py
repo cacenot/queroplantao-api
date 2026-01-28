@@ -3,6 +3,17 @@
 from enum import Enum
 
 
+class DocumentSourceType(str, Enum):
+    """
+    Source type for professional documents.
+
+    Indicates how/where a document was created.
+    """
+
+    DIRECT = "DIRECT"  # Uploaded directly via API/admin
+    SCREENING = "SCREENING"  # Uploaded during a screening process
+
+
 class CouncilType(str, Enum):
     """
     Types of professional councils in Brazil.

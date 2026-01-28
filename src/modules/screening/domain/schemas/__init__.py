@@ -11,15 +11,9 @@ from src.modules.screening.domain.schemas.organization_screening_settings import
     OrganizationScreeningSettingsResponse,
     OrganizationScreeningSettingsUpdate,
 )
-from src.modules.screening.domain.schemas.screening_document_review import (
-    DocumentUploadBulkRequest,
-    DocumentUploadRequest,
-    ScreeningDocumentReviewBulkUpdate,
-    ScreeningDocumentReviewCreate,
-    ScreeningDocumentReviewItemUpdate,
-    ScreeningDocumentReviewResponse,
-    ScreeningDocumentReviewUpdate,
-    ScreeningDocumentUpload,
+from src.modules.screening.domain.schemas.screening_document import (
+    ScreeningDocumentCreate,
+    ScreeningDocumentResponse,
 )
 from src.modules.screening.domain.schemas.screening_process import (
     ScreeningProcessCancel,
@@ -38,14 +32,6 @@ from src.modules.screening.domain.schemas.screening_process_step import (
     ScreeningProcessStepUpdate,
     StepSummaryResponse,
 )
-from src.modules.screening.domain.schemas.screening_required_document import (
-    ReviewNoteEntry,
-    ScreeningRequiredDocumentBulkCreate,
-    ScreeningRequiredDocumentCreate,
-    ScreeningRequiredDocumentDetailResponse,
-    ScreeningRequiredDocumentResponse,
-    ScreeningRequiredDocumentUpdate,
-)
 from src.modules.screening.domain.schemas.screening_step_complete import (
     ClientValidationStepCompleteRequest,
     ConversationStepCompleteRequest,
@@ -53,10 +39,16 @@ from src.modules.screening.domain.schemas.screening_step_complete import (
     DocumentUploadStepCompleteRequest,
 )
 from src.modules.screening.domain.schemas.steps import (
+    ConfigureDocumentsRequest,
     ConversationStepResponse,
+    DocumentReviewStepResponse,
+    DocumentUploadStepResponse,
     ProfessionalDataStepCompleteRequest,
     ProfessionalDataStepResponse,
+    ReviewDocumentRequest,
+    ScreeningDocumentSummary,
     StepResponseBase,
+    UploadDocumentRequest,
 )
 
 __all__ = [
@@ -69,15 +61,9 @@ __all__ = [
     "OrganizationScreeningSettingsCreate",
     "OrganizationScreeningSettingsResponse",
     "OrganizationScreeningSettingsUpdate",
-    # Screening Document Review
-    "DocumentUploadBulkRequest",
-    "DocumentUploadRequest",
-    "ScreeningDocumentReviewBulkUpdate",
-    "ScreeningDocumentReviewCreate",
-    "ScreeningDocumentReviewItemUpdate",
-    "ScreeningDocumentReviewResponse",
-    "ScreeningDocumentReviewUpdate",
-    "ScreeningDocumentUpload",
+    # Screening Document
+    "ScreeningDocumentCreate",
+    "ScreeningDocumentResponse",
     # Screening Process
     "ScreeningProcessCancel",
     "ScreeningProcessCreate",
@@ -93,21 +79,20 @@ __all__ = [
     "ScreeningProcessStepResponse",
     "ScreeningProcessStepUpdate",
     "StepSummaryResponse",
-    # Screening Required Document
-    "ReviewNoteEntry",
-    "ScreeningRequiredDocumentBulkCreate",
-    "ScreeningRequiredDocumentCreate",
-    "ScreeningRequiredDocumentDetailResponse",
-    "ScreeningRequiredDocumentResponse",
-    "ScreeningRequiredDocumentUpdate",
     # Screening Step Complete
     "ClientValidationStepCompleteRequest",
     "ConversationStepCompleteRequest",
     "DocumentReviewStepCompleteRequest",
     "DocumentUploadStepCompleteRequest",
     # Step Response Schemas
+    "ConfigureDocumentsRequest",
     "ConversationStepResponse",
+    "DocumentReviewStepResponse",
+    "DocumentUploadStepResponse",
     "ProfessionalDataStepCompleteRequest",
     "ProfessionalDataStepResponse",
+    "ReviewDocumentRequest",
+    "ScreeningDocumentSummary",
     "StepResponseBase",
+    "UploadDocumentRequest",
 ]

@@ -61,12 +61,7 @@ class ScreeningDocumentBase(BaseModel):
     rejection_reason: Optional[str] = Field(
         default=None,
         max_length=1000,
-        description="Reason for rejection (if REJECTED)",
-    )
-    alert_reason: Optional[str] = Field(
-        default=None,
-        max_length=1000,
-        description="Reason for alert (if ALERT)",
+        description="Reason for rejection (if CORRECTION_NEEDED)",
     )
 
     # Review history - JSONB array of {user_id, action, notes, timestamp}
@@ -95,16 +90,18 @@ class ScreeningDocument(
     - ScreeningDocumentReview (the review)
 
     Lifecycle:
-    1. Created with PENDING_UPLOAD when screening is configured
+    1. Created with PENDING_UPLOAD when documents are configured
     2. Moves to PENDING_REVIEW when professional uploads (links professional_document_id)
-    3. Reviewer sets APPROVED, REJECTED, or ALERT
-    4. If REJECTED, professional re-uploads and status goes back to PENDING_REVIEW
-    5. If ALERT, escalates to supervisor review
+    3. Reviewer sets APPROVED or CORRECTION_NEEDED
+    4. If CORRECTION_NEEDED, professional re-uploads and status goes back to PENDING_REVIEW
 
     For optional documents:
     - is_required=False
     - Can be SKIPPED if not provided
     - Still goes through review if uploaded
+
+    For reused documents:
+    - REUSED status when document from previous screening is used
     """
 
     __tablename__ = "screening_documents"
@@ -190,8 +187,7 @@ class ScreeningDocument(
         """Check if document has been reviewed."""
         return self.status in (
             ScreeningDocumentStatus.APPROVED,
-            ScreeningDocumentStatus.REJECTED,
-            ScreeningDocumentStatus.ALERT,
+            ScreeningDocumentStatus.CORRECTION_NEEDED,
         )
 
     @property
@@ -211,13 +207,18 @@ class ScreeningDocument(
 
     @property
     def needs_correction(self) -> bool:
-        """Check if document was rejected and needs re-upload."""
-        return self.status == ScreeningDocumentStatus.REJECTED
+        """Check if document needs re-upload after rejection."""
+        return self.status == ScreeningDocumentStatus.CORRECTION_NEEDED
 
     @property
-    def requires_escalation(self) -> bool:
-        """Check if document needs supervisor attention."""
-        return self.status == ScreeningDocumentStatus.ALERT
+    def is_reused(self) -> bool:
+        """Check if document is reused from previous screening."""
+        return self.status == ScreeningDocumentStatus.REUSED
+
+    @property
+    def is_skipped(self) -> bool:
+        """Check if optional document was skipped."""
+        return self.status == ScreeningDocumentStatus.SKIPPED
 
     @property
     def is_complete(self) -> bool:

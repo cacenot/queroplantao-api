@@ -39,15 +39,10 @@ class DocumentReviewStepBase(BaseModel):
         ge=0,
         description="Documents approved",
     )
-    rejected_count: int = Field(
+    correction_needed_count: int = Field(
         default=0,
         ge=0,
-        description="Documents rejected (need re-upload)",
-    )
-    alert_count: int = Field(
-        default=0,
-        ge=0,
-        description="Documents with alerts (need supervisor)",
+        description="Documents needing correction (re-upload)",
     )
 
 
@@ -60,15 +55,14 @@ class DocumentReviewStep(DocumentReviewStepBase, ScreeningStepMixin, table=True)
     The step completes when all uploaded documents have been reviewed.
     Based on review outcomes:
     - All APPROVED → screening continues to next step
-    - Any REJECTED → step gets CORRECTION_NEEDED, back to upload step
-    - Any ALERT → triggers SupervisorReviewStep (if configured)
+    - Any CORRECTION_NEEDED → step gets CORRECTION_NEEDED, back to upload step
 
     Documents are accessed via the linked DocumentUploadStep.
 
     Workflow:
     1. Gestor opens document review step
     2. Reviews each document individually
-    3. Sets status for each: APPROVED, REJECTED (with reason), or ALERT
+    3. Sets status for each: APPROVED or CORRECTION_NEEDED (with reason)
     4. When all reviewed, determines next action based on outcomes
     """
 
@@ -119,22 +113,16 @@ class DocumentReviewStep(DocumentReviewStepBase, ScreeningStepMixin, table=True)
         return [d for d in self.documents if d.needs_review]
 
     @property
-    def has_rejections(self) -> bool:
-        """Check if any document was rejected."""
-        return self.rejected_count > 0
-
-    @property
-    def has_alerts(self) -> bool:
-        """Check if any document has alerts."""
-        return self.alert_count > 0
+    def has_corrections_needed(self) -> bool:
+        """Check if any document needs correction."""
+        return self.correction_needed_count > 0
 
     @property
     def all_approved(self) -> bool:
         """Check if all documents are approved."""
         return (
             self.reviewed_count == self.total_to_review
-            and self.rejected_count == 0
-            and self.alert_count == 0
+            and self.correction_needed_count == 0
         )
 
     @property
@@ -150,5 +138,4 @@ class DocumentReviewStep(DocumentReviewStepBase, ScreeningStepMixin, table=True)
         self.total_to_review = sum(1 for d in docs if d.is_uploaded)
         self.reviewed_count = sum(1 for d in docs if d.is_reviewed)
         self.approved_count = sum(1 for d in docs if d.is_approved)
-        self.rejected_count = sum(1 for d in docs if d.needs_correction)
-        self.alert_count = sum(1 for d in docs if d.requires_escalation)
+        self.correction_needed_count = sum(1 for d in docs if d.needs_correction)

@@ -4,9 +4,10 @@ from typing import TYPE_CHECKING, Optional
 from uuid import UUID
 
 from pydantic import AwareDatetime
-from sqlalchemy import Index, text
+from sqlalchemy import Enum as SAEnum, Index, text
 from sqlmodel import Field, Relationship
 
+from src.modules.professionals.domain.models.enums import DocumentSourceType
 from src.shared.domain.models import (
     AwareDatetimeField,
     BaseModel,
@@ -27,6 +28,7 @@ if TYPE_CHECKING:
     from src.modules.professionals.domain.models.professional_specialty import (
         ProfessionalSpecialty,
     )
+    from src.modules.screening.domain.models import ScreeningProcess
     from src.shared.domain.models import DocumentType
 
 
@@ -63,6 +65,19 @@ class ProfessionalDocumentBase(BaseModel):
     notes: Optional[str] = Field(
         default=None,
         description="Additional notes about this document",
+    )
+
+    # Source tracking
+    source_type: DocumentSourceType = Field(
+        default=DocumentSourceType.DIRECT,
+        sa_type=SAEnum(DocumentSourceType, name="documentsourcetype"),
+        description="How this document was created (DIRECT or SCREENING)",
+    )
+
+    # Pending state for screening workflow
+    is_pending: bool = Field(
+        default=False,
+        description="True if document is pending screening approval",
     )
 
 
@@ -107,6 +122,12 @@ class ProfessionalDocument(
             "expires_at",
             postgresql_where=text("deleted_at IS NULL AND expires_at IS NOT NULL"),
         ),
+        # B-tree index for pending documents in screening
+        Index(
+            "idx_professional_documents_pending",
+            "screening_id",
+            postgresql_where=text("deleted_at IS NULL AND is_pending = TRUE"),
+        ),
     )
 
     # Document type reference
@@ -137,6 +158,24 @@ class ProfessionalDocument(
         description="Professional specialty ID (for SPECIALTY category)",
     )
 
+    # Screening workflow fields
+    screening_id: Optional[UUID] = Field(
+        default=None,
+        foreign_key="screening_processes.id",
+        nullable=True,
+        description="Screening process that created this document (if source_type=SCREENING)",
+    )
+    promoted_at: Optional[AwareDatetime] = AwareDatetimeField(
+        default=None,
+        nullable=True,
+        description="When document was promoted from pending (UTC)",
+    )
+    promoted_by: Optional[UUID] = Field(
+        default=None,
+        nullable=True,
+        description="User who promoted the document from pending",
+    )
+
     # Relationships
     document_type: "DocumentType" = Relationship(
         back_populates="professional_documents",
@@ -148,7 +187,9 @@ class ProfessionalDocument(
     specialty: Optional["ProfessionalSpecialty"] = Relationship(
         back_populates="documents"
     )
-    # Note: screening_reviews relationship is defined on ScreeningDocumentReview to avoid circular imports
+    screening: Optional["ScreeningProcess"] = Relationship(
+        back_populates="pending_documents",
+    )
 
     # === Properties ===
 

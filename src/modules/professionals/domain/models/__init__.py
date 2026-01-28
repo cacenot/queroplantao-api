@@ -4,6 +4,7 @@ Professionals module models.
 
 from src.modules.professionals.domain.models.enums import (
     CouncilType,
+    DocumentSourceType,
     EducationLevel,
     Gender,
     MaritalStatus,
@@ -58,6 +59,7 @@ from src.shared.domain.models.specialty import Specialty, SpecialtyBase
 __all__ = [
     # Enums
     "CouncilType",
+    "DocumentSourceType",
     "EducationLevel",
     "Gender",
     "MaritalStatus",

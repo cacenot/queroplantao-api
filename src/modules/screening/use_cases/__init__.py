@@ -4,6 +4,7 @@
 from src.modules.screening.use_cases.screening_process import (
     CancelScreeningProcessUseCase,
     CreateScreeningProcessUseCase,
+    FinalizeScreeningProcessUseCase,
     GetScreeningProcessByTokenUseCase,
     GetScreeningProcessUseCase,
     ListMyScreeningProcessesUseCase,
@@ -18,6 +19,7 @@ from src.modules.screening.use_cases.screening_step import (
     CompleteDocumentUploadStepUseCase,
     CompleteSimpleStepUseCase,
     GoBackToStepUseCase,
+    ReuseDocumentUseCase,
 )
 
 # Screening Document use cases
@@ -40,6 +42,7 @@ __all__ = [
     # Process
     "CancelScreeningProcessUseCase",
     "CreateScreeningProcessUseCase",
+    "FinalizeScreeningProcessUseCase",
     "GetScreeningProcessByTokenUseCase",
     "GetScreeningProcessUseCase",
     "ListMyScreeningProcessesUseCase",
@@ -51,6 +54,7 @@ __all__ = [
     "CompleteDocumentUploadStepUseCase",
     "CompleteSimpleStepUseCase",
     "GoBackToStepUseCase",
+    "ReuseDocumentUseCase",
     # Documents
     "ApproveDocumentUseCase",
     "KeepExistingDocumentUseCase",

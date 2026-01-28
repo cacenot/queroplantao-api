@@ -6,6 +6,7 @@ from uuid import UUID
 
 from pydantic import AwareDatetime, BaseModel, ConfigDict, Field
 
+from src.modules.professionals.domain.models import DocumentSourceType
 from src.shared.domain.models import DocumentCategory
 
 
@@ -52,6 +53,12 @@ class ProfessionalDocumentCreate(BaseModel):
     specialty_id: Optional[UUID] = Field(
         default=None,
         description="Professional specialty ID (for SPECIALTY category)",
+    )
+
+    # Screening workflow fields (set automatically when creating via screening)
+    screening_id: Optional[UUID] = Field(
+        default=None,
+        description="Screening process ID when document is uploaded during screening",
     )
 
 
@@ -114,6 +121,13 @@ class ProfessionalDocumentResponse(BaseModel):
 
     # Verification
     is_verified: bool = False
+
+    # Screening workflow fields
+    is_pending: bool = False
+    source_type: DocumentSourceType = DocumentSourceType.DIRECT
+    screening_id: Optional[UUID] = None
+    promoted_at: Optional[datetime] = None
+    promoted_by: Optional[UUID] = None
 
     # Timestamps
     created_at: Optional[datetime] = None

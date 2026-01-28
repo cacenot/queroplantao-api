@@ -1,0 +1,56 @@
+meta {
+  name: Finalize Screening
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/screenings/{{screeningId}}/finalize
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  X-Organization-ID: {{organizationId}}
+}
+
+docs {
+  # Finalizar Triagem
+  
+  Finaliza o processo de triagem e aprova todos os documentos pendentes.
+  
+  ## Comportamento
+  
+  1. Valida que todas as etapas obrigatórias foram concluídas
+  2. Promove todos os documentos pendentes (`is_pending=False`)
+  3. Registra `promoted_at` e `promoted_by` em cada documento promovido
+  4. Atualiza o status da triagem para `APPROVED`
+  5. Registra `completed_at`
+  
+  ## Documentos Pendentes
+  
+  Documentos criados durante a triagem têm `source_type=SCREENING` e `is_pending=True`.
+  Ao finalizar:
+  - `is_pending` → `False`
+  - `promoted_at` → timestamp atual
+  - `promoted_by` → ID do usuário que finalizou
+  
+  Isso significa que os documentos "tornam-se oficiais" apenas após a aprovação da triagem.
+  
+  ## Restrições
+  
+  - Só é possível finalizar triagens com status `IN_PROGRESS`
+  - Todas as etapas obrigatórias devem estar `COMPLETED` ou `APPROVED`
+  - Etapas opcionais podem estar `SKIPPED`
+  
+  ## Error Codes
+  
+  | Status | Code | Descrição |
+  |--------|------|-----------|
+  | 404 | `SCREENING_PROCESS_NOT_FOUND` | Triagem não encontrada |
+  | 422 | `VALIDATION_ERROR` | Triagem não pode ser finalizada (status inválido ou etapas incompletas) |
+}

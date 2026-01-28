@@ -9,6 +9,9 @@ from src.app.exceptions import (
     ScreeningProcessCannotCancelError,
     ScreeningProcessNotFoundError,
 )
+from src.modules.professionals.infrastructure.repositories import (
+    ProfessionalDocumentRepository,
+)
 from src.modules.screening.domain.models.enums import ScreeningStatus, StepStatus
 from src.modules.screening.domain.models.screening_process import ScreeningProcess
 from src.modules.screening.domain.schemas import ScreeningProcessResponse
@@ -19,12 +22,14 @@ class CancelScreeningProcessUseCase:
     """
     Cancel a screening process.
 
-    Marks the screening as CANCELLED with a reason and cancels all active steps.
+    Marks the screening as CANCELLED with a reason, cancels all active steps,
+    and soft-deletes any orphan pending documents.
     """
 
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
         self.repository = ScreeningProcessRepository(session)
+        self.document_repository = ProfessionalDocumentRepository(session)
 
     async def execute(
         self,
@@ -73,6 +78,12 @@ class CancelScreeningProcessUseCase:
 
         # Cancel all active steps
         self._cancel_active_steps(process)
+
+        # Soft-delete orphan pending documents
+        await self.document_repository.soft_delete_orphan_pending_documents(
+            screening_id=screening_id,
+            deleted_by=cancelled_by,
+        )
 
         await self.session.flush()
         await self.session.refresh(process)

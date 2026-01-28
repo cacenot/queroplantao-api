@@ -40,7 +40,14 @@ docs {
   - Atualiza o status da triagem para `CANCELLED`
   - Registra `cancelled_at`, `cancelled_by` e `cancellation_reason`
   - Todos os steps ativos (PENDING ou IN_PROGRESS) são marcados como `CANCELLED`
+  - **Documentos pendentes são soft-deleted** (documentos com `is_pending=True` e `screening_id` desta triagem)
   - Triagens canceladas não podem ser reativadas
+  
+  ## Documentos Órfãos
+  
+  Documentos criados durante a triagem (`source_type=SCREENING`, `is_pending=True`) são automaticamente
+  soft-deleted quando a triagem é cancelada. Isso garante que arquivos não aprovados não fiquem
+  "órfãos" no sistema.
   
   ## Restrições
   

@@ -65,19 +65,6 @@ class ChangeType(str, Enum):
     REMOVED = "REMOVED"  # Field/entity removed
 
 
-class DocumentReviewStatus(str, Enum):
-    """
-    Status of an individual document review.
-
-    Tracks the review outcome for a specific document.
-    """
-
-    PENDING = "PENDING"  # Not yet reviewed
-    APPROVED = "APPROVED"  # Document approved
-    REJECTED = "REJECTED"  # Document rejected, needs re-upload
-    ALERT = "ALERT"  # Requires supervisor attention
-
-
 class ScreeningStatus(str, Enum):
     """
     Status of a screening process throughout its lifecycle.
@@ -92,20 +79,6 @@ class ScreeningStatus(str, Enum):
     REJECTED = "REJECTED"  # Screening rejected
     EXPIRED = "EXPIRED"  # Screening expired before completion
     CANCELLED = "CANCELLED"  # Screening cancelled by organization
-
-
-class RequiredDocumentStatus(str, Enum):
-    """
-    Status of a required document in the screening workflow.
-
-    Tracks document upload and review lifecycle.
-    """
-
-    PENDING_UPLOAD = "PENDING_UPLOAD"  # Waiting for professional to upload
-    UPLOADED = "UPLOADED"  # Uploaded, waiting for review
-    APPROVED = "APPROVED"  # Document approved
-    REJECTED = "REJECTED"  # Document rejected, needs re-upload
-    CORRECTION_NEEDED = "CORRECTION_NEEDED"  # Needs correction after review
 
 
 class StepStatus(str, Enum):
@@ -130,6 +103,15 @@ class ScreeningDocumentStatus(str, Enum):
     Status of a document in the screening workflow.
 
     Tracks the full lifecycle from requirement to approval.
+
+    Flow:
+    PENDING_UPLOAD → PENDING_REVIEW → APPROVED
+                          │
+                          └──→ CORRECTION_NEEDED → PENDING_REVIEW (after re-upload)
+
+    Special states:
+    - REUSED: Document reused from a previous screening
+    - SKIPPED: Optional document explicitly skipped
     """
 
     # Initial state - waiting for professional to upload
@@ -140,8 +122,7 @@ class ScreeningDocumentStatus(str, Enum):
 
     # Review outcomes
     APPROVED = "APPROVED"  # Document approved
-    REJECTED = "REJECTED"  # Document rejected, needs re-upload
-    ALERT = "ALERT"  # Requires supervisor attention
+    CORRECTION_NEEDED = "CORRECTION_NEEDED"  # Needs re-upload after review
 
     # Special states
     REUSED = "REUSED"  # Document reused from a previous screening

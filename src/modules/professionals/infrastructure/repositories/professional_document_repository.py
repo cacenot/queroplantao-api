@@ -1,9 +1,10 @@
 """ProfessionalDocument repository for database operations."""
 
+from datetime import datetime, timezone
 from uuid import UUID
 
 from fastapi_restkit.pagination import PaginatedResponse, PaginationParams
-from sqlalchemy import Select
+from sqlalchemy import Select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -217,3 +218,91 @@ class ProfessionalDocumentRepository(
             .options(selectinload(ProfessionalDocument.document_type))
         )
         return list(result.scalars().all())
+
+    # ============================================================
+    # Pending Document Methods (Screening Workflow)
+    # ============================================================
+
+    async def list_pending_by_screening(
+        self,
+        screening_id: UUID,
+    ) -> list[ProfessionalDocument]:
+        """
+        List all pending documents for a screening.
+
+        Args:
+            screening_id: The screening process UUID.
+
+        Returns:
+            List of pending documents linked to the screening.
+        """
+        result = await self.session.execute(
+            self._exclude_deleted()
+            .where(ProfessionalDocument.screening_id == screening_id)
+            .where(ProfessionalDocument.is_pending.is_(True))
+        )
+        return list(result.scalars().all())
+
+    async def promote_pending_documents(
+        self,
+        screening_id: UUID,
+        promoted_by: UUID,
+    ) -> int:
+        """
+        Promote all pending documents for a screening.
+
+        Sets is_pending=False and records promotion timestamp and user.
+
+        Args:
+            screening_id: The screening process UUID.
+            promoted_by: The user promoting the documents.
+
+        Returns:
+            Number of documents promoted.
+        """
+        now = datetime.now(timezone.utc)
+        stmt = (
+            update(ProfessionalDocument)
+            .where(ProfessionalDocument.screening_id == screening_id)
+            .where(ProfessionalDocument.is_pending.is_(True))
+            .where(ProfessionalDocument.deleted_at.is_(None))
+            .values(
+                is_pending=False,
+                promoted_at=now,
+                promoted_by=promoted_by,
+            )
+        )
+        result = await self.session.execute(stmt)
+        return result.rowcount
+
+    async def soft_delete_orphan_pending_documents(
+        self,
+        screening_id: UUID,
+        deleted_by: UUID,
+    ) -> int:
+        """
+        Soft delete all pending documents for a cancelled/rejected screening.
+
+        These are orphan documents that were uploaded during screening but
+        never got approved.
+
+        Args:
+            screening_id: The screening process UUID.
+            deleted_by: The user performing the deletion.
+
+        Returns:
+            Number of documents soft deleted.
+        """
+        now = datetime.now(timezone.utc)
+        stmt = (
+            update(ProfessionalDocument)
+            .where(ProfessionalDocument.screening_id == screening_id)
+            .where(ProfessionalDocument.is_pending.is_(True))
+            .where(ProfessionalDocument.deleted_at.is_(None))
+            .values(
+                deleted_at=now,
+                deleted_by=deleted_by,
+            )
+        )
+        result = await self.session.execute(stmt)
+        return result.rowcount

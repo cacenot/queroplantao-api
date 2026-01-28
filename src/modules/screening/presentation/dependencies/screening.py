@@ -9,6 +9,7 @@ from src.modules.screening.use_cases import (
     ApproveDocumentUseCase,
     CancelScreeningProcessUseCase,
     CreateScreeningProcessUseCase,
+    FinalizeScreeningProcessUseCase,
     GetScreeningProcessByTokenUseCase,
     GetScreeningProcessUseCase,
     KeepExistingDocumentUseCase,
@@ -16,6 +17,7 @@ from src.modules.screening.use_cases import (
     ListScreeningProcessesUseCase,
     RejectDocumentUseCase,
     RemoveRequiredDocumentUseCase,
+    ReuseDocumentUseCase,
     ReviewDocumentUseCase,
     SelectDocumentsUseCase,
     SkipClientValidationUseCase,
@@ -58,6 +60,18 @@ def get_cancel_screening_process_use_case(
     session: SessionDep,
 ) -> CancelScreeningProcessUseCase:
     return CancelScreeningProcessUseCase(session)
+
+
+def get_finalize_screening_process_use_case(
+    session: SessionDep,
+) -> FinalizeScreeningProcessUseCase:
+    return FinalizeScreeningProcessUseCase(session)
+
+
+def get_reuse_document_use_case(
+    session: SessionDep,
+) -> ReuseDocumentUseCase:
+    return ReuseDocumentUseCase(session)
 
 
 # Document use case factories
@@ -122,6 +136,10 @@ ListMyScreeningProcessesUC = Annotated[
 CancelScreeningProcessUC = Annotated[
     CancelScreeningProcessUseCase, Depends(get_cancel_screening_process_use_case)
 ]
+FinalizeScreeningProcessUC = Annotated[
+    FinalizeScreeningProcessUseCase, Depends(get_finalize_screening_process_use_case)
+]
+ReuseDocumentUC = Annotated[ReuseDocumentUseCase, Depends(get_reuse_document_use_case)]
 SelectDocumentsUC = Annotated[
     SelectDocumentsUseCase, Depends(get_select_documents_use_case)
 ]

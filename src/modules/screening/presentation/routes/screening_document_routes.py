@@ -1,181 +1,143 @@
-"""Screening document routes."""
+"""Screening document routes.
+
+Handles document configuration, upload, and review within a screening workflow.
+"""
 
 from uuid import UUID
 
 from fastapi import APIRouter, status
 
 from src.app.dependencies import OrganizationContext
-from src.modules.screening.domain.schemas import (
-    ScreeningDocumentReviewCreate,
-    ScreeningDocumentReviewResponse,
-    ScreeningDocumentUpload,
-    ScreeningRequiredDocumentCreate,
-    ScreeningRequiredDocumentResponse,
+from src.modules.screening.domain.schemas.screening_document import (
+    ScreeningDocumentResponse,
 )
-from src.modules.screening.presentation.dependencies import (
-    ApproveDocumentUC,
-    KeepExistingDocumentUC,
-    RejectDocumentUC,
-    RemoveRequiredDocumentUC,
+from src.modules.screening.domain.schemas.steps import (
+    ConfigureDocumentsRequest,
+    DocumentUploadStepResponse,
+    ReviewDocumentRequest,
+    UploadDocumentRequest,
+)
+from src.modules.screening.presentation.dependencies.screening_document import (
+    ConfigureDocumentsUC,
     ReviewDocumentUC,
-    SelectDocumentsUC,
-    UploadScreeningDocumentUC,
+    UploadDocumentUC,
 )
+from src.modules.screening.presentation.dependencies import ReuseDocumentUC
 
 router = APIRouter()
 
 
+# =============================================================================
+# DOCUMENT UPLOAD STEP ENDPOINTS
+# =============================================================================
+
+
 @router.post(
-    "/{screening_id}/documents",
-    response_model=list[ScreeningRequiredDocumentResponse],
+    "/{screening_id}/steps/document-upload/configure",
+    response_model=DocumentUploadStepResponse,
     status_code=status.HTTP_201_CREATED,
-    summary="Selecionar documentos",
-    description="Seleciona os documentos requeridos para a triagem (Etapa 2)",
+    summary="Configurar documentos",
+    description=(
+        "Configura a lista de documentos necessários para a triagem. "
+        "Transiciona o step de PENDING para IN_PROGRESS."
+    ),
 )
-async def select_documents(
+async def configure_documents(
     screening_id: UUID,
-    documents: list[ScreeningRequiredDocumentCreate],
+    data: ConfigureDocumentsRequest,
     ctx: OrganizationContext,
-    use_case: SelectDocumentsUC,
-) -> list[ScreeningRequiredDocumentResponse]:
-    """Select required documents for the screening."""
+    use_case: ConfigureDocumentsUC,
+) -> DocumentUploadStepResponse:
+    """Configure required documents for the screening."""
     return await use_case.execute(
         organization_id=ctx.organization,
         screening_id=screening_id,
-        documents=documents,
-        updated_by=ctx.user,
-    )
-
-
-@router.delete(
-    "/{screening_id}/documents/{document_id}",
-    status_code=status.HTTP_204_NO_CONTENT,
-    summary="Remover documento requerido",
-    description="Remove um documento da lista de requeridos",
-)
-async def remove_required_document(
-    screening_id: UUID,
-    document_id: UUID,
-    ctx: OrganizationContext,
-    use_case: RemoveRequiredDocumentUC,
-) -> None:
-    """Remove a required document."""
-    await use_case.execute(
-        organization_id=ctx.organization,
-        screening_id=screening_id,
-        document_id=document_id,
+        data=data,
+        configured_by=ctx.user,
     )
 
 
 @router.post(
     "/{screening_id}/documents/{document_id}/upload",
-    response_model=ScreeningRequiredDocumentResponse,
+    response_model=ScreeningDocumentResponse,
     summary="Upload de documento",
-    description="Faz upload de um documento para a triagem (Etapa 3)",
+    description=(
+        "Registra o upload de um documento. "
+        "O arquivo deve ser previamente enviado ao Firebase pelo frontend. "
+        "Após o upload, cria-se um ProfessionalDocument com screening_id para "
+        "vincular o documento à triagem (is_pending=True)."
+    ),
 )
 async def upload_document(
     screening_id: UUID,
     document_id: UUID,
-    data: ScreeningDocumentUpload,
+    data: UploadDocumentRequest,
     ctx: OrganizationContext,
-    use_case: UploadScreeningDocumentUC,
-) -> ScreeningRequiredDocumentResponse:
-    """Upload a document for the screening."""
+    use_case: UploadDocumentUC,
+) -> ScreeningDocumentResponse:
+    """Register a document upload."""
+    # Note: screening_id is used for authorization check in the future
+    _ = screening_id
     return await use_case.execute(
-        screening_id=screening_id,
-        required_document_id=document_id,
+        screening_document_id=document_id,
         data=data,
         uploaded_by=ctx.user,
     )
 
 
 @router.post(
-    "/{screening_id}/documents/{document_id}/keep",
-    response_model=ScreeningRequiredDocumentResponse,
-    summary="Manter documento existente",
-    description="Mantém um documento existente do profissional",
+    "/{screening_id}/documents/{document_id}/reuse",
+    response_model=ScreeningDocumentResponse,
+    summary="Reutilizar documento existente",
+    description=(
+        "Reutiliza um documento já aprovado de triagens anteriores. "
+        "Apenas documentos que não estão pendentes (is_pending=False) podem ser reutilizados. "
+        "O documento reutilizado recebe status REUSED e não precisa de revisão."
+    ),
 )
-async def keep_existing_document(
+async def reuse_document(
     screening_id: UUID,
     document_id: UUID,
     professional_document_id: UUID,
     ctx: OrganizationContext,
-    use_case: KeepExistingDocumentUC,
-) -> ScreeningRequiredDocumentResponse:
-    """Keep an existing professional document."""
+    use_case: ReuseDocumentUC,
+) -> ScreeningDocumentResponse:
+    """Reuse an existing approved document."""
+    # Note: screening_id is used for authorization check in the future
+    _ = screening_id
     return await use_case.execute(
-        screening_id=screening_id,
-        required_document_id=document_id,
+        screening_document_id=document_id,
         professional_document_id=professional_document_id,
-        updated_by=ctx.user,
+        reused_by=ctx.user,
     )
+
+
+# =============================================================================
+# DOCUMENT REVIEW STEP ENDPOINTS
+# =============================================================================
 
 
 @router.post(
     "/{screening_id}/documents/{document_id}/review",
-    response_model=ScreeningDocumentReviewResponse,
-    status_code=status.HTTP_201_CREATED,
+    response_model=ScreeningDocumentResponse,
     summary="Revisar documento",
-    description="Cria uma revisão de documento (Etapa 4)",
+    description=(
+        "Revisa um documento individual. "
+        "Define como APPROVED ou CORRECTION_NEEDED (com motivo)."
+    ),
 )
 async def review_document(
     screening_id: UUID,
     document_id: UUID,
-    data: ScreeningDocumentReviewCreate,
+    data: ReviewDocumentRequest,
     ctx: OrganizationContext,
     use_case: ReviewDocumentUC,
-) -> ScreeningDocumentReviewResponse:
+) -> ScreeningDocumentResponse:
     """Review a screening document."""
+    # Note: screening_id is used for authorization check in the future
+    _ = screening_id
     return await use_case.execute(
-        organization_id=ctx.organization,
-        screening_id=screening_id,
-        required_document_id=document_id,
+        screening_document_id=document_id,
         data=data,
         reviewed_by=ctx.user,
-    )
-
-
-@router.post(
-    "/{screening_id}/documents/{document_id}/approve",
-    response_model=ScreeningDocumentReviewResponse,
-    summary="Aprovar documento",
-    description="Aprova um documento",
-)
-async def approve_document(
-    screening_id: UUID,
-    document_id: UUID,
-    ctx: OrganizationContext,
-    use_case: ApproveDocumentUC,
-    notes: str | None = None,
-) -> ScreeningDocumentReviewResponse:
-    """Approve a document."""
-    return await use_case.execute(
-        organization_id=ctx.organization,
-        screening_id=screening_id,
-        required_document_id=document_id,
-        reviewed_by=ctx.user,
-        notes=notes,
-    )
-
-
-@router.post(
-    "/{screening_id}/documents/{document_id}/reject",
-    response_model=ScreeningDocumentReviewResponse,
-    summary="Rejeitar documento",
-    description="Rejeita um documento",
-)
-async def reject_document(
-    screening_id: UUID,
-    document_id: UUID,
-    notes: str,
-    ctx: OrganizationContext,
-    use_case: RejectDocumentUC,
-) -> ScreeningDocumentReviewResponse:
-    """Reject a document."""
-    return await use_case.execute(
-        organization_id=ctx.organization,
-        screening_id=screening_id,
-        required_document_id=document_id,
-        reviewed_by=ctx.user,
-        notes=notes,
     )

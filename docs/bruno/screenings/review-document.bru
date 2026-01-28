@@ -28,31 +28,31 @@ body:json {
 docs {
   # Revisar Documento (Etapa 4)
   
-  Aprova ou rejeita um documento durante a verificação.
+  Aprova ou marca documento como necessitando correção durante a verificação.
   
   ## Campos
   
   | Campo | Tipo | Obrigatório | Descrição |
   |-------|------|-------------|-----------|
-  | status | enum | Sim | `APPROVED` ou `REJECTED` |
+  | status | enum | Sim | `APPROVED` ou `CORRECTION_NEEDED` |
   | notes | string | Não | Observações sobre a revisão |
+  | rejection_reason | string | Condicional | Obrigatório se status = CORRECTION_NEEDED |
   
   ## Comportamento
   
-  - Cria um registro de `ScreeningDocumentReview`
-  - Atualiza o status do documento requerido
-  - Se rejeitado, o profissional deve reenviar
+  - Atualiza o status do ScreeningDocument
+  - Adiciona entrada ao review_history (JSONB)
+  - Se CORRECTION_NEEDED, profissional deve reenviar após step.complete()
   
   ## Status Possíveis
   
   - `APPROVED`: Documento aceito
-  - `REJECTED`: Documento rejeitado (precisa reenviar)
+  - `CORRECTION_NEEDED`: Documento precisa correção (re-upload necessário)
   
   ## Error Codes
   
   | Status | Code | Descrição |
   |--------|------|-----------|
-  | 404 | `SCREENING_NOT_FOUND` | Triagem não encontrada |
-  | 404 | `REQUIRED_DOCUMENT_NOT_FOUND` | Documento requerido não encontrado |
-  | 422 | `DOCUMENT_NOT_UPLOADED` | Documento ainda não foi enviado |
+  | 404 | `SCREENING_DOCUMENT_NOT_FOUND` | Documento não encontrado |
+  | 422 | `SCREENING_DOCUMENT_NOT_UPLOADED` | Documento ainda não foi enviado |
 }

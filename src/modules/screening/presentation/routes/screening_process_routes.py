@@ -22,6 +22,7 @@ from src.modules.screening.infrastructure.filters import (
 from src.modules.screening.presentation.dependencies import (
     CancelScreeningProcessUC,
     CreateScreeningProcessUC,
+    FinalizeScreeningProcessUC,
     GetScreeningProcessUC,
     ListMyScreeningProcessesUC,
     ListScreeningProcessesUC,
@@ -264,4 +265,77 @@ async def cancel_screening_process(
         screening_id=screening_id,
         cancelled_by=ctx.user,
         reason=data.reason,
+    )
+
+
+@router.post(
+    "/{screening_id}/finalize",
+    response_model=ScreeningProcessResponse,
+    summary="Finalizar triagem",
+    description="""
+Finaliza o processo de triagem e aprova o profissional.
+
+**Ações realizadas:**
+- Valida que todas as etapas obrigatórias foram concluídas
+- Promove todos os documentos pendentes (is_pending=False)
+- Atualiza o status da triagem para APPROVED
+
+**Documentos pendentes:**
+Documentos criados durante a triagem (source_type=SCREENING) ficam com is_pending=True
+até a triagem ser finalizada. Isso permite que:
+- O profissional visualize os documentos que está enviando
+- O sistema mantenha histórico de versões
+- Documentos de triagens canceladas/rejeitadas sejam automaticamente excluídos
+
+**Regras:**
+- Só é possível finalizar triagens com status IN_PROGRESS
+- Todas as etapas obrigatórias devem estar COMPLETED ou APPROVED
+""",
+    responses={
+        404: {
+            "model": ErrorResponse,
+            "description": "Não encontrado",
+            "content": {
+                "application/json": {
+                    "examples": {
+                        "not_found": {
+                            "summary": "Triagem não encontrada",
+                            "value": {
+                                "code": ScreeningErrorCodes.SCREENING_PROCESS_NOT_FOUND,
+                                "message": "Processo de triagem não encontrado",
+                            },
+                        },
+                    }
+                }
+            },
+        },
+        422: {
+            "model": ErrorResponse,
+            "description": "Erro de validação - Etapas pendentes",
+            "content": {
+                "application/json": {
+                    "examples": {
+                        "incomplete_steps": {
+                            "summary": "Etapas incompletas",
+                            "value": {
+                                "code": "VALIDATION_ERROR",
+                                "message": "Não é possível finalizar a triagem. Etapas pendentes: Revisão de Documentos, Dados de Pagamento",
+                            },
+                        },
+                    }
+                }
+            },
+        },
+    },
+)
+async def finalize_screening_process(
+    screening_id: UUID,
+    ctx: OrganizationContext,
+    use_case: FinalizeScreeningProcessUC,
+) -> ScreeningProcessResponse:
+    """Finalize a screening process and promote pending documents."""
+    return await use_case.execute(
+        organization_id=ctx.organization,
+        screening_id=screening_id,
+        finalized_by=ctx.user,
     )

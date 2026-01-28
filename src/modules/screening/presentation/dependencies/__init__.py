@@ -4,6 +4,7 @@ from src.modules.screening.presentation.dependencies.screening import (
     ApproveDocumentUC,
     CancelScreeningProcessUC,
     CreateScreeningProcessUC,
+    FinalizeScreeningProcessUC,
     GetScreeningProcessByTokenUC,
     GetScreeningProcessUC,
     KeepExistingDocumentUC,
@@ -11,10 +12,16 @@ from src.modules.screening.presentation.dependencies.screening import (
     ListScreeningProcessesUC,
     RejectDocumentUC,
     RemoveRequiredDocumentUC,
+    ReuseDocumentUC,
     ReviewDocumentUC,
     SelectDocumentsUC,
     SkipClientValidationUC,
     UploadScreeningDocumentUC,
+)
+from src.modules.screening.presentation.dependencies.screening_document import (
+    ConfigureDocumentsUC,
+    ReviewDocumentUC as ReviewDocumentStepUC,
+    UploadDocumentUC,
 )
 from src.modules.screening.presentation.dependencies.screening_step import (
     CompleteClientValidationStepUC,
@@ -29,6 +36,7 @@ __all__ = [
     "ApproveDocumentUC",
     "CancelScreeningProcessUC",
     "CreateScreeningProcessUC",
+    "FinalizeScreeningProcessUC",
     "GetScreeningProcessByTokenUC",
     "GetScreeningProcessUC",
     "KeepExistingDocumentUC",
@@ -36,6 +44,7 @@ __all__ = [
     "ListScreeningProcessesUC",
     "RejectDocumentUC",
     "RemoveRequiredDocumentUC",
+    "ReuseDocumentUC",
     "ReviewDocumentUC",
     "SelectDocumentsUC",
     "SkipClientValidationUC",
@@ -47,4 +56,8 @@ __all__ = [
     "CompleteDocumentUploadStepUC",
     "CompleteProfessionalDataStepUC",
     "GoBackToStepUC",
+    # Document step dependencies
+    "ConfigureDocumentsUC",
+    "ReviewDocumentStepUC",
+    "UploadDocumentUC",
 ]

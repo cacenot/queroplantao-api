@@ -146,11 +146,10 @@ Status unificado de um documento de triagem.
 
 | Valor | Descrição |
 |-------|-----------|
-| PENDING_UPLOAD | Aguardando upload pelo profissional |
+| PENDING_UPLOAD | Aguardando upload (profissional ou gestor) |
 | PENDING_REVIEW | Upload feito, aguardando revisão |
 | APPROVED | Documento aprovado |
-| REJECTED | Documento rejeitado, precisa re-upload |
-| ALERT | Documento com alerta, requer supervisor |
+| CORRECTION_NEEDED | Documento precisa de correção, re-upload necessário |
 | REUSED | Documento reaproveitado de triagem anterior |
 | SKIPPED | Documento não obrigatório, pulado |
 
@@ -298,8 +297,7 @@ Cada tipo de step tem sua própria tabela com campos específicos. Todas herdam 
 | upload_step_id | UUID | ❌ | FK para screening_document_upload_steps |
 | total_documents | INTEGER | ❌ | Total a revisar |
 | approved_count | INTEGER | ❌ | Quantidade aprovada |
-| rejected_count | INTEGER | ❌ | Quantidade rejeitada |
-| alert_count | INTEGER | ❌ | Quantidade com alerta |
+| correction_needed_count | INTEGER | ❌ | Quantidade que precisa correção |
 | pending_count | INTEGER | ❌ | Quantidade pendente |
 
 #### screening_payment_info_steps
@@ -347,8 +345,7 @@ Documento unificado que combina requisito + upload + revisão.
 | status | ScreeningDocumentStatus | ❌ | Status atual |
 | **Revisão** | | | |
 | review_notes | VARCHAR(2000) | ✅ | Notas do revisor |
-| rejection_reason | VARCHAR(1000) | ✅ | Motivo da rejeição |
-| alert_reason | VARCHAR(1000) | ✅ | Motivo do alerta |
+| rejection_reason | VARCHAR(1000) | ✅ | Motivo da correção necessária |
 | review_history | JSONB | ❌ | Histórico de ações de revisão |
 | **Upload Tracking** | | | |
 | uploaded_at | TIMESTAMP | ✅ | Quando foi enviado |
@@ -502,7 +499,7 @@ Registro granular de cada alteração feita em uma versão.
    - Fase 2: Profissional/Gestor faz upload dos arquivos
 4. **DOCUMENT_REVIEW** (Obrigatório): Revisão individual de cada documento
 5. **PAYMENT_INFO** (Opcional): Dados bancários e empresa PJ
-6. **SUPERVISOR_REVIEW** (Opcional): Ativado quando há documentos com ALERT
+6. **SUPERVISOR_REVIEW** (Opcional): Revisão por supervisor quando necessário
 7. **CLIENT_VALIDATION** (Opcional): Aprovação final pelo cliente contratante
 
 ### Fluxo Detalhado: DOCUMENT_UPLOAD e DOCUMENT_REVIEW
@@ -533,7 +530,7 @@ O processo de documentos é dividido em duas etapas com um fluxo de estados bem 
 │                                                                                         │
 │       │                                                                                 │
 │       │ POST /screening/{id}/documents/{doc_id}/upload (para cada documento)            │
-│       │ Cria ProfessionalDocument e linka ao ScreeningDocument                          │
+│       │ Linka ProfessionalDocument ao ScreeningDocument (upload via Firebase)           │
 │       │ ScreeningDocument.status → PENDING_REVIEW                                       │
 │       ▼                                                                                 │
 │                                                                                         │
@@ -565,12 +562,11 @@ O processo de documentos é dividido em duas etapas com um fluxo de estados bem 
 │                                                                                         │
 │       │                                                                                 │
 │       │ POST /screening/{id}/documents/{doc_id}/review                                  │
-│       │ Payload: { status: APPROVED | REJECTED | ALERT, notes, reason }                 │
+│       │ Payload: { status: APPROVED | CORRECTION_NEEDED, notes, reason }                │
 │       │                                                                                 │
 │       │ Para cada documento:                                                            │
 │       │   • APPROVED: documento válido                                                  │
-│       │   • REJECTED: documento inválido, precisa re-upload                             │
-│       │   • ALERT: documento com ressalva, escalar para supervisor                      │
+│       │   • CORRECTION_NEEDED: documento inválido, precisa re-upload                    │
 │       ▼                                                                                 │
 │                                                                                         │
 │  Todos Revisados                                                                        │
@@ -585,15 +581,14 @@ O processo de documentos é dividido em duas etapas com um fluxo de estados bem 
 │  │                       DECISÃO BASEADA NOS RESULTADOS                            │    │
 │  ├─────────────────────────────────────────────────────────────────────────────────┤    │
 │  │                                                                                 │    │
-│  │  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐                  │    │
-│  │  │ Todos APPROVED  │  │ Algum REJECTED  │  │  Algum ALERT    │                  │    │
-│  │  └────────┬────────┘  └────────┬────────┘  └────────┬────────┘                  │    │
-│  │           │                    │                    │                           │    │
-│  │           ▼                    ▼                    ▼                           │    │
-│  │     Step APPROVED       Step CORRECTION      Step APPROVED                      │    │
-│  │     Prossegue para       _NEEDED             (se supervisor)                    │    │
-│  │     próximo step         Retorna ao          ou ALERT                           │    │
-│  │                          DOCUMENT_UPLOAD     (aguarda supervisor)               │    │
+│  │  ┌─────────────────────┐              ┌─────────────────────────┐               │    │
+│  │  │   Todos APPROVED    │              │ Algum CORRECTION_NEEDED │               │    │
+│  │  └──────────┬──────────┘              └────────────┬────────────┘               │    │
+│  │             │                                      │                            │    │
+│  │             ▼                                      ▼                            │    │
+│  │       Step APPROVED                       Step CORRECTION_NEEDED                │    │
+│  │       Prossegue para                      Retorna ao DOCUMENT_UPLOAD            │    │
+│  │       próximo step                        para re-upload                        │    │
 │  │                                                                                 │    │
 │  └─────────────────────────────────────────────────────────────────────────────────┘    │
 │                                                                                         │
@@ -607,12 +602,12 @@ O processo de documentos é dividido em duas etapas com um fluxo de estados bem 
 │                           CICLO DE CORREÇÃO                                           │
 ├───────────────────────────────────────────────────────────────────────────────────────┤
 │                                                                                       │
-│  DOCUMENT_REVIEW.complete() com documentos REJECTED                                   │
+│  DOCUMENT_REVIEW.complete() com documentos CORRECTION_NEEDED                          │
 │                                                                                       │
 │       │                                                                               │
 │       │ 1. DocumentReviewStep.status → CORRECTION_NEEDED                              │
 │       │ 2. DocumentUploadStep.status → CORRECTION_NEEDED                              │
-│       │ 3. ScreeningDocument (rejeitados).status → PENDING_UPLOAD                     │
+│       │ 3. ScreeningDocument (com correção).status → permanece CORRECTION_NEEDED      │
 │       ▼                                                                               │
 │                                                                                       │
 │  Profissional notificado para re-upload                                               │
@@ -660,12 +655,9 @@ O processo de documentos é dividido em duas etapas com um fluxo de estados bem 
             ┌────────────────┼────────────────┐                      │
             │                │                │                      │
             ▼                ▼                ▼                      │
-    ┌───────────┐    ┌───────────┐    ┌───────────┐                  │
-    │ APPROVED  │    │ REJECTED  │    │   ALERT   │                  │
-    └───────────┘    └─────┬─────┘    └───────────┘                  │
-                           │                                         │
-                           │ (ciclo de correção)                     │
-                           └─────────────────────────────────────────┘
+    ┌───────────┐    ┌──────────────────┐    │                       │
+    │ APPROVED  │    │CORRECTION_NEEDED │────┘                       │
+    └───────────┘    └──────────────────┘   (ciclo de correção)
 
 
     Estados Especiais:
@@ -676,6 +668,163 @@ O processo de documentos é dividido em duas etapas com um fluxo de estados bem 
      anterior)         não enviado)
 ```
 
+### Documentos Pendentes (Pending Documents)
+
+Documentos enviados durante uma triagem são criados como **pendentes** (`is_pending=True`) no modelo `ProfessionalDocument`. 
+Isso significa que o documento existe no sistema, mas **não substitui a versão oficial do profissional** até que a triagem seja finalizada.
+
+#### Por que documentos pendentes?
+
+1. **Segurança**: Se a triagem for cancelada ou rejeitada, os documentos não aprovados são automaticamente removidos
+2. **Versionamento**: Mantém histórico claro entre documentos "oficiais" e documentos em processo de aprovação
+3. **Reutilização**: Permite que documentos já aprovados de triagens anteriores sejam reutilizados sem novo upload
+
+#### Campos no ProfessionalDocument
+
+| Campo | Tipo | Descrição |
+|-------|------|-----------|
+| `is_pending` | BOOLEAN | Se está pendente de aprovação (default: False) |
+| `source_type` | DocumentSourceType | Origem do documento: DIRECT ou SCREENING |
+| `screening_id` | UUID | FK para screening_processes (se criado durante triagem) |
+| `promoted_at` | TIMESTAMP | Quando foi promovido (is_pending → False) |
+| `promoted_by` | UUID | Quem promoveu o documento |
+
+#### DocumentSourceType Enum
+
+| Valor | Descrição |
+|-------|-----------|
+| `DIRECT` | Upload direto via API/admin (documento já aprovado) |
+| `SCREENING` | Upload durante processo de triagem (pendente até aprovação) |
+
+#### Fluxo de Documentos Pendentes
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────────────┐
+│                         FLUXO DE DOCUMENTOS PENDENTES                                   │
+├─────────────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                         │
+│  Upload de documento durante triagem                                                    │
+│                                                                                         │
+│       │                                                                                 │
+│       │ 1. Frontend faz upload do arquivo para Firebase                                 │
+│       │ 2. Frontend cria ProfessionalDocument com screening_id                          │
+│       │    → is_pending = True                                                          │
+│       │    → source_type = SCREENING                                                    │
+│       │ 3. POST /screening/{id}/documents/{doc_id}/upload                               │
+│       │    → Linka ao ScreeningDocument                                                 │
+│       ▼                                                                                 │
+│                                                                                         │
+│  Documento criado como PENDENTE                                                         │
+│  ─────────────────────────────                                                          │
+│  O profissional pode visualizar o documento enviado,                                    │
+│  mas ele ainda não é a versão "oficial".                                                │
+│                                                                                         │
+│       │                                                                                 │
+│       │ Triagem continua normalmente...                                                 │
+│       │ Revisão de documentos, etc.                                                     │
+│       ▼                                                                                 │
+│                                                                                         │
+│  ┌─────────────────────────────────────────────────────────────────────────────────┐    │
+│  │                       DECISÃO FINAL DA TRIAGEM                                  │    │
+│  ├─────────────────────────────────────────────────────────────────────────────────┤    │
+│  │                                                                                 │    │
+│  │  ┌─────────────────────┐              ┌─────────────────────────┐               │    │
+│  │  │  Triagem APROVADA   │              │ Triagem CANCELADA/      │               │    │
+│  │  │  POST /finalize     │              │ REJEITADA               │               │    │
+│  │  └──────────┬──────────┘              └────────────┬────────────┘               │    │
+│  │             │                                      │                            │    │
+│  │             ▼                                      ▼                            │    │
+│  │   Promove documentos:                    Soft-delete documentos:                │    │
+│  │   • is_pending = False                   • deleted_at = now()                   │    │
+│  │   • promoted_at = now()                  (apenas is_pending=True)               │    │
+│  │   • promoted_by = user_id                                                       │    │
+│  │                                                                                 │    │
+│  │   Documentos tornam-se                   Documentos órfãos são                  │    │
+│  │   versão oficial                         removidos automaticamente              │    │
+│  │                                                                                 │    │
+│  └─────────────────────────────────────────────────────────────────────────────────┘    │
+│                                                                                         │
+└─────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Reutilização de Documentos
+
+Profissionais podem reutilizar documentos já aprovados de triagens anteriores, evitando re-upload do mesmo arquivo.
+
+#### Fluxo de Reutilização
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────────────┐
+│                         REUTILIZAÇÃO DE DOCUMENTOS                                      │
+├─────────────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                         │
+│  Profissional tem documento aprovado de triagem anterior                                │
+│  (is_pending = False, source_type = SCREENING ou DIRECT)                                │
+│                                                                                         │
+│       │                                                                                 │
+│       │ POST /screening/{id}/documents/{doc_id}/reuse                                   │
+│       │ Payload: { professional_document_id: "uuid-do-doc-existente" }                  │
+│       ▼                                                                                 │
+│                                                                                         │
+│  Validações:                                                                            │
+│  ─────────────                                                                          │
+│  • ScreeningDocument está em PENDING_UPLOAD ou CORRECTION_NEEDED                        │
+│  • ProfessionalDocument existe e is_pending = False                                     │
+│  • document_type_id do ProfessionalDocument == do ScreeningDocument                     │
+│                                                                                         │
+│       │                                                                                 │
+│       │ Vinculação:                                                                     │
+│       │ • ScreeningDocument.professional_document_id = uuid-doc-existente               │
+│       │ • ScreeningDocument.status = REUSED                                             │
+│       │ • Registra em review_history                                                    │
+│       ▼                                                                                 │
+│                                                                                         │
+│  Documento reutilizado não precisa de revisão                                           │
+│  (já foi aprovado anteriormente)                                                        │
+│                                                                                         │
+└─────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+**Importante:** Documentos reutilizados (status `REUSED`) **não criam novo ProfessionalDocument** - apenas vinculam o existente ao ScreeningDocument.
+
+### Endpoint de Finalização
+
+```
+POST /screening/{id}/finalize
+```
+
+Finaliza a triagem e promove todos os documentos pendentes.
+
+#### Validações
+
+1. Triagem deve estar em status `IN_PROGRESS`
+2. Todas as etapas obrigatórias devem estar `COMPLETED` ou `APPROVED`
+
+#### Ações Realizadas
+
+1. Promove documentos pendentes: `is_pending = False`
+2. Registra promoção: `promoted_at`, `promoted_by`
+3. Atualiza status da triagem: `APPROVED`
+4. Registra conclusão: `completed_at`
+
+#### Response
+
+```json
+{
+  "id": "uuid",
+  "status": "APPROVED",
+  "completed_at": "2024-01-15T10:30:00Z",
+  // ... demais campos
+}
+```
+
+#### Error Codes
+
+| Status | Code | Descrição |
+|--------|------|-----------|
+| 404 | `SCREENING_PROCESS_NOT_FOUND` | Triagem não encontrada |
+| 422 | `VALIDATION_ERROR` | Etapas incompletas |
+
 #### Endpoints de Documentos
 
 | Método | Endpoint | Descrição | Quem usa |
@@ -683,10 +832,12 @@ O processo de documentos é dividido em duas etapas com um fluxo de estados bem 
 | POST | `/screening/{id}/steps/document-upload/configure` | Configura lista de documentos necessários | Gestor |
 | GET | `/screening/{id}/documents` | Lista documentos da triagem | Ambos |
 | POST | `/screening/{id}/documents/{doc_id}/upload` | Upload de arquivo | Profissional/Gestor |
+| POST | `/screening/{id}/documents/{doc_id}/reuse` | Reutiliza documento aprovado | Profissional/Gestor |
 | DELETE | `/screening/{id}/documents/{doc_id}/upload` | Remove upload (antes da revisão) | Profissional/Gestor |
 | POST | `/screening/{id}/steps/document-upload/complete` | Finaliza etapa de upload | Profissional/Gestor |
 | POST | `/screening/{id}/documents/{doc_id}/review` | Revisa documento individual | Gestor |
 | POST | `/screening/{id}/steps/document-review/complete` | Finaliza etapa de revisão | Gestor |
+| POST | `/screening/{id}/finalize` | Finaliza triagem e promove documentos | Gestor |
 
 #### Payload: Configurar Documentos
 

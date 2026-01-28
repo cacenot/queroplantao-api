@@ -26,6 +26,9 @@ if TYPE_CHECKING:
     from src.modules.professionals.domain.models.organization_professional import (
         OrganizationProfessional,
     )
+    from src.modules.professionals.domain.models.professional_document import (
+        ProfessionalDocument,
+    )
     from src.modules.screening.domain.models.steps.client_validation_step import (
         ClientValidationStep,
     )
@@ -319,6 +322,11 @@ class ScreeningProcess(
     client_validation_step: Optional["ClientValidationStep"] = Relationship(
         back_populates="process",
         sa_relationship_kwargs={"uselist": False},
+    )
+
+    # Pending documents created during this screening (source_type=SCREENING)
+    pending_documents: list["ProfessionalDocument"] = Relationship(
+        back_populates="screening",
     )
 
     # === Properties ===

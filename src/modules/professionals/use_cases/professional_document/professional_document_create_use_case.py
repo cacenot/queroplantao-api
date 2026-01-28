@@ -11,7 +11,10 @@ from src.app.exceptions import (
     QualificationNotFoundError,
     SpecialtyNotFoundError,
 )
-from src.modules.professionals.domain.models import ProfessionalDocument
+from src.modules.professionals.domain.models import (
+    DocumentSourceType,
+    ProfessionalDocument,
+)
 from src.modules.professionals.domain.schemas import ProfessionalDocumentCreate
 from src.modules.professionals.infrastructure.repositories import (
     OrganizationProfessionalRepository,
@@ -77,8 +80,18 @@ class CreateProfessionalDocumentUseCase:
             if data.document_category != DocumentCategory.SPECIALTY:
                 raise DocumentSpecialtyCategoryError()
 
+        # Determine source type and pending status based on screening_id
+        is_screening_upload = data.screening_id is not None
+        source_type = (
+            DocumentSourceType.SCREENING
+            if is_screening_upload
+            else DocumentSourceType.DIRECT
+        )
+
         document = ProfessionalDocument(
             organization_professional_id=professional_id,
+            is_pending=is_screening_upload,
+            source_type=source_type,
             **data.model_dump(),
         )
 

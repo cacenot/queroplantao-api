@@ -1,0 +1,72 @@
+meta {
+  name: Reuse Document
+  type: http
+  seq: 15
+}
+
+post {
+  url: {{baseUrl}}/screenings/{{screeningId}}/documents/{{screeningDocumentId}}/reuse?professional_document_id={{professionalDocumentId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  X-Organization-ID: {{organizationId}}
+}
+
+docs {
+  # Reutilizar Documento
+  
+  Reutiliza um documento já aprovado de triagens anteriores para preencher um requisito de documento.
+  
+  ## Parâmetros
+  
+  | Parâmetro | Tipo | Obrigatório | Descrição |
+  |-----------|------|-------------|-----------|
+  | screeningId | UUID | Sim | ID da triagem (path) |
+  | screeningDocumentId | UUID | Sim | ID do documento de triagem (ScreeningDocument) (path) |
+  | professional_document_id | UUID | Sim | ID do documento do profissional a reutilizar (query) |
+  
+  ## Comportamento
+  
+  1. Valida que o ScreeningDocument está em `PENDING_UPLOAD` ou `CORRECTION_NEEDED`
+  2. Valida que o ProfessionalDocument existe e **não está pendente** (`is_pending=False`)
+  3. Valida que o tipo de documento (`document_type_id`) corresponde
+  4. Vincula o ProfessionalDocument ao ScreeningDocument
+  5. Define o status como `REUSED`
+  6. Registra a ação no `review_history`
+  
+  ## Diferença entre Upload e Reuse
+  
+  | Aspecto | Upload | Reuse |
+  |---------|--------|-------|
+  | Cria novo ProfessionalDocument | Sim | Não |
+  | Documento fica pendente | Sim (`is_pending=True`) | N/A |
+  | Status do ScreeningDocument | `PENDING_REVIEW` | `REUSED` |
+  | Precisa de revisão | Sim | Não |
+  
+  ## Quando usar
+  
+  - Profissional já enviou o documento em triagem anterior
+  - Documento foi aprovado anteriormente
+  - Tipo de documento é o mesmo requisitado
+  
+  ## Restrições
+  
+  - Documento a reutilizar **não pode estar pendente** (`is_pending=False`)
+  - Tipo de documento deve corresponder ao requisitado
+  - Step de upload deve estar em `IN_PROGRESS` ou `CORRECTION_NEEDED`
+  - ScreeningDocument deve estar em `PENDING_UPLOAD` ou `CORRECTION_NEEDED`
+  
+  ## Error Codes
+  
+  | Status | Code | Descrição |
+  |--------|------|-----------|
+  | 404 | `NOT_FOUND` | ScreeningDocument ou ProfessionalDocument não encontrado |
+  | 409 | `SCREENING_STEP_NOT_IN_PROGRESS` | Step não está em andamento |
+  | 422 | `VALIDATION_ERROR` | Documento pendente, tipo incorreto, ou status inválido |
+}

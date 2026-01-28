@@ -1,0 +1,82 @@
+meta {
+  name: Configure Documents
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/screenings/{{screeningId}}/steps/document-upload/configure
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  X-Organization-ID: {{organizationId}}
+}
+
+body:json {
+  {
+    "documents": [
+      {
+        "document_type_id": "{{documentTypeId1}}",
+        "is_required": true,
+        "order": 1,
+        "description": "Documento de identidade com foto"
+      },
+      {
+        "document_type_id": "{{documentTypeId2}}",
+        "is_required": true,
+        "order": 2,
+        "description": "CRM ou COREN válido"
+      },
+      {
+        "document_type_id": "{{documentTypeId3}}",
+        "is_required": false,
+        "order": 3,
+        "description": "Certificado de especialização (opcional)"
+      }
+    ]
+  }
+}
+
+docs {
+  # Configurar Documentos (Etapa 3 - Fase 1)
+  
+  Configura a lista de documentos necessários para a triagem.
+  Transiciona o DocumentUploadStep de PENDING para IN_PROGRESS.
+  
+  ## Campos
+  
+  | Campo | Tipo | Obrigatório | Descrição |
+  |-------|------|-------------|-----------|
+  | documents | array | Sim | Lista de documentos a configurar |
+  | documents[].document_type_id | UUID | Sim | ID do tipo de documento |
+  | documents[].is_required | boolean | Sim | Se o documento é obrigatório |
+  | documents[].order | integer | Não | Ordem de exibição (default: índice) |
+  | documents[].description | string | Não | Instruções customizadas |
+  
+  ## Comportamento
+  
+  1. Valida que o step está em PENDING
+  2. Cria ScreeningDocument para cada item
+  3. Transiciona step para IN_PROGRESS
+  4. Retorna step com lista de documentos
+  
+  ## Pré-requisitos
+  
+  - DocumentUploadStep deve estar em status PENDING
+  - Steps anteriores (CONVERSATION, PROFESSIONAL_DATA) devem estar COMPLETED/APPROVED
+  
+  ## Error Codes
+  
+  | Status | Code | Descrição |
+  |--------|------|-----------|
+  | 404 | `SCREENING_PROCESS_NOT_FOUND` | Processo não encontrado |
+  | 404 | `SCREENING_STEP_NOT_FOUND` | Step não encontrado |
+  | 422 | `SCREENING_STEP_NOT_PENDING` | Step não está em PENDING |
+  | 422 | `DOCUMENT_TYPE_NOT_FOUND` | Tipo de documento não encontrado |
+}
