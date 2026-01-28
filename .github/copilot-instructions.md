@@ -31,6 +31,15 @@ make migrate-create msg="description"  # New migration
 make migrate          # Apply migrations
 ```
 
+## API Client (packages/api-client)
+
+When adding endpoints or enums, always keep the API client in sync:
+
+- Regenerate client artifacts: run `make client-all`.
+- Enums/labels: update `ENUM_LABELS` and `MANUAL_ENUM_DEFINITIONS` in [scripts/generate_ts_enums.py](scripts/generate_ts_enums.py), then run `make client-enums`.
+- ESM/NodeNext: use explicit `.js` extensions in API client relative imports and barrel re-exports.
+- Releases: workflow requires `contents: write` and should skip release when the version already exists in [ .github/workflows/publish-api-client.yml ](.github/workflows/publish-api-client.yml).
+
 ## Architecture
 
 ### Module Structure (`src/modules/{module}/`)
