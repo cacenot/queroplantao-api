@@ -69,3 +69,39 @@ export const DocumentCategoryLabels: Record<DocumentCategory, string> = {
 export function getDocumentCategoryLabel(value: DocumentCategory): string {
   return DocumentCategoryLabels[value];
 }
+
+/**
+ * Types of documents that can be uploaded.
+ * 
+ * Used to identify specific document types in the screening
+ * and professional document management flows.
+ */
+export enum DocumentType {
+  RG = "RG",
+  CPF = "CPF",
+  CNH = "CNH",
+  PASSPORT = "PASSPORT",
+  DIPLOMA = "DIPLOMA",
+  CERTIFICATE = "CERTIFICATE",
+  RQE_CERTIFICATE = "RQE_CERTIFICATE",
+  COUNCIL_CARD = "COUNCIL_CARD",
+  PROOF_OF_ADDRESS = "PROOF_OF_ADDRESS",
+  OTHER = "OTHER",
+}
+
+export const DocumentTypeLabels: Record<DocumentType, string> = {
+  [DocumentType.RG]: "RG",
+  [DocumentType.CPF]: "CPF",
+  [DocumentType.CNH]: "CNH",
+  [DocumentType.PASSPORT]: "Passaporte",
+  [DocumentType.DIPLOMA]: "Diploma",
+  [DocumentType.CERTIFICATE]: "Certificado",
+  [DocumentType.RQE_CERTIFICATE]: "Certificado RQE",
+  [DocumentType.COUNCIL_CARD]: "Carteira do Conselho",
+  [DocumentType.PROOF_OF_ADDRESS]: "Comprovante de Endereço",
+  [DocumentType.OTHER]: "Outro",
+};
+
+export function getDocumentTypeLabel(value: DocumentType): string {
+  return DocumentTypeLabels[value];
+}

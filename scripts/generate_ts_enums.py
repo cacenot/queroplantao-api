@@ -233,6 +233,19 @@ ENUM_LABELS: dict[str, dict[str, str]] = {
         "QUALIFICATION": "Qualificação",
         "SPECIALTY": "Especialidade",
     },
+    # Document type
+    "DocumentType": {
+        "RG": "RG",
+        "CPF": "CPF",
+        "CNH": "CNH",
+        "PASSPORT": "Passaporte",
+        "DIPLOMA": "Diploma",
+        "CERTIFICATE": "Certificado",
+        "RQE_CERTIFICATE": "Certificado RQE",
+        "COUNCIL_CARD": "Carteira do Conselho",
+        "PROOF_OF_ADDRESS": "Comprovante de Endereço",
+        "OTHER": "Outro",
+    },
 }
 
 
@@ -251,6 +264,32 @@ class EnumDefinition:
     name: str
     members: list[EnumMember]
     docstring: str | None = None
+
+
+MANUAL_ENUM_DEFINITIONS: dict[str, list[EnumDefinition]] = {
+    "shared": [
+        EnumDefinition(
+            name="DocumentType",
+            docstring=(
+                "Types of documents that can be uploaded.\n\n"
+                "Used to identify specific document types in the screening\n"
+                "and professional document management flows."
+            ),
+            members=[
+                EnumMember(name="RG", value="RG"),
+                EnumMember(name="CPF", value="CPF"),
+                EnumMember(name="CNH", value="CNH"),
+                EnumMember(name="PASSPORT", value="PASSPORT"),
+                EnumMember(name="DIPLOMA", value="DIPLOMA"),
+                EnumMember(name="CERTIFICATE", value="CERTIFICATE"),
+                EnumMember(name="RQE_CERTIFICATE", value="RQE_CERTIFICATE"),
+                EnumMember(name="COUNCIL_CARD", value="COUNCIL_CARD"),
+                EnumMember(name="PROOF_OF_ADDRESS", value="PROOF_OF_ADDRESS"),
+                EnumMember(name="OTHER", value="OTHER"),
+            ],
+        ),
+    ]
+}
 
 
 def parse_enums_from_file(file_path: Path) -> Iterator[EnumDefinition]:
@@ -404,6 +443,10 @@ def main() -> None:
 
         module_enums.setdefault(module_name, []).extend(enums)
         print(f"    ✅ Collected {len(enums)} enums from {file_path.name}")
+
+    for module_name, enums in MANUAL_ENUM_DEFINITIONS.items():
+        module_enums.setdefault(module_name, []).extend(enums)
+        print(f"    ✅ Added {len(enums)} manual enums for {module_name}")
 
     for module_name, enums in module_enums.items():
         content = generate_module_file(module_name, enums)
