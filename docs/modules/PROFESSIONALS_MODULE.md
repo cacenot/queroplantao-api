@@ -613,29 +613,26 @@ Versionamento de dados do profissional (Event Sourcing simplificado).
       "council_type": "CRM",
       "council_number": "123456",
       "council_state": "SP",
-      "is_primary": true
-    }
-  ],
-  "specialties": [
-    {
-      "id": "uuid",
-      "qualification_id": "uuid",
-      "specialty_id": "uuid",
-      "specialty_code": "CARDIOLOGIA",
-      "specialty_name": "Cardiologia",
       "is_primary": true,
-      "rqe_number": "12345",
-      "residency_status": "COMPLETED"
-    }
-  ],
-  "educations": [
-    {
-      "id": "uuid",
-      "qualification_id": "uuid",
-      "level": "SPECIALIZATION",
-      "course_name": "Residência em Cardiologia",
-      "institution": "USP",
-      "is_completed": true
+      "specialties": [
+        {
+          "id": "uuid",
+          "specialty_id": "uuid",
+          "specialty_name": "Cardiologia",
+          "is_primary": true,
+          "rqe_number": "12345",
+          "residency_status": "COMPLETED"
+        }
+      ],
+      "educations": [
+        {
+          "id": "uuid",
+          "level": "SPECIALIZATION",
+          "course_name": "Residência em Cardiologia",
+          "institution": "USP",
+          "is_completed": true
+        }
+      ]
     }
   ],
   "companies": [
@@ -643,15 +640,17 @@ Versionamento de dados do profissional (Event Sourcing simplificado).
       "id": "uuid",
       "company_id": "uuid",
       "cnpj": "12345678000199",
-      "legal_name": "Empresa Médica LTDA"
+      "razao_social": "Empresa Médica LTDA"
     }
   ],
   "bank_accounts": [
     {
       "id": "uuid",
       "bank_code": "001",
-      "agency": "1234",
-      "account_number": "12345-6",
+      "agency_number": "1234",
+      "account_number": "123456",
+      "account_holder_name": "João Silva",
+      "account_holder_document": "12345678901",
       "is_primary": true,
       "pix_key": "joao@email.com"
     }
@@ -676,7 +675,7 @@ Registro granular de cada alteração feita em uma versão.
 **Exemplos de field_path:**
 - `personal_info.full_name`
 - `qualifications[0].council_number`
-- `specialties[1]` (quando adicionado/removido)
+- `qualifications[id=uuid].specialties[id=uuid]`
 - `bank_accounts[0].pix_key`
 
 **Índices:**
