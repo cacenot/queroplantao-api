@@ -61,6 +61,7 @@ export const ErrorMessages: Record<string, string> = {
   [ErrorCodes.PROFESSIONAL_DOCUMENT_SPECIALTY_CATEGORY]: "Documentos vinculados a uma especialidade devem ter categoria SPECIALTY",
   [ErrorCodes.PROFESSIONAL_COMPANY_NOT_FOUND]: "Empresa não encontrada",
   [ErrorCodes.PROFESSIONAL_COMPANY_ALREADY_LINKED]: "Este profissional já está vinculado a esta empresa",
+  [ErrorCodes.PROFESSIONAL_BANK_NOT_FOUND]: "Banco não encontrado",
   [ErrorCodes.PROFESSIONAL_VERSION_NOT_FOUND]: "Versão do profissional não encontrada",
   [ErrorCodes.PROFESSIONAL_VERSION_ALREADY_APPLIED]: "Esta versão já foi aplicada",
   [ErrorCodes.PROFESSIONAL_VERSION_ALREADY_REJECTED]: "Esta versão já foi rejeitada",
