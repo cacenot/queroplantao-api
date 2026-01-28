@@ -1,7 +1,7 @@
 """seed_roles_and_specialties
 
 Revision ID: 000000000002
-Revises: a4d50683ad2a
+Revises: 000000000001
 Create Date: 2026-01-27 21:00:00.000000
 
 """
@@ -14,7 +14,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision: str = "000000000002"
-down_revision: Union[str, Sequence[str], None] = "a4d50683ad2a"
+down_revision: Union[str, Sequence[str], None] = "000000000001"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

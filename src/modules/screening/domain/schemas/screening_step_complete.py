@@ -25,18 +25,6 @@ class ConversationStepCompleteRequest(BaseModel):
     )
 
 
-class SimpleStepCompleteRequest(BaseModel):
-    """Request schema for completing simple steps (no specific data required)."""
-
-    model_config = ConfigDict(from_attributes=True)
-
-    notes: Optional[str] = Field(
-        default=None,
-        max_length=2000,
-        description="Notas opcionais sobre a etapa",
-    )
-
-
 class DocumentUploadStepCompleteRequest(BaseModel):
     """Request schema for completing document upload step.
 

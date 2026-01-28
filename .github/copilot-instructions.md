@@ -232,6 +232,36 @@ Reference data not scoped by organization (e.g., specialties) use `CurrentContex
 - **GIN trigram indexes** for search: `postgresql_using="gin"`, requires `pg_trgm` + `f_unaccent` function
 - Denormalize `organization_id` when needed for unique constraints
 
+### Migration Naming Convention (REQUIRED)
+Migrations use **sequential numeric prefixes** (12 digits, zero-padded) instead of Alembic's random revision IDs:
+
+```
+000000000001_add_postgresql_extensions.py
+000000000002_seed_roles_and_specialties.py
+000000000003_unify_document_types.py
+...
+000000000006_remove_redundant_step_fields.py
+```
+
+**Rules:**
+1. **Check existing migrations first**: List `alembic/versions/` to find the highest prefix number
+2. **Increment by 1**: New migration = highest existing number + 1
+3. **Use as revision ID**: The prefix IS the revision ID (e.g., `revision: str = "000000000006"`)
+4. **Set down_revision**: Point to previous sequential number (e.g., `down_revision = "000000000005"`)
+5. **File naming**: `{prefix}_{snake_case_description}.py`
+
+**Example migration header:**
+```python
+"""description_of_change
+
+Revision ID: 000000000006
+Revises: 000000000005
+Create Date: 2026-01-28 14:00:00.000000
+"""
+revision: str = "000000000006"
+down_revision: Union[str, Sequence[str], None] = "000000000005"
+```
+
 ## Exceptions & Error Codes
 
 ### Domain-Specific Exceptions (REQUIRED)

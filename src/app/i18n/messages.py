@@ -125,9 +125,16 @@ class ScreeningMessages(StrEnum):
     STEP_NOT_IN_PROGRESS = "screening.step.not_in_progress"
     STEP_INVALID_TYPE = "screening.step.invalid_type"
     STEP_CANNOT_GO_BACK = "screening.step.cannot_go_back"
+    STEP_NOT_ASSIGNED_TO_USER = "screening.step.not_assigned_to_user"
 
     # Conversation messages
     CONVERSATION_REJECTED = "screening.conversation.rejected"
+
+    # Professional data messages
+    PROFESSIONAL_NOT_LINKED = "screening.professional_data.not_linked"
+    PROFESSIONAL_NO_QUALIFICATION = "screening.professional_data.no_qualification"
+    PROFESSIONAL_TYPE_MISMATCH = "screening.professional_data.type_mismatch"
+    SPECIALTY_MISMATCH = "screening.professional_data.specialty_mismatch"
 
     # Document messages
     DOCUMENTS_NOT_UPLOADED = "screening.documents.not_uploaded"

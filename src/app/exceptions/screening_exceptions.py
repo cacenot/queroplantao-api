@@ -201,6 +201,75 @@ class ScreeningConversationRejectedError(AppException):
         )
 
 
+class ScreeningStepNotAssignedToUserError(AppException):
+    """Raised when step is not assigned to the user trying to complete it."""
+
+    def __init__(self, step_id: str, user_id: str) -> None:
+        super().__init__(
+            message=get_message(ScreeningMessages.STEP_NOT_ASSIGNED_TO_USER),
+            code=ScreeningErrorCodes.SCREENING_STEP_NOT_ASSIGNED_TO_USER,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details={"step_id": step_id, "user_id": user_id},
+        )
+
+
+# =============================================================================
+# PROFESSIONAL DATA STEP EXCEPTIONS
+# =============================================================================
+
+
+class ScreeningProfessionalNotLinkedError(AppException):
+    """Raised when no professional is linked to the screening process."""
+
+    def __init__(self, screening_id: str) -> None:
+        super().__init__(
+            message=get_message(ScreeningMessages.PROFESSIONAL_NOT_LINKED),
+            code=ScreeningErrorCodes.SCREENING_PROFESSIONAL_NOT_LINKED,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            details={"screening_id": screening_id},
+        )
+
+
+class ScreeningProfessionalNoQualificationError(AppException):
+    """Raised when professional has no qualification registered."""
+
+    def __init__(self, professional_id: str) -> None:
+        super().__init__(
+            message=get_message(ScreeningMessages.PROFESSIONAL_NO_QUALIFICATION),
+            code=ScreeningErrorCodes.SCREENING_PROFESSIONAL_NO_QUALIFICATION,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            details={"professional_id": professional_id},
+        )
+
+
+class ScreeningProfessionalTypeMismatchError(AppException):
+    """Raised when professional type doesn't match expected type."""
+
+    def __init__(self, expected: str, found: str) -> None:
+        super().__init__(
+            message=get_message(
+                ScreeningMessages.PROFESSIONAL_TYPE_MISMATCH,
+                expected=expected,
+                found=found,
+            ),
+            code=ScreeningErrorCodes.SCREENING_PROFESSIONAL_TYPE_MISMATCH,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            details={"expected": expected, "found": found},
+        )
+
+
+class ScreeningSpecialtyMismatchError(AppException):
+    """Raised when professional doesn't have the required specialty."""
+
+    def __init__(self, specialty_id: str, professional_id: str) -> None:
+        super().__init__(
+            message=get_message(ScreeningMessages.SPECIALTY_MISMATCH),
+            code=ScreeningErrorCodes.SCREENING_SPECIALTY_MISMATCH,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            details={"specialty_id": specialty_id, "professional_id": professional_id},
+        )
+
+
 # =============================================================================
 # DOCUMENT STEP EXCEPTIONS
 # =============================================================================

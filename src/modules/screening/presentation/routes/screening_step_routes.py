@@ -12,14 +12,18 @@ from src.modules.screening.domain.schemas import (
     DocumentReviewStepCompleteRequest,
     DocumentUploadStepCompleteRequest,
     ScreeningProcessStepResponse,
-    SimpleStepCompleteRequest,
+)
+from src.modules.screening.domain.schemas.steps import (
+    ConversationStepResponse,
+    ProfessionalDataStepCompleteRequest,
+    ProfessionalDataStepResponse,
 )
 from src.modules.screening.presentation.dependencies import (
     CompleteClientValidationStepUC,
     CompleteConversationStepUC,
     CompleteDocumentReviewStepUC,
     CompleteDocumentUploadStepUC,
-    CompleteSimpleStepUC,
+    CompleteProfessionalDataStepUC,
     GoBackToStepUC,
     SkipClientValidationUC,
 )
@@ -34,12 +38,41 @@ router = APIRouter()
 
 
 @router.post(
-    "/{screening_id}/steps/{step_id}/conversation/complete",
-    response_model=ScreeningProcessStepResponse,
+    "/{screening_id}/steps/conversation/complete",
+    response_model=ConversationStepResponse,
     status_code=status.HTTP_200_OK,
     summary="Finalizar etapa de conversa",
-    description="Finaliza a etapa de conversa inicial com o profissional.",
+    description="""
+Finaliza a etapa de conversa inicial com o profissional.
+
+**Outcomes:**
+- `PROCEED`: Aprova a etapa e avança para PROFESSIONAL_DATA
+- `REJECT`: Rejeita a etapa e encerra o processo de triagem
+
+**Validações:**
+- Processo deve existir e pertencer à organização
+- Etapa de conversa deve existir para o processo
+- Etapa deve estar em andamento (IN_PROGRESS)
+- Usuário deve estar atribuído à etapa (se assigned_to estiver definido)
+""",
     responses={
+        403: {
+            "model": ErrorResponse,
+            "description": "Não autorizado",
+            "content": {
+                "application/json": {
+                    "examples": {
+                        "not_assigned": {
+                            "summary": "Etapa não atribuída ao usuário",
+                            "value": {
+                                "code": ScreeningErrorCodes.SCREENING_STEP_NOT_ASSIGNED_TO_USER,
+                                "message": "Esta etapa não está atribuída ao usuário atual",
+                            },
+                        },
+                    }
+                }
+            },
+        },
         404: {
             "model": ErrorResponse,
             "description": "Não encontrado",
@@ -77,11 +110,11 @@ router = APIRouter()
                                 "message": "Esta etapa já foi concluída",
                             },
                         },
-                        "invalid_type": {
-                            "summary": "Tipo de etapa inválido",
+                        "not_in_progress": {
+                            "summary": "Etapa não está em andamento",
                             "value": {
-                                "code": ScreeningErrorCodes.SCREENING_STEP_INVALID_TYPE,
-                                "message": "Tipo de etapa inválido para esta operação",
+                                "code": ScreeningErrorCodes.SCREENING_STEP_NOT_IN_PROGRESS,
+                                "message": "Esta etapa não está em andamento",
                             },
                         },
                     }
@@ -92,49 +125,153 @@ router = APIRouter()
 )
 async def complete_conversation_step(
     screening_id: UUID,
-    step_id: UUID,
     data: ConversationStepCompleteRequest,
     ctx: OrganizationContext,
     use_case: CompleteConversationStepUC,
-) -> ScreeningProcessStepResponse:
+) -> ConversationStepResponse:
     """Complete the conversation step."""
     return await use_case.execute(
         organization_id=ctx.organization,
         screening_id=screening_id,
-        step_id=step_id,
         data=data,
         completed_by=ctx.user,
     )
 
 
 # =============================================================================
-# SIMPLE STEPS (Data collection)
+# PROFESSIONAL DATA STEP
 # =============================================================================
 
 
 @router.post(
-    "/{screening_id}/steps/{step_id}/simple/complete",
-    response_model=ScreeningProcessStepResponse,
+    "/{screening_id}/steps/professional-data/complete",
+    response_model=ProfessionalDataStepResponse,
     status_code=status.HTTP_200_OK,
-    summary="Finalizar etapa simples",
-    description="Finaliza uma etapa simples de coleta de dados (PROFESSIONAL_DATA, QUALIFICATION, SPECIALTY, EDUCATION, COMPANY, BANK_ACCOUNT).",
+    summary="Finalizar etapa de dados do profissional",
+    description="""
+Finaliza a etapa de coleta de dados do profissional.
+
+Esta etapa valida que os dados do profissional estão completos.
+O frontend exibe os dados do profissional para o usuário revisar.
+O usuário pode criar/editar o profissional usando os endpoints /composite
+antes de completar esta etapa.
+
+**Validações:**
+- Processo deve existir e pertencer à organização
+- Etapa de dados do profissional deve existir para o processo
+- Etapa deve estar em andamento (IN_PROGRESS)
+- Usuário deve estar atribuído à etapa (se assigned_to estiver definido)
+- Profissional deve estar vinculado ao processo (organization_professional_id)
+- Profissional deve ter pelo menos uma qualificação
+- Se expected_professional_type estiver definido, deve corresponder
+- Se expected_specialty_id estiver definido, profissional deve ter essa especialidade
+""",
     responses={
-        404: {"model": ErrorResponse, "description": "Não encontrado"},
-        422: {"model": ErrorResponse, "description": "Validação falhou"},
+        403: {
+            "model": ErrorResponse,
+            "description": "Não autorizado",
+            "content": {
+                "application/json": {
+                    "examples": {
+                        "not_assigned": {
+                            "summary": "Etapa não atribuída ao usuário",
+                            "value": {
+                                "code": ScreeningErrorCodes.SCREENING_STEP_NOT_ASSIGNED_TO_USER,
+                                "message": "Esta etapa não está atribuída ao usuário atual",
+                            },
+                        },
+                    }
+                }
+            },
+        },
+        404: {
+            "model": ErrorResponse,
+            "description": "Não encontrado",
+            "content": {
+                "application/json": {
+                    "examples": {
+                        "process_not_found": {
+                            "summary": "Processo não encontrado",
+                            "value": {
+                                "code": ScreeningErrorCodes.SCREENING_PROCESS_NOT_FOUND,
+                                "message": "Processo de triagem não encontrado",
+                            },
+                        },
+                        "step_not_found": {
+                            "summary": "Etapa não encontrada",
+                            "value": {
+                                "code": ScreeningErrorCodes.SCREENING_STEP_NOT_FOUND,
+                                "message": "Etapa de triagem não encontrada",
+                            },
+                        },
+                    }
+                }
+            },
+        },
+        422: {
+            "model": ErrorResponse,
+            "description": "Validação falhou",
+            "content": {
+                "application/json": {
+                    "examples": {
+                        "already_completed": {
+                            "summary": "Etapa já concluída",
+                            "value": {
+                                "code": ScreeningErrorCodes.SCREENING_STEP_ALREADY_COMPLETED,
+                                "message": "Esta etapa já foi concluída",
+                            },
+                        },
+                        "not_in_progress": {
+                            "summary": "Etapa não está em andamento",
+                            "value": {
+                                "code": ScreeningErrorCodes.SCREENING_STEP_NOT_IN_PROGRESS,
+                                "message": "Esta etapa não está em andamento",
+                            },
+                        },
+                        "professional_not_linked": {
+                            "summary": "Profissional não vinculado",
+                            "value": {
+                                "code": ScreeningErrorCodes.SCREENING_PROFESSIONAL_NOT_LINKED,
+                                "message": "Nenhum profissional vinculado ao processo de triagem",
+                            },
+                        },
+                        "no_qualification": {
+                            "summary": "Sem qualificação",
+                            "value": {
+                                "code": ScreeningErrorCodes.SCREENING_PROFESSIONAL_NO_QUALIFICATION,
+                                "message": "O profissional não possui qualificação cadastrada",
+                            },
+                        },
+                        "type_mismatch": {
+                            "summary": "Tipo não corresponde",
+                            "value": {
+                                "code": ScreeningErrorCodes.SCREENING_PROFESSIONAL_TYPE_MISMATCH,
+                                "message": "Tipo de profissional não corresponde ao esperado",
+                            },
+                        },
+                        "specialty_mismatch": {
+                            "summary": "Especialidade não encontrada",
+                            "value": {
+                                "code": ScreeningErrorCodes.SCREENING_SPECIALTY_MISMATCH,
+                                "message": "O profissional não possui a especialidade requerida",
+                            },
+                        },
+                    }
+                }
+            },
+        },
     },
 )
-async def complete_simple_step(
+async def complete_professional_data_step(
     screening_id: UUID,
-    step_id: UUID,
-    data: SimpleStepCompleteRequest,
+    data: ProfessionalDataStepCompleteRequest,
     ctx: OrganizationContext,
-    use_case: CompleteSimpleStepUC,
-) -> ScreeningProcessStepResponse:
-    """Complete a simple step (PROFESSIONAL_DATA, QUALIFICATION, etc.)."""
+    use_case: CompleteProfessionalDataStepUC,
+) -> ProfessionalDataStepResponse:
+    """Complete the professional data step."""
     return await use_case.execute(
         organization_id=ctx.organization,
         screening_id=screening_id,
-        step_id=step_id,
         data=data,
         completed_by=ctx.user,
     )

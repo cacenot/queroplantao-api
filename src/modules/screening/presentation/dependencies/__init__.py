@@ -21,7 +21,7 @@ from src.modules.screening.presentation.dependencies.screening_step import (
     CompleteConversationStepUC,
     CompleteDocumentReviewStepUC,
     CompleteDocumentUploadStepUC,
-    CompleteSimpleStepUC,
+    CompleteProfessionalDataStepUC,
     GoBackToStepUC,
 )
 
@@ -45,6 +45,6 @@ __all__ = [
     "CompleteConversationStepUC",
     "CompleteDocumentReviewStepUC",
     "CompleteDocumentUploadStepUC",
-    "CompleteSimpleStepUC",
+    "CompleteProfessionalDataStepUC",
     "GoBackToStepUC",
 ]

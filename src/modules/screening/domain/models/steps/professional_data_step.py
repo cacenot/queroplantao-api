@@ -3,8 +3,7 @@
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID
 
-from sqlalchemy import ARRAY, Enum as SAEnum, Index, UniqueConstraint
-from sqlalchemy.dialects.postgresql import UUID as PGUUID
+from sqlalchemy import Enum as SAEnum, Index, UniqueConstraint
 from sqlmodel import Field, Relationship
 
 from src.modules.screening.domain.models.enums import StepType
@@ -40,23 +39,6 @@ class ProfessionalDataStepBase(BaseModel):
         default=None,
         nullable=True,
         description="ID of the OrganizationProfessional record created/updated",
-    )
-
-    # References to created/updated entities (for tracking)
-    qualification_ids: list[str] = Field(
-        default_factory=list,
-        sa_type=ARRAY(PGUUID),
-        description="IDs of ProfessionalQualification records created/updated",
-    )
-    specialty_ids: list[str] = Field(
-        default_factory=list,
-        sa_type=ARRAY(PGUUID),
-        description="IDs of ProfessionalSpecialty records created/updated",
-    )
-    education_ids: list[str] = Field(
-        default_factory=list,
-        sa_type=ARRAY(PGUUID),
-        description="IDs of ProfessionalEducation records created/updated",
     )
 
     # Link to version history
@@ -122,21 +104,6 @@ class ProfessionalDataStep(ProfessionalDataStepBase, ScreeningStepMixin, table=T
     def has_professional(self) -> bool:
         """Check if a professional record was created/linked."""
         return self.professional_id is not None
-
-    @property
-    def has_qualifications(self) -> bool:
-        """Check if qualifications were created/updated."""
-        return len(self.qualification_ids) > 0
-
-    @property
-    def has_specialties(self) -> bool:
-        """Check if specialties were created/updated."""
-        return len(self.specialty_ids) > 0
-
-    @property
-    def has_education(self) -> bool:
-        """Check if education records were created/updated."""
-        return len(self.education_ids) > 0
 
     @property
     def has_version(self) -> bool:

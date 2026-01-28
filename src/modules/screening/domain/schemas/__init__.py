@@ -51,7 +51,12 @@ from src.modules.screening.domain.schemas.screening_step_complete import (
     ConversationStepCompleteRequest,
     DocumentReviewStepCompleteRequest,
     DocumentUploadStepCompleteRequest,
-    SimpleStepCompleteRequest,
+)
+from src.modules.screening.domain.schemas.steps import (
+    ConversationStepResponse,
+    ProfessionalDataStepCompleteRequest,
+    ProfessionalDataStepResponse,
+    StepResponseBase,
 )
 
 __all__ = [
@@ -100,5 +105,9 @@ __all__ = [
     "ConversationStepCompleteRequest",
     "DocumentReviewStepCompleteRequest",
     "DocumentUploadStepCompleteRequest",
-    "SimpleStepCompleteRequest",
+    # Step Response Schemas
+    "ConversationStepResponse",
+    "ProfessionalDataStepCompleteRequest",
+    "ProfessionalDataStepResponse",
+    "StepResponseBase",
 ]

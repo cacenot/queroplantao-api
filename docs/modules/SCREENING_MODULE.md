@@ -497,11 +497,276 @@ Registro granular de cada alteração feita em uma versão.
    - Se não existe: cria novo profissional
    - Cria `ProfessionalVersion` com snapshot completo
    - Ao completar: aplica versão ao profissional real
-3. **DOCUMENT_UPLOAD** (Obrigatório): Upload de documentos obrigatórios
+3. **DOCUMENT_UPLOAD** (Obrigatório): Configuração e upload de documentos
+   - Fase 1: Gestor configura quais documentos são necessários
+   - Fase 2: Profissional/Gestor faz upload dos arquivos
 4. **DOCUMENT_REVIEW** (Obrigatório): Revisão individual de cada documento
 5. **PAYMENT_INFO** (Opcional): Dados bancários e empresa PJ
 6. **SUPERVISOR_REVIEW** (Opcional): Ativado quando há documentos com ALERT
 7. **CLIENT_VALIDATION** (Opcional): Aprovação final pelo cliente contratante
+
+### Fluxo Detalhado: DOCUMENT_UPLOAD e DOCUMENT_REVIEW
+
+O processo de documentos é dividido em duas etapas com um fluxo de estados bem definido.
+
+#### Diagrama do Fluxo de Documentos
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────────────┐
+│                         DOCUMENT_UPLOAD Step                                            │
+├─────────────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                         │
+│  Status: PENDING                                                                        │
+│  ──────────────────                                                                     │
+│  Step criado mas ainda não configurado.                                                 │
+│  Nenhum documento foi selecionado ainda.                                                │
+│                                                                                         │
+│       │                                                                                 │
+│       │ POST /screening/{id}/steps/document-upload/configure                            │
+│       │ Payload: lista de document_type_ids com is_required, order, description         │
+│       ▼                                                                                 │
+│                                                                                         │
+│  Status: IN_PROGRESS                                                                    │
+│  ────────────────────                                                                   │
+│  Documentos configurados, aguardando uploads.                                           │
+│  ScreeningDocument records criados com status PENDING_UPLOAD.                           │
+│                                                                                         │
+│       │                                                                                 │
+│       │ POST /screening/{id}/documents/{doc_id}/upload (para cada documento)            │
+│       │ Cria ProfessionalDocument e linka ao ScreeningDocument                          │
+│       │ ScreeningDocument.status → PENDING_REVIEW                                       │
+│       ▼                                                                                 │
+│                                                                                         │
+│  Uploads Completos                                                                      │
+│  ─────────────────                                                                      │
+│  Todos os documentos obrigatórios (is_required=true) foram enviados.                    │
+│                                                                                         │
+│       │                                                                                 │
+│       │ POST /screening/{id}/steps/document-upload/complete                             │
+│       │ Valida: todos required docs com status != PENDING_UPLOAD                        │
+│       ▼                                                                                 │
+│                                                                                         │
+│  Status: COMPLETED                                                                      │
+│  ─────────────────                                                                      │
+│  Step finalizado, pronto para revisão.                                                  │
+│                                                                                         │
+└─────────────────────────────────────────────────────────────────────────────────────────┘
+
+                              │
+                              ▼
+
+┌─────────────────────────────────────────────────────────────────────────────────────────┐
+│                         DOCUMENT_REVIEW Step                                            │
+├─────────────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                         │
+│  Status: IN_PROGRESS                                                                    │
+│  ────────────────────                                                                   │
+│  Gestor revisa cada documento individualmente.                                          │
+│                                                                                         │
+│       │                                                                                 │
+│       │ POST /screening/{id}/documents/{doc_id}/review                                  │
+│       │ Payload: { status: APPROVED | REJECTED | ALERT, notes, reason }                 │
+│       │                                                                                 │
+│       │ Para cada documento:                                                            │
+│       │   • APPROVED: documento válido                                                  │
+│       │   • REJECTED: documento inválido, precisa re-upload                             │
+│       │   • ALERT: documento com ressalva, escalar para supervisor                      │
+│       ▼                                                                                 │
+│                                                                                         │
+│  Todos Revisados                                                                        │
+│  ───────────────                                                                        │
+│  Nenhum documento com status PENDING_REVIEW.                                            │
+│                                                                                         │
+│       │                                                                                 │
+│       │ POST /screening/{id}/steps/document-review/complete                             │
+│       ▼                                                                                 │
+│                                                                                         │
+│  ┌─────────────────────────────────────────────────────────────────────────────────┐    │
+│  │                       DECISÃO BASEADA NOS RESULTADOS                            │    │
+│  ├─────────────────────────────────────────────────────────────────────────────────┤    │
+│  │                                                                                 │    │
+│  │  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐                  │    │
+│  │  │ Todos APPROVED  │  │ Algum REJECTED  │  │  Algum ALERT    │                  │    │
+│  │  └────────┬────────┘  └────────┬────────┘  └────────┬────────┘                  │    │
+│  │           │                    │                    │                           │    │
+│  │           ▼                    ▼                    ▼                           │    │
+│  │     Step APPROVED       Step CORRECTION      Step APPROVED                      │    │
+│  │     Prossegue para       _NEEDED             (se supervisor)                    │    │
+│  │     próximo step         Retorna ao          ou ALERT                           │    │
+│  │                          DOCUMENT_UPLOAD     (aguarda supervisor)               │    │
+│  │                                                                                 │    │
+│  └─────────────────────────────────────────────────────────────────────────────────┘    │
+│                                                                                         │
+└─────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+#### Ciclo de Correção de Documentos
+
+```
+┌───────────────────────────────────────────────────────────────────────────────────────┐
+│                           CICLO DE CORREÇÃO                                           │
+├───────────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                       │
+│  DOCUMENT_REVIEW.complete() com documentos REJECTED                                   │
+│                                                                                       │
+│       │                                                                               │
+│       │ 1. DocumentReviewStep.status → CORRECTION_NEEDED                              │
+│       │ 2. DocumentUploadStep.status → CORRECTION_NEEDED                              │
+│       │ 3. ScreeningDocument (rejeitados).status → PENDING_UPLOAD                     │
+│       ▼                                                                               │
+│                                                                                       │
+│  Profissional notificado para re-upload                                               │
+│                                                                                       │
+│       │                                                                               │
+│       │ POST /screening/{id}/documents/{doc_id}/upload (re-upload)                    │
+│       │ ScreeningDocument.status → PENDING_REVIEW                                     │
+│       │ Histórico de revisão mantido em review_history[]                              │
+│       ▼                                                                               │
+│                                                                                       │
+│  Todos re-uploads feitos                                                              │
+│                                                                                       │
+│       │                                                                               │
+│       │ POST /screening/{id}/steps/document-upload/complete                           │
+│       │ DocumentUploadStep.status → COMPLETED                                         │
+│       ▼                                                                               │
+│                                                                                       │
+│  Volta para DOCUMENT_REVIEW                                                           │
+│                                                                                       │
+│       │                                                                               │
+│       │ DocumentReviewStep.status → IN_PROGRESS                                       │
+│       │ Gestor revisa novamente                                                       │
+│       ▼                                                                               │
+│                                                                                       │
+│  (Ciclo repete até todos APPROVED ou processo rejeitado)                              │
+│                                                                                       │
+└───────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+#### Estados do ScreeningDocument
+
+```
+                    ┌─────────────────┐
+                    │ PENDING_UPLOAD  │◄─────────────────────────────┐
+                    └────────┬────────┘                              │
+                             │                                       │
+                             │ upload()                              │
+                             ▼                                       │
+                    ┌─────────────────┐                              │
+                    │ PENDING_REVIEW  │                              │
+                    └────────┬────────┘                              │
+                             │                                       │
+                             │ review()                              │
+                             ▼                                       │
+            ┌────────────────┼────────────────┐                      │
+            │                │                │                      │
+            ▼                ▼                ▼                      │
+    ┌───────────┐    ┌───────────┐    ┌───────────┐                  │
+    │ APPROVED  │    │ REJECTED  │    │   ALERT   │                  │
+    └───────────┘    └─────┬─────┘    └───────────┘                  │
+                           │                                         │
+                           │ (ciclo de correção)                     │
+                           └─────────────────────────────────────────┘
+
+
+    Estados Especiais:
+    ┌───────────┐    ┌───────────┐
+    │  REUSED   │    │  SKIPPED  │
+    └───────────┘    └───────────┘
+    (doc de triagem   (doc opcional
+     anterior)         não enviado)
+```
+
+#### Endpoints de Documentos
+
+| Método | Endpoint | Descrição | Quem usa |
+|--------|----------|-----------|----------|
+| POST | `/screening/{id}/steps/document-upload/configure` | Configura lista de documentos necessários | Gestor |
+| GET | `/screening/{id}/documents` | Lista documentos da triagem | Ambos |
+| POST | `/screening/{id}/documents/{doc_id}/upload` | Upload de arquivo | Profissional/Gestor |
+| DELETE | `/screening/{id}/documents/{doc_id}/upload` | Remove upload (antes da revisão) | Profissional/Gestor |
+| POST | `/screening/{id}/steps/document-upload/complete` | Finaliza etapa de upload | Profissional/Gestor |
+| POST | `/screening/{id}/documents/{doc_id}/review` | Revisa documento individual | Gestor |
+| POST | `/screening/{id}/steps/document-review/complete` | Finaliza etapa de revisão | Gestor |
+
+#### Payload: Configurar Documentos
+
+```json
+POST /screening/{id}/steps/document-upload/configure
+
+{
+  "documents": [
+    {
+      "document_type_id": "uuid-rg",
+      "is_required": true,
+      "order": 1,
+      "description": "Documento com foto legível"
+    },
+    {
+      "document_type_id": "uuid-diploma",
+      "is_required": true,
+      "order": 2,
+      "description": null
+    },
+    {
+      "document_type_id": "uuid-comprovante-residencia",
+      "is_required": false,
+      "order": 3,
+      "description": "Últimos 3 meses"
+    }
+  ]
+}
+```
+
+#### Payload: Revisar Documento
+
+```json
+POST /screening/{id}/documents/{doc_id}/review
+
+// Aprovação
+{
+  "status": "APPROVED",
+  "notes": "Documento válido e legível"
+}
+
+// Rejeição
+{
+  "status": "REJECTED",
+  "rejection_reason": "Documento ilegível, enviar foto com melhor qualidade"
+}
+
+// Alerta (escala para supervisor)
+{
+  "status": "ALERT",
+  "alert_reason": "Documento com data de validade próxima do vencimento"
+}
+```
+
+#### Rastreabilidade
+
+Cada ação é registrada para auditoria:
+
+- **ScreeningDocument.created_by**: Quem configurou o documento
+- **ScreeningDocument.uploaded_by**: Quem fez o upload
+- **ScreeningDocument.reviewed_by**: Quem revisou
+- **ScreeningDocument.review_history**: Array JSONB com histórico completo
+
+```json
+// Exemplo de review_history
+[
+  {
+    "user_id": "uuid",
+    "action": "REJECTED",
+    "notes": "Documento ilegível",
+    "timestamp": "2024-01-15T10:30:00Z"
+  },
+  {
+    "user_id": "uuid",
+    "action": "APPROVED",
+    "notes": "Novo upload aceito",
+    "timestamp": "2024-01-16T14:00:00Z"
+  }
+]
+```
 
 ### Versionamento de Dados
 

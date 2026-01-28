@@ -150,8 +150,14 @@ MESSAGES: dict[str, str] = {
     ScreeningMessages.STEP_NOT_IN_PROGRESS: "Esta etapa não está em andamento",
     ScreeningMessages.STEP_INVALID_TYPE: "Tipo de etapa inválido para esta operação. Esperado: {expected}, recebido: {received}",
     ScreeningMessages.STEP_CANNOT_GO_BACK: "Não é possível voltar para a etapa {step_type}",
+    ScreeningMessages.STEP_NOT_ASSIGNED_TO_USER: "Esta etapa não está atribuída ao usuário atual",
     # Conversation
     ScreeningMessages.CONVERSATION_REJECTED: "Profissional rejeitado na conversa inicial",
+    # Professional data
+    ScreeningMessages.PROFESSIONAL_NOT_LINKED: "Nenhum profissional vinculado ao processo de triagem",
+    ScreeningMessages.PROFESSIONAL_NO_QUALIFICATION: "O profissional não possui qualificação cadastrada",
+    ScreeningMessages.PROFESSIONAL_TYPE_MISMATCH: "Tipo de profissional não corresponde ao esperado. Esperado: {expected}, encontrado: {found}",
+    ScreeningMessages.SPECIALTY_MISMATCH: "O profissional não possui a especialidade requerida para esta triagem",
     # Documents
     ScreeningMessages.DOCUMENTS_NOT_UPLOADED: "Documentos obrigatórios pendentes de envio: {documents}",
     ScreeningMessages.DOCUMENTS_MISSING_REQUIRED: "Documentos obrigatórios não foram enviados: {missing}",
