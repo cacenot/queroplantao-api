@@ -1,0 +1,37 @@
+meta {
+  name: Listar Alertas
+  type: http
+  seq: 31
+}
+
+get {
+  url: {{baseUrl}}/api/v1/screenings/:screening_id/alerts
+  body: none
+  auth: inherit
+}
+
+params:path {
+  screening_id: {{screening_id}}
+}
+
+headers {
+  X-Organization-ID: {{organization_id}}
+}
+
+docs {
+  # Listar Alertas
+  
+  Lista todos os alertas de um processo de triagem.
+  
+  ## Retorno
+  
+  - `alerts`: Lista de alertas (resolvidos e pendentes)
+  - `total_count`: Contagem total de alertas
+  - `pending_count`: Contagem de alertas pendentes
+  
+  ## Error Codes
+  
+  | Status | Code | Descrição |
+  |--------|------|-----------|
+  | 404 | `SCREENING_PROCESS_NOT_FOUND` | Triagem não encontrada |
+}

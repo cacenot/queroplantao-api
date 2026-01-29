@@ -349,5 +349,56 @@ class ScreeningProcessHasRejectedDocumentsError(AppException):
 
 
 # =============================================================================
+# ALERT EXCEPTIONS
+# =============================================================================
+
+
+class ScreeningAlertNotFoundError(AppException):
+    """Raised when screening alert is not found."""
+
+    def __init__(self, alert_id: str) -> None:
+        super().__init__(
+            message=get_message(ScreeningMessages.ALERT_NOT_FOUND),
+            code=ScreeningErrorCodes.SCREENING_ALERT_NOT_FOUND,
+            status_code=status.HTTP_404_NOT_FOUND,
+            details={"alert_id": alert_id},
+        )
+
+
+class ScreeningAlertAlreadyExistsError(AppException):
+    """Raised when trying to create alert but one already exists."""
+
+    def __init__(self) -> None:
+        super().__init__(
+            message=get_message(ScreeningMessages.ALERT_ALREADY_EXISTS),
+            code=ScreeningErrorCodes.SCREENING_ALERT_ALREADY_EXISTS,
+            status_code=status.HTTP_409_CONFLICT,
+        )
+
+
+class ScreeningAlertAlreadyResolvedError(AppException):
+    """Raised when trying to resolve/reject an already resolved alert."""
+
+    def __init__(self, alert_id: str) -> None:
+        super().__init__(
+            message=get_message(ScreeningMessages.ALERT_ALREADY_RESOLVED),
+            code=ScreeningErrorCodes.SCREENING_ALERT_ALREADY_RESOLVED,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            details={"alert_id": alert_id},
+        )
+
+
+class ScreeningProcessBlockedByAlertError(AppException):
+    """Raised when trying to perform action on process blocked by alert."""
+
+    def __init__(self) -> None:
+        super().__init__(
+            message=get_message(ScreeningMessages.PROCESS_BLOCKED_BY_ALERT),
+            code=ScreeningErrorCodes.SCREENING_PROCESS_BLOCKED_BY_ALERT,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        )
+
+
+# =============================================================================
 # CLIENT VALIDATION EXCEPTIONS
 # =============================================================================

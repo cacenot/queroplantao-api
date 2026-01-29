@@ -198,6 +198,7 @@ class OrganizationIdentityMiddleware(BaseHTTPMiddleware):
                 organization_id=organization_id,
                 organization_name=org_data["name"],
                 organization_role=membership_data["role_code"],
+                organization_role_name=membership_data["role_name"],
                 child_organization_id=(
                     UUID(child_org_data["id"]) if child_org_data else None
                 ),
@@ -404,6 +405,7 @@ class OrganizationIdentityMiddleware(BaseHTTPMiddleware):
                 "membership_id": str(membership.id),
                 "role_id": str(membership.role_id),
                 "role_code": membership.role.code if membership.role else None,
+                "role_name": membership.role.name if membership.role else None,
                 "is_active": membership.is_active,
             }
 

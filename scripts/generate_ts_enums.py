@@ -139,6 +139,7 @@ ENUM_LABELS: dict[str, dict[str, str]] = {
     "ScreeningStatus": {
         "DRAFT": "Rascunho",
         "IN_PROGRESS": "Em Andamento",
+        "PENDING_SUPERVISOR": "Aguardando Supervisor",
         "APPROVED": "Aprovado",
         "REJECTED": "Rejeitado",
         "EXPIRED": "Expirado",
@@ -162,8 +163,16 @@ ENUM_LABELS: dict[str, dict[str, str]] = {
         "DOCUMENT_UPLOAD": "Upload de Documentos",
         "DOCUMENT_REVIEW": "Revisão de Documentos",
         "PAYMENT_INFO": "Informações de Pagamento",
-        "SUPERVISOR_REVIEW": "Revisão do Supervisor",
         "CLIENT_VALIDATION": "Validação do Cliente",
+    },
+    # Alert category
+    "AlertCategory": {
+        "DOCUMENT": "Documento",
+        "DATA": "Dados",
+        "BEHAVIOR": "Comportamento",
+        "COMPLIANCE": "Conformidade",
+        "QUALIFICATION": "Qualificação",
+        "OTHER": "Outros",
     },
     # Source type
     "SourceType": {

@@ -63,14 +63,15 @@ class ScreeningProcessCreate(BaseModel):
         default=True,
         description="Include payment info step (bank account + company data)",
     )
-    include_supervisor_review: bool = Field(
-        default=False,
-        description="Include supervisor review step (escalated review)",
-    )
     include_client_validation: bool = Field(
         default=False,
         description="Include client validation step (client approval). "
         "Automatically set to True if client_company_id is provided.",
+    )
+
+    # Supervisor for alerts and document review
+    supervisor_id: UUID = Field(
+        description="Supervisor responsible for alert resolution and document review",
     )
 
     # Conversation notes

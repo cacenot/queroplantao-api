@@ -20,7 +20,6 @@ from src.modules.screening.domain.models.steps import (
     PaymentInfoStep,
     ProfessionalDataStep,
     ScreeningStepMixin,
-    SupervisorReviewStep,
 )
 
 # Type alias for any step model
@@ -30,7 +29,6 @@ AnyStep = Union[
     DocumentUploadStep,
     DocumentReviewStep,
     PaymentInfoStep,
-    SupervisorReviewStep,
     ClientValidationStep,
 ]
 

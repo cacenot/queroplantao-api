@@ -3,6 +3,7 @@
 from fastapi import APIRouter
 
 from src.modules.screening.presentation.routes import (
+    alert_router,
     document_router,
     process_router,
     public_router,
@@ -16,6 +17,7 @@ router = APIRouter(prefix="/screenings", tags=["Screening"])
 router.include_router(process_router)
 router.include_router(step_router)
 router.include_router(document_router)
+router.include_router(alert_router)
 
 # Public router for token-based access (no auth required)
 public_screening_router = APIRouter(

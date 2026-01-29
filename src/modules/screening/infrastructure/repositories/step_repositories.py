@@ -7,9 +7,6 @@ from sqlalchemy import Select, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from src.modules.screening.domain.models import (
-    StepStatus,
-)
 from src.modules.screening.domain.models.steps import (
     ClientValidationStep,
     ConversationStep,
@@ -18,7 +15,6 @@ from src.modules.screening.domain.models.steps import (
     PaymentInfoStep,
     ProfessionalDataStep,
     ScreeningStepMixin,
-    SupervisorReviewStep,
 )
 from src.shared.infrastructure.repositories import BaseRepository
 
@@ -249,44 +245,6 @@ class PaymentInfoStepRepository(BaseStepRepository[PaymentInfoStep]):
         )
         result = await self.session.execute(query)
         return result.scalar_one_or_none()
-
-
-class SupervisorReviewStepRepository(BaseStepRepository[SupervisorReviewStep]):
-    """
-    Repository for SupervisorReviewStep model.
-
-    Supervisor review step for escalations.
-    """
-
-    model = SupervisorReviewStep
-
-    def __init__(self, session: AsyncSession) -> None:
-        super().__init__(session)
-
-    async def list_pending_for_supervisor(
-        self,
-        supervisor_id: UUID,
-    ) -> list[SupervisorReviewStep]:
-        """
-        List pending steps assigned to a supervisor.
-
-        Args:
-            supervisor_id: The supervisor user UUID.
-
-        Returns:
-            List of pending steps assigned to the supervisor.
-        """
-        query = (
-            self._base_query()
-            .where(SupervisorReviewStep.assigned_to == supervisor_id)
-            .where(
-                SupervisorReviewStep.status.in_(
-                    [StepStatus.PENDING, StepStatus.IN_PROGRESS]
-                )
-            )
-        )
-        result = await self.session.execute(query)
-        return list(result.scalars().all())
 
 
 class ClientValidationStepRepository(BaseStepRepository[ClientValidationStep]):

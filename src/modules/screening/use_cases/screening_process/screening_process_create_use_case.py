@@ -27,7 +27,6 @@ from src.modules.screening.domain.models.steps import (
     DocumentUploadStep,
     PaymentInfoStep,
     ProfessionalDataStep,
-    SupervisorReviewStep,
 )
 from src.modules.screening.domain.schemas import (
     ScreeningProcessCreate,
@@ -42,7 +41,6 @@ from src.modules.screening.infrastructure.repositories import (
     PaymentInfoStepRepository,
     ProfessionalDataStepRepository,
     ScreeningProcessRepository,
-    SupervisorReviewStepRepository,
 )
 from src.shared.domain.value_objects import CPF
 
@@ -64,8 +62,12 @@ class CreateScreeningProcessUseCase:
       DOCUMENT_UPLOAD, DOCUMENT_REVIEW
     - Optional steps (configurable via include_* fields):
       - PAYMENT_INFO (default: True)
-      - SUPERVISOR_REVIEW (default: False)
       - CLIENT_VALIDATION (default: False, auto-enabled if client_company_id set)
+
+    Alert system:
+    - Supervisor review is now handled via alerts, not as a step
+    - Alerts can be created at any point during the screening
+    - supervisor_id is required for alert resolution
     """
 
     def __init__(self, session: AsyncSession) -> None:
@@ -79,7 +81,6 @@ class CreateScreeningProcessUseCase:
         self.document_upload_step_repo = DocumentUploadStepRepository(session)
         self.document_review_step_repo = DocumentReviewStepRepository(session)
         self.payment_info_step_repo = PaymentInfoStepRepository(session)
-        self.supervisor_review_step_repo = SupervisorReviewStepRepository(session)
         self.client_validation_step_repo = ClientValidationStepRepository(session)
 
     async def execute(
@@ -144,6 +145,7 @@ class CreateScreeningProcessUseCase:
             expected_specialty_id=data.expected_specialty_id,
             owner_id=data.owner_id or created_by,
             current_actor_id=data.owner_id or created_by,
+            supervisor_id=data.supervisor_id,
             client_company_id=data.client_company_id,
             access_token=access_token,
             access_token_expires_at=token_expires_at,
@@ -163,7 +165,6 @@ class CreateScreeningProcessUseCase:
         await self._create_steps(
             process=process,
             include_payment_info=data.include_payment_info,
-            include_supervisor_review=data.include_supervisor_review,
             include_client_validation=include_client_validation,
         )
 
@@ -216,20 +217,18 @@ class CreateScreeningProcessUseCase:
         self,
         process: ScreeningProcess,
         include_payment_info: bool = True,
-        include_supervisor_review: bool = False,
         include_client_validation: bool = False,
     ) -> None:
         """
         Create process steps based on configuration.
 
-        Fixed order (7 possible steps):
+        Fixed order (6 possible steps):
         1. CONVERSATION (required) - Initial phone call
         2. PROFESSIONAL_DATA (required) - Personal + qualification + specialties
         3. DOCUMENT_UPLOAD (required) - Upload documents
         4. DOCUMENT_REVIEW (required) - Review documents
         5. PAYMENT_INFO (optional) - Bank account + company
-        6. SUPERVISOR_REVIEW (optional) - Escalated review
-        7. CLIENT_VALIDATION (optional) - Client approval
+        6. CLIENT_VALIDATION (optional) - Client approval
         """
         current_order = 1
 
@@ -279,17 +278,7 @@ class CreateScreeningProcessUseCase:
             await self.payment_info_step_repo.create(payment_info_step)
             current_order += 1
 
-        # 6. Supervisor Review (optional)
-        if include_supervisor_review:
-            supervisor_review_step = SupervisorReviewStep(
-                process_id=process.id,
-                order=current_order,
-                status=StepStatus.PENDING,
-            )
-            await self.supervisor_review_step_repo.create(supervisor_review_step)
-            current_order += 1
-
-        # 7. Client Validation (optional)
+        # 6. Client Validation (optional)
         if include_client_validation:
             client_validation_step = ClientValidationStep(
                 process_id=process.id,

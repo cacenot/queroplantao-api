@@ -29,6 +29,7 @@ if TYPE_CHECKING:
     from src.modules.professionals.domain.models.professional_document import (
         ProfessionalDocument,
     )
+    from src.modules.screening.domain.models.screening_alert import ScreeningAlert
     from src.modules.screening.domain.models.steps.client_validation_step import (
         ClientValidationStep,
     )
@@ -47,9 +48,6 @@ if TYPE_CHECKING:
     from src.modules.screening.domain.models.steps.professional_data_step import (
         ProfessionalDataStep,
     )
-    from src.modules.screening.domain.models.steps.supervisor_review_step import (
-        SupervisorReviewStep,
-    )
     from src.shared.domain.models.company import Company
 
     # Union type for all step types
@@ -59,7 +57,6 @@ if TYPE_CHECKING:
         DocumentUploadStep,
         DocumentReviewStep,
         PaymentInfoStep,
-        SupervisorReviewStep,
         ClientValidationStep,
     ]
 
@@ -156,6 +153,36 @@ class ScreeningProcessBase(BaseModel):
         description="User currently responsible for the next action (for filtering)",
     )
 
+    # Supervisor assignment (required - used for alerts and document review)
+    supervisor_id: UUID = Field(
+        nullable=False,
+        description="Supervisor responsible for alert resolution and document review",
+    )
+
+    # Workflow timestamps
+    completed_at: Optional[AwareDatetime] = AwareDatetimeField(
+        default=None,
+        nullable=True,
+        description="When screening was approved/finalized",
+    )
+    cancelled_at: Optional[AwareDatetime] = AwareDatetimeField(
+        default=None,
+        nullable=True,
+        description="When screening was cancelled",
+    )
+
+    # Cancellation tracking
+    cancelled_by: Optional[UUID] = Field(
+        default=None,
+        nullable=True,
+        description="User who cancelled this screening",
+    )
+    cancellation_reason: Optional[str] = Field(
+        default=None,
+        max_length=2000,
+        description="Reason for cancellation (if cancelled)",
+    )
+
 
 class ScreeningProcess(
     ScreeningProcessBase,
@@ -214,6 +241,8 @@ class ScreeningProcess(
         Index("ix_screening_processes_current_actor", "current_actor_id"),
         # Index for client company
         Index("ix_screening_processes_client_company", "client_company_id"),
+        # Index for supervisor
+        Index("ix_screening_processes_supervisor", "supervisor_id"),
     )
 
     # Organization reference (required - tenant isolation)
@@ -253,30 +282,6 @@ class ScreeningProcess(
         description="Client company (empresa contratante) for outsourcing scenarios",
     )
 
-    # Workflow timestamps
-    completed_at: Optional[AwareDatetime] = AwareDatetimeField(
-        default=None,
-        nullable=True,
-        description="When screening was approved/finalized",
-    )
-    cancelled_at: Optional[AwareDatetime] = AwareDatetimeField(
-        default=None,
-        nullable=True,
-        description="When screening was cancelled",
-    )
-
-    # Cancellation tracking
-    cancelled_by: Optional[UUID] = Field(
-        default=None,
-        nullable=True,
-        description="User who cancelled this screening",
-    )
-    cancellation_reason: Optional[str] = Field(
-        default=None,
-        max_length=2000,
-        description="Reason for cancellation (if cancelled)",
-    )
-
     # === Relationships ===
 
     # Core entity relationships
@@ -294,7 +299,7 @@ class ScreeningProcess(
 
     # Step relationships (optional 1:1 - only exist if step is configured)
     # Order: CONVERSATION -> PROFESSIONAL_DATA -> DOCUMENT_UPLOAD -> DOCUMENT_REVIEW
-    #        -> PAYMENT_INFO -> SUPERVISOR_REVIEW -> CLIENT_VALIDATION
+    #        -> PAYMENT_INFO -> CLIENT_VALIDATION
     conversation_step: Optional["ConversationStep"] = Relationship(
         back_populates="process",
         sa_relationship_kwargs={"uselist": False},
@@ -315,10 +320,6 @@ class ScreeningProcess(
         back_populates="process",
         sa_relationship_kwargs={"uselist": False},
     )
-    supervisor_review_step: Optional["SupervisorReviewStep"] = Relationship(
-        back_populates="process",
-        sa_relationship_kwargs={"uselist": False},
-    )
     client_validation_step: Optional["ClientValidationStep"] = Relationship(
         back_populates="process",
         sa_relationship_kwargs={"uselist": False},
@@ -327,6 +328,12 @@ class ScreeningProcess(
     # Pending documents created during this screening (source_type=SCREENING)
     pending_documents: list["ProfessionalDocument"] = Relationship(
         back_populates="screening",
+    )
+
+    # Alerts relationship (1:N - multiple alerts can exist, only one unresolved at a time)
+    alerts: list["ScreeningAlert"] = Relationship(
+        back_populates="process",
+        sa_relationship_kwargs={"order_by": "ScreeningAlert.created_at.desc()"},
     )
 
     # === Properties ===
@@ -343,8 +350,7 @@ class ScreeningProcess(
         3. DOCUMENT_UPLOAD (required)
         4. DOCUMENT_REVIEW (required)
         5. PAYMENT_INFO (optional)
-        6. SUPERVISOR_REVIEW (optional)
-        7. CLIENT_VALIDATION (optional)
+        6. CLIENT_VALIDATION (optional)
         """
         steps: list[AnyStep] = []
         state = inspect(self)
@@ -361,11 +367,6 @@ class ScreeningProcess(
             steps.append(self.document_review_step)
         if "payment_info_step" not in state.unloaded and self.payment_info_step:
             steps.append(self.payment_info_step)
-        if (
-            "supervisor_review_step" not in state.unloaded
-            and self.supervisor_review_step
-        ):
-            steps.append(self.supervisor_review_step)
         if (
             "client_validation_step" not in state.unloaded
             and self.client_validation_step
@@ -475,3 +476,33 @@ class ScreeningProcess(
     def all_steps_completed(self) -> bool:
         """Check if all configured steps are completed."""
         return all(step.is_completed for step in self.active_steps)
+
+    # === Alert-related properties ===
+
+    @property
+    def pending_alert(self) -> "Optional[ScreeningAlert]":
+        """Get the unresolved alert, if any."""
+        from sqlalchemy import inspect as sa_inspect
+
+        state = sa_inspect(self)
+        if "alerts" in state.unloaded:
+            return None
+        for alert in self.alerts:
+            if not alert.is_resolved:
+                return alert
+        return None
+
+    @property
+    def has_pending_alert(self) -> bool:
+        """Check if there's an unresolved alert."""
+        return self.pending_alert is not None
+
+    @property
+    def is_blocked_by_alert(self) -> bool:
+        """Check if process is blocked by an unresolved alert."""
+        return self.status == ScreeningStatus.PENDING_SUPERVISOR
+
+    @property
+    def can_proceed(self) -> bool:
+        """Check if process can proceed (not blocked by alerts and can be filled)."""
+        return self.can_be_filled and not self.is_blocked_by_alert

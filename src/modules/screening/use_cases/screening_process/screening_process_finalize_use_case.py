@@ -112,7 +112,6 @@ class FinalizeScreeningProcessUseCase:
             (process.document_upload_step, "Upload de Documentos"),
             (process.document_review_step, "Revisão de Documentos"),
             (process.payment_info_step, "Dados de Pagamento"),
-            (process.supervisor_review_step, "Revisão do Supervisor"),
             (process.client_validation_step, "Validação do Cliente"),
         ]
 

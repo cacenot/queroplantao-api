@@ -2,11 +2,12 @@
 
 ## Visão Geral
 
-O módulo de triagem gerencia o processo de coleta e validação de dados e documentos de profissionais de saúde. Implementa um fluxo de **7 etapas fixas**, com suporte a **versionamento de dados** para rastreabilidade completa de alterações.
+O módulo de triagem gerencia o processo de coleta e validação de dados e documentos de profissionais de saúde. Implementa um fluxo de **6 etapas fixas**, com suporte a **versionamento de dados** para rastreabilidade completa de alterações.
 
 ### Principais Funcionalidades
 
-- **Fluxo de 7 etapas**: Conversa → Dados do Profissional → Upload de Documentos → Revisão de Documentos → Informações de Pagamento → Revisão do Supervisor → Validação do Cliente
+- **Fluxo de 6 etapas**: Conversa → Dados do Profissional → Upload de Documentos → Revisão de Documentos → Informações de Pagamento → Validação do Cliente
+- **Sistema de Alertas**: Alertas podem ser criados a qualquer momento para escalar ao supervisor
 - **Versionamento de dados**: Histórico completo de alterações do profissional via Event Sourcing simplificado
 - **Documentos unificados**: Modelo único `ScreeningDocument` que gerencia requisitos, uploads e revisões
 - **Steps tipados**: Cada tipo de step tem seu próprio modelo com campos específicos (não usa model genérico)
@@ -28,34 +29,30 @@ O módulo de triagem gerencia o processo de coleta e validação de dados e docu
 │  │  └──────────────────┘        └───────────────────┘                        │          │
 │  │                                      │                                    │          │
 │  │         ┌────────────────────────────┼────────────────────────────────┐   │          │
-│  │        1:1                          1:1                              1:1  │          │
+│  │        1:1                          1:1                              1:N  │          │
 │  │         │                            │                                │   │          │
 │  │  ┌──────────────┐  ┌──────────────────────┐  ┌──────────────────────┐ │   │          │
-│  │  │Conversation  │  │ProfessionalData      │  │DocumentUpload        │ │   │          │
-│  │  │    Step      │  │       Step           │  │      Step            │ │   │          │
+│  │  │Conversation  │  │ProfessionalData      │  │  ScreeningAlert      │ │   │          │
+│  │  │    Step      │  │       Step           │  │    (Alertas)         │ │   │          │
 │  │  └──────────────┘  └──────────────────────┘  └──────────────────────┘ │   │          │
-│  │                            │                         │                │   │          │
-│  │                           N:1                       1:N               │   │          │
-│  │                            │                         │                │   │          │
+│  │                            │                                          │   │          │
+│  │                           N:1                                         │   │          │
+│  │                            │                                          │   │          │
 │  │                  ┌─────────────────────┐   ┌─────────────────────┐    │   │          │
-│  │                  │ ProfessionalVersion │   │  ScreeningDocument  │    │   │          │
+│  │                  │ ProfessionalVersion │   │  DocumentUploadStep │    │   │          │
 │  │                  └─────────────────────┘   └─────────────────────┘    │   │          │
-│  │                            │                                          │   │          │
-│  │                           1:N                                         │   │          │
-│  │                            │                                          │   │          │
-│  │                  ┌─────────────────────────┐                          │   │          │
-│  │                  │ ProfessionalChangeDiff  │                          │   │          │
-│  │                  └─────────────────────────┘                          │   │          │
+│  │                            │                        │                 │   │          │
+│  │                           1:N                      1:N                │   │          │
+│  │                            │                        │                 │   │          │
+│  │                  ┌─────────────────────────┐ ┌─────────────────────┐  │   │          │
+│  │                  │ ProfessionalChangeDiff  │ │ ScreeningDocument   │  │   │          │
+│  │                  └─────────────────────────┘ └─────────────────────┘  │   │          │
 │  │                                                                       │   │          │
 │  │  ┌──────────────┐  ┌──────────────────────┐  ┌──────────────────────┐ │   │          │
-│  │  │DocumentReview│  │   PaymentInfo        │  │  SupervisorReview    │ │   │          │
-│  │  │    Step      │  │       Step           │  │       Step           │ │   │          │
+│  │  │DocumentReview│  │   PaymentInfo        │  │  ClientValidation   │ │   │          │
+│  │  │    Step      │  │       Step           │  │       Step          │ │   │          │
 │  │  └──────────────┘  └──────────────────────┘  └──────────────────────┘ │   │          │
 │  │                                                                       │   │          │
-│  │  ┌──────────────────────┐                                             │   │          │
-│  │  │  ClientValidation    │                                             │   │          │
-│  │  │       Step           │                                             │   │          │
-│  │  └──────────────────────┘                                             │   │          │
 │  └───────────────────────────────────────────────────────────────────────┘   │          │
 │                                                                              │          │
 │  ┌───────────────────────────────────────────────────────────────────────┐   │          │
@@ -80,7 +77,7 @@ O módulo de triagem gerencia o processo de coleta e validação de dados e docu
 │ IN_PROGRESS │ ─── Processo em andamento
 └──────┬──────┘
        │
-       │  Etapas (7 steps fixos):
+       │  Etapas (6 steps fixos):
        │
        │  ┌─────────────────────────────────────────────────────────────┐
        │  │ 1. CONVERSATION      - Conversa inicial (REQUIRED)         │
@@ -88,9 +85,14 @@ O módulo de triagem gerencia o processo de coleta e validação de dados e docu
        │  │ 3. DOCUMENT_UPLOAD   - Upload de documentos (REQUIRED)     │
        │  │ 4. DOCUMENT_REVIEW   - Verificação de docs (REQUIRED)      │
        │  │ 5. PAYMENT_INFO      - Conta bancária/empresa (OPTIONAL)   │
-       │  │ 6. SUPERVISOR_REVIEW - Revisão superior (OPTIONAL)         │
-       │  │ 7. CLIENT_VALIDATION - Aprovação do cliente (OPTIONAL)     │
+       │  │ 6. CLIENT_VALIDATION - Aprovação do cliente (OPTIONAL)     │
        │  └─────────────────────────────────────────────────────────────┘
+       │
+       ├──(alerta criado)──► PENDING_SUPERVISOR
+       │                           │
+       │                           ├──(alerta resolvido)──► IN_PROGRESS
+       │                           │
+       │                           └──(rejeitado via alerta)──► REJECTED
        │
        ├──(rejeitado em qualquer etapa)──► REJECTED
        │
@@ -104,7 +106,7 @@ O módulo de triagem gerencia o processo de coleta e validação de dados e docu
 ## Enums
 
 ### StepType
-Tipos fixos de etapas no workflow de triagem (7 tipos).
+Tipos fixos de etapas no workflow de triagem (6 tipos).
 
 | Valor | Obrigatório | Descrição |
 |-------|-------------|-----------|
@@ -113,8 +115,19 @@ Tipos fixos de etapas no workflow de triagem (7 tipos).
 | DOCUMENT_UPLOAD | ✅ | Upload de documentos obrigatórios pelo profissional |
 | DOCUMENT_REVIEW | ✅ | Verificação de documentos pelo gestor |
 | PAYMENT_INFO | ❌ | Conta bancária + empresa PJ (se aplicável) |
-| SUPERVISOR_REVIEW | ❌ | Revisão superior para alertas/escalações |
 | CLIENT_VALIDATION | ❌ | Validação final pelo cliente contratante |
+
+### AlertCategory
+Categorias de alertas de triagem.
+
+| Valor | Descrição |
+|-------|-----------|
+| DOCUMENT | Problema com documentos |
+| DATA | Dados inconsistentes |
+| BEHAVIOR | Comportamento inadequado |
+| COMPLIANCE | Problemas de conformidade |
+| QUALIFICATION | Qualificação insuficiente |
+| OTHER | Outros |
 
 ### ScreeningStatus
 Status macro do processo de triagem.
@@ -123,6 +136,7 @@ Status macro do processo de triagem.
 |-------|-----------|
 | DRAFT | Criado, não iniciado |
 | IN_PROGRESS | Em andamento (qualquer etapa) |
+| PENDING_SUPERVISOR | Aguardando ação do supervisor (alerta criado) |
 | APPROVED | Aprovado e finalizado |
 | REJECTED | Rejeitado |
 | EXPIRED | Expirado antes de conclusão |
@@ -310,14 +324,6 @@ Cada tipo de step tem sua própria tabela com campos específicos. Todas herdam 
 | bank_account_id | UUID | ✅ | FK para bank_accounts |
 | payment_version_id | UUID | ✅ | FK para versão de pagamento |
 
-#### screening_supervisor_review_steps
-
-| Campo Adicional | Tipo | Nullable | Descrição |
-|-----------------|------|----------|-----------|
-| escalation_reason | TEXT | ✅ | Motivo da escalação |
-| escalated_by | UUID | ✅ | Quem escalou |
-| escalated_at | TIMESTAMP | ✅ | Quando escalou |
-
 #### screening_client_validation_steps
 
 | Campo Adicional | Tipo | Nullable | Descrição |
@@ -326,6 +332,34 @@ Cada tipo de step tem sua própria tabela com campos específicos. Todas herdam 
 | validation_notes | TEXT | ✅ | Notas da validação |
 | validated_by_name | VARCHAR(255) | ✅ | Nome de quem validou |
 | validated_at | TIMESTAMP | ✅ | Quando foi validado |
+
+### screening_alerts
+
+Alertas que podem ser criados a qualquer momento durante a triagem para escalar ao supervisor.
+
+| Campo | Tipo | Nullable | Descrição |
+|-------|------|----------|-----------|
+| id | UUID (v7) | ❌ | Primary key |
+| process_id | UUID | ❌ | FK para screening_processes |
+| reason | VARCHAR(2000) | ❌ | Motivo do alerta |
+| category | AlertCategory | ❌ | Categoria do alerta |
+| notes | JSONB | ❌ | Histórico de notas (AlertNote[]) |
+| is_resolved | BOOLEAN | ❌ | Se foi resolvido |
+| resolved_at | TIMESTAMP | ✅ | Quando foi resolvido |
+| resolved_by | UUID | ✅ | Quem resolveu |
+| created_by, updated_by | UUID | ✅ | Tracking |
+| created_at, updated_at | TIMESTAMP | | Timestamps |
+
+**AlertNote (TypedDict):**
+```json
+{
+  "timestamp": "2026-01-28T14:00:00Z",
+  "user_id": "uuid-string",
+  "user_name": "João Silva",
+  "user_role": "Escalista",
+  "content": "Documentos verificados"
+}
+```
 
 ### screening_documents
 
@@ -499,8 +533,36 @@ Registro granular de cada alteração feita em uma versão.
    - Fase 2: Profissional/Gestor faz upload dos arquivos
 4. **DOCUMENT_REVIEW** (Obrigatório): Revisão individual de cada documento
 5. **PAYMENT_INFO** (Opcional): Dados bancários e empresa PJ
-6. **SUPERVISOR_REVIEW** (Opcional): Revisão por supervisor quando necessário
-7. **CLIENT_VALIDATION** (Opcional): Aprovação final pelo cliente contratante
+6. **CLIENT_VALIDATION** (Opcional): Aprovação final pelo cliente contratante
+
+### Sistema de Alertas
+
+A qualquer momento durante a triagem (desde que `status = IN_PROGRESS`), um alerta pode ser criado para escalar ao supervisor:
+
+```
+┌─────────────┐
+│ IN_PROGRESS │
+└──────┬──────┘
+       │
+       │ POST /screenings/{id}/alerts
+       │ Payload: { reason, category }
+       ▼
+┌────────────────────┐
+│ PENDING_SUPERVISOR │ ◄── Processo bloqueado
+└─────────┬──────────┘
+          │
+          ├── POST /screenings/{id}/alerts/{alert_id}/resolve
+          │   └── Processo volta para IN_PROGRESS
+          │
+          └── POST /screenings/{id}/alerts/{alert_id}/reject
+              └── Processo vai para REJECTED
+```
+
+**Características:**
+- Apenas um alerta pendente por vez
+- O `current_actor_id` passa a ser o `supervisor_id`
+- Histórico de notas mantido no campo `notes` (JSONB)
+- Qualquer usuário pode criar alerta, mas só supervisor resolve/rejeita
 
 ### Fluxo Detalhado: DOCUMENT_UPLOAD e DOCUMENT_REVIEW
 
@@ -960,11 +1022,12 @@ src/modules/screening/
 ├── domain/
 │   ├── models/
 │   │   ├── __init__.py
-│   │   ├── enums.py                              # StepType, ScreeningStatus, SourceType, ChangeType
+│   │   ├── enums.py                              # StepType, ScreeningStatus, AlertCategory, etc.
 │   │   ├── document_type_config.py               # Configuração de tipos de documento
 │   │   ├── organization_screening_settings.py   # Configurações por organização
 │   │   ├── screening_process.py                  # Processo de triagem
 │   │   ├── screening_document.py                 # Documento unificado
+│   │   ├── screening_alert.py                    # Alertas de triagem
 │   │   └── steps/
 │   │       ├── __init__.py
 │   │       ├── base_step.py                      # ScreeningStepMixin
@@ -973,7 +1036,6 @@ src/modules/screening/
 │   │       ├── document_upload_step.py
 │   │       ├── document_review_step.py
 │   │       ├── payment_info_step.py
-│   │       ├── supervisor_review_step.py
 │   │       └── client_validation_step.py
 │   └── schemas/
 │       └── ...

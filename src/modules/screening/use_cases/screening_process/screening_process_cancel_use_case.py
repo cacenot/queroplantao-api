@@ -100,7 +100,6 @@ class CancelScreeningProcessUseCase:
             process.document_upload_step,
             process.document_review_step,
             process.payment_info_step,
-            process.supervisor_review_step,
             process.client_validation_step,
         ]
 

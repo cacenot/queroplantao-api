@@ -10,6 +10,12 @@ from src.modules.screening.presentation.dependencies.screening import (
     ReuseDocumentUC,
     ReviewDocumentUC,
 )
+from src.modules.screening.presentation.dependencies.screening_alert import (
+    CreateScreeningAlertUC,
+    ListScreeningAlertsUC,
+    RejectScreeningAlertUC,
+    ResolveScreeningAlertUC,
+)
 from src.modules.screening.presentation.dependencies.screening_document import (
     ConfigureDocumentsUC,
     ReviewDocumentUC as ReviewDocumentStepUC,
@@ -44,6 +50,11 @@ __all__ = [
     "ListScreeningProcessesUC",
     "ReuseDocumentUC",
     "ReviewDocumentUC",
+    # Alert dependencies
+    "CreateScreeningAlertUC",
+    "ListScreeningAlertsUC",
+    "RejectScreeningAlertUC",
+    "ResolveScreeningAlertUC",
     # Step-specific dependencies
     # "CompleteClientValidationStepUC",  # BROKEN - commented out
     "CompleteConversationStepUC",

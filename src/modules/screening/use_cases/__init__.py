@@ -1,5 +1,13 @@
 """Screening module use cases."""
 
+# Screening Alert use cases
+from src.modules.screening.use_cases.screening_alert import (
+    CreateScreeningAlertUseCase,
+    ListScreeningAlertsUseCase,
+    RejectScreeningAlertUseCase,
+    ResolveScreeningAlertUseCase,
+)
+
 # Screening Process use cases
 from src.modules.screening.use_cases.screening_process import (
     CancelScreeningProcessUseCase,
@@ -38,6 +46,11 @@ from src.modules.screening.use_cases.screening_step import (
 # =============================================================================
 
 __all__ = [
+    # Alerts
+    "CreateScreeningAlertUseCase",
+    "ListScreeningAlertsUseCase",
+    "RejectScreeningAlertUseCase",
+    "ResolveScreeningAlertUseCase",
     # Process
     "CancelScreeningProcessUseCase",
     "CreateScreeningProcessUseCase",

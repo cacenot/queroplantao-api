@@ -25,10 +25,6 @@ from src.modules.screening.domain.models.steps.professional_data_step import (
     ProfessionalDataStep,
     ProfessionalDataStepBase,
 )
-from src.modules.screening.domain.models.steps.supervisor_review_step import (
-    SupervisorReviewStep,
-    SupervisorReviewStepBase,
-)
 
 __all__ = [
     # Base mixin
@@ -47,9 +43,6 @@ __all__ = [
     # Payment info (optional) - includes bank account and company
     "PaymentInfoStep",
     "PaymentInfoStepBase",
-    # Review (optional)
-    "SupervisorReviewStep",
-    "SupervisorReviewStepBase",
     # Validation (optional)
     "ClientValidationStep",
     "ClientValidationStepBase",

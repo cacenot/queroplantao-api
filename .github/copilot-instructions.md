@@ -424,6 +424,10 @@ src/app/i18n/
 - Type everything (strict MyPy)
 - Async-first: all DB operations use `await`
 
+## ScreeningProcess Model Rule
+- Keep only FK columns and relationships in `ScreeningProcess`.
+- Move all other properties/columns to `ScreeningProcessBase`.
+
 ## Value Objects & Validation
 **ALWAYS use typed value objects for data validation in schemas. NEVER use raw `str` for these fields:**
 

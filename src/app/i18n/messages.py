@@ -143,6 +143,12 @@ class ScreeningMessages(StrEnum):
     DOCUMENTS_MISSING_REQUIRED = "screening.documents.missing_required"
     DOCUMENTS_PENDING_REVIEW = "screening.documents.pending_review"
 
+    # Alert messages
+    ALERT_NOT_FOUND = "screening.alert.not_found"
+    ALERT_ALREADY_EXISTS = "screening.alert.already_exists"
+    ALERT_ALREADY_RESOLVED = "screening.alert.already_resolved"
+    PROCESS_BLOCKED_BY_ALERT = "screening.process.blocked_by_alert"
+
 
 class UserMessages(StrEnum):
     """User management message keys."""

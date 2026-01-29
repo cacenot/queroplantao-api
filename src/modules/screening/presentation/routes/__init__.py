@@ -1,5 +1,8 @@
 """Screening routes."""
 
+from src.modules.screening.presentation.routes.screening_alert_routes import (
+    router as alert_router,
+)
 from src.modules.screening.presentation.routes.screening_document_routes import (
     router as document_router,
 )
@@ -14,6 +17,7 @@ from src.modules.screening.presentation.routes.screening_step_routes import (
 )
 
 __all__ = [
+    "alert_router",
     "document_router",
     "process_router",
     "public_router",

@@ -1,0 +1,47 @@
+meta {
+  name: Resolver Alerta
+  type: http
+  seq: 32
+}
+
+post {
+  url: {{baseUrl}}/api/v1/screenings/:screening_id/alerts/:alert_id/resolve
+  body: json
+  auth: inherit
+}
+
+params:path {
+  screening_id: {{screening_id}}
+  alert_id: {{alert_id}}
+}
+
+headers {
+  X-Organization-ID: {{organization_id}}
+}
+
+body:json {
+  {
+    "resolution_notes": "Documentos verificados e validados após análise detalhada"
+  }
+}
+
+docs {
+  # Resolver Alerta
+  
+  Resolve um alerta, permitindo que a triagem continue.
+  
+  ## Comportamento
+  
+  - Apenas supervisores podem resolver alertas
+  - O alerta é marcado como resolvido (`is_resolved = true`)
+  - O status da triagem volta para `IN_PROGRESS`
+  - Uma nota é adicionada ao histórico do alerta
+  
+  ## Error Codes
+  
+  | Status | Code | Descrição |
+  |--------|------|-----------|
+  | 404 | `SCREENING_PROCESS_NOT_FOUND` | Triagem não encontrada |
+  | 404 | `SCREENING_ALERT_NOT_FOUND` | Alerta não encontrado |
+  | 409 | `SCREENING_ALERT_ALREADY_RESOLVED` | Alerta já foi resolvido |
+}

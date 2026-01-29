@@ -105,8 +105,9 @@ class ScreeningProcessRepository(
                 ),
                 selectinload(ScreeningProcess.document_review_step),
                 selectinload(ScreeningProcess.payment_info_step),
-                selectinload(ScreeningProcess.supervisor_review_step),
                 selectinload(ScreeningProcess.client_validation_step),
+                # Load alerts
+                selectinload(ScreeningProcess.alerts),
                 # Load other relationships
                 selectinload(ScreeningProcess.client_company),
             )
@@ -145,8 +146,9 @@ class ScreeningProcessRepository(
             ),
             selectinload(ScreeningProcess.document_review_step),
             selectinload(ScreeningProcess.payment_info_step),
-            selectinload(ScreeningProcess.supervisor_review_step),
             selectinload(ScreeningProcess.client_validation_step),
+            # Load alerts
+            selectinload(ScreeningProcess.alerts),
         )
         return await self.list_paginated(
             pagination,
@@ -193,8 +195,9 @@ class ScreeningProcessRepository(
                 ),
                 selectinload(ScreeningProcess.document_review_step),
                 selectinload(ScreeningProcess.payment_info_step),
-                selectinload(ScreeningProcess.supervisor_review_step),
                 selectinload(ScreeningProcess.client_validation_step),
+                # Load alerts
+                selectinload(ScreeningProcess.alerts),
             )
         )
         return await self.list_paginated(
@@ -281,8 +284,9 @@ class ScreeningProcessRepository(
                 ),
                 selectinload(ScreeningProcess.document_review_step),
                 selectinload(ScreeningProcess.payment_info_step),
-                selectinload(ScreeningProcess.supervisor_review_step),
                 selectinload(ScreeningProcess.client_validation_step),
+                # Load alerts
+                selectinload(ScreeningProcess.alerts),
                 # Load other relationships
                 selectinload(ScreeningProcess.client_company),
             )

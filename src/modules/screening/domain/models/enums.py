@@ -16,8 +16,7 @@ class StepType(str, Enum):
     3. DOCUMENT_UPLOAD - Upload documents (required)
     4. DOCUMENT_REVIEW - Review uploaded documents (required)
     5. PAYMENT_INFO - Bank account + company if PJ (optional)
-    6. SUPERVISOR_REVIEW - Escalated review (optional)
-    7. CLIENT_VALIDATION - Client approval (optional)
+    6. CLIENT_VALIDATION - Client approval (optional)
     """
 
     # Initial conversation phase (required)
@@ -35,8 +34,7 @@ class StepType(str, Enum):
     # Includes: bank account + company (if PJ)
     PAYMENT_INFO = "PAYMENT_INFO"
 
-    # Review phases (optional)
-    SUPERVISOR_REVIEW = "SUPERVISOR_REVIEW"
+    # Validation phase (optional)
     CLIENT_VALIDATION = "CLIENT_VALIDATION"
 
 
@@ -75,6 +73,7 @@ class ScreeningStatus(str, Enum):
 
     DRAFT = "DRAFT"  # Created but not started
     IN_PROGRESS = "IN_PROGRESS"  # Process is active (any step in progress)
+    PENDING_SUPERVISOR = "PENDING_SUPERVISOR"  # Blocked by alert, awaiting supervisor
     APPROVED = "APPROVED"  # Screening approved and completed
     REJECTED = "REJECTED"  # Screening rejected
     EXPIRED = "EXPIRED"  # Screening expired before completion
@@ -149,3 +148,19 @@ class ClientValidationOutcome(str, Enum):
 
     APPROVED = "APPROVED"  # Client approved the professional
     REJECTED = "REJECTED"  # Client rejected the professional
+
+
+class AlertCategory(str, Enum):
+    """
+    Category of a screening alert.
+
+    Used to classify alerts raised during the screening process.
+    Helps supervisors prioritize and filter alerts.
+    """
+
+    DOCUMENT = "DOCUMENT"  # Problem with documents
+    DATA = "DATA"  # Data inconsistency
+    BEHAVIOR = "BEHAVIOR"  # Suspicious behavior
+    COMPLIANCE = "COMPLIANCE"  # Regulatory/compliance issue
+    QUALIFICATION = "QUALIFICATION"  # Problem with qualification/registration
+    OTHER = "OTHER"  # Other issues

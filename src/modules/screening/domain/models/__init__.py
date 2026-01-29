@@ -1,6 +1,7 @@
 """Screening module domain models."""
 
 from src.modules.screening.domain.models.enums import (
+    AlertCategory,
     ChangeType,
     ClientValidationOutcome,
     ConversationOutcome,
@@ -13,6 +14,12 @@ from src.modules.screening.domain.models.enums import (
 from src.modules.screening.domain.models.organization_screening_settings import (
     OrganizationScreeningSettings,
     OrganizationScreeningSettingsBase,
+)
+from src.modules.screening.domain.models.screening_alert import (
+    AlertNote,
+    ScreeningAlert,
+    ScreeningAlertBase,
+    create_alert_note,
 )
 from src.modules.screening.domain.models.screening_document import (
     ScreeningDocument,
@@ -36,12 +43,11 @@ from src.modules.screening.domain.models.steps import (
     ProfessionalDataStep,
     ProfessionalDataStepBase,
     ScreeningStepMixin,
-    SupervisorReviewStep,
-    SupervisorReviewStepBase,
 )
 
 __all__ = [
     # Enums
+    "AlertCategory",
     "ChangeType",
     "ClientValidationOutcome",
     "ConversationOutcome",
@@ -75,10 +81,12 @@ __all__ = [
     # Payment info step (optional) - includes bank account and company
     "PaymentInfoStep",
     "PaymentInfoStepBase",
-    # Review step (optional)
-    "SupervisorReviewStep",
-    "SupervisorReviewStepBase",
     # Validation step (optional)
     "ClientValidationStep",
     "ClientValidationStepBase",
+    # Alert model and helpers
+    "AlertNote",
+    "ScreeningAlert",
+    "ScreeningAlertBase",
+    "create_alert_note",
 ]

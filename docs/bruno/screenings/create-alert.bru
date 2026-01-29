@@ -1,0 +1,59 @@
+meta {
+  name: Criar Alerta
+  type: http
+  seq: 30
+}
+
+post {
+  url: {{baseUrl}}/api/v1/screenings/:screening_id/alerts
+  body: json
+  auth: inherit
+}
+
+params:path {
+  screening_id: {{screening_id}}
+}
+
+headers {
+  X-Organization-ID: {{organization_id}}
+}
+
+body:json {
+  {
+    "reason": "Documentos com suspeita de adulteração",
+    "category": "DOCUMENT"
+  }
+}
+
+docs {
+  # Criar Alerta
+  
+  Cria um alerta para um processo de triagem, bloqueando seu andamento até que o supervisor tome uma ação.
+  
+  ## Categorias Disponíveis
+  
+  | Categoria | Descrição |
+  |-----------|-----------|
+  | `DOCUMENT` | Problema com documentos |
+  | `DATA` | Dados inconsistentes |
+  | `BEHAVIOR` | Comportamento inadequado |
+  | `COMPLIANCE` | Problemas de conformidade |
+  | `QUALIFICATION` | Qualificação insuficiente |
+  | `OTHER` | Outros |
+  
+  ## Comportamento
+  
+  - Qualquer usuário autorizado pode criar um alerta
+  - Apenas um alerta pendente por vez
+  - O alerta bloqueia o andamento da triagem
+  - O status da triagem muda para `PENDING_SUPERVISOR`
+  - O `current_actor_id` passa a ser o `supervisor_id`
+  
+  ## Error Codes
+  
+  | Status | Code | Descrição |
+  |--------|------|-----------|
+  | 404 | `SCREENING_PROCESS_NOT_FOUND` | Triagem não encontrada |
+  | 409 | `SCREENING_ALERT_ALREADY_EXISTS` | Já existe um alerta pendente |
+  | 422 | `SCREENING_INVALID_STATUS_TRANSITION` | Status não permite criação de alerta |
+}

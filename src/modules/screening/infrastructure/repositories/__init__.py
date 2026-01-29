@@ -3,6 +3,9 @@
 from src.modules.screening.infrastructure.repositories.organization_screening_settings_repository import (
     OrganizationScreeningSettingsRepository,
 )
+from src.modules.screening.infrastructure.repositories.screening_alert_repository import (
+    ScreeningAlertRepository,
+)
 from src.modules.screening.infrastructure.repositories.screening_document_repository import (
     ScreeningDocumentRepository,
 )
@@ -17,7 +20,6 @@ from src.modules.screening.infrastructure.repositories.step_repositories import 
     DocumentUploadStepRepository,
     PaymentInfoStepRepository,
     ProfessionalDataStepRepository,
-    SupervisorReviewStepRepository,
 )
 
 # =============================================================================
@@ -45,6 +47,8 @@ __all__ = [
     "OrganizationScreeningSettingsRepository",
     # Process
     "ScreeningProcessRepository",
+    # Alert
+    "ScreeningAlertRepository",
     # Document
     "ScreeningDocumentRepository",
     # Steps (base)
@@ -55,7 +59,6 @@ __all__ = [
     "DocumentUploadStepRepository",
     "DocumentReviewStepRepository",
     "PaymentInfoStepRepository",
-    "SupervisorReviewStepRepository",
     "ClientValidationStepRepository",
     # DEPRECATED - Remove after use_cases refactoring
     "ScreeningProcessStepRepository",

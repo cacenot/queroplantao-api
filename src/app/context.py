@@ -23,6 +23,7 @@ class RequestContext:
     organization_id: UUID | None = None
     organization_name: str | None = None
     organization_role: str | None = None
+    organization_role_name: str | None = None
     child_organization_id: UUID | None = None
     child_organization_name: str | None = None
 
