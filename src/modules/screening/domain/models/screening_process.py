@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Any, Optional, Union
 from uuid import UUID
 
 from pydantic import AwareDatetime
-from sqlalchemy import Enum as SAEnum, Index
+from sqlalchemy import Enum as SAEnum, Index, inspect
 from sqlmodel import Field, Relationship
 
 from src.modules.screening.domain.models.enums import ScreeningStatus, StepType
@@ -347,19 +347,20 @@ class ScreeningProcess(
         7. CLIENT_VALIDATION (optional)
         """
         steps: list[AnyStep] = []
-        if self.conversation_step:
+        state = inspect(self)
+        if "conversation_step" not in state.unloaded and self.conversation_step:
             steps.append(self.conversation_step)
-        if self.professional_data_step:
+        if "professional_data_step" not in state.unloaded and self.professional_data_step:
             steps.append(self.professional_data_step)
-        if self.document_upload_step:
+        if "document_upload_step" not in state.unloaded and self.document_upload_step:
             steps.append(self.document_upload_step)
-        if self.document_review_step:
+        if "document_review_step" not in state.unloaded and self.document_review_step:
             steps.append(self.document_review_step)
-        if self.payment_info_step:
+        if "payment_info_step" not in state.unloaded and self.payment_info_step:
             steps.append(self.payment_info_step)
-        if self.supervisor_review_step:
+        if "supervisor_review_step" not in state.unloaded and self.supervisor_review_step:
             steps.append(self.supervisor_review_step)
-        if self.client_validation_step:
+        if "client_validation_step" not in state.unloaded and self.client_validation_step:
             steps.append(self.client_validation_step)
         return sorted(steps, key=lambda s: s.order)
 

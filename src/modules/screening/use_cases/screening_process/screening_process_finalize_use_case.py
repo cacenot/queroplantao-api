@@ -54,8 +54,8 @@ class FinalizeScreeningProcessUseCase:
             ValidationError: If screening cannot be finalized.
         """
         process = await self.repository.get_by_id_with_details(
+            id=screening_id,
             organization_id=organization_id,
-            entity_id=screening_id,
         )
         if not process:
             raise ScreeningProcessNotFoundError(screening_id=str(screening_id))

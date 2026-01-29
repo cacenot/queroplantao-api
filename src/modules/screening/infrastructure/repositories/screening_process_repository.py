@@ -134,7 +134,20 @@ class ScreeningProcessRepository(
         Returns:
             Paginated list of screening processes.
         """
-        base_query = self._base_query_for_organization(organization_id)
+        base_query = self._base_query_for_organization(organization_id).options(
+            # Load all step relationships to avoid lazy-loading in responses
+            selectinload(ScreeningProcess.conversation_step),
+            selectinload(ScreeningProcess.professional_data_step),
+            selectinload(ScreeningProcess.document_upload_step).options(
+                selectinload(DocumentUploadStep.documents).options(
+                    selectinload(ScreeningDocument.document_type),
+                ),
+            ),
+            selectinload(ScreeningProcess.document_review_step),
+            selectinload(ScreeningProcess.payment_info_step),
+            selectinload(ScreeningProcess.supervisor_review_step),
+            selectinload(ScreeningProcess.client_validation_step),
+        )
         return await self.list_paginated(
             pagination,
             filters=filters,
@@ -166,8 +179,23 @@ class ScreeningProcessRepository(
         Returns:
             Paginated list of screening processes.
         """
-        base_query = self._base_query_for_organization(organization_id).where(
-            ScreeningProcess.current_actor_id == actor_id
+        base_query = (
+            self._base_query_for_organization(organization_id)
+            .where(ScreeningProcess.current_actor_id == actor_id)
+            .options(
+                # Load all step relationships to avoid lazy-loading in responses
+                selectinload(ScreeningProcess.conversation_step),
+                selectinload(ScreeningProcess.professional_data_step),
+                selectinload(ScreeningProcess.document_upload_step).options(
+                    selectinload(DocumentUploadStep.documents).options(
+                        selectinload(ScreeningDocument.document_type),
+                    ),
+                ),
+                selectinload(ScreeningProcess.document_review_step),
+                selectinload(ScreeningProcess.payment_info_step),
+                selectinload(ScreeningProcess.supervisor_review_step),
+                selectinload(ScreeningProcess.client_validation_step),
+            )
         )
         return await self.list_paginated(
             pagination,

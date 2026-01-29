@@ -11,7 +11,6 @@ from src.modules.screening.use_cases import (
     FinalizeScreeningProcessUseCase,
     GetScreeningProcessByTokenUseCase,
     GetScreeningProcessUseCase,
-    ListMyScreeningProcessesUseCase,
     ListScreeningProcessesUseCase,
     ReuseDocumentUseCase,
     ReviewDocumentUseCase,
@@ -54,12 +53,6 @@ def get_list_screening_processes_use_case(
     return ListScreeningProcessesUseCase(session)
 
 
-def get_list_my_screening_processes_use_case(
-    session: SessionDep,
-) -> ListMyScreeningProcessesUseCase:
-    return ListMyScreeningProcessesUseCase(session)
-
-
 def get_cancel_screening_process_use_case(
     session: SessionDep,
 ) -> CancelScreeningProcessUseCase:
@@ -95,9 +88,6 @@ GetScreeningProcessByTokenUC = Annotated[
 ]
 ListScreeningProcessesUC = Annotated[
     ListScreeningProcessesUseCase, Depends(get_list_screening_processes_use_case)
-]
-ListMyScreeningProcessesUC = Annotated[
-    ListMyScreeningProcessesUseCase, Depends(get_list_my_screening_processes_use_case)
 ]
 CancelScreeningProcessUC = Annotated[
     CancelScreeningProcessUseCase, Depends(get_cancel_screening_process_use_case)

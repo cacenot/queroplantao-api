@@ -39,7 +39,7 @@ class GetScreeningProcessUseCase:
             ScreeningProcessNotFoundError: If screening not found.
         """
         process = await self.repository.get_by_id_with_details(
-            entity_id=screening_id,
+            id=screening_id,
             organization_id=organization_id,
         )
 

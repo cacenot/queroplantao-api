@@ -7,7 +7,6 @@ from src.modules.screening.use_cases.screening_process import (
     FinalizeScreeningProcessUseCase,
     GetScreeningProcessByTokenUseCase,
     GetScreeningProcessUseCase,
-    ListMyScreeningProcessesUseCase,
     ListScreeningProcessesUseCase,
 )
 
@@ -45,7 +44,6 @@ __all__ = [
     "FinalizeScreeningProcessUseCase",
     "GetScreeningProcessByTokenUseCase",
     "GetScreeningProcessUseCase",
-    "ListMyScreeningProcessesUseCase",
     "ListScreeningProcessesUseCase",
     # Steps (specific use cases)
     # "CompleteClientValidationStepUseCase",  # BROKEN

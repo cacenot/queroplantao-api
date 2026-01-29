@@ -14,7 +14,6 @@ from src.modules.screening.use_cases.screening_process.screening_process_get_use
     GetScreeningProcessUseCase,
 )
 from src.modules.screening.use_cases.screening_process.screening_process_list_use_case import (
-    ListMyScreeningProcessesUseCase,
     ListScreeningProcessesUseCase,
 )
 
@@ -24,6 +23,5 @@ __all__ = [
     "FinalizeScreeningProcessUseCase",
     "GetScreeningProcessByTokenUseCase",
     "GetScreeningProcessUseCase",
-    "ListMyScreeningProcessesUseCase",
     "ListScreeningProcessesUseCase",
 ]

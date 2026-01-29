@@ -172,7 +172,7 @@ class CreateScreeningProcessUseCase:
 
         # Re-fetch with all related data for complete response
         process_with_details = await self.repository.get_by_id_with_details(
-            entity_id=process.id,
+            id=process.id,
             organization_id=organization_id,
         )
 

@@ -24,7 +24,6 @@ from src.modules.screening.presentation.dependencies import (
     CreateScreeningProcessUC,
     FinalizeScreeningProcessUC,
     GetScreeningProcessUC,
-    ListMyScreeningProcessesUC,
     ListScreeningProcessesUC,
 )
 from src.shared.domain.schemas import ErrorResponse
@@ -100,6 +99,7 @@ Lista todos os processos de triagem da organização.
 - `status`: Filtra por status (DRAFT, IN_PROGRESS, APPROVED, REJECTED, CANCELLED)
 - `search`: Busca por nome ou CPF do profissional
 - `owner_id`: Filtra por responsável
+- `actor_id`: Filtra por usuário responsável atual (current_actor_id)
 - `created_after`: Filtra por data de criação
 
 **Ordenação:**
@@ -120,35 +120,6 @@ async def list_screening_processes(
     """List all screening processes for the organization."""
     return await use_case.execute(
         organization_id=ctx.organization,
-        pagination=pagination,
-        filters=filters,
-        sorting=sorting,
-    )
-
-
-@router.get(
-    "/me",
-    response_model=PaginatedResponse[ScreeningProcessResponse],
-    summary="Minhas triagens",
-    description="""
-Lista as triagens atribuídas ao usuário atual como `current_actor_id`.
-
-Útil para visualizar a fila de trabalho do usuário logado.
-""",
-)
-async def list_my_screening_processes(
-    ctx: OrganizationContext,
-    use_case: ListMyScreeningProcessesUC,
-    pagination: PaginationParams = Depends(),
-    filters: ScreeningProcessFilter = Depends(filter_as_query(ScreeningProcessFilter)),
-    sorting: ScreeningProcessSorting = Depends(
-        sorting_as_query(ScreeningProcessSorting)
-    ),
-) -> PaginatedResponse[ScreeningProcessResponse]:
-    """List screening processes assigned to the current user."""
-    return await use_case.execute(
-        organization_id=ctx.organization,
-        actor_id=ctx.user,
         pagination=pagination,
         filters=filters,
         sorting=sorting,
