@@ -5,13 +5,9 @@ meta {
 }
 
 post {
-  url: {{baseUrl}}/screenings/{{screeningId}}/finalize
+  url: {{baseUrl}}/api/v1/screenings/{{screeningId}}/finalize
   body: none
-  auth: bearer
-}
-
-auth:bearer {
-  token: {{accessToken}}
+  auth: inherit
 }
 
 headers {

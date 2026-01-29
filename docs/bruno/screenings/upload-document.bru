@@ -5,13 +5,9 @@ meta {
 }
 
 post {
-  url: {{baseUrl}}/screenings/{{screeningId}}/documents/{{documentId}}/upload
+  url: {{baseUrl}}/api/v1/screenings/{{screeningId}}/documents/{{documentId}}/upload
   body: json
-  auth: bearer
-}
-
-auth:bearer {
-  token: {{accessToken}}
+  auth: inherit
 }
 
 headers {
@@ -28,19 +24,7 @@ body:json {
 docs {
   # Upload de Documento (Etapa 3 - Fase 2)
   
-  Registra o upload de um documento. O arquivo deve ser previamente 
-  enviado ao Firebase pelo frontend. Este endpoint apenas vincula 
-  o ProfessionalDocument ao ScreeningDocument.
-  
-  ## Campos
-  
-  | Campo | Tipo | Obrigatório | Descrição |
-  |-------|------|-------------|-----------|
-  | professional_document_id | UUID | Sim | ID do documento já criado no módulo professionals |
-  | notes | string | Não | Notas sobre o upload |
-  
-  ## Fluxo de Upload
-  
+  auth: inherit
   1. Frontend faz upload do arquivo para Firebase Storage
   2. Frontend cria ProfessionalDocument via `/professionals/{id}/documents`
   3. Frontend chama este endpoint para vincular ao screening

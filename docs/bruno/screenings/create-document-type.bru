@@ -7,11 +7,7 @@ meta {
 post {
   url: {{baseUrl}}/screenings/document-types
   body: json
-  auth: bearer
-}
-
-auth:bearer {
-  token: {{accessToken}}
+  auth: inherit
 }
 
 headers {

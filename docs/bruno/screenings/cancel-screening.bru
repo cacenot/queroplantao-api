@@ -5,13 +5,9 @@ meta {
 }
 
 post {
-  url: {{baseUrl}}/screenings/{{screeningId}}/cancel
+  url: {{baseUrl}}/api/v1/screenings/{{screeningId}}/cancel
   body: json
-  auth: bearer
-}
-
-auth:bearer {
-  token: {{accessToken}}
+  auth: inherit
 }
 
 headers {

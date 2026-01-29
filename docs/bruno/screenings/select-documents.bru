@@ -7,11 +7,7 @@ meta {
 post {
   url: {{baseUrl}}/screenings/{{screeningId}}/documents
   body: json
-  auth: bearer
-}
-
-auth:bearer {
-  token: {{accessToken}}
+  auth: inherit
 }
 
 headers {
@@ -36,11 +32,7 @@ body:json {
 docs {
   # Selecionar Documentos (Etapa 2)
   
-  Define os documentos requeridos para a triagem.
-  
-  ## Campos por Documento
-  
-  | Campo | Tipo | Obrigatório | Descrição |
+  auth: inherit
   |-------|------|-------------|-----------|
   | document_type_config_id | UUID | Sim | ID do tipo de documento |
   | is_required | boolean | Não | Se é obrigatório (default: true) |

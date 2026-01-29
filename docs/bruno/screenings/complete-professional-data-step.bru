@@ -1,0 +1,21 @@
+meta {
+  name: Complete Professional Data Step
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/api/v1/screenings/{{screeningId}}/steps/professional-data/complete
+  body: none
+  auth: inherit
+}
+
+headers {
+  X-Organization-ID: {{organizationId}}
+}
+
+docs {
+  # Finalizar etapa de dados do profissional
+  
+  Finaliza a etapa de dados do profissional após validações internas.
+}

@@ -5,13 +5,9 @@ meta {
 }
 
 post {
-  url: {{baseUrl}}/screenings/{{screeningId}}/documents/{{screeningDocumentId}}/reuse?professional_document_id={{professionalDocumentId}}
+  url: {{baseUrl}}/api/v1/screenings/{{screeningId}}/documents/{{documentId}}/reuse?professional_document_id={{professionalDocumentId}}
   body: none
-  auth: bearer
-}
-
-auth:bearer {
-  token: {{accessToken}}
+  auth: inherit
 }
 
 headers {
@@ -21,19 +17,7 @@ headers {
 docs {
   # Reutilizar Documento
   
-  Reutiliza um documento já aprovado de triagens anteriores para preencher um requisito de documento.
-  
-  ## Parâmetros
-  
-  | Parâmetro | Tipo | Obrigatório | Descrição |
-  |-----------|------|-------------|-----------|
-  | screeningId | UUID | Sim | ID da triagem (path) |
-  | screeningDocumentId | UUID | Sim | ID do documento de triagem (ScreeningDocument) (path) |
-  | professional_document_id | UUID | Sim | ID do documento do profissional a reutilizar (query) |
-  
-  ## Comportamento
-  
-  1. Valida que o ScreeningDocument está em `PENDING_UPLOAD` ou `CORRECTION_NEEDED`
+  auth: inherit
   2. Valida que o ProfessionalDocument existe e **não está pendente** (`is_pending=False`)
   3. Valida que o tipo de documento (`document_type_id`) corresponde
   4. Vincula o ProfessionalDocument ao ScreeningDocument

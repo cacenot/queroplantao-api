@@ -1,0 +1,35 @@
+meta {
+  name: Complete Conversation Step
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/v1/screenings/{{screeningId}}/steps/conversation/complete
+  body: json
+  auth: inherit
+}
+
+headers {
+  X-Organization-ID: {{organizationId}}
+}
+
+body:json {
+  {
+    "notes": "Conversa inicial realizada. Profissional interessado em prosseguir.",
+    "outcome": "PROCEED"
+  }
+}
+
+docs {
+  # Finalizar etapa de conversa
+  
+  Finaliza a etapa de conversa inicial.
+  
+  ## Campos
+  
+  | Campo | Tipo | Obrigatório | Descrição |
+  |-------|------|-------------|-----------|
+  | notes | string | Sim | Notas da conversa (min 10) |
+  | outcome | string | Sim | Resultado: PROCEED ou REJECT |
+}

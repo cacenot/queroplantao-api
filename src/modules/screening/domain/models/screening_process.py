@@ -350,7 +350,10 @@ class ScreeningProcess(
         state = inspect(self)
         if "conversation_step" not in state.unloaded and self.conversation_step:
             steps.append(self.conversation_step)
-        if "professional_data_step" not in state.unloaded and self.professional_data_step:
+        if (
+            "professional_data_step" not in state.unloaded
+            and self.professional_data_step
+        ):
             steps.append(self.professional_data_step)
         if "document_upload_step" not in state.unloaded and self.document_upload_step:
             steps.append(self.document_upload_step)
@@ -358,9 +361,15 @@ class ScreeningProcess(
             steps.append(self.document_review_step)
         if "payment_info_step" not in state.unloaded and self.payment_info_step:
             steps.append(self.payment_info_step)
-        if "supervisor_review_step" not in state.unloaded and self.supervisor_review_step:
+        if (
+            "supervisor_review_step" not in state.unloaded
+            and self.supervisor_review_step
+        ):
             steps.append(self.supervisor_review_step)
-        if "client_validation_step" not in state.unloaded and self.client_validation_step:
+        if (
+            "client_validation_step" not in state.unloaded
+            and self.client_validation_step
+        ):
             steps.append(self.client_validation_step)
         return sorted(steps, key=lambda s: s.order)
 

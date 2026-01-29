@@ -7,11 +7,7 @@ meta {
 post {
   url: {{baseUrl}}/screenings/{{screeningId}}/interview/complete
   body: json
-  auth: bearer
-}
-
-auth:bearer {
-  token: {{accessToken}}
+  auth: inherit
 }
 
 headers {
@@ -30,15 +26,7 @@ body:json {
 docs {
   # Concluir Entrevista (Etapa 5)
   
-  Registra o resultado da entrevista com o profissional.
-  
-  ## Campos
-  
-  | Campo | Tipo | Obrigatório | Descrição |
-  |-------|------|-------------|-----------|
-  | interview_date | datetime | Sim | Data/hora da entrevista |
-  | interview_method | enum | Sim | Método utilizado |
-  | interview_notes | string | Não | Observações da entrevista |
+  auth: inherit
   | outcome | enum | Sim | Resultado da entrevista |
   | escalation_reason | string | Condicional | Motivo (se escalated) |
   

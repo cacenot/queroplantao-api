@@ -7,11 +7,7 @@ meta {
 post {
   url: {{baseUrl}}/screenings/{{screeningId}}/client-validation/complete
   body: json
-  auth: bearer
-}
-
-auth:bearer {
-  token: {{accessToken}}
+  auth: inherit
 }
 
 headers {
@@ -28,15 +24,7 @@ body:json {
 docs {
   # Concluir Validação do Cliente (Etapa 6)
   
-  Registra a decisão da empresa cliente sobre o profissional.
-  
-  ## Campos
-  
-  | Campo | Tipo | Obrigatório | Descrição |
-  |-------|------|-------------|-----------|
-  | outcome | enum | Sim | Decisão do cliente |
-  | notes | string | Não | Observações do cliente |
-  
+  auth: inherit
   ## Resultados Possíveis
   
   - `APPROVED`: Cliente aprovou o profissional

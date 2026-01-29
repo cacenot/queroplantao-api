@@ -5,13 +5,9 @@ meta {
 }
 
 post {
-  url: {{baseUrl}}/screenings/{{screeningId}}/documents/{{documentId}}/review
+  url: {{baseUrl}}/api/v1/screenings/{{screeningId}}/documents/{{documentId}}/review
   body: json
-  auth: bearer
-}
-
-auth:bearer {
-  token: {{accessToken}}
+  auth: inherit
 }
 
 headers {

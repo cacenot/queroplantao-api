@@ -5,13 +5,9 @@ meta {
 }
 
 post {
-  url: {{baseUrl}}/screenings/{{screeningId}}/steps/document-upload/configure
+  url: {{baseUrl}}/api/v1/screenings/{{screeningId}}/steps/document-upload/configure
   body: json
-  auth: bearer
-}
-
-auth:bearer {
-  token: {{accessToken}}
+  auth: inherit
 }
 
 headers {
@@ -46,19 +42,7 @@ body:json {
 docs {
   # Configurar Documentos (Etapa 3 - Fase 1)
   
-  Configura a lista de documentos necessários para a triagem.
-  Transiciona o DocumentUploadStep de PENDING para IN_PROGRESS.
-  
-  ## Campos
-  
-  | Campo | Tipo | Obrigatório | Descrição |
-  |-------|------|-------------|-----------|
-  | documents | array | Sim | Lista de documentos a configurar |
-  | documents[].document_type_id | UUID | Sim | ID do tipo de documento |
-  | documents[].is_required | boolean | Sim | Se o documento é obrigatório |
-  | documents[].order | integer | Não | Ordem de exibição (default: índice) |
-  | documents[].description | string | Não | Instruções customizadas |
-  
+  auth: inherit
   ## Comportamento
   
   1. Valida que o step está em PENDING

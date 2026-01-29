@@ -7,11 +7,7 @@ meta {
 post {
   url: {{baseUrl}}/screenings/{{screeningId}}/documents/{{documentId}}/keep
   body: json
-  auth: bearer
-}
-
-auth:bearer {
-  token: {{accessToken}}
+  auth: inherit
 }
 
 headers {
@@ -27,19 +23,7 @@ body:json {
 docs {
   # Manter Documento Existente (Etapa 3)
   
-  Vincula um documento existente do profissional a um documento requerido.
-  
-  ## Campos
-  
-  | Campo | Tipo | Obrigatório | Descrição |
-  |-------|------|-------------|-----------|
-  | professional_document_id | UUID | Sim | ID do documento existente |
-  
-  ## Comportamento
-  
-  - Marca o required document como `is_existing = true`
-  - Vincula ao `professional_document_id`
-  - Se configuração da organização permitir, aprova automaticamente
+  auth: inherit
   - Caso contrário, segue para verificação manual
   
   ## Validações

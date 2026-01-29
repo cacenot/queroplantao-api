@@ -1,19 +1,7 @@
 meta {
   name: Update Screening Settings
   type: http
-  seq: 20
-}
-
-patch {
-  url: {{baseUrl}}/screenings/settings
-  body: json
-  auth: bearer
-}
-
-auth:bearer {
-  token: {{accessToken}}
-}
-
+  auth: inherit
 headers {
   X-Organization-ID: {{organizationId}}
 }

@@ -5,13 +5,9 @@ meta {
 }
 
 post {
-  url: {{baseUrl}}/screenings/{{screeningId}}/steps/{{stepId}}/document-upload/complete
+  url: {{baseUrl}}/api/v1/screenings/{{screeningId}}/steps/{{stepId}}/document-upload/complete
   body: json
-  auth: bearer
-}
-
-auth:bearer {
-  token: {{accessToken}}
+  auth: inherit
 }
 
 headers {
@@ -27,19 +23,7 @@ body:json {
 docs {
   # Completar Etapa de Upload de Documentos (Etapa 3)
   
-  Finaliza a etapa de upload de documentos após todos os documentos obrigatórios terem sido enviados.
-  
-  ## Campos
-  
-  | Campo | Tipo | Obrigatório | Descrição |
-  |-------|------|-------------|-----------|
-  | notes | string | Não | Notas sobre a conclusão |
-  
-  ## Comportamento
-  
-  1. Valida que todos os documentos obrigatórios foram enviados
-  2. Transiciona step de IN_PROGRESS para COMPLETED
-  3. Avança para o próximo step (DOCUMENT_REVIEW)
+  auth: inherit
   
   ## Validações
   

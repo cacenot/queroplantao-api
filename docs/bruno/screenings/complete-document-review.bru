@@ -5,13 +5,9 @@ meta {
 }
 
 post {
-  url: {{baseUrl}}/screenings/{{screeningId}}/steps/{{stepId}}/document-review/complete
+  url: {{baseUrl}}/api/v1/screenings/{{screeningId}}/steps/{{stepId}}/document-review/complete
   body: json
-  auth: bearer
-}
-
-auth:bearer {
-  token: {{accessToken}}
+  auth: inherit
 }
 
 headers {
@@ -27,19 +23,7 @@ body:json {
 docs {
   # Completar Etapa de Revisão de Documentos (Etapa 4)
   
-  Finaliza a etapa de revisão de documentos após todos terem sido revisados.
-  
-  ## Campos
-  
-  | Campo | Tipo | Obrigatório | Descrição |
-  |-------|------|-------------|-----------|
-  | notes | string | Não | Notas sobre a conclusão |
-  
-  ## Comportamento
-  
-  Depende do resultado das revisões:
-  
-  ### Todos APPROVED
+  auth: inherit
   - DocumentReviewStep → APPROVED
   - Avança para próximo step (PAYMENT_INFO ou SUPERVISOR_REVIEW)
   

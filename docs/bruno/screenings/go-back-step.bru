@@ -1,0 +1,21 @@
+meta {
+  name: Go Back Step
+  type: http
+  seq: 12
+}
+
+post {
+  url: {{baseUrl}}/api/v1/screenings/{{screeningId}}/steps/{{stepId}}/go-back
+  body: none
+  auth: inherit
+}
+
+headers {
+  X-Organization-ID: {{organizationId}}
+}
+
+docs {
+  # Voltar para etapa anterior
+  
+  Retorna o processo para uma etapa anterior, resetando etapas posteriores.
+}

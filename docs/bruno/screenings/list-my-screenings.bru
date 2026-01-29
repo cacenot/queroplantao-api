@@ -7,11 +7,7 @@ meta {
 get {
   url: {{baseUrl}}/screenings/me
   body: none
-  auth: bearer
-}
-
-auth:bearer {
-  token: {{accessToken}}
+  auth: inherit
 }
 
 headers {
