@@ -109,6 +109,11 @@ info: ## Show server information
 # Development workflow
 dev: setup test info ## Setup, test, and show info (recommended first run)
 
+# GitHub Copilot integration
+copilot-config: check-env ## Generate GitHub Copilot MCP configuration
+	@echo "🔧 Generating GitHub Copilot configuration..."
+	./setup-copilot.sh
+
 # Production deployment helpers
 build: ## Build for production (if needed)
 	@echo "MCP server doesn't require building - it's pure Python"

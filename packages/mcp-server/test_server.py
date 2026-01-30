@@ -11,7 +11,6 @@ Usage:
 """
 
 import asyncio
-import json
 import sys
 from pathlib import Path
 
@@ -19,17 +18,17 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent / "src"))
 
 from queroplantao_mcp.config import validate_project_structure
-from queroplantao_mcp.parsers.openapi_parser import OpenAPIParser
 from queroplantao_mcp.parsers.enum_parser import EnumParser
+from queroplantao_mcp.parsers.openapi_parser import OpenAPIParser
 from queroplantao_mcp.parsers.sqlmodel_parser import SQLModelParser
 from queroplantao_mcp.tools.business_rules import get_state_machine
 
 
 def print_header(title: str):
     """Print a formatted header."""
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print(f" {title}")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
 
 
 def test_project_structure():
@@ -176,14 +175,14 @@ async def test_business_rules():
     try:
         # Test state machine
         result = await get_state_machine("ScreeningProcess")
-        print(f"✓ State machine for ScreeningProcess:")
+        print("✓ State machine for ScreeningProcess:")
         print(f"  - States: {len(result['states'])}")
         print(f"  - Transitions: {len(result['transitions'])}")
         print(f"  - UI hints: {len(result['ui_hints'])}")
 
         # Show sample transition
-        if result['transitions']:
-            transition = result['transitions'][0]
+        if result["transitions"]:
+            transition = result["transitions"][0]
             print(f"  - Sample transition: {transition['from']} → {transition['to']}")
             print(f"    Trigger: {transition['trigger']}")
 
@@ -199,8 +198,8 @@ def test_server_import():
     print_header("MCP SERVER INITIALIZATION")
 
     try:
+        from queroplantao_mcp.config import SERVER_DESCRIPTION, SERVER_NAME
         from queroplantao_mcp.server import mcp
-        from queroplantao_mcp.config import SERVER_NAME, SERVER_DESCRIPTION
 
         print(f"✓ Server name: {SERVER_NAME}")
         print(f"✓ Description: {SERVER_DESCRIPTION[:50]}...")
@@ -214,7 +213,11 @@ def test_server_import():
             "Health": [t for t in tool_names if "health" in t],
             "API Schemas": [t for t in tool_names if any(x in t for x in ["module", "endpoint", "schema", "enum"])],
             "Database": [t for t in tool_names if any(x in t for x in ["entity", "er_diagram"])],
-            "Business Rules": [t for t in tool_names if any(x in t for x in ["business_rule", "workflow", "state_machine", "user_story"])],
+            "Business Rules": [
+                t
+                for t in tool_names
+                if any(x in t for x in ["business_rule", "workflow", "state_machine", "user_story"])
+            ],
             "Code Analysis": [t for t in tool_names if any(x in t for x in ["use_case", "code", "error_code"])],
             "Context": [t for t in tool_names if "context" in t or "checklist" in t or "integration" in t],
         }

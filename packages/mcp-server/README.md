@@ -12,28 +12,89 @@ This MCP server is designed to be consumed by LLMs (like GPT-5.2 mini or Claude)
 - **Documentation**: Module docs, OpenAPI specs, Bruno examples
 - **Code Analysis**: Use case analysis, code explanations (LLM-powered)
 
+## Quick Start
+
+```bash
+# Complete setup and testing
+make dev
+
+# Run the server
+make run
+```
+
+## Available Commands
+
+| Command | Description |
+|---------|-------------|
+| `make dev` | Complete setup (install deps, create .env, test, show info) |
+| `make run` | Run MCP server in stdio mode (for Claude Desktop) |
+| `make run-sse` | Run MCP server in SSE mode (HTTP server) |
+| `make test` | Run comprehensive test suite |
+| `make test-quick` | Quick import and structure test |
+| `make info` | Show server information and environment status |
+| `make setup` | Setup development environment |
+| `make check-env` | Verify environment configuration |
+| `make copilot-config` | Generate GitHub Copilot MCP configuration |
+| `make lint` | Run code linter |
+| `make format` | Format code |
+| `make clean` | Clean cache files |
+
 ## Installation
 
 ```bash
 cd packages/mcp-server
-uv sync
+make setup
 ```
 
 ## Configuration
 
-Set environment variables:
-
+1. **Copy environment file:**
 ```bash
-# Required for LLM-powered tools
-export OPENAI_API_KEY="sk-..."
-
-# Optional: customize LLM settings
-export MCP_LLM_MODEL="gpt-4o-mini"  # or gpt-5.2-mini when available
-export MCP_LLM_TEMPERATURE="0.1"
-export MCP_LLM_MAX_TOKENS="4096"
+cp .env.example .env
 ```
 
+2. **Set your OpenAI API key:**
+```bash
+# Edit .env and add your OpenAI API key
+OPENAI_API_KEY=sk-your-openai-api-key-here
+```
+
+### Environment Variables
+
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `OPENAI_API_KEY` | Yes* | - | OpenAI API key for LLM-powered tools |
+| `MCP_LLM_MODEL` | No | `gpt-4o-mini` | Model for analysis (gpt-4o-mini, gpt-4o, gpt-3.5-turbo) |
+| `MCP_LLM_TEMPERATURE` | No | `0.1` | Response creativity (0.0-1.0) |
+| `MCP_LLM_MAX_TOKENS` | No | `4096` | Max tokens per response |
+
+*Required for LLM-powered tools. Server works without it but with limited functionality.
+
+## Testing
+
+Run the comprehensive test suite to verify everything is working:
+
+```bash
+uv run python test_server.py
+```
+
+This will test:
+- ✅ Project structure validation
+- ✅ OpenAPI specification parsing (70 endpoints, 120 schemas)
+- ✅ Enum parsing (22 enums found)
+- ✅ SQLModel entity parsing (38 entities found)
+- ✅ Business rules tools (state machines, workflows)
+- ✅ MCP server initialization (24 tools registered)
+
 ## Running the Server
+
+### Test First
+
+Before running the server, test that everything is working:
+
+```bash
+uv run python test_server.py
+```
 
 ### Stdio Mode (for MCP clients like Claude Desktop)
 
@@ -46,6 +107,88 @@ uv run mcp-server
 ```bash
 uv run mcp-server --sse
 ```
+
+## GitHub Copilot Integration
+
+O GitHub Copilot tem suporte experimental a MCP servers. Para usar este servidor:
+
+### Configuração Automática (Recomendado)
+
+```bash
+cd packages/mcp-server
+./setup-copilot.sh
+```
+
+Este script irá:
+- ✅ Detectar automaticamente os caminhos
+- ✅ Ler sua API key do arquivo `.env`
+- ✅ Gerar arquivo `github-copilot-config-generated.json`
+- ✅ Mostrar instruções de como colar no VS Code
+
+### Configuração Manual
+
+1. **Abra as configurações do VS Code** (`Ctrl/Cmd + Shift + P` → "Preferences: Open Settings (JSON)")
+2. **Adicione a configuração MCP:**
+
+```json
+{
+  "github.copilot.chat.mcp": {
+    "queroplantao-api": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--project",
+        "/path/to/your/queroplantao-api/packages/mcp-server",
+        "mcp-server"
+      ],
+      "env": {
+        "OPENAI_API_KEY": "sk-your-openai-api-key-here"
+      }
+    }
+  }
+}
+```
+
+### Verificação
+
+1. **Reinicie o VS Code**
+2. **Abra o Chat do GitHub Copilot** (`Ctrl/Cmd + Shift + P` → "GitHub Copilot: Open Chat")
+3. **Teste a conexão:**
+
+```
+What MCP servers do you have access to?
+```
+
+### Exemplos de Uso
+
+Agora você pode perguntar ao Copilot sobre a API:
+
+```
+Show me all available endpoints in the screening module
+```
+
+```
+What are the business rules for professional validation?
+```
+
+```
+Generate a checklist for implementing a screening process form
+```
+
+```
+Explain the state machine for ScreeningProcess entity
+```
+
+### Troubleshooting
+
+**Se o servidor não conectar:**
+- Execute `make test` para verificar se funciona
+- Verifique se o caminho no arquivo de configuração está correto
+- Certifique-se que `OPENAI_API_KEY` está definida
+
+**Se as tools não aparecerem:**
+- Reinicie o VS Code completamente
+- Verifique os logs: `Ctrl/Cmd + Shift + P` → "Developer: Show Logs" → "GitHub Copilot Chat"
 
 ## Available Tools
 
@@ -63,11 +206,10 @@ uv run mcp-server --sse
 - `get_state_machine` - Get state machine for an entity
 - `validate_user_story` - Validate if a user story is implementable
 
-### Database (Deterministic)
-- `list_entities` - List all database entities
-- `get_entity_schema` - Get SQLModel entity structure
-- `find_entities_by_field` - Find entities containing a specific field
-- `get_er_diagram` - Get ER diagram for a module (Mermaid/DBML)
+### Database & Entities (Deterministic)
+- `get_entity_schema` - Get complete SQLModel entity schema with relationships
+- `get_er_diagram` - Generate ER diagram (Mermaid/DBML/ASCII)
+- `find_entity_by_field` - Find entities containing a specific field with insights
 
 ### Code Analysis (LLM-powered)
 - `analyze_use_case` - Analyze a use case and explain its logic
@@ -85,6 +227,13 @@ uv run mcp-server --sse
 ## Available Resources
 
 - `docs://modules/{module}` - Module documentation (Markdown)
+- `openapi://spec` - Full OpenAPI specification (JSON)
+- `openapi://paths/{path}` - OpenAPI spec for specific path
+- `client://types/{type_name}` - TypeScript type definitions from API client
+- `bruno://{module}/{endpoint}` - Bruno request examples
+- `bruno://list` - List all available Bruno examples
+- `errors://all` - All error codes organized by module
+
 - `openapi://spec` - Full OpenAPI specification (JSON)
 - `bruno://{module}/{endpoint}` - Bruno request examples
 - `bruno://list` - List all Bruno examples by module
@@ -119,11 +268,21 @@ src/queroplantao_mcp/
 |----------|-------|------|
 | Health | 1 | Deterministic |
 | API Schemas | 6 | Deterministic |
-| Database | 4 | Deterministic |
 | Business Rules | 4 | LLM-powered |
+| Database & Entities | 3 | Deterministic |
 | Code Analysis | 4 | LLM-powered |
-| Context | 5 | Mixed |
-| **Total** | **24** | |
+| Context Management | 5 | Mixed |
+| **Total Tools** | **23** | |
+| **Resources** | **7** | (3 static + 4 templated) |
+
+**Resources:**
+- `docs://modules/{module}` - Module documentation
+- `openapi://spec` - Full OpenAPI spec
+- `openapi://paths/{path}` - OpenAPI spec for specific path
+- `client://types/{type_name}` - TypeScript types from API client
+- `bruno://{module}/{endpoint}` - Bruno request examples
+- `bruno://list` - List all Bruno examples
+- `errors://all` - All error codes
 
 ## License
 

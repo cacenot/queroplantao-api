@@ -28,6 +28,11 @@ from queroplantao_mcp.tools.context import (
     set_development_context,
     suggest_api_integration,
 )
+from queroplantao_mcp.tools.database import (
+    find_entity_by_field,
+    get_entity_schema,
+    get_er_diagram,
+)
 
 __all__ = [
     # Business Rules
@@ -46,4 +51,8 @@ __all__ = [
     "clear_development_context",
     "get_implementation_checklist",
     "suggest_api_integration",
+    # Database
+    "get_entity_schema",
+    "get_er_diagram",
+    "find_entity_by_field",
 ]

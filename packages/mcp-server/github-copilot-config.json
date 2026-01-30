@@ -1,19 +1,19 @@
 {
-  "mcpServers": {
-    "queroplantao-api": {
-      "command": "uv",
-      "args": [
-        "run",
-        "--project",
-        "/path/to/your/queroplantao-api/packages/mcp-server",
-        "mcp-server"
-      ],
-      "env": {
-        "OPENAI_API_KEY": "sk-your-openai-api-key-here",
-        "MCP_LLM_MODEL": "gpt-4o-mini",
-        "MCP_LLM_TEMPERATURE": "0.1",
-        "MCP_LLM_MAX_TOKENS": "4096"
-      }
+    "mcpServers": {
+        "queroplantao-api": {
+            "command": "uv",
+            "args": [
+                "run",
+                "--project",
+                "/path/to/your/queroplantao-api/packages/mcp-server",
+                "mcp-server"
+            ],
+            "env": {
+                "OPENAI_API_KEY": "sk-your-openai-api-key-here",
+                "MCP_LLM_MODEL": "gpt-4o-mini",
+                "MCP_LLM_TEMPERATURE": "0.1",
+                "MCP_LLM_MAX_TOKENS": "4096"
+            }
+        }
     }
-  }
 }

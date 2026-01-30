@@ -203,87 +203,6 @@ def list_enums(module: str | None = None) -> list[dict]:
 
 
 # =============================================================================
-# DATABASE TOOLS
-# =============================================================================
-
-
-@mcp.tool()
-def get_entity_schema(entity_name: str) -> dict | None:
-    """
-    Get SQLModel entity structure including columns and relationships.
-
-    Args:
-        entity_name: Name of the entity (e.g., "ScreeningProcess").
-
-    Returns:
-        Entity definition with columns, relationships, and indexes.
-    """
-    from queroplantao_mcp.parsers import get_sqlmodel_parser
-
-    parser = get_sqlmodel_parser()
-    return parser.get_entity(entity_name)
-
-
-@mcp.tool()
-def list_entities(module: str | None = None) -> list[dict]:
-    """
-    List all database entities.
-
-    Args:
-        module: Optional module to filter by.
-
-    Returns:
-        List of entity summaries.
-    """
-    from queroplantao_mcp.parsers import get_sqlmodel_parser
-
-    parser = get_sqlmodel_parser()
-    return parser.list_entities(module=module)
-
-
-@mcp.tool()
-def find_entities_by_field(
-    field_name: str,
-    field_type: str | None = None,
-) -> list[dict]:
-    """
-    Find entities that contain a specific field.
-
-    Args:
-        field_name: Name of the field to search for.
-        field_type: Optional type to filter by.
-
-    Returns:
-        List of matches with entity and field info.
-    """
-    from queroplantao_mcp.parsers import get_sqlmodel_parser
-
-    parser = get_sqlmodel_parser()
-    return parser.find_by_field(field_name, field_type)
-
-
-@mcp.tool()
-def get_er_diagram(
-    module: str,
-    format: str = "mermaid",
-) -> str:
-    """
-    Generate an ER diagram for a module.
-
-    Args:
-        module: The module to generate diagram for.
-        format: Output format - "mermaid" or "dbml".
-
-    Returns:
-        Diagram in the specified format.
-    """
-    from queroplantao_mcp.parsers import get_sqlmodel_parser
-
-    parser = get_sqlmodel_parser()
-    return parser.generate_er_diagram(module, format_=format)
-
-
-# =============================================================================
 # DOCUMENTATION RESOURCES
 # =============================================================================
 
@@ -323,6 +242,76 @@ def get_openapi_spec() -> str:
     parser = get_openapi_parser()
     spec = parser.get_spec()
     return json.dumps(spec, indent=2)
+
+
+@mcp.resource("openapi://paths/{path}")
+def get_openapi_path(path: str) -> str:
+    """
+    Get OpenAPI specification for a specific path.
+
+    Args:
+        path: API path (e.g., "/screenings", "/professionals/{id}")
+
+    Returns:
+        OpenAPI path spec as JSON.
+    """
+    import json
+
+    from queroplantao_mcp.parsers import get_openapi_parser
+
+    parser = get_openapi_parser()
+    spec = parser.get_spec()
+
+    # Normalize path (remove leading slash if present)
+    normalized_path = f"/{path}" if not path.startswith("/") else path
+
+    paths = spec.get("paths", {})
+    if normalized_path in paths:
+        return json.dumps({normalized_path: paths[normalized_path]}, indent=2)
+
+    return json.dumps({"error": f"Path not found: {normalized_path}", "available_paths": list(paths.keys())[:20]})
+
+
+@mcp.resource("client://types/{type_name}")
+def get_client_type(type_name: str) -> str:
+    """
+    Get TypeScript type definition from API client.
+
+    Args:
+        type_name: Type name (e.g., "ScreeningProcessResponse", "ProfessionalCreate")
+
+    Returns:
+        TypeScript type definition.
+    """
+    from queroplantao_mcp.config import PROJECT_ROOT
+
+    # Try to find in generated API client
+    api_client_dir = PROJECT_ROOT / "packages" / "api-client" / "src"
+
+    # Search in model files
+    models_file = api_client_dir / "model" / "index.ts"
+    if models_file.exists():
+        content = models_file.read_text(encoding="utf-8")
+
+        # Look for type/interface definition
+        lines = content.split("\n")
+        in_type = False
+        type_lines = []
+
+        for line in lines:
+            if f"export type {type_name}" in line or f"export interface {type_name}" in line:
+                in_type = True
+                type_lines.append(line)
+            elif in_type:
+                type_lines.append(line)
+                if line.strip().startswith("}"):
+                    # End of type definition
+                    break
+
+        if type_lines:
+            return "\n".join(type_lines)
+
+    return f"Type not found in API client: {type_name}\nNote: Run 'make client-all' to regenerate the API client"
 
 
 @mcp.resource("bruno://{module}/{endpoint}")
@@ -577,6 +566,63 @@ async def get_error_codes(module: str | None = None) -> dict:
 
 
 # =============================================================================
+# DATABASE & ENTITIES TOOLS
+# =============================================================================
+
+
+@mcp.tool()
+async def get_entity_schema(entity: str) -> dict:
+    """
+    Get complete schema for a SQLModel entity.
+
+    Args:
+        entity: Entity name (e.g., "ScreeningProcess", "Professional").
+
+    Returns:
+        Entity schema with columns, relationships, constraints, and patterns.
+    """
+    from queroplantao_mcp.tools import get_entity_schema as _impl
+
+    return await _impl(entity)
+
+
+@mcp.tool()
+async def get_er_diagram(
+    module: str | None = None,
+    format: str = "mermaid",
+) -> dict:
+    """
+    Generate Entity-Relationship diagram.
+
+    Args:
+        module: Optional module to filter entities.
+        format: Output format - "mermaid", "dbml", or "ascii".
+
+    Returns:
+        ER diagram in the specified format.
+    """
+    from queroplantao_mcp.tools import get_er_diagram as _impl
+
+    return await _impl(module, format)
+
+
+@mcp.tool()
+async def find_entity_by_field(field_name: str) -> dict:
+    """
+    Find all entities containing a specific field.
+
+    Args:
+        field_name: Field to search for (e.g., "organization_id", "deleted_at").
+
+    Returns:
+        List of entities with the field and pattern insights.
+    """
+    from queroplantao_mcp.tools import find_entity_by_field as _impl
+
+    return await _impl(field_name)
+
+
+# =============================================================================
 # CONTEXT MANAGEMENT TOOLS
 # =============================================================================
 
@@ -710,7 +756,7 @@ def main() -> None:
 
     if args.sse:
         logger.info(f"Running in SSE mode on http://{args.host}:{args.port}")
-        mcp.run(transport="sse", sse_host=args.host, sse_port=args.port)
+        mcp.run(transport="http", host=args.host, port=args.port)
     else:
         logger.info("Running in stdio mode")
         mcp.run()
