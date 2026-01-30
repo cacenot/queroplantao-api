@@ -1,0 +1,31 @@
+# Claude Desktop MCP Configuration Example
+# Add this to your Claude Desktop configuration file
+# Location: ~/Library/Application Support/Claude/claude_desktop_config.json (macOS)
+#         %APPDATA%/Claude/claude_desktop_config.json (Windows)
+#         ~/.config/Claude/claude_desktop_config.json (Linux)
+
+{
+  "mcpServers": {
+    "queroplantao-api": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--project",
+        "/path/to/your/queroplantao-api/packages/mcp-server",
+        "mcp-server"
+      ],
+      "env": {
+        "OPENAI_API_KEY": "sk-your-openai-api-key-here",
+        "MCP_LLM_MODEL": "gpt-4o-mini",
+        "MCP_LLM_TEMPERATURE": "0.1",
+        "MCP_LLM_MAX_TOKENS": "4096"
+      }
+    }
+  }
+}
+
+# Notes:
+# 1. Replace "/path/to/your/queroplantao-api" with the actual path
+# 2. Make sure to set your actual OPENAI_API_KEY
+# 3. The MCP server will be available in Claude Desktop as "queroplantao-api"
+# 4. You can have multiple MCP servers configured
