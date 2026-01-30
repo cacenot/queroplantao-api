@@ -120,3 +120,6 @@ packages/api-client/dist/
 packages/api-client/.turbo/
 *.tsbuildinfo
 .DS_Store
+
+# MCP Server - Generated config files with secrets
+packages/mcp-server/github-copilot-config-generated.json
