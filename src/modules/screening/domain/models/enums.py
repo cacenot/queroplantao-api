@@ -71,7 +71,6 @@ class ScreeningStatus(str, Enum):
     Detailed progress is tracked via the status of each configured step.
     """
 
-    DRAFT = "DRAFT"  # Created but not started
     IN_PROGRESS = "IN_PROGRESS"  # Process is active (any step in progress)
     PENDING_SUPERVISOR = "PENDING_SUPERVISOR"  # Blocked by alert, awaiting supervisor
     APPROVED = "APPROVED"  # Screening approved and completed

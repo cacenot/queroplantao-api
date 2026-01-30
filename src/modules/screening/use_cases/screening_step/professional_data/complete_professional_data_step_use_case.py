@@ -143,14 +143,15 @@ class CompleteProfessionalDataStepUseCase:
             status=StepStatus.APPROVED,
         )
 
-        # Start process if still in DRAFT
-        if process.status == ScreeningStatus.DRAFT:
+        # Start process if not in progress (legacy, should not happen)
+        if process.status != ScreeningStatus.IN_PROGRESS:
             process.status = ScreeningStatus.IN_PROGRESS
 
-        # Advance to next step
+        # Advance to next step (document_upload_step)
         StepWorkflowService.advance_to_next_step(
             process=process,
             current_step=step,
+            next_step=process.document_upload_step,
         )
 
         # 10. Persist changes

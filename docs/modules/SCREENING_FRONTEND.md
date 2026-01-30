@@ -181,10 +181,12 @@ interface ScreeningProcessResponse {
   professional_cpf: string;
   professional_name: string;
   status: ScreeningStatus;
-  current_step_type?: StepType;
+  current_step_type: StepType;
+  configured_step_types: StepType[];
   
   // Assignment
   owner_id?: string;           // Responsável geral
+  supervisor_id?: string;      // Supervisor responsável
   current_actor_id?: string;   // Responsável pela ação atual
   
   // Etapa 1 fields
@@ -210,7 +212,6 @@ interface ScreeningProcessResponse {
 ### ScreeningStatus
 ```typescript
 enum ScreeningStatus {
-  DRAFT = "DRAFT",           // Criado, não iniciado
   IN_PROGRESS = "IN_PROGRESS", // Em andamento (qualquer etapa)
   APPROVED = "APPROVED",      // Aprovado e finalizado
   REJECTED = "REJECTED",      // Rejeitado

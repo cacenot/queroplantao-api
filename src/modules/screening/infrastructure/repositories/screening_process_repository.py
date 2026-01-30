@@ -126,6 +126,9 @@ class ScreeningProcessRepository(
         """
         List screening processes for an organization.
 
+        Uses denormalized fields (current_step_type, configured_step_types)
+        instead of loading step relationships, for efficient listing.
+
         Args:
             organization_id: The organization UUID.
             pagination: Pagination parameters.
@@ -135,21 +138,7 @@ class ScreeningProcessRepository(
         Returns:
             Paginated list of screening processes.
         """
-        base_query = self._base_query_for_organization(organization_id).options(
-            # Load all step relationships to avoid lazy-loading in responses
-            selectinload(ScreeningProcess.conversation_step),
-            selectinload(ScreeningProcess.professional_data_step),
-            selectinload(ScreeningProcess.document_upload_step).options(
-                selectinload(DocumentUploadStep.documents).options(
-                    selectinload(ScreeningDocument.document_type),
-                ),
-            ),
-            selectinload(ScreeningProcess.document_review_step),
-            selectinload(ScreeningProcess.payment_info_step),
-            selectinload(ScreeningProcess.client_validation_step),
-            # Load alerts
-            selectinload(ScreeningProcess.alerts),
-        )
+        base_query = self._base_query_for_organization(organization_id)
         return await self.list_paginated(
             pagination,
             filters=filters,
@@ -171,6 +160,9 @@ class ScreeningProcessRepository(
 
         This is the "my pending screenings" filter.
 
+        Uses denormalized fields (current_step_type, configured_step_types)
+        instead of loading step relationships, for efficient listing.
+
         Args:
             organization_id: The organization UUID.
             actor_id: The current actor user UUID.
@@ -181,24 +173,8 @@ class ScreeningProcessRepository(
         Returns:
             Paginated list of screening processes.
         """
-        base_query = (
-            self._base_query_for_organization(organization_id)
-            .where(ScreeningProcess.current_actor_id == actor_id)
-            .options(
-                # Load all step relationships to avoid lazy-loading in responses
-                selectinload(ScreeningProcess.conversation_step),
-                selectinload(ScreeningProcess.professional_data_step),
-                selectinload(ScreeningProcess.document_upload_step).options(
-                    selectinload(DocumentUploadStep.documents).options(
-                        selectinload(ScreeningDocument.document_type),
-                    ),
-                ),
-                selectinload(ScreeningProcess.document_review_step),
-                selectinload(ScreeningProcess.payment_info_step),
-                selectinload(ScreeningProcess.client_validation_step),
-                # Load alerts
-                selectinload(ScreeningProcess.alerts),
-            )
+        base_query = self._base_query_for_organization(organization_id).where(
+            ScreeningProcess.current_actor_id == actor_id
         )
         return await self.list_paginated(
             pagination,

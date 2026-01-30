@@ -11,7 +11,7 @@ from src.app.exceptions import (
     ScreeningStepSkippedError,
 )
 from src.modules.screening.domain.models import ScreeningProcess, ScreeningStatus
-from src.modules.screening.domain.models.enums import StepStatus
+from src.modules.screening.domain.models.enums import StepStatus, StepType
 from src.modules.screening.domain.models.steps import (
     ClientValidationStep,
     ConversationStep,
@@ -98,42 +98,51 @@ class StepWorkflowService:
     def advance_to_next_step(
         process: ScreeningProcess,
         current_step: ScreeningStepMixin,
-    ) -> AnyStep | None:
+        next_step: AnyStep | None = None,
+    ) -> StepType | None:
         """
-        Find and start the next step in the workflow.
+        Advance to the next step in the workflow.
 
-        Uses process.active_steps to get the ordered list of steps,
-        finds the current step, and starts the next one.
+        Updates process.current_step_type to the next step type.
+        If next_step is provided, also starts it (sets status and started_at).
 
         Args:
             process: The screening process.
             current_step: The step that was just completed.
+            next_step: The next step model (if already loaded). If provided,
+                      will be started (status=IN_PROGRESS, started_at=now).
 
         Returns:
-            The next step if found, None if this was the last step.
+            The next step type if found, None if this was the last step.
         """
-        active_steps = process.active_steps
-        current_index = None
+        configured_steps = process.configured_step_types
+        current_step_type = current_step.step_type.value
 
-        # Find current step in the list
-        for i, step in enumerate(active_steps):
-            if step.id == current_step.id:
-                current_index = i
-                break
-
-        if current_index is None:
+        # Find current step index in configured steps
+        try:
+            current_index = configured_steps.index(current_step_type)
+        except ValueError:
             return None
 
         # Check if there's a next step
         next_index = current_index + 1
-        if next_index >= len(active_steps):
+        if next_index >= len(configured_steps):
+            # This was the last step, keep current_step_type at last value
             return None
 
-        next_step = active_steps[next_index]
-        next_step.status = StepStatus.IN_PROGRESS
-        next_step.started_at = datetime.now(timezone.utc)
+        # Get next step type
+        next_step_type_value = configured_steps[next_index]
+        next_step_type = StepType(next_step_type_value)
 
-        return next_step
+        # Update process current_step_type
+        process.current_step_type = next_step_type
+
+        # If next step model is provided, start it
+        if next_step is not None:
+            next_step.status = StepStatus.IN_PROGRESS
+            next_step.started_at = datetime.now(timezone.utc)
+
+        return next_step_type
 
     @staticmethod
     def reject_screening_process(

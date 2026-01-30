@@ -109,8 +109,8 @@ class CompleteDocumentUploadStepUseCase:
             status=StepStatus.COMPLETED,
         )
 
-        # 7. Start process if still in DRAFT
-        if process.status == ScreeningStatus.DRAFT:
+        # 7. Start process if not in progress (legacy, should not happen)
+        if process.status != ScreeningStatus.IN_PROGRESS:
             process.status = ScreeningStatus.IN_PROGRESS
 
         # 8. Advance to document review step and link it
@@ -121,6 +121,7 @@ class CompleteDocumentUploadStepUseCase:
             StepWorkflowService.advance_to_next_step(
                 process=process,
                 current_step=step,
+                next_step=review_step,
             )
 
         # 9. Persist changes

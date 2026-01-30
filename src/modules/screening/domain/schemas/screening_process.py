@@ -119,22 +119,34 @@ class ScreeningProcessCancel(BaseModel):
 
 
 class ScreeningProcessListResponse(BaseModel):
-    """Schema for screening process list (minimal fields)."""
+    """Schema for screening process list (minimal fields, no relationships)."""
 
     model_config = ConfigDict(from_attributes=True)
 
     id: UUID
     status: ScreeningStatus
+
+    # Step tracking (denormalized - no joins required)
+    current_step_type: StepType
+    configured_step_types: list[str]
+
+    # Professional info
     professional_cpf: Optional[str]
     professional_name: Optional[str]
     professional_phone: Optional[str]
     professional_email: Optional[str]
     expected_professional_type: Optional[str]
-    current_step_type: Optional[StepType]
+
+    # Assignment
     owner_id: Optional[UUID]
     current_actor_id: Optional[UUID]
+    supervisor_id: UUID
+
+    # Links
     organization_professional_id: Optional[UUID]
     client_company_id: Optional[UUID]
+
+    # Timestamps
     created_at: datetime
     updated_at: datetime
     expires_at: Optional[datetime]
@@ -148,6 +160,10 @@ class ScreeningProcessResponse(BaseModel):
     id: UUID
     organization_id: UUID
     status: ScreeningStatus
+
+    # Step tracking (denormalized)
+    current_step_type: StepType
+    configured_step_types: list[str]
 
     # Professional data
     professional_cpf: Optional[str]
@@ -163,6 +179,7 @@ class ScreeningProcessResponse(BaseModel):
     # Assignment
     owner_id: Optional[UUID]
     current_actor_id: Optional[UUID]
+    supervisor_id: UUID
 
     # Client company
     client_company_id: Optional[UUID]
@@ -172,7 +189,6 @@ class ScreeningProcessResponse(BaseModel):
     client_contract_id: Optional[UUID]
 
     # Status fields
-    current_step_type: Optional[StepType]
     rejection_reason: Optional[str]
     notes: Optional[str]
 
@@ -199,11 +215,11 @@ class ScreeningProcessDetailResponse(ScreeningProcessResponse):
 
 
 # Forward references
-from src.modules.screening.domain.schemas.screening_process_step import (  # noqa: E402
-    StepSummaryResponse,
-)
 from src.modules.screening.domain.schemas.screening_document import (  # noqa: E402
     ScreeningDocumentResponse,
+)
+from src.modules.screening.domain.schemas.screening_process_step import (  # noqa: E402
+    StepSummaryResponse,
 )
 
 ScreeningProcessDetailResponse.model_rebuild()

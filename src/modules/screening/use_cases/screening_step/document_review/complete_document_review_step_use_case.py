@@ -141,10 +141,12 @@ class CompleteDocumentReviewStepUseCase:
                 status=StepStatus.APPROVED,
             )
 
-            # Advance to next step
+            # Determine and start next step
+            next_step = self._get_next_step(process)
             StepWorkflowService.advance_to_next_step(
                 process=process,
                 current_step=review_step,
+                next_step=next_step,
             )
 
         # 9. Persist changes
@@ -185,7 +187,7 @@ class CompleteDocumentReviewStepUseCase:
         organization_id: UUID,
         screening_id: UUID,
     ) -> ScreeningProcess | None:
-        """Load process with document steps."""
+        """Load process with document steps and potential next steps."""
         from sqlmodel import select
 
         query = (
@@ -196,10 +198,35 @@ class CompleteDocumentReviewStepUseCase:
             .options(
                 selectinload(ScreeningProcess.document_upload_step),
                 selectinload(ScreeningProcess.document_review_step),
+                selectinload(ScreeningProcess.payment_info_step),
+                selectinload(ScreeningProcess.client_validation_step),
             )
         )
         result = await self.session.execute(query)
         return result.scalar_one_or_none()
+
+    def _get_next_step(self, process: ScreeningProcess):
+        """Get the next step after document review based on configuration."""
+        from src.modules.screening.domain.models.enums import StepType
+
+        configured = process.configured_step_types
+        try:
+            current_idx = configured.index(StepType.DOCUMENT_REVIEW.value)
+        except ValueError:
+            return None
+
+        next_idx = current_idx + 1
+        if next_idx >= len(configured):
+            return None
+
+        next_type = configured[next_idx]
+
+        if next_type == StepType.PAYMENT_INFO.value:
+            return process.payment_info_step
+        elif next_type == StepType.CLIENT_VALIDATION.value:
+            return process.client_validation_step
+
+        return None
 
     def _build_response(
         self,

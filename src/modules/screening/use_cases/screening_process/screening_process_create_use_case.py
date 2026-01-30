@@ -18,6 +18,7 @@ from src.modules.professionals.infrastructure.repositories import (
 from src.modules.screening.domain.models.enums import (
     ScreeningStatus,
     StepStatus,
+    StepType,
 )
 from src.modules.screening.domain.models.screening_process import ScreeningProcess
 from src.modules.screening.domain.models.steps import (
@@ -132,7 +133,17 @@ class CreateScreeningProcessUseCase:
             hours=settings.token_expiry_hours
         )
 
-        # Create the screening process
+        # Determine which steps will be configured
+        # Client validation is auto-enabled if client company is provided
+        include_client_validation = (
+            data.include_client_validation or data.client_company_id is not None
+        )
+        configured_step_types = self._build_configured_step_types(
+            include_payment_info=data.include_payment_info,
+            include_client_validation=include_client_validation,
+        )
+
+        # Create the screening process with step tracking
         process = ScreeningProcess(
             organization_id=organization_id,
             organization_professional_id=professional.id,
@@ -141,6 +152,8 @@ class CreateScreeningProcessUseCase:
             professional_phone=data.professional_phone,
             professional_email=data.professional_email,
             status=ScreeningStatus.IN_PROGRESS,
+            current_step_type=StepType.CONVERSATION,
+            configured_step_types=configured_step_types,
             expected_professional_type=data.expected_professional_type,
             expected_specialty_id=data.expected_specialty_id,
             owner_id=data.owner_id or created_by,
@@ -157,11 +170,6 @@ class CreateScreeningProcessUseCase:
         await self.session.flush()
 
         # Create steps based on configuration
-        # Client validation is auto-enabled if client company is provided
-        include_client_validation = (
-            data.include_client_validation or data.client_company_id is not None
-        )
-
         await self._create_steps(
             process=process,
             include_payment_info=data.include_payment_info,
@@ -292,3 +300,28 @@ class CreateScreeningProcessUseCase:
         import secrets
 
         return secrets.token_urlsafe(32)
+
+    def _build_configured_step_types(
+        self,
+        include_payment_info: bool = True,
+        include_client_validation: bool = False,
+    ) -> list[str]:
+        """
+        Build list of configured step types based on options.
+
+        Returns list of step type values as strings (for ARRAY(String) column).
+        """
+        step_types: list[str] = [
+            StepType.CONVERSATION.value,
+            StepType.PROFESSIONAL_DATA.value,
+            StepType.DOCUMENT_UPLOAD.value,
+            StepType.DOCUMENT_REVIEW.value,
+        ]
+
+        if include_payment_info:
+            step_types.append(StepType.PAYMENT_INFO.value)
+
+        if include_client_validation:
+            step_types.append(StepType.CLIENT_VALIDATION.value)
+
+        return step_types

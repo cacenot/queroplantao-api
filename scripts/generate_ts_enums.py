@@ -137,7 +137,6 @@ ENUM_LABELS: dict[str, dict[str, str]] = {
     },
     # Screening status
     "ScreeningStatus": {
-        "DRAFT": "Rascunho",
         "IN_PROGRESS": "Em Andamento",
         "PENDING_SUPERVISOR": "Aguardando Supervisor",
         "APPROVED": "Aprovado",

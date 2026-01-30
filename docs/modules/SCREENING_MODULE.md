@@ -68,13 +68,8 @@ O módulo de triagem gerencia o processo de coleta e validação de dados e docu
 ## Fluxo Principal
 
 ```
-┌─────────┐
-│  DRAFT  │ ─── Triagem criada, não iniciada
-└────┬────┘
-     │
-     ▼ (iniciar)
 ┌─────────────┐
-│ IN_PROGRESS │ ─── Processo em andamento
+│ IN_PROGRESS │ ─── Processo criado e em andamento
 └──────┬──────┘
        │
        │  Etapas (6 steps fixos):
@@ -101,7 +96,20 @@ O módulo de triagem gerencia o processo de coleta e validação de dados e docu
        ├──(cancelado)──► CANCELLED
        │
        └──(todas etapas aprovadas)──► APPROVED
-```
+
+### Mecânica de Controle de Fluxo
+
+O progresso é controlado por duas colunas desnormalizadas na tabela principal, permitindo consultas eficientes sem joins:
+
+1. **`configured_step_types`**: Lista ordenada de etapas definida na criação (snapshot).
+   - Exemplo: `['CONVERSATION', 'PROFESSIONAL_DATA', 'DOCUMENT_UPLOAD', 'DOCUMENT_REVIEW']`
+   - Permite flexibilidade caso o fluxo mude no futuro (processos antigos mantêm seu fluxo).
+
+2. **`current_step_type`**: Ponteiro para a etapa ativa.
+   - Avanço: Ao completar uma etapa, o sistema busca o próximo item na lista configurada.
+   - Término: Se não houver próximo item, o processo é movido para `APPROVED`.
+
+Isso resolve problemas de performance (N+1 queries) e complexidade (joins múltiplos) na listagem de triagens.
 
 ## Enums
 
@@ -134,7 +142,6 @@ Status macro do processo de triagem.
 
 | Valor | Descrição |
 |-------|-----------|
-| DRAFT | Criado, não iniciado |
 | IN_PROGRESS | Em andamento (qualquer etapa) |
 | PENDING_SUPERVISOR | Aguardando ação do supervisor (alerta criado) |
 | APPROVED | Aprovado e finalizado |
@@ -225,7 +232,9 @@ Instância de um processo de triagem para um profissional.
 | expected_professional_type | ProfessionalType | ✅ | Tipo esperado (DOCTOR, NURSE, etc.) |
 | expected_specialty_id | UUID | ✅ | Especialidade esperada (para médicos) |
 | **Status e Controle** | | | |
-| status | ScreeningStatus | ❌ | Status atual (default: DRAFT) |
+| status | ScreeningStatus | ❌ | Status atual (default: **IN_PROGRESS**) |
+| current_step_type | StepType | ❌ | Etapa ativa (default: CONVERSATION) |
+| configured_step_types | VARCHAR[] | ❌ | Lista ordenada de etapas deste processo |
 | **Acesso por Token** | | | |
 | access_token | VARCHAR(64) | ✅ | Token para acesso do profissional |
 | access_token_expires_at | TIMESTAMP | ✅ | Expiração do token |

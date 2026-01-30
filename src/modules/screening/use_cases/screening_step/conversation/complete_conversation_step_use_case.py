@@ -117,14 +117,15 @@ class CompleteConversationStepUseCase:
                 status=StepStatus.APPROVED,
             )
 
-            # Start process if still in DRAFT
-            if process.status == ScreeningStatus.DRAFT:
+            # Start process if still in DRAFT (legacy, should not happen)
+            if process.status != ScreeningStatus.IN_PROGRESS:
                 process.status = ScreeningStatus.IN_PROGRESS
 
-            # Advance to next step
+            # Advance to next step (professional_data_step)
             StepWorkflowService.advance_to_next_step(
                 process=process,
                 current_step=step,
+                next_step=process.professional_data_step,
             )
 
         # 6. Persist changes

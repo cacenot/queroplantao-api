@@ -13,6 +13,7 @@ from src.modules.screening.domain.schemas import (
     ScreeningProcessCancel,
     ScreeningProcessCreate,
     ScreeningProcessDetailResponse,
+    ScreeningProcessListResponse,
     ScreeningProcessResponse,
 )
 from src.modules.screening.infrastructure.filters import (
@@ -90,13 +91,13 @@ async def create_screening_process(
 
 @router.get(
     "/",
-    response_model=PaginatedResponse[ScreeningProcessResponse],
+    response_model=PaginatedResponse[ScreeningProcessListResponse],
     summary="Listar triagens",
     description="""
 Lista todos os processos de triagem da organização.
 
 **Filtros disponíveis:**
-- `status`: Filtra por status (DRAFT, IN_PROGRESS, APPROVED, REJECTED, CANCELLED)
+- `status`: Filtra por status (IN_PROGRESS, APPROVED, REJECTED, CANCELLED)
 - `search`: Busca por nome ou CPF do profissional
 - `owner_id`: Filtra por responsável
 - `actor_id`: Filtra por usuário responsável atual (current_actor_id)
@@ -116,7 +117,7 @@ async def list_screening_processes(
     sorting: ScreeningProcessSorting = Depends(
         sorting_as_query(ScreeningProcessSorting)
     ),
-) -> PaginatedResponse[ScreeningProcessResponse]:
+) -> PaginatedResponse[ScreeningProcessListResponse]:
     """List all screening processes for the organization."""
     return await use_case.execute(
         organization_id=ctx.organization,

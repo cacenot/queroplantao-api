@@ -1,10 +1,11 @@
 """ScreeningProcess model - individual screening instances."""
 
-from typing import TYPE_CHECKING, Any, Optional, Union
+from typing import TYPE_CHECKING, Optional, Union
 from uuid import UUID
 
 from pydantic import AwareDatetime
-from sqlalchemy import Enum as SAEnum, Index, inspect
+from sqlalchemy import ARRAY, Index, String
+from sqlalchemy import Enum as SAEnum
 from sqlmodel import Field, Relationship
 
 from src.modules.screening.domain.models.enums import ScreeningStatus, StepType
@@ -65,11 +66,23 @@ class ScreeningProcessBase(BaseModel):
     """Base fields for ScreeningProcess."""
 
     status: ScreeningStatus = Field(
-        default=ScreeningStatus.DRAFT,
+        default=ScreeningStatus.IN_PROGRESS,
         sa_type=SAEnum(
             ScreeningStatus, name="screening_status", create_constraint=True
         ),
         description="Current status of the screening process",
+    )
+
+    # Step tracking (denormalized for efficient queries without joins)
+    current_step_type: StepType = Field(
+        default=StepType.CONVERSATION,
+        sa_type=SAEnum(StepType, name="step_type", create_constraint=True),
+        description="Current active step type (updated when step completes)",
+    )
+    configured_step_types: list[str] = Field(
+        default_factory=list,
+        sa_type=ARRAY(String),
+        description="List of step types configured for this process (in order)",
     )
 
     # Professional identification (used for lookup/creation)
@@ -243,6 +256,8 @@ class ScreeningProcess(
         Index("ix_screening_processes_client_company", "client_company_id"),
         # Index for supervisor
         Index("ix_screening_processes_supervisor", "supervisor_id"),
+        # Index for current step type (filtering by step)
+        Index("ix_screening_processes_current_step_type", "current_step_type"),
     )
 
     # Organization reference (required - tenant isolation)
@@ -335,174 +350,3 @@ class ScreeningProcess(
         back_populates="process",
         sa_relationship_kwargs={"order_by": "ScreeningAlert.created_at.desc()"},
     )
-
-    # === Properties ===
-
-    @property
-    def active_steps(self) -> "list[AnyStep]":
-        """
-        Get list of steps that exist for this process, sorted by order.
-
-        Only returns steps that were actually configured/created for this screening.
-        Steps are returned in fixed order:
-        1. CONVERSATION (required)
-        2. PROFESSIONAL_DATA (required)
-        3. DOCUMENT_UPLOAD (required)
-        4. DOCUMENT_REVIEW (required)
-        5. PAYMENT_INFO (optional)
-        6. CLIENT_VALIDATION (optional)
-        """
-        steps: list[AnyStep] = []
-        state = inspect(self)
-        if "conversation_step" not in state.unloaded and self.conversation_step:
-            steps.append(self.conversation_step)
-        if (
-            "professional_data_step" not in state.unloaded
-            and self.professional_data_step
-        ):
-            steps.append(self.professional_data_step)
-        if "document_upload_step" not in state.unloaded and self.document_upload_step:
-            steps.append(self.document_upload_step)
-        if "document_review_step" not in state.unloaded and self.document_review_step:
-            steps.append(self.document_review_step)
-        if "payment_info_step" not in state.unloaded and self.payment_info_step:
-            steps.append(self.payment_info_step)
-        if (
-            "client_validation_step" not in state.unloaded
-            and self.client_validation_step
-        ):
-            steps.append(self.client_validation_step)
-        return sorted(steps, key=lambda s: s.order)
-
-    @property
-    def step_types(self) -> list[StepType]:
-        """Get list of step types configured for this process."""
-        return [step.step_type for step in self.active_steps]
-
-    @property
-    def current_step(self) -> "Optional[AnyStep]":
-        """
-        Get the current active step (first non-completed step in order).
-
-        Returns None if all steps are completed.
-        """
-        for step in self.active_steps:
-            if not step.is_completed:
-                return step
-        return None
-
-    @property
-    def current_step_type(self) -> Optional[StepType]:
-        """Get the type of the current active step."""
-        step = self.current_step
-        return step.step_type if step else None
-
-    @property
-    def step_count(self) -> int:
-        """Get total number of configured steps."""
-        return len(self.active_steps)
-
-    @property
-    def steps(self) -> list[dict[str, Any]]:
-        """
-        Get list of step summaries for serialization.
-
-        Returns a list of dicts with fields matching StepSummaryResponse:
-        - id: UUID
-        - step_type: StepType
-        - order: int
-        - status: StepStatus
-        - is_current: bool
-        """
-        current = self.current_step
-        current_id = current.id if current else None
-
-        return [
-            {
-                "id": step.id,
-                "step_type": step.step_type,
-                "order": step.order,
-                "status": step.status,
-                "is_current": step.id == current_id,
-            }
-            for step in self.active_steps
-        ]
-
-    @property
-    def completed_step_count(self) -> int:
-        """Get number of completed steps."""
-        return sum(1 for step in self.active_steps if step.is_completed)
-
-    @property
-    def progress_percentage(self) -> float:
-        """Get overall progress as percentage (0-100)."""
-        if self.step_count == 0:
-            return 100.0
-        return (self.completed_step_count / self.step_count) * 100
-
-    @property
-    def is_expired(self) -> bool:
-        """Check if screening has expired."""
-        from datetime import datetime, timezone
-
-        if self.expires_at is None:
-            return False
-        return datetime.now(timezone.utc) > self.expires_at
-
-    @property
-    def is_active(self) -> bool:
-        """Check if screening is in an active state."""
-        return self.status in (
-            ScreeningStatus.DRAFT,
-            ScreeningStatus.IN_PROGRESS,
-        )
-
-    @property
-    def is_terminal(self) -> bool:
-        """Check if screening is in a terminal (final) state."""
-        return self.status in (
-            ScreeningStatus.APPROVED,
-            ScreeningStatus.REJECTED,
-            ScreeningStatus.EXPIRED,
-            ScreeningStatus.CANCELLED,
-        )
-
-    @property
-    def can_be_filled(self) -> bool:
-        """Check if screening can still accept input."""
-        return self.status == ScreeningStatus.IN_PROGRESS and not self.is_expired
-
-    @property
-    def all_steps_completed(self) -> bool:
-        """Check if all configured steps are completed."""
-        return all(step.is_completed for step in self.active_steps)
-
-    # === Alert-related properties ===
-
-    @property
-    def pending_alert(self) -> "Optional[ScreeningAlert]":
-        """Get the unresolved alert, if any."""
-        from sqlalchemy import inspect as sa_inspect
-
-        state = sa_inspect(self)
-        if "alerts" in state.unloaded:
-            return None
-        for alert in self.alerts:
-            if not alert.is_resolved:
-                return alert
-        return None
-
-    @property
-    def has_pending_alert(self) -> bool:
-        """Check if there's an unresolved alert."""
-        return self.pending_alert is not None
-
-    @property
-    def is_blocked_by_alert(self) -> bool:
-        """Check if process is blocked by an unresolved alert."""
-        return self.status == ScreeningStatus.PENDING_SUPERVISOR
-
-    @property
-    def can_proceed(self) -> bool:
-        """Check if process can proceed (not blocked by alerts and can be filled)."""
-        return self.can_be_filled and not self.is_blocked_by_alert
