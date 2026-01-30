@@ -10,7 +10,8 @@ from __future__ import annotations
 import argparse
 import logging
 
-from fastmcp import FastMCP
+from fastmcp import Context, FastMCP
+from fastmcp.server.transforms import Namespace, ResourcesAsTools
 
 from queroplantao_mcp.config import (
     PROJECT_ROOT,
@@ -31,6 +32,12 @@ mcp = FastMCP(
     name=SERVER_NAME,
     instructions=SERVER_DESCRIPTION,
 )
+
+# Add transforms for component organization
+# Namespace prefix for all tools/resources to avoid conflicts
+mcp.add_transform(Namespace("qp"))
+# Expose resources as tools for clients that only support tools
+mcp.add_transform(ResourcesAsTools(mcp))
 
 
 # =============================================================================
@@ -406,7 +413,7 @@ def get_all_error_codes() -> str:
 # =============================================================================
 
 
-@mcp.tool()
+@mcp.tool(timeout=60.0, task=True)
 async def explain_business_rule(
     topic: str,
     module: str | None = None,
@@ -428,7 +435,7 @@ async def explain_business_rule(
     return await _impl(topic, module, context)
 
 
-@mcp.tool()
+@mcp.tool(timeout=60.0, task=True)
 async def get_workflow_diagram(
     workflow: str,
     format: str = "mermaid",
@@ -464,7 +471,7 @@ async def get_state_machine(entity: str) -> dict:
     return await _impl(entity)
 
 
-@mcp.tool()
+@mcp.tool(timeout=60.0, task=True)
 async def validate_user_story(
     story: str,
     module: str | None = None,
@@ -489,7 +496,7 @@ async def validate_user_story(
 # =============================================================================
 
 
-@mcp.tool()
+@mcp.tool(timeout=60.0, task=True)
 async def analyze_use_case(use_case: str) -> dict:
     """
     Analyze a use case and explain its logic.
@@ -505,7 +512,7 @@ async def analyze_use_case(use_case: str) -> dict:
     return await _impl(use_case)
 
 
-@mcp.tool()
+@mcp.tool(timeout=30.0)
 async def find_related_code(
     concept: str,
     code_type: str = "all",
@@ -527,7 +534,7 @@ async def find_related_code(
     return await _impl(concept, code_type, module)
 
 
-@mcp.tool()
+@mcp.tool(timeout=60.0, task=True)
 async def explain_code_snippet(
     file_path: str,
     start_line: int | None = None,
@@ -631,6 +638,7 @@ async def find_entity_by_field(field_name: str) -> dict:
 async def set_development_context(
     feature: str,
     module: str,
+    ctx: Context,
     user_story: str | None = None,
     notes: str | None = None,
 ) -> dict:
@@ -640,6 +648,7 @@ async def set_development_context(
     Args:
         feature: Feature being developed.
         module: Module being worked on.
+        ctx: FastMCP Context for session state.
         user_story: Optional user story.
         notes: Optional notes.
 
@@ -648,37 +657,44 @@ async def set_development_context(
     """
     from queroplantao_mcp.tools import set_development_context as _impl
 
-    return await _impl(feature, module, user_story, notes)
+    return await _impl(feature, module, ctx, user_story, notes)
 
 
 @mcp.tool()
-async def get_development_context() -> dict:
+async def get_development_context(ctx: Context) -> dict:
     """
     Get the current development context.
+
+    Args:
+        ctx: FastMCP Context for session state.
 
     Returns:
         Current context if set.
     """
     from queroplantao_mcp.tools import get_development_context as _impl
 
-    return await _impl()
+    return await _impl(ctx)
 
 
 @mcp.tool()
-async def clear_development_context() -> dict:
+async def clear_development_context(ctx: Context) -> dict:
     """
     Clear the current development context.
+
+    Args:
+        ctx: FastMCP Context for session state.
 
     Returns:
         Confirmation message.
     """
     from queroplantao_mcp.tools import clear_development_context as _impl
 
-    return await _impl()
+    return await _impl(ctx)
 
 
-@mcp.tool()
+@mcp.tool(timeout=60.0)
 async def get_implementation_checklist(
+    ctx: Context,
     feature: str | None = None,
     module: str | None = None,
 ) -> dict:
@@ -686,6 +702,7 @@ async def get_implementation_checklist(
     Generate an implementation checklist for a feature.
 
     Args:
+        ctx: FastMCP Context for session state.
         feature: Optional feature name (uses context if not provided).
         module: Optional module name (uses context if not provided).
 
@@ -694,10 +711,10 @@ async def get_implementation_checklist(
     """
     from queroplantao_mcp.tools import get_implementation_checklist as _impl
 
-    return await _impl(feature, module)
+    return await _impl(ctx, feature, module)
 
 
-@mcp.tool()
+@mcp.tool(timeout=60.0, task=True)
 async def suggest_api_integration(
     feature: str,
     existing_code: str | None = None,
@@ -756,7 +773,7 @@ def main() -> None:
 
     if args.sse:
         logger.info(f"Running in SSE mode on http://{args.host}:{args.port}")
-        mcp.run(transport="http", host=args.host, port=args.port)
+        mcp.run(transport="streamable-http", host=args.host, port=args.port)
     else:
         logger.info("Running in stdio mode")
         mcp.run()

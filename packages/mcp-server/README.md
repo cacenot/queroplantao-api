@@ -2,6 +2,13 @@
 
 MCP (Model Context Protocol) server providing technical documentation, schema information, business rules, and code analysis tools for the Quero Plantão API.
 
+Built with **FastMCP 3.0** with:
+- 🔄 **Namespace Transform**: All tools prefixed with `qp_` to avoid conflicts
+- 📦 **ResourcesAsTools**: Resources exposed as tools for broader client compatibility
+- ⏱️ **Tool Timeouts**: LLM-powered tools have 60s timeout for reliability
+- 🔙 **Background Tasks**: Long-running LLM operations run as background tasks
+- 💾 **Session State**: Development context persists across requests within sessions
+
 ## Purpose
 
 This MCP server is designed to be consumed by LLMs (like GPT-5.2 mini or Claude) that are building the frontend for the Quero Plantão application. It provides structured access to:
@@ -84,7 +91,7 @@ This will test:
 - ✅ Enum parsing (22 enums found)
 - ✅ SQLModel entity parsing (38 entities found)
 - ✅ Business rules tools (state machines, workflows)
-- ✅ MCP server initialization (24 tools registered)
+- ✅ MCP server initialization (25 tools registered with `qp_` prefix)
 
 ## Running the Server
 

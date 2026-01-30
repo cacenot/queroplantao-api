@@ -3,21 +3,29 @@ Context tools for the MCP server.
 
 These tools help manage development context and generate
 implementation checklists for frontend development.
+
+FastMCP 3.0: Uses session-scoped state via Context for persistence across requests.
 """
 
 from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 from queroplantao_mcp.config import MODULES_DIR
 from queroplantao_mcp.llm import get_llm_client
 from queroplantao_mcp.parsers.openapi_parser import OpenAPIParser
 
-# Development context storage (in-memory for session)
-_development_context: dict = {}
+if TYPE_CHECKING:
+    from fastmcp import Context
+
+# State key for development context (session-scoped in FastMCP 3.0)
+CONTEXT_STATE_KEY = "development_context"
 
 
 async def set_development_context(
     feature: str,
     module: str,
+    ctx: Context,
     user_story: str | None = None,
     notes: str | None = None,
 ) -> dict:
@@ -25,46 +33,54 @@ async def set_development_context(
     Set the current development context.
 
     This helps the LLM understand what the developer is working on
-    and provide more relevant responses.
+    and provide more relevant responses. Uses FastMCP 3.0 session-scoped
+    state for persistence across requests within the same session.
 
     Args:
         feature: Name of the feature being developed (e.g., "tela de triagem",
                  "lista de profissionais").
         module: Module being worked on (e.g., "screening", "professionals").
+        ctx: FastMCP Context for session state management.
         user_story: Optional user story being implemented.
         notes: Optional additional notes.
 
     Returns:
         Confirmation of context set with relevant resources.
     """
-    global _development_context
-
-    _development_context = {
+    context_data = {
         "feature": feature,
         "module": module,
         "user_story": user_story,
         "notes": notes,
     }
 
+    # Store in session-scoped state (async in FastMCP 3.0)
+    await ctx.set_state(CONTEXT_STATE_KEY, context_data)
+
     # Gather relevant resources
     resources = await _gather_context_resources(module, feature)
 
     return {
         "status": "Context set successfully",
-        "context": _development_context,
+        "context": context_data,
         "relevant_resources": resources,
         "tip": "Use get_implementation_checklist to get a step-by-step guide",
     }
 
 
-async def get_development_context() -> dict:
+async def get_development_context(ctx: Context) -> dict:
     """
     Get the current development context.
+
+    Args:
+        ctx: FastMCP Context for session state management.
 
     Returns:
         Current context if set, or empty state.
     """
-    if not _development_context:
+    context_data = await ctx.get_state(CONTEXT_STATE_KEY)
+
+    if not context_data:
         return {
             "status": "No context set",
             "tip": "Use set_development_context to set your current focus",
@@ -72,19 +88,21 @@ async def get_development_context() -> dict:
 
     return {
         "status": "Context active",
-        "context": _development_context,
+        "context": context_data,
     }
 
 
-async def clear_development_context() -> dict:
+async def clear_development_context(ctx: Context) -> dict:
     """
     Clear the current development context.
+
+    Args:
+        ctx: FastMCP Context for session state management.
 
     Returns:
         Confirmation message.
     """
-    global _development_context
-    _development_context = {}
+    await ctx.set_state(CONTEXT_STATE_KEY, None)
 
     return {
         "status": "Context cleared",
@@ -141,6 +159,7 @@ async def _gather_context_resources(module: str, feature: str) -> dict:
 
 
 async def get_implementation_checklist(
+    ctx: Context,
     feature: str | None = None,
     module: str | None = None,
 ) -> dict:
@@ -150,17 +169,20 @@ async def get_implementation_checklist(
     Uses the current context if feature/module not provided.
 
     Args:
+        ctx: FastMCP Context for session state management.
         feature: Optional feature name (uses context if not provided).
         module: Optional module name (uses context if not provided).
 
     Returns:
         Step-by-step implementation checklist.
     """
-    # Use context if not provided
-    if not feature:
-        feature = _development_context.get("feature")
-    if not module:
-        module = _development_context.get("module")
+    # Use context from session state if not provided
+    if not feature or not module:
+        context_data = await ctx.get_state(CONTEXT_STATE_KEY) or {}
+        if not feature:
+            feature = context_data.get("feature")
+        if not module:
+            module = context_data.get("module")
 
     if not feature or not module:
         return {

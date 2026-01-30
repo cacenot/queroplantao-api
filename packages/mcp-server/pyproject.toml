@@ -9,8 +9,8 @@ authors = [{ name = "Quero Plantão", email = "dev@queroplantao.com.br" }]
 keywords = ["mcp", "model-context-protocol", "fastmcp", "documentation", "api"]
 
 dependencies = [
-    # MCP Framework
-    "fastmcp>=2.0.0",
+    # MCP Framework (3.0 beta with background tasks support)
+    "fastmcp[tasks]>=3.0.0b1",
     # LLM Client
     "openai>=1.0.0",
     # Utilities

@@ -193,7 +193,7 @@ async def test_business_rules():
         return False
 
 
-def test_server_import():
+async def test_server_import():
     """Test MCP server import and tool registration."""
     print_header("MCP SERVER INITIALIZATION")
 
@@ -204,11 +204,14 @@ def test_server_import():
         print(f"✓ Server name: {SERVER_NAME}")
         print(f"✓ Description: {SERVER_DESCRIPTION[:50]}...")
 
-        tools_count = len(mcp._tool_manager._tools)
+        # FastMCP 3.0: list_tools() is async and returns a list of Tool objects
+        tools = await mcp.list_tools()
+        tools_count = len(tools)
         print(f"✓ Tools registered: {tools_count}")
 
-        # List tool categories
-        tool_names = list(mcp._tool_manager._tools.keys())
+        # List tool categories - tools now have .name attribute
+        # Note: With Namespace("qp") transform, all tools are prefixed with qp_
+        tool_names = [t.name for t in tools]
         categories = {
             "Health": [t for t in tool_names if "health" in t],
             "API Schemas": [t for t in tool_names if any(x in t for x in ["module", "endpoint", "schema", "enum"])],
@@ -223,14 +226,17 @@ def test_server_import():
         }
 
         print("Tools by category:")
-        for category, tools in categories.items():
-            if tools:
-                print(f"  - {category}: {len(tools)} tools")
+        for category, tools_in_cat in categories.items():
+            if tools_in_cat:
+                print(f"  - {category}: {len(tools_in_cat)} tools")
 
         return True
 
     except Exception as e:
         print(f"✗ Error: {e}")
+        import traceback
+
+        traceback.print_exc()
         return False
 
 
@@ -252,7 +258,9 @@ async def main():
     for name, test_func in tests:
         print(f"\n🔍 Running {name} test...")
         try:
-            if asyncio.iscoroutinefunction(test_func):
+            import inspect
+
+            if inspect.iscoroutinefunction(test_func):
                 result = await test_func()
             else:
                 result = test_func()
