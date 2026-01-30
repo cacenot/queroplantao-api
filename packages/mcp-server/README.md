@@ -53,9 +53,9 @@ uv run mcp-server --sse
 - `list_modules` - List all API modules with descriptions
 - `get_endpoints` - Get endpoints for a module
 - `get_schema` - Get request/response schema details
+- `list_schemas` - List all available schemas
 - `get_enum` - Get enum values with PT-BR labels
 - `list_enums` - List all available enums
-- `get_error_codes` - Get error codes for a module/endpoint
 
 ### Business Rules (LLM-powered)
 - `explain_business_rule` - Explain a business rule in natural language
@@ -64,25 +64,31 @@ uv run mcp-server --sse
 - `validate_user_story` - Validate if a user story is implementable
 
 ### Database (Deterministic)
+- `list_entities` - List all database entities
 - `get_entity_schema` - Get SQLModel entity structure
-- `get_er_diagram` - Get ER diagram for a module
-- `find_entity_by_field` - Find entities containing a field
+- `find_entities_by_field` - Find entities containing a specific field
+- `get_er_diagram` - Get ER diagram for a module (Mermaid/DBML)
 
 ### Code Analysis (LLM-powered)
 - `analyze_use_case` - Analyze a use case and explain its logic
 - `find_related_code` - Find code related to a concept
 - `explain_code_snippet` - Explain a code snippet
+- `get_error_codes` - Get all error codes for a module
 
-### Context
+### Context Management
 - `set_development_context` - Set context for focused responses
+- `get_development_context` - Get current development context
+- `clear_development_context` - Clear the current context
 - `get_implementation_checklist` - Get implementation checklist for a feature
+- `suggest_api_integration` - Get API integration suggestions
 
 ## Available Resources
 
-- `docs://modules/{module}` - Module documentation
-- `openapi://spec` - Full OpenAPI specification
-- `openapi://paths/{path}` - OpenAPI path details
-- `bruno://{module}/{endpoint}` - Bruno request/response examples
+- `docs://modules/{module}` - Module documentation (Markdown)
+- `openapi://spec` - Full OpenAPI specification (JSON)
+- `bruno://{module}/{endpoint}` - Bruno request examples
+- `bruno://list` - List all Bruno examples by module
+- `errors://all` - All error codes organized by class
 
 ## Project Structure
 
@@ -90,24 +96,34 @@ uv run mcp-server --sse
 src/queroplantao_mcp/
 ├── __init__.py
 ├── config.py              # Configuration and paths
-├── server.py              # FastMCP server entry point
+├── server.py              # FastMCP server entry point (24 tools)
 ├── parsers/
+│   ├── __init__.py
 │   ├── openapi_parser.py  # Parse OpenAPI spec
-│   ├── enum_parser.py     # Parse Python enums
-│   ├── pydantic_parser.py # Parse Pydantic schemas
+│   ├── enum_parser.py     # Parse Python enums with PT-BR labels
 │   └── sqlmodel_parser.py # Parse SQLModel entities
 ├── tools/
-│   ├── api_schemas.py     # API schema tools
-│   ├── business_rules.py  # Business rule tools (LLM)
-│   ├── database.py        # Database structure tools
-│   └── code_analysis.py   # Code analysis tools (LLM)
-├── resources/
-│   ├── docs.py            # Documentation resources
-│   └── openapi.py         # OpenAPI resources
+│   ├── __init__.py
+│   ├── business_rules.py  # Workflow diagrams, state machines
+│   ├── code_analysis.py   # Use case analysis, code search
+│   └── context.py         # Development context management
 └── llm/
+    ├── __init__.py
     ├── client.py          # OpenAI client wrapper
-    └── prompts.py         # System prompts
+    └── prompts.py         # System prompts for analysis
 ```
+
+## Tool Count Summary
+
+| Category | Tools | Type |
+|----------|-------|------|
+| Health | 1 | Deterministic |
+| API Schemas | 6 | Deterministic |
+| Database | 4 | Deterministic |
+| Business Rules | 4 | LLM-powered |
+| Code Analysis | 4 | LLM-powered |
+| Context | 5 | Mixed |
+| **Total** | **24** | |
 
 ## License
 

@@ -158,10 +158,7 @@ class OpenAPIParser:
         # Handle arrays
         if schema_type == "array" and "items" in schema:
             items = schema["items"]
-            if "$ref" in items:
-                item_type = items["$ref"].split("/")[-1]
-            else:
-                item_type = items.get("type", "any")
+            item_type = items["$ref"].split("/")[-1] if "$ref" in items else items.get("type", "any")
             schema_type = f"array[{item_type}]"
 
         return ParameterInfo(
@@ -429,10 +426,7 @@ class OpenAPIParser:
         # Handle array
         if result["type"] == "array" and "items" in prop_def:
             items = prop_def["items"]
-            if "$ref" in items:
-                item_type = items["$ref"].split("/")[-1]
-            else:
-                item_type = items.get("type", "any")
+            item_type = items["$ref"].split("/")[-1] if "$ref" in items else items.get("type", "any")
             result["type"] = f"array[{item_type}]"
 
         # Additional metadata

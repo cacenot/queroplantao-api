@@ -174,9 +174,8 @@ def _is_sqlmodel_entity(node: ast.ClassDef, source: str) -> bool:
     """Check if a class is a SQLModel entity (has table=True or inherits from known base)."""
     # Check for table=True in class keywords
     for keyword in node.keywords:
-        if keyword.arg == "table" and isinstance(keyword.value, ast.Constant):
-            if keyword.value.value is True:
-                return True
+        if keyword.arg == "table" and isinstance(keyword.value, ast.Constant) and keyword.value.value is True:
+            return True
 
     # Check base classes for known patterns
     base_names = _get_base_names(node)
@@ -252,10 +251,7 @@ def _extract_relationship_info(node: ast.AnnAssign) -> RelationshipInfo | None:
 
     # Determine relationship type
     type_str = _get_type_str(node.annotation)
-    if "list[" in type_str.lower():
-        rel_type = "one-to-many"
-    else:
-        rel_type = "many-to-one"
+    rel_type = "one-to-many" if "list[" in type_str.lower() else "many-to-one"
 
     # Extract kwargs
     kwargs = _extract_field_kwargs(node.value)
@@ -329,9 +325,12 @@ def _extract_table_name(node: ast.ClassDef) -> str | None:
     for item in node.body:
         if isinstance(item, ast.Assign):
             for target in item.targets:
-                if isinstance(target, ast.Name) and target.id == "__tablename__":
-                    if isinstance(item.value, ast.Constant):
-                        return item.value.value
+                if (
+                    isinstance(target, ast.Name)
+                    and target.id == "__tablename__"
+                    and isinstance(item.value, ast.Constant)
+                ):
+                    return item.value.value
     return None
 
 

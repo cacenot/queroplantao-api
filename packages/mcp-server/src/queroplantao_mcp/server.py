@@ -325,6 +325,352 @@ def get_openapi_spec() -> str:
     return json.dumps(spec, indent=2)
 
 
+@mcp.resource("bruno://{module}/{endpoint}")
+def get_bruno_example(module: str, endpoint: str) -> str:
+    """
+    Get a Bruno request example for an endpoint.
+
+    Args:
+        module: Module name (screenings, professionals, etc.)
+        endpoint: Endpoint name (create-screening, list-professionals, etc.)
+
+    Returns:
+        Bruno request file content.
+    """
+    from queroplantao_mcp.config import PROJECT_ROOT
+
+    bruno_path = PROJECT_ROOT / "docs" / "bruno" / module / f"{endpoint}.bru"
+    if bruno_path.exists():
+        return bruno_path.read_text(encoding="utf-8")
+
+    return f"Bruno example not found: {module}/{endpoint}"
+
+
+@mcp.resource("bruno://list")
+def list_bruno_examples() -> str:
+    """
+    List all available Bruno request examples.
+
+    Returns:
+        JSON list of available examples by module.
+    """
+    import json
+
+    from queroplantao_mcp.config import PROJECT_ROOT
+
+    bruno_dir = PROJECT_ROOT / "docs" / "bruno"
+    examples: dict[str, list[str]] = {}
+
+    for module_dir in bruno_dir.iterdir():
+        if module_dir.is_dir() and not module_dir.name.startswith("."):
+            module_examples = []
+            for bru_file in module_dir.glob("*.bru"):
+                if bru_file.name != "folder.bru":
+                    module_examples.append(bru_file.stem)
+            if module_examples:
+                examples[module_dir.name] = sorted(module_examples)
+
+    return json.dumps(examples, indent=2)
+
+
+@mcp.resource("errors://all")
+def get_all_error_codes() -> str:
+    """
+    Get all error codes defined in the project.
+
+    Returns:
+        JSON with all error codes organized by module.
+    """
+    import ast
+    import json
+
+    from queroplantao_mcp.config import PROJECT_ROOT
+
+    error_codes_path = PROJECT_ROOT / "src" / "app" / "constants" / "error_codes.py"
+    if not error_codes_path.exists():
+        return json.dumps({"error": "error_codes.py not found"})
+
+    content = error_codes_path.read_text(encoding="utf-8")
+    tree = ast.parse(content)
+
+    error_codes: dict[str, list[str]] = {}
+
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ClassDef) and node.name.endswith("ErrorCodes"):
+            class_name = node.name
+            codes = []
+
+            for item in node.body:
+                if isinstance(item, ast.Assign):
+                    for target in item.targets:
+                        if isinstance(target, ast.Name) and isinstance(item.value, ast.Constant):
+                            codes.append(item.value.value)
+
+            if codes:
+                error_codes[class_name] = codes
+
+    return json.dumps(error_codes, indent=2)
+
+
+# =============================================================================
+# BUSINESS RULES TOOLS (LLM-powered)
+# =============================================================================
+
+
+@mcp.tool()
+async def explain_business_rule(
+    topic: str,
+    module: str | None = None,
+    context: str | None = None,
+) -> dict:
+    """
+    Explain a business rule using LLM analysis.
+
+    Args:
+        topic: Topic to explain (e.g., "validação de CPF", "family scope").
+        module: Optional module to focus on.
+        context: Optional additional context.
+
+    Returns:
+        Detailed explanation with examples.
+    """
+    from queroplantao_mcp.tools import explain_business_rule as _impl
+
+    return await _impl(topic, module, context)
+
+
+@mcp.tool()
+async def get_workflow_diagram(
+    workflow: str,
+    format: str = "mermaid",
+) -> dict:
+    """
+    Get a workflow diagram for a business process.
+
+    Args:
+        workflow: Workflow name (e.g., "screening_process", "document_review").
+        format: Output format - "mermaid", "ascii", or "steps".
+
+    Returns:
+        Diagram in the specified format.
+    """
+    from queroplantao_mcp.tools import get_workflow_diagram as _impl
+
+    return await _impl(workflow, format)
+
+
+@mcp.tool()
+async def get_state_machine(entity: str) -> dict:
+    """
+    Get state machine definition for an entity.
+
+    Args:
+        entity: Entity name (e.g., "ScreeningProcess", "ScreeningDocument").
+
+    Returns:
+        State machine with states, transitions, and UI hints.
+    """
+    from queroplantao_mcp.tools import get_state_machine as _impl
+
+    return await _impl(entity)
+
+
+@mcp.tool()
+async def validate_user_story(
+    story: str,
+    module: str | None = None,
+) -> dict:
+    """
+    Validate if a user story is implementable with the current API.
+
+    Args:
+        story: User story description.
+        module: Optional module context.
+
+    Returns:
+        Validation result with feasibility and suggestions.
+    """
+    from queroplantao_mcp.tools import validate_user_story as _impl
+
+    return await _impl(story, module)
+
+
+# =============================================================================
+# CODE ANALYSIS TOOLS (LLM-powered)
+# =============================================================================
+
+
+@mcp.tool()
+async def analyze_use_case(use_case: str) -> dict:
+    """
+    Analyze a use case and explain its logic.
+
+    Args:
+        use_case: Name of the use case (e.g., "CreateScreeningProcessUseCase").
+
+    Returns:
+        Analysis with dependencies, validations, and frontend notes.
+    """
+    from queroplantao_mcp.tools import analyze_use_case as _impl
+
+    return await _impl(use_case)
+
+
+@mcp.tool()
+async def find_related_code(
+    concept: str,
+    code_type: str = "all",
+    module: str | None = None,
+) -> dict:
+    """
+    Find code related to a concept.
+
+    Args:
+        concept: Concept to search for (e.g., "family scope", "soft delete").
+        code_type: Type - "all", "use_cases", "repositories", "routes", "schemas", "models".
+        module: Optional module to limit search.
+
+    Returns:
+        List of matching files with relevant excerpts.
+    """
+    from queroplantao_mcp.tools import find_related_code as _impl
+
+    return await _impl(concept, code_type, module)
+
+
+@mcp.tool()
+async def explain_code_snippet(
+    file_path: str,
+    start_line: int | None = None,
+    end_line: int | None = None,
+) -> dict:
+    """
+    Explain a code snippet.
+
+    Args:
+        file_path: Path to file (relative or absolute).
+        start_line: Optional start line (1-indexed).
+        end_line: Optional end line (1-indexed).
+
+    Returns:
+        LLM explanation of the code.
+    """
+    from queroplantao_mcp.tools import explain_code_snippet as _impl
+
+    return await _impl(file_path, start_line, end_line)
+
+
+@mcp.tool()
+async def get_error_codes(module: str | None = None) -> dict:
+    """
+    Get error codes defined in the project.
+
+    Args:
+        module: Optional module to filter by.
+
+    Returns:
+        List of error codes with messages.
+    """
+    from queroplantao_mcp.tools import get_error_codes as _impl
+
+    return await _impl(module)
+
+
+# =============================================================================
+# CONTEXT MANAGEMENT TOOLS
+# =============================================================================
+
+
+@mcp.tool()
+async def set_development_context(
+    feature: str,
+    module: str,
+    user_story: str | None = None,
+    notes: str | None = None,
+) -> dict:
+    """
+    Set the current development context.
+
+    Args:
+        feature: Feature being developed.
+        module: Module being worked on.
+        user_story: Optional user story.
+        notes: Optional notes.
+
+    Returns:
+        Context confirmation with relevant resources.
+    """
+    from queroplantao_mcp.tools import set_development_context as _impl
+
+    return await _impl(feature, module, user_story, notes)
+
+
+@mcp.tool()
+async def get_development_context() -> dict:
+    """
+    Get the current development context.
+
+    Returns:
+        Current context if set.
+    """
+    from queroplantao_mcp.tools import get_development_context as _impl
+
+    return await _impl()
+
+
+@mcp.tool()
+async def clear_development_context() -> dict:
+    """
+    Clear the current development context.
+
+    Returns:
+        Confirmation message.
+    """
+    from queroplantao_mcp.tools import clear_development_context as _impl
+
+    return await _impl()
+
+
+@mcp.tool()
+async def get_implementation_checklist(
+    feature: str | None = None,
+    module: str | None = None,
+) -> dict:
+    """
+    Generate an implementation checklist for a feature.
+
+    Args:
+        feature: Optional feature name (uses context if not provided).
+        module: Optional module name (uses context if not provided).
+
+    Returns:
+        Step-by-step implementation checklist.
+    """
+    from queroplantao_mcp.tools import get_implementation_checklist as _impl
+
+    return await _impl(feature, module)
+
+
+@mcp.tool()
+async def suggest_api_integration(
+    feature: str,
+    existing_code: str | None = None,
+) -> dict:
+    """
+    Suggest API integration for a feature.
+
+    Args:
+        feature: Feature being implemented.
+        existing_code: Optional existing frontend code.
+
+    Returns:
+        Integration suggestions with code examples.
+    """
+    from queroplantao_mcp.tools import suggest_api_integration as _impl
+
+    return await _impl(feature, existing_code)
+
+
 # =============================================================================
 # ENTRY POINT
 # =============================================================================
