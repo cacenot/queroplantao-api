@@ -62,6 +62,9 @@ def upgrade() -> None:
         "UPDATE screening_processes SET status = 'IN_PROGRESS' WHERE status = 'DRAFT'"
     )
 
+    # Drop partial unique index that depends on screening_status enum
+    op.execute("DROP INDEX IF EXISTS uq_screening_processes_org_cpf_active")
+
     # Rename old enum, create new one without DRAFT, update column, drop old enum
     op.execute("ALTER TYPE screening_status RENAME TO screening_status_old")
     op.execute(
@@ -76,9 +79,24 @@ def upgrade() -> None:
     )
     op.execute("DROP TYPE screening_status_old")
 
+    # Recreate partial unique index after enum change
+    op.create_index(
+        "uq_screening_processes_org_cpf_active",
+        "screening_processes",
+        ["organization_id", "professional_cpf"],
+        unique=True,
+        postgresql_where=sa.text(
+            "status NOT IN ('APPROVED', 'REJECTED', 'EXPIRED', 'CANCELLED') "
+            "AND deleted_at IS NULL AND professional_cpf IS NOT NULL"
+        ),
+    )
+
 
 def downgrade() -> None:
     # Restore DRAFT to screening_status enum
+    # Drop partial unique index that depends on screening_status enum
+    op.execute("DROP INDEX IF EXISTS uq_screening_processes_org_cpf_active")
+
     op.execute("ALTER TYPE screening_status RENAME TO screening_status_old")
     op.execute(
         "CREATE TYPE screening_status AS ENUM ("
@@ -91,6 +109,18 @@ def downgrade() -> None:
         "USING status::text::screening_status"
     )
     op.execute("DROP TYPE screening_status_old")
+
+    # Recreate partial unique index after enum change
+    op.create_index(
+        "uq_screening_processes_org_cpf_active",
+        "screening_processes",
+        ["organization_id", "professional_cpf"],
+        unique=True,
+        postgresql_where=sa.text(
+            "status NOT IN ('APPROVED', 'REJECTED', 'EXPIRED', 'CANCELLED') "
+            "AND deleted_at IS NULL AND professional_cpf IS NOT NULL"
+        ),
+    )
 
     # Drop index
     op.drop_index("ix_screening_processes_current_step_type", "screening_processes")

@@ -90,7 +90,7 @@ Cria um alerta para um processo de triagem.
                         "invalid_status": {
                             "summary": "Status inválido",
                             "value": {
-                                "code": ScreeningErrorCodes.SCREENING_INVALID_STATUS_TRANSITION,
+                                "code": ScreeningErrorCodes.SCREENING_PROCESS_INVALID_STATUS,
                                 "message": "Não é possível criar alerta para triagem com status atual",
                             },
                         },
