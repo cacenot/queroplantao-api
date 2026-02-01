@@ -3,7 +3,7 @@
 from typing import TYPE_CHECKING, Generic, TypeVar
 from uuid import UUID
 
-from fastapi_restkit.pagination import PaginatedResponse
+from fastapi_restkit.pagination import PaginatedResponse, PaginationParams
 from sqlalchemy import Select, desc, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import SQLModel
@@ -113,12 +113,13 @@ class BaseRepository(Generic[ModelT]):
         result = await self.session.execute(query)
         items = list(result.scalars().all())
 
-        return PaginatedResponse(
+        page = (offset // limit) + 1 if limit > 0 else 1
+        pagination = PaginationParams(page=page, page_size=limit)
+
+        return PaginatedResponse.create(
             items=items,
             total=total,
-            page=(offset // limit) + 1 if limit > 0 else 1,
-            page_size=limit,
-            pages=(total + limit - 1) // limit if limit > 0 else 1,
+            pagination=pagination,
         )
 
     async def create(self, entity: ModelT) -> ModelT:
