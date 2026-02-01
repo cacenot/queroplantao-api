@@ -68,11 +68,11 @@ class OrganizationMembershipRepository(BaseRepository[OrganizationMembership]):
                 | OrganizationMembership.invited_at.is_(None)
             )
 
-        return await self.list_paginated(
+        return await self.paginate(
             pagination,
+            query,
             filters=filters,
             sorting=sorting,
-            base_query=query,
         )
 
     async def get_by_id_for_organization(

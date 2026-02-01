@@ -1,10 +1,17 @@
 """Mixin for organization-scoped queries with hierarchical support."""
 
-from typing import Generic, Literal, TypeVar
+from typing import TYPE_CHECKING, Generic, Literal, TypeVar
 from uuid import UUID
 
+from fastapi_restkit.pagination import PaginatedResponse
 from sqlalchemy import Select, select
 from sqlmodel import SQLModel
+
+
+if TYPE_CHECKING:
+    from fastapi_restkit.filterset import FilterSet
+    from fastapi_restkit.sortingset import SortingSet
+    from sqlalchemy.ext.asyncio import AsyncSession
 
 
 ModelT = TypeVar("ModelT", bound=SQLModel)
@@ -32,23 +39,13 @@ class OrganizationScopeMixin(Generic[ModelT]):
             model = Professional
             default_scope_policy = "FAMILY"
 
-            async def list_for_organization(
-                self,
-                organization_id: UUID,
-                family_org_ids: list[UUID],
-                pagination: PaginationParams,
-                *,
-                scope_policy: ScopePolicy | None = None,
-            ):
-                query = self._base_query_for_scope(
-                    organization_id=organization_id,
-                    family_org_ids=family_org_ids,
-                    scope_policy=scope_policy,
-                )
-                return await self.paginate(pagination, query)
+    Note:
+        This mixin must be listed BEFORE SoftDeleteMixin and BaseRepository
+        in the inheritance chain for proper method resolution.
     """
 
     model: type[ModelT]
+    session: "AsyncSession"
     default_scope_policy: ScopePolicy = "ORGANIZATION_ONLY"
 
     def _get_effective_org_ids(
@@ -98,43 +95,92 @@ class OrganizationScopeMixin(Generic[ModelT]):
             Filtered query.
         """
         if len(org_ids) == 1:
-            return query.where(self.model.organization_id == org_ids[0])
-        return query.where(self.model.organization_id.in_(org_ids))
+            return query.where(self.model.organization_id == org_ids[0])  # type: ignore[attr-defined]
+        return query.where(self.model.organization_id.in_(org_ids))  # type: ignore[attr-defined]
 
-    def _base_query_for_scope(
+    async def get_by_organization(
         self,
+        id: UUID,
         organization_id: UUID,
         family_org_ids: list[UUID] | tuple[UUID, ...],
+        *,
         scope_policy: ScopePolicy | None = None,
-        base_query: Select[tuple[ModelT]] | None = None,
-    ) -> Select[tuple[ModelT]]:
+    ) -> ModelT | None:
         """
-        Get base query filtered by organization scope.
+        Get entity by ID within organization scope.
 
         Args:
+            id: The entity UUID.
             organization_id: The current organization UUID.
             family_org_ids: List of all organization IDs in the family.
             scope_policy: The scope policy to apply. Uses default if None.
-            base_query: Optional base query to start from. Creates new if None.
 
         Returns:
-            Query filtered by organization scope.
+            The entity if found within scope, None otherwise.
         """
-        if base_query is None:
-            base_query = select(self.model)
-
         org_ids = self._get_effective_org_ids(
             organization_id=organization_id,
             family_org_ids=family_org_ids,
             scope_policy=scope_policy,
         )
 
-        return self._apply_org_scope(base_query, org_ids)
+        # Use parent's get_query() to respect soft-delete filter
+        query = super().get_query()  # type: ignore[misc]
+        query = self._apply_org_scope(query, org_ids)
+        query = query.where(self.model.id == id)  # type: ignore[attr-defined]
+
+        result = await self.session.execute(query)
+        return result.scalar_one_or_none()
+
+    async def list_by_organization(
+        self,
+        organization_id: UUID,
+        family_org_ids: list[UUID] | tuple[UUID, ...],
+        *,
+        filters: "FilterSet | None" = None,
+        sorting: "SortingSet | None" = None,
+        limit: int = 25,
+        offset: int = 0,
+        scope_policy: ScopePolicy | None = None,
+    ) -> PaginatedResponse[ModelT]:
+        """
+        List entities within organization scope with pagination.
+
+        Args:
+            organization_id: The current organization UUID.
+            family_org_ids: List of all organization IDs in the family.
+            filters: Optional FilterSet to apply.
+            sorting: Optional SortingSet to apply.
+            limit: Maximum number of items to return (default: 25).
+            offset: Number of items to skip (default: 0).
+            scope_policy: The scope policy to apply. Uses default if None.
+
+        Returns:
+            PaginatedResponse with items filtered by organization scope.
+        """
+        org_ids = self._get_effective_org_ids(
+            organization_id=organization_id,
+            family_org_ids=family_org_ids,
+            scope_policy=scope_policy,
+        )
+
+        # Use parent's get_query() to respect soft-delete filter
+        base_query = super().get_query()  # type: ignore[misc]
+        base_query = self._apply_org_scope(base_query, org_ids)
+
+        # Delegate to parent's list() method
+        return await super().list(  # type: ignore[misc]
+            filters=filters,
+            sorting=sorting,
+            limit=limit,
+            offset=offset,
+            base_query=base_query,
+        )
 
     async def exists_in_family(
         self,
         family_org_ids: list[UUID] | tuple[UUID, ...],
-        **filters,
+        **filters: object,
     ) -> bool:
         """
         Check if a record exists in any of the family organizations.
@@ -146,17 +192,13 @@ class OrganizationScopeMixin(Generic[ModelT]):
         Returns:
             True if a matching record exists, False otherwise.
         """
-        query = select(self.model).where(
-            self.model.organization_id.in_(list(family_org_ids))
-        )
+        # Use parent's get_query() to respect soft-delete filter
+        query = super().get_query()  # type: ignore[misc]
+        query = query.where(self.model.organization_id.in_(list(family_org_ids)))  # type: ignore[attr-defined]
 
         for field, value in filters.items():
             if hasattr(self.model, field) and value is not None:
                 query = query.where(getattr(self.model, field) == value)
-
-        # Add soft delete filter if model has deleted_at
-        if hasattr(self.model, "deleted_at"):
-            query = query.where(self.model.deleted_at.is_(None))
 
         result = await self.session.execute(select(query.exists()))
         return result.scalar_one()
@@ -166,7 +208,7 @@ class OrganizationScopeMixin(Generic[ModelT]):
         family_org_ids: list[UUID] | tuple[UUID, ...],
         *,
         exclude_id: UUID | None = None,
-        **filters,
+        **filters: object,
     ) -> ModelT | None:
         """
         Find a record in any of the family organizations.
@@ -179,20 +221,16 @@ class OrganizationScopeMixin(Generic[ModelT]):
         Returns:
             The matching record or None.
         """
-        query = select(self.model).where(
-            self.model.organization_id.in_(list(family_org_ids))
-        )
+        # Use parent's get_query() to respect soft-delete filter
+        query = super().get_query()  # type: ignore[misc]
+        query = query.where(self.model.organization_id.in_(list(family_org_ids)))  # type: ignore[attr-defined]
 
         for field, value in filters.items():
             if hasattr(self.model, field) and value is not None:
                 query = query.where(getattr(self.model, field) == value)
 
-        # Add soft delete filter if model has deleted_at
-        if hasattr(self.model, "deleted_at"):
-            query = query.where(self.model.deleted_at.is_(None))
-
         if exclude_id is not None:
-            query = query.where(self.model.id != exclude_id)
+            query = query.where(self.model.id != exclude_id)  # type: ignore[attr-defined]
 
         result = await self.session.execute(query)
         return result.scalar_one_or_none()

@@ -57,41 +57,255 @@ use_cases/            # Business logic orchestration
 
 ### Key Base Classes
 - `BaseRepository[ModelT]` - CRUD operations with pagination ([base.py](src/shared/infrastructure/repositories/base.py))
-- `SoftDeletePaginationMixin` - Soft delete + filtering/sorting support ([mixins.py](src/shared/infrastructure/repositories/mixins.py))
-- `OrganizationScopeMixin` - Family scope support for hierarchical organizations ([organization_scope_mixin.py](src/shared/infrastructure/repositories/organization_scope_mixin.py))
+- `SoftDeleteMixin[ModelT]` - Soft delete support, overrides `get_query()` and `delete()` ([mixins.py](src/shared/infrastructure/repositories/mixins.py))
+- `OrganizationScopeMixin[ModelT]` - Organization/family scope for multi-tenant queries ([organization_scope_mixin.py](src/shared/infrastructure/repositories/organization_scope_mixin.py))
 - Model mixins: `PrimaryKeyMixin`, `TimestampMixin`, `SoftDeleteMixin`, `TrackingMixin`, `VerificationMixin`
+
+## Repository System
+
+The repository layer provides a composable, type-safe data access pattern using mixins.
+
+### BaseRepository
+
+The base class for all repositories. Provides CRUD operations and paginated listing.
+
+```python
+from src.shared.infrastructure.repositories import BaseRepository
+
+class UserRepository(BaseRepository[User]):
+    model = User
+```
+
+**Core Methods:**
+- `get_query()` → Returns base `SELECT` query. Override in mixins to add filters.
+- `get_by_id(id)` → Get entity by UUID or `None`
+- `get_by_id_or_raise(id)` → Get entity or raise `NotFoundError`
+- `list(*, filters, sorting, limit, offset, base_query)` → Paginated listing with FilterSet/SortingSet
+- `create(entity)` → Insert and return entity
+- `update(entity)` → Update and return entity
+- `delete(id)` → Hard delete entity
+
+**Pagination Parameters:**
+```python
+result = await repository.list(
+    filters=MyFilter(search="john"),  # FilterSet instance
+    sorting=MySorting(name="asc"),    # SortingSet instance
+    limit=25,                          # Page size (default: 25)
+    offset=0,                          # Skip N records (default: 0)
+)
+# Returns PaginatedResponse[Entity] with items, total, page, page_size, pages
+```
+
+### SoftDeleteMixin
+
+Adds soft delete behavior. Must be listed BEFORE `BaseRepository` in inheritance.
+
+```python
+from src.shared.infrastructure.repositories import BaseRepository, SoftDeleteMixin
+
+class ProfessionalRepository(SoftDeleteMixin[Professional], BaseRepository[Professional]):
+    model = Professional
+```
+
+**What it does:**
+- Overrides `get_query()` → Adds `WHERE deleted_at IS NULL` filter
+- Overrides `delete(id)` → Sets `deleted_at = now()` instead of hard delete
+
+**Additional Methods:**
+- `get_by_id_including_deleted(id)` → Bypass soft-delete filter (for restore/audit)
+- `restore(id)` → Clear `deleted_at` to restore entity
+
+**Behavior:**
+```python
+# With SoftDeleteMixin:
+await repo.delete(id)  # Sets deleted_at, entity hidden from queries
+await repo.get_by_id(id)  # Returns None (filtered out)
+await repo.get_by_id_including_deleted(id)  # Returns entity
+await repo.restore(id)  # Clears deleted_at, entity visible again
+```
+
+### OrganizationScopeMixin
+
+Adds organization-scoped queries with support for family hierarchy. Must be listed BEFORE other mixins.
+
+```python
+from src.shared.infrastructure.repositories import (
+    BaseRepository,
+    OrganizationScopeMixin,
+    SoftDeleteMixin,
+)
+
+class OrganizationProfessionalRepository(
+    OrganizationScopeMixin[OrganizationProfessional],
+    SoftDeleteMixin[OrganizationProfessional],
+    BaseRepository[OrganizationProfessional],
+):
+    model = OrganizationProfessional
+    default_scope_policy = "FAMILY"  # or "ORGANIZATION_ONLY"
+```
+
+**Scope Policies:**
+- `"ORGANIZATION_ONLY"` → Query only the current organization (default)
+- `"FAMILY"` → Query all organizations in the family (parent + children)
+
+**Methods:**
+```python
+# Get entity within organization scope
+entity = await repo.get_by_organization(
+    id=entity_id,
+    organization_id=org_id,
+    family_org_ids=family_ids,
+    scope_policy="FAMILY",  # Optional, uses default if omitted
+)
+
+# List with organization scope + pagination
+result = await repo.list_by_organization(
+    organization_id=org_id,
+    family_org_ids=family_ids,
+    filters=MyFilter(),
+    sorting=MySorting(),
+    limit=25,
+    offset=0,
+    scope_policy="FAMILY",
+)
+
+# Check existence in family
+exists = await repo.exists_in_family(
+    family_org_ids=family_ids,
+    cpf="12345678901",  # Field filters as kwargs
+)
+
+# Find single record in family
+entity = await repo.find_in_family(
+    family_org_ids=family_ids,
+    exclude_id=current_id,  # Optional: exclude from results
+    email="user@example.com",
+)
+```
+
+### Mixin Composition Order (CRITICAL)
+
+The order of mixins in inheritance matters due to Python's Method Resolution Order (MRO):
+
+```python
+# ✅ CORRECT ORDER: OrganizationScope → SoftDelete → Base
+class MyRepository(
+    OrganizationScopeMixin[Entity],
+    SoftDeleteMixin[Entity],
+    BaseRepository[Entity],
+):
+    model = Entity
+
+# Method Resolution:
+# - list_by_organization() calls super().get_query() → SoftDeleteMixin.get_query()
+# - SoftDeleteMixin.get_query() returns query with deleted_at filter
+# - list_by_organization() then applies org scope to that query
+```
+
+**Rule:** More specific mixins go FIRST (leftmost), `BaseRepository` goes LAST.
+
+### Repository Composition Examples
+
+```python
+# 1. Simple repository (no soft delete, no org scope)
+class RoleRepository(BaseRepository[Role]):
+    model = Role
+
+# 2. With soft delete only
+class SpecialtyRepository(SoftDeleteMixin[Specialty], BaseRepository[Specialty]):
+    model = Specialty
+
+# 3. With org scope only (no soft delete)
+class ContractRepository(OrganizationScopeMixin[Contract], BaseRepository[Contract]):
+    model = Contract
+    default_scope_policy = "ORGANIZATION_ONLY"
+
+# 4. Full stack: org scope + soft delete
+class ProfessionalRepository(
+    OrganizationScopeMixin[Professional],
+    SoftDeleteMixin[Professional],
+    BaseRepository[Professional],
+):
+    model = Professional
+    default_scope_policy = "FAMILY"
+```
+
+### Custom Repository Methods
+
+Add domain-specific methods by extending the base patterns:
+
+```python
+class ProfessionalRepository(
+    OrganizationScopeMixin[Professional],
+    SoftDeleteMixin[Professional],
+    BaseRepository[Professional],
+):
+    model = Professional
+    default_scope_policy = "FAMILY"
+
+    async def find_by_cpf(
+        self,
+        cpf: str,
+        organization_id: UUID,
+        family_org_ids: tuple[UUID, ...],
+    ) -> Professional | None:
+        """Find professional by CPF within family scope."""
+        return await self.find_in_family(
+            family_org_ids=family_org_ids,
+            cpf=cpf,
+        )
+
+    async def exists_by_email_in_family(
+        self,
+        email: str,
+        family_org_ids: tuple[UUID, ...],
+        *,
+        exclude_id: UUID | None = None,
+    ) -> bool:
+        """Check if email exists in family, optionally excluding an ID."""
+        existing = await self.find_in_family(
+            family_org_ids=family_org_ids,
+            exclude_id=exclude_id,
+            email=email,
+        )
+        return existing is not None
+```
 
 ## Core Patterns
 
 ### Multi-Tenancy with Family Scope (CRITICAL)
-Professionals are shared within an organization family (parent + children). Use `family_org_ids` for queries:
+Professionals are shared within an organization family (parent + children). Use `OrganizationScopeMixin` with `default_scope_policy = "FAMILY"`:
 
 ```python
-# Single organization scope (default for most entities)
-def _base_query_for_organization(self, organization_id: UUID):
-    return self._exclude_deleted().where(Model.organization_id == organization_id)
+class ProfessionalRepository(
+    OrganizationScopeMixin[Professional],
+    SoftDeleteMixin[Professional],
+    BaseRepository[Professional],
+):
+    model = Professional
+    default_scope_policy = "FAMILY"
 
-# Family scope (for professionals - shared across family)
-def _base_query_for_organization(
-    self,
-    organization_id: UUID,
-    family_org_ids: list[UUID] | tuple[UUID, ...] | None = None,
-) -> Select[tuple[Model]]:
-    base = self._exclude_deleted()
-    if family_org_ids:
-        return base.where(Model.organization_id.in_(list(family_org_ids)))
-    return base.where(Model.organization_id == organization_id)
+# In use case:
+professionals = await repo.list_by_organization(
+    organization_id=ctx.organization,
+    family_org_ids=ctx.family_org_ids,
+    filters=filters,
+    sorting=sorting,
+    limit=limit,
+    offset=offset,
+)
 ```
 
 **Family Scope Validation:**
 - CPF uniqueness is validated at family level (not just organization)
 - Email uniqueness is validated at family level
 - Council registration uniqueness is validated at family level
-- Use `exists_by_cpf_in_family()`, `exists_by_email_in_family()`, `council_exists_in_family()`
+- Use `exists_in_family()` and `find_in_family()` for validation
 
 ### Soft Delete
-Models with `SoftDeleteMixin` use `deleted_at` column. Repositories must:
-- Use `_exclude_deleted()` in all queries
+Models with `SoftDeleteMixin` (model) use `deleted_at` column. Repositories using `SoftDeleteMixin` (repository):
+- Automatically filter out deleted records via `get_query()`
+- Use `delete()` which performs soft delete
 - Create partial unique indexes: `postgresql_where=text("deleted_at IS NULL")`
 
 ### Use Case Pattern
@@ -115,15 +329,25 @@ for field, value in update_data.items():
     setattr(entity, field, value)
 ```
 
-### Pagination with Filters
+### Pagination in Routes
 ```python
-# Repository method
-async def list_for_organization(
-    self, organization_id: UUID, pagination: PaginationParams,
-    *, filters: EntityFilter | None = None, sorting: EntitySorting | None = None
-) -> PaginatedResponse[Entity]:
-    query = self._base_query_for_organization(organization_id)
-    return await self.list_paginated(pagination, filters=filters, sorting=sorting, base_query=query)
+@router.get("/", response_model=PaginatedResponse[EntityResponse])
+async def list_entities(
+    ctx: OrganizationContext,
+    use_case: ListEntitiesUC,
+    filters: Annotated[EntityFilter, Depends()],
+    sorting: Annotated[EntitySorting, Depends()],
+    limit: Annotated[int, Query(ge=1, le=100)] = 25,
+    offset: Annotated[int, Query(ge=0)] = 0,
+) -> PaginatedResponse[EntityResponse]:
+    return await use_case.execute(
+        organization_id=ctx.organization,
+        family_org_ids=ctx.family_org_ids,
+        filters=filters,
+        sorting=sorting,
+        limit=limit,
+        offset=offset,
+    )
 ```
 
 ### FilterSet/SortingSet Definition
