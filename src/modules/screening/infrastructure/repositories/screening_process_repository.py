@@ -19,12 +19,15 @@ from src.modules.screening.infrastructure.filters import (
 )
 from src.shared.infrastructure.repositories import (
     BaseRepository,
-    SoftDeletePaginationMixin,
+    OrganizationScopeMixin,
+    ScopePolicy,
+    SoftDeleteMixin,
 )
 
 
 class ScreeningProcessRepository(
-    SoftDeletePaginationMixin[ScreeningProcess],
+    OrganizationScopeMixin[ScreeningProcess],
+    SoftDeleteMixin[ScreeningProcess],
     BaseRepository[ScreeningProcess],
 ):
     """
@@ -34,6 +37,7 @@ class ScreeningProcessRepository(
     """
 
     model = ScreeningProcess
+    default_scope_policy = "ORGANIZATION_ONLY"
 
     def __init__(self, session: AsyncSession) -> None:
         super().__init__(session)
@@ -41,6 +45,8 @@ class ScreeningProcessRepository(
     def _base_query_for_organization(
         self,
         organization_id: UUID,
+        family_org_ids: list[UUID] | tuple[UUID, ...] | None,
+        scope_policy: ScopePolicy | None = None,
     ) -> Select[tuple[ScreeningProcess]]:
         """
         Get base query filtered by organization.
@@ -51,14 +57,20 @@ class ScreeningProcessRepository(
         Returns:
             Query filtered by organization and excluding soft-deleted.
         """
-        return self._exclude_deleted().where(
-            ScreeningProcess.organization_id == organization_id
+        org_ids = self._get_effective_org_ids(
+            organization_id=organization_id,
+            family_org_ids=family_org_ids or (),
+            scope_policy=scope_policy,
         )
+        base_query = super().get_query()  # type: ignore[misc]
+        return self._apply_org_scope(base_query, org_ids)
 
     async def get_by_id_for_organization(
         self,
         id: UUID,
         organization_id: UUID,
+        family_org_ids: list[UUID] | tuple[UUID, ...] | None,
+        scope_policy: ScopePolicy | None = None,
     ) -> ScreeningProcess | None:
         """
         Get screening process by ID for a specific organization.
@@ -66,13 +78,17 @@ class ScreeningProcessRepository(
         Args:
             id: The screening process UUID.
             organization_id: The organization UUID.
+            family_org_ids: List of family org IDs (required for FAMILY scope).
+            scope_policy: Scope policy to apply. Uses default if None.
 
         Returns:
             ScreeningProcess if found, None otherwise.
         """
-        query = self._base_query_for_organization(organization_id).where(
-            ScreeningProcess.id == id
-        )
+        query = self._base_query_for_organization(
+            organization_id=organization_id,
+            family_org_ids=family_org_ids,
+            scope_policy=scope_policy,
+        ).where(ScreeningProcess.id == id)
         result = await self.session.execute(query)
         return result.scalar_one_or_none()
 
@@ -80,6 +96,8 @@ class ScreeningProcessRepository(
         self,
         id: UUID,
         organization_id: UUID,
+        family_org_ids: list[UUID] | tuple[UUID, ...] | None,
+        scope_policy: ScopePolicy | None = None,
     ) -> ScreeningProcess | None:
         """
         Get screening process with all related data (steps, documents).
@@ -87,12 +105,18 @@ class ScreeningProcessRepository(
         Args:
             id: The screening process UUID.
             organization_id: The organization UUID.
+            family_org_ids: List of family org IDs (required for FAMILY scope).
+            scope_policy: Scope policy to apply. Uses default if None.
 
         Returns:
             ScreeningProcess with loaded relationships.
         """
         query = (
-            self._base_query_for_organization(organization_id)
+            self._base_query_for_organization(
+                organization_id=organization_id,
+                family_org_ids=family_org_ids,
+                scope_policy=scope_policy,
+            )
             .where(ScreeningProcess.id == id)
             .options(
                 # Load all step relationships
@@ -120,6 +144,8 @@ class ScreeningProcessRepository(
         organization_id: UUID,
         pagination: PaginationParams,
         *,
+        family_org_ids: list[UUID] | tuple[UUID, ...] | None,
+        scope_policy: ScopePolicy | None = None,
         filters: ScreeningProcessFilter | None = None,
         sorting: ScreeningProcessSorting | None = None,
     ) -> PaginatedResponse[ScreeningProcess]:
@@ -132,17 +158,24 @@ class ScreeningProcessRepository(
         Args:
             organization_id: The organization UUID.
             pagination: Pagination parameters.
+            family_org_ids: List of family org IDs (required for FAMILY scope).
+            scope_policy: Scope policy to apply. Uses default if None.
             filters: Optional filters.
             sorting: Optional sorting.
 
         Returns:
             Paginated list of screening processes.
         """
-        base_query = self._base_query_for_organization(organization_id)
-        return await self.list_paginated(
-            pagination,
+        base_query = self._base_query_for_organization(
+            organization_id=organization_id,
+            family_org_ids=family_org_ids,
+            scope_policy=scope_policy,
+        )
+        return await self.list(
             filters=filters,
             sorting=sorting,
+            limit=pagination.page_size,
+            offset=(pagination.page - 1) * pagination.page_size,
             base_query=base_query,
         )
 
@@ -152,6 +185,8 @@ class ScreeningProcessRepository(
         actor_id: UUID,
         pagination: PaginationParams,
         *,
+        family_org_ids: list[UUID] | tuple[UUID, ...] | None,
+        scope_policy: ScopePolicy | None = None,
         filters: ScreeningProcessFilter | None = None,
         sorting: ScreeningProcessSorting | None = None,
     ) -> PaginatedResponse[ScreeningProcess]:
@@ -167,19 +202,24 @@ class ScreeningProcessRepository(
             organization_id: The organization UUID.
             actor_id: The current actor user UUID.
             pagination: Pagination parameters.
+            family_org_ids: List of family org IDs (required for FAMILY scope).
+            scope_policy: Scope policy to apply. Uses default if None.
             filters: Optional additional filters.
             sorting: Optional sorting.
 
         Returns:
             Paginated list of screening processes.
         """
-        base_query = self._base_query_for_organization(organization_id).where(
-            ScreeningProcess.current_actor_id == actor_id
-        )
-        return await self.list_paginated(
-            pagination,
+        base_query = self._base_query_for_organization(
+            organization_id=organization_id,
+            family_org_ids=family_org_ids,
+            scope_policy=scope_policy,
+        ).where(ScreeningProcess.current_actor_id == actor_id)
+        return await self.list(
             filters=filters,
             sorting=sorting,
+            limit=pagination.page_size,
+            offset=(pagination.page - 1) * pagination.page_size,
             base_query=base_query,
         )
 
@@ -187,6 +227,8 @@ class ScreeningProcessRepository(
         self,
         organization_id: UUID,
         cpf: str,
+        family_org_ids: list[UUID] | tuple[UUID, ...] | None = None,
+        scope_policy: ScopePolicy | None = None,
     ) -> ScreeningProcess | None:
         """
         Get active screening for a professional by CPF.
@@ -196,6 +238,8 @@ class ScreeningProcessRepository(
         Args:
             organization_id: The organization UUID.
             cpf: The professional's CPF.
+            family_org_ids: List of family org IDs (required for FAMILY scope).
+            scope_policy: Scope policy to apply. Uses default if None.
 
         Returns:
             Active ScreeningProcess if found, None otherwise.
@@ -207,7 +251,11 @@ class ScreeningProcessRepository(
             ScreeningStatus.CANCELLED,
         ]
         query = (
-            self._base_query_for_organization(organization_id)
+            self._base_query_for_organization(
+                organization_id=organization_id,
+                family_org_ids=family_org_ids,
+                scope_policy=scope_policy,
+            )
             .where(ScreeningProcess.professional_cpf == cpf)
             .where(ScreeningProcess.status.not_in(terminal_statuses))
         )
@@ -227,7 +275,7 @@ class ScreeningProcessRepository(
         Returns:
             ScreeningProcess if found and not deleted, None otherwise.
         """
-        query = self._exclude_deleted().where(
+        query = super().get_query().where(  # type: ignore[misc]
             ScreeningProcess.access_token == access_token
         )
         result = await self.session.execute(query)
@@ -247,7 +295,7 @@ class ScreeningProcessRepository(
             ScreeningProcess with loaded relationships if found, None otherwise.
         """
         query = (
-            self._exclude_deleted()
+            super().get_query()  # type: ignore[misc]
             .where(ScreeningProcess.access_token == access_token)
             .options(
                 # Load all step relationships
@@ -273,6 +321,8 @@ class ScreeningProcessRepository(
     async def count_by_status(
         self,
         organization_id: UUID,
+        family_org_ids: list[UUID] | tuple[UUID, ...] | None,
+        scope_policy: ScopePolicy | None = None,
     ) -> dict[ScreeningStatus, int]:
         """
         Count screening processes by status for an organization.
@@ -282,13 +332,20 @@ class ScreeningProcessRepository(
         """
         from sqlalchemy import func
 
+        org_ids = self._get_effective_org_ids(
+            organization_id=organization_id,
+            family_org_ids=family_org_ids or (),
+            scope_policy=scope_policy,
+        )
+        base_query = super().get_query()  # type: ignore[misc]
+        base_query = self._apply_org_scope(base_query, org_ids)
+
         query = (
             select(
                 ScreeningProcess.status,
                 func.count(ScreeningProcess.id).label("count"),
             )
-            .where(ScreeningProcess.organization_id == organization_id)
-            .where(ScreeningProcess.deleted_at.is_(None))
+            .select_from(base_query.subquery())
             .group_by(ScreeningProcess.status)
         )
         result = await self.session.execute(query)

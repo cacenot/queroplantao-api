@@ -430,6 +430,7 @@ async def go_back_to_step(
     """Go back to a previous step."""
     return await use_case.execute(
         organization_id=ctx.organization,
+        family_org_ids=ctx.family_org_ids,
         screening_id=screening_id,
         target_step_id=step_id,
         requested_by=ctx.user,

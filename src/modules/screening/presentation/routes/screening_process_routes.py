@@ -122,6 +122,7 @@ async def list_screening_processes(
     return await use_case.execute(
         organization_id=ctx.organization,
         pagination=pagination,
+        family_org_ids=ctx.family_org_ids,
         filters=filters,
         sorting=sorting,
     )
@@ -169,6 +170,7 @@ async def get_screening_process(
     return await use_case.execute(
         organization_id=ctx.organization,
         screening_id=screening_id,
+        family_org_ids=ctx.family_org_ids,
     )
 
 
@@ -237,6 +239,7 @@ async def cancel_screening_process(
         screening_id=screening_id,
         cancelled_by=ctx.user,
         reason=data.reason,
+        family_org_ids=ctx.family_org_ids,
     )
 
 
@@ -310,4 +313,5 @@ async def finalize_screening_process(
         organization_id=ctx.organization,
         screening_id=screening_id,
         finalized_by=ctx.user,
+        family_org_ids=ctx.family_org_ids,
     )

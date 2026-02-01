@@ -31,6 +31,7 @@ class ListScreeningAlertsUseCase:
         self,
         organization_id: UUID,
         process_id: UUID,
+        family_org_ids: tuple[UUID, ...] | list[UUID] | None,
     ) -> ScreeningAlertListResponse:
         """
         Execute the list alerts use case.
@@ -38,6 +39,7 @@ class ListScreeningAlertsUseCase:
         Args:
             organization_id: The organization UUID.
             process_id: The screening process UUID.
+            family_org_ids: Organization family IDs for scope validation.
 
         Returns:
             List response with alerts and counts.
@@ -47,7 +49,9 @@ class ListScreeningAlertsUseCase:
         """
         # Validate process exists
         process = await self.process_repo.get_by_id_for_organization(
-            process_id, organization_id
+            id=process_id,
+            organization_id=organization_id,
+            family_org_ids=family_org_ids,
         )
         if not process:
             raise ScreeningProcessNotFoundError(screening_id=str(process_id))

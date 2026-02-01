@@ -24,6 +24,7 @@ class GetScreeningProcessUseCase:
         self,
         organization_id: UUID,
         screening_id: UUID,
+        family_org_ids: tuple[UUID, ...] | list[UUID] | None,
     ) -> ScreeningProcessDetailResponse:
         """
         Get screening process by ID with all related data.
@@ -31,6 +32,7 @@ class GetScreeningProcessUseCase:
         Args:
             organization_id: The organization ID.
             screening_id: The screening process ID.
+            family_org_ids: Organization family IDs for scope validation.
 
         Returns:
             The screening process response with steps summary.
@@ -41,6 +43,7 @@ class GetScreeningProcessUseCase:
         process = await self.repository.get_by_id_with_details(
             id=screening_id,
             organization_id=organization_id,
+            family_org_ids=family_org_ids,
         )
 
         if not process:

@@ -48,6 +48,7 @@ class RejectScreeningAlertUseCase:
         rejected_by: UUID,
         rejected_by_name: str,
         rejected_by_role_name: str,
+        family_org_ids: tuple[UUID, ...] | list[UUID] | None,
     ) -> ScreeningAlertResponse:
         """
         Execute the reject via alert use case.
@@ -60,6 +61,7 @@ class RejectScreeningAlertUseCase:
             rejected_by: The user UUID who is rejecting.
             rejected_by_name: The name of the user.
             rejected_by_role_name: The role display name (from database).
+            family_org_ids: Organization family IDs for scope validation.
 
         Returns:
             The updated alert response.
@@ -71,7 +73,9 @@ class RejectScreeningAlertUseCase:
         """
         # 1. Validate process exists
         process = await self.process_repo.get_by_id_for_organization(
-            process_id, organization_id
+            id=process_id,
+            organization_id=organization_id,
+            family_org_ids=family_org_ids,
         )
         if not process:
             raise ScreeningProcessNotFoundError(screening_id=str(process_id))

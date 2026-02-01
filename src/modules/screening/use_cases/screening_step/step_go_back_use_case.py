@@ -17,7 +17,6 @@ from src.modules.screening.domain.models.enums import (
 from src.modules.screening.domain.schemas import ScreeningProcessStepResponse
 from src.modules.screening.infrastructure.repositories import (
     ScreeningProcessRepository,
-    ScreeningProcessStepRepository,
 )
 
 # Steps that cannot be revisited
@@ -36,11 +35,11 @@ class GoBackToStepUseCase:
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
         self.process_repository = ScreeningProcessRepository(session)
-        self.step_repository = ScreeningProcessStepRepository(session)
 
     async def execute(
         self,
         organization_id: UUID,
+        family_org_ids: tuple[UUID, ...] | list[UUID] | None,
         screening_id: UUID,
         target_step_id: UUID,
         requested_by: UUID,
@@ -50,6 +49,7 @@ class GoBackToStepUseCase:
 
         Args:
             organization_id: Organization ID.
+            family_org_ids: Organization family IDs for scope validation.
             screening_id: Screening process ID.
             target_step_id: Step ID to go back to.
             requested_by: User requesting the action.
@@ -63,27 +63,41 @@ class GoBackToStepUseCase:
             ScreeningStepCannotGoBackError: If cannot go back to this step.
         """
         # 1. Validate process
-        process = await self.process_repository.get_by_id_for_organization(
+        process = await self.process_repository.get_by_id_with_details(
             id=screening_id,
             organization_id=organization_id,
+            family_org_ids=family_org_ids,
         )
         if not process:
             raise ScreeningProcessNotFoundError(screening_id=str(screening_id))
 
-        # 2. Get target step
-        target_step = await self.step_repository.get_by_id(target_step_id)
-        if not target_step or target_step.process_id != screening_id:
+        # 2. Get all steps from process
+        all_steps = [
+            process.conversation_step,
+            process.professional_data_step,
+            process.document_upload_step,
+            process.document_review_step,
+            process.payment_info_step,
+            process.client_validation_step,
+        ]
+        all_steps = [step for step in all_steps if step is not None]
+
+        # 3. Find target step
+        target_step = next(
+            (step for step in all_steps if step.id == target_step_id),
+            None,
+        )
+        if not target_step:
             raise ScreeningStepNotFoundError(step_id=str(target_step_id))
 
-        # 3. Validate can go back to this step
+        # 4. Validate can go back to this step
         if target_step.step_type in NON_REVERSIBLE_STEPS:
             raise ScreeningStepCannotGoBackError(step_type=target_step.step_type.value)
 
-        # 4. Get all steps ordered
-        all_steps = await self.step_repository.list_by_process(screening_id)
+        # 5. Get all steps ordered
         all_steps_sorted = sorted(all_steps, key=lambda s: s.order)
 
-        # 5. Reset steps after target
+        # 6. Reset steps after target
         for step in all_steps_sorted:
             if step.order > target_step.order:
                 if step.status != StepStatus.SKIPPED:
@@ -92,11 +106,11 @@ class GoBackToStepUseCase:
                     step.submitted_at = None
                     step.submitted_by = None
 
-        # 6. Set target step as in progress
+        # 7. Set target step as in progress
         target_step.status = StepStatus.IN_PROGRESS
         target_step.started_at = datetime.now(timezone.utc)
 
-        # 7. Process status stays as IN_PROGRESS
+        # 8. Process status stays as IN_PROGRESS
         # (status is already IN_PROGRESS for active screenings)
 
         await self.session.flush()

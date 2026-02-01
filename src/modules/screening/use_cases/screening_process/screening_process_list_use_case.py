@@ -28,6 +28,7 @@ class ListScreeningProcessesUseCase:
         self,
         organization_id: UUID,
         pagination: PaginationParams,
+        family_org_ids: tuple[UUID, ...] | list[UUID] | None,
         filters: ScreeningProcessFilter | None = None,
         sorting: ScreeningProcessSorting | None = None,
     ) -> PaginatedResponse[ScreeningProcess]:
@@ -37,6 +38,7 @@ class ListScreeningProcessesUseCase:
         Args:
             organization_id: The organization ID.
             pagination: Pagination parameters.
+            family_org_ids: Organization family IDs for scope validation.
             filters: Optional filter parameters.
             sorting: Optional sorting parameters.
 
@@ -46,6 +48,7 @@ class ListScreeningProcessesUseCase:
         return await self.repository.list_for_organization(
             organization_id=organization_id,
             pagination=pagination,
+            family_org_ids=family_org_ids,
             filters=filters,
             sorting=sorting,
         )

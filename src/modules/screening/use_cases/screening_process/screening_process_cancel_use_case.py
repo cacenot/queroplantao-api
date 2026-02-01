@@ -37,6 +37,7 @@ class CancelScreeningProcessUseCase:
         screening_id: UUID,
         cancelled_by: UUID,
         reason: str,
+        family_org_ids: tuple[UUID, ...] | list[UUID] | None,
     ) -> ScreeningProcessResponse:
         """
         Cancel the screening process.
@@ -46,6 +47,7 @@ class CancelScreeningProcessUseCase:
             screening_id: The screening process ID.
             cancelled_by: The user cancelling the screening.
             reason: The cancellation reason (required).
+            family_org_ids: Organization family IDs for scope validation.
 
         Returns:
             The cancelled screening process response.
@@ -57,6 +59,7 @@ class CancelScreeningProcessUseCase:
         process = await self.repository.get_by_id_with_details(
             id=screening_id,
             organization_id=organization_id,
+            family_org_ids=family_org_ids,
         )
         if not process:
             raise ScreeningProcessNotFoundError(screening_id=str(screening_id))

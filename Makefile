@@ -40,7 +40,7 @@ migrate-rollback:
 
 ## Run the API server
 run:
-	uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+	uv run uvicorn src.app.main:app --reload --host 0.0.0.0 --port 8000 --loop uvloop --http httptools
 
 ## Run the worker
 worker:

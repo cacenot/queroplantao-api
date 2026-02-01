@@ -107,12 +107,16 @@ class CreateScreeningProcessUseCase:
             ScreeningProcessActiveExistsError: If professional has active screening.
         """
         # Get organization settings
-        settings = await self.settings_repository.get_or_create_default(organization_id)
+        settings = await self.settings_repository.get_or_create_default(
+            organization_id=organization_id,
+            family_org_ids=family_org_ids,
+        )
 
         # Check for existing active screening by CPF
         existing = await self.repository.get_active_by_cpf(
             organization_id=organization_id,
             cpf=data.professional_cpf,
+            family_org_ids=family_org_ids,
         )
         if existing:
             raise ScreeningProcessActiveExistsError()
@@ -183,6 +187,7 @@ class CreateScreeningProcessUseCase:
         process_with_details = await self.repository.get_by_id_with_details(
             id=process.id,
             organization_id=organization_id,
+            family_org_ids=family_org_ids,
         )
 
         return ScreeningProcessDetailResponse.model_validate(process_with_details)

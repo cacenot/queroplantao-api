@@ -47,6 +47,7 @@ class ResolveScreeningAlertUseCase:
         resolved_by: UUID,
         resolved_by_name: str,
         resolved_by_role_name: str,
+        family_org_ids: tuple[UUID, ...] | list[UUID] | None,
     ) -> ScreeningAlertResponse:
         """
         Execute the resolve alert use case.
@@ -59,6 +60,7 @@ class ResolveScreeningAlertUseCase:
             resolved_by: The user UUID who is resolving.
             resolved_by_name: The name of the user.
             resolved_by_role_name: The role display name (from database).
+            family_org_ids: Organization family IDs for scope validation.
 
         Returns:
             The updated alert response.
@@ -70,7 +72,9 @@ class ResolveScreeningAlertUseCase:
         """
         # 1. Validate process exists
         process = await self.process_repo.get_by_id_for_organization(
-            process_id, organization_id
+            id=process_id,
+            organization_id=organization_id,
+            family_org_ids=family_org_ids,
         )
         if not process:
             raise ScreeningProcessNotFoundError(screening_id=str(process_id))

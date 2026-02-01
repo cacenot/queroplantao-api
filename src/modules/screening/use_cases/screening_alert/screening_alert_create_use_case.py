@@ -47,6 +47,7 @@ class CreateScreeningAlertUseCase:
         triggered_by: UUID,
         triggered_by_name: str,
         triggered_by_role_name: str,
+        family_org_ids: tuple[UUID, ...] | list[UUID] | None,
     ) -> ScreeningAlertResponse:
         """
         Execute the create alert use case.
@@ -58,6 +59,7 @@ class CreateScreeningAlertUseCase:
             triggered_by: The user UUID who triggered the alert.
             triggered_by_name: The name of the user who triggered.
             triggered_by_role_name: The role display name (from database).
+            family_org_ids: Organization family IDs for scope validation.
 
         Returns:
             The created alert response.
@@ -69,7 +71,9 @@ class CreateScreeningAlertUseCase:
         """
         # 1. Get and validate process
         process = await self.process_repo.get_by_id_for_organization(
-            process_id, organization_id
+            id=process_id,
+            organization_id=organization_id,
+            family_org_ids=family_org_ids,
         )
         if not process:
             raise ScreeningProcessNotFoundError(screening_id=str(process_id))

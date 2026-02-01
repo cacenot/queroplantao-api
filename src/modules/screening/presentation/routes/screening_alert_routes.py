@@ -114,6 +114,7 @@ async def create_alert(
         triggered_by=ctx.user,
         triggered_by_name=ctx.context.full_name,
         triggered_by_role_name=ctx.context.organization_role_name or "Usuário",
+        family_org_ids=ctx.family_org_ids,
     )
 
 
@@ -158,6 +159,7 @@ async def list_alerts(
     return await use_case.execute(
         organization_id=ctx.organization,
         process_id=screening_id,
+        family_org_ids=ctx.family_org_ids,
     )
 
 
@@ -234,6 +236,7 @@ async def resolve_alert(
         resolved_by=ctx.user,
         resolved_by_name=ctx.context.full_name,
         resolved_by_role_name=ctx.context.organization_role_name or "Supervisor",
+        family_org_ids=ctx.family_org_ids,
     )
 
 
@@ -310,4 +313,5 @@ async def reject_via_alert(
         rejected_by=ctx.user,
         rejected_by_name=ctx.context.full_name,
         rejected_by_role_name=ctx.context.organization_role_name or "Supervisor",
+        family_org_ids=ctx.family_org_ids,
     )

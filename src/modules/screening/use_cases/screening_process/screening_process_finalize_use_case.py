@@ -37,6 +37,7 @@ class FinalizeScreeningProcessUseCase:
         organization_id: UUID,
         screening_id: UUID,
         finalized_by: UUID,
+        family_org_ids: tuple[UUID, ...] | list[UUID] | None,
     ) -> ScreeningProcessResponse:
         """
         Finalize the screening process.
@@ -45,6 +46,7 @@ class FinalizeScreeningProcessUseCase:
             organization_id: The organization ID.
             screening_id: The screening process ID.
             finalized_by: The user finalizing the screening.
+            family_org_ids: Organization family IDs for scope validation.
 
         Returns:
             The finalized screening process response.
@@ -56,6 +58,7 @@ class FinalizeScreeningProcessUseCase:
         process = await self.repository.get_by_id_with_details(
             id=screening_id,
             organization_id=organization_id,
+            family_org_ids=family_org_ids,
         )
         if not process:
             raise ScreeningProcessNotFoundError(screening_id=str(screening_id))
