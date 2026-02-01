@@ -27,6 +27,7 @@ class DiffCalculatorService:
     def calculate_diffs(
         self,
         version_id: UUID,
+        organization_id: UUID,
         old_snapshot: ProfessionalDataSnapshot | None,
         new_snapshot: ProfessionalDataSnapshot,
     ) -> list[ProfessionalChangeDiff]:
@@ -49,6 +50,7 @@ class DiffCalculatorService:
         if "personal_info" in new_snapshot:
             self._compare_objects(
                 version_id=version_id,
+                organization_id=organization_id,
                 path="personal_info",
                 old_obj=old.get("personal_info", {}),
                 new_obj=new_snapshot["personal_info"],
@@ -60,6 +62,7 @@ class DiffCalculatorService:
             if collection_name in new_snapshot:
                 self._compare_collections(
                     version_id=version_id,
+                    organization_id=organization_id,
                     path=collection_name,
                     old_items=old.get(collection_name, []),
                     new_items=new_snapshot[collection_name],
@@ -71,6 +74,7 @@ class DiffCalculatorService:
     def _compare_objects(
         self,
         version_id: UUID,
+        organization_id: UUID,
         path: str,
         old_obj: dict[str, Any],
         new_obj: dict[str, Any],
@@ -100,6 +104,7 @@ class DiffCalculatorService:
 
                 diffs.append(
                     ProfessionalChangeDiff(
+                        organization_id=organization_id,
                         version_id=version_id,
                         field_path=field_path,
                         change_type=change_type,
@@ -111,6 +116,7 @@ class DiffCalculatorService:
     def _compare_collections(
         self,
         version_id: UUID,
+        organization_id: UUID,
         path: str,
         old_items: list[dict[str, Any]],
         new_items: list[dict[str, Any]],
@@ -137,6 +143,7 @@ class DiffCalculatorService:
             if item_id not in new_by_id:
                 diffs.append(
                     ProfessionalChangeDiff(
+                        organization_id=organization_id,
                         version_id=version_id,
                         field_path=f"{path}[id={item_id}]",
                         change_type=ChangeType.REMOVED,
@@ -157,6 +164,7 @@ class DiffCalculatorService:
                 # Compare object fields
                 self._compare_objects(
                     version_id=version_id,
+                    organization_id=organization_id,
                     path=item_path,
                     old_obj=old_item,
                     new_obj=new_item,
@@ -169,6 +177,7 @@ class DiffCalculatorService:
                         if nested_name in new_item:
                             self._compare_collections(
                                 version_id=version_id,
+                                organization_id=organization_id,
                                 path=f"{item_path}.{nested_name}",
                                 old_items=old_item.get(nested_name, []),
                                 new_items=new_item.get(nested_name, []),
@@ -178,6 +187,7 @@ class DiffCalculatorService:
                 # New item
                 diffs.append(
                     ProfessionalChangeDiff(
+                        organization_id=organization_id,
                         version_id=version_id,
                         field_path=f"{path}[{idx}]",
                         change_type=ChangeType.ADDED,

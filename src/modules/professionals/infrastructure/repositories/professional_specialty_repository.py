@@ -2,24 +2,19 @@
 
 from uuid import UUID
 
-from fastapi_restkit.pagination import PaginatedResponse, PaginationParams
 from sqlalchemy import Select, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from src.modules.professionals.domain.models import ProfessionalSpecialty
-from src.modules.professionals.infrastructure.filters import (
-    ProfessionalSpecialtyFilter,
-    ProfessionalSpecialtySorting,
-)
 from src.shared.infrastructure.repositories import (
     BaseRepository,
-    SoftDeletePaginationMixin,
+    SoftDeleteMixin,
 )
 
 
 class ProfessionalSpecialtyRepository(
-    SoftDeletePaginationMixin[ProfessionalSpecialty],
+    SoftDeleteMixin[ProfessionalSpecialty],
     BaseRepository[ProfessionalSpecialty],
 ):
     """
@@ -46,7 +41,7 @@ class ProfessionalSpecialtyRepository(
         Returns:
             Query filtered by qualification and excluding soft-deleted.
         """
-        return self._exclude_deleted().where(
+        return self.get_query().where(
             ProfessionalSpecialty.qualification_id == qualification_id
         )
 
@@ -93,36 +88,6 @@ class ProfessionalSpecialtyRepository(
             .options(selectinload(ProfessionalSpecialty.specialty))
         )
         return result.scalar_one_or_none()
-
-    async def list_for_qualification(
-        self,
-        qualification_id: UUID,
-        pagination: PaginationParams,
-        *,
-        filters: ProfessionalSpecialtyFilter | None = None,
-        sorting: ProfessionalSpecialtySorting | None = None,
-    ) -> PaginatedResponse[ProfessionalSpecialty]:
-        """
-        List professional specialties for a qualification with pagination, filtering, and sorting.
-
-        Args:
-            qualification_id: The qualification UUID.
-            pagination: Pagination parameters.
-            filters: Optional filters (search by RQE, is_verified).
-            sorting: Optional sorting (id, acquisition_date, created_at).
-
-        Returns:
-            Paginated list of professional specialties.
-        """
-        query = self._base_query_for_qualification(qualification_id).options(
-            selectinload(ProfessionalSpecialty.specialty)
-        )
-        return await self.list_paginated(
-            pagination,
-            filters=filters,
-            sorting=sorting,
-            base_query=query,
-        )
 
     async def get_by_specialty_id(
         self,

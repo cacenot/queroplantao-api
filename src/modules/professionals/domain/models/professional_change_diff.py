@@ -87,6 +87,8 @@ class ProfessionalChangeDiff(ProfessionalChangeDiffBase, PrimaryKeyMixin, table=
     __table_args__ = (
         # Index for finding diffs by version
         Index("ix_professional_change_diffs_version_id", "version_id"),
+        # Index for organization scope
+        Index("ix_professional_change_diffs_organization_id", "organization_id"),
         # Index for finding changes to specific fields
         Index("ix_professional_change_diffs_field_path", "field_path"),
         # Composite index for field change queries
@@ -95,6 +97,18 @@ class ProfessionalChangeDiff(ProfessionalChangeDiffBase, PrimaryKeyMixin, table=
             "version_id",
             "field_path",
         ),
+        # Composite index for organization + version queries
+        Index(
+            "ix_professional_change_diffs_org_version",
+            "organization_id",
+            "version_id",
+        ),
+    )
+
+    organization_id: UUID = Field(
+        foreign_key="organizations.id",
+        nullable=False,
+        description="Organization ID (denormalized for scope queries)",
     )
 
     # Reference to the version this diff belongs to

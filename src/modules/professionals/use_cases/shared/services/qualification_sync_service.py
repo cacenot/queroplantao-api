@@ -8,7 +8,7 @@ natural key for matching qualifications.
 from datetime import datetime, timezone
 from uuid import UUID
 
-from fastapi_restkit.pagination import PaginationParams
+from fastapi_restkit.filters import ListFilter
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.app.exceptions import (
@@ -28,6 +28,11 @@ from src.modules.professionals.domain.schemas.professional_version import (
     EducationInput,
     QualificationInput,
     SpecialtyInput,
+)
+from src.modules.professionals.infrastructure.filters import (
+    ProfessionalEducationFilter,
+    ProfessionalQualificationFilter,
+    ProfessionalSpecialtyFilter,
 )
 from src.modules.professionals.infrastructure.repositories import (
     ProfessionalEducationRepository,
@@ -153,9 +158,13 @@ class QualificationSyncService:
         professional_id: UUID,
     ) -> list[ProfessionalQualification]:
         """Get all existing qualifications for a professional."""
-        paginated = await self.qualification_repository.list_for_professional(
-            professional_id,
-            PaginationParams(page=1, page_size=100),  # Assume max 100 qualifications
+        filters = ProfessionalQualificationFilter(
+            organization_professional_id=ListFilter(values=[professional_id])
+        )
+        paginated = await self.qualification_repository.list(
+            filters=filters,
+            limit=100,
+            offset=0,
         )
         return paginated.items
 
@@ -190,6 +199,7 @@ class QualificationSyncService:
         )
         await self._sync_educations(
             qualification_id=qualification.id,
+            organization_id=organization_id,
             educations_data=data.educations,
             updated_by=updated_by,
         )
@@ -220,6 +230,7 @@ class QualificationSyncService:
         )
         await self._sync_educations(
             qualification_id=qualification.id,
+            organization_id=qualification.organization_id,
             educations_data=data.educations,
             updated_by=updated_by,
         )
@@ -325,9 +336,13 @@ class QualificationSyncService:
         qualification_id: UUID,
     ) -> list[ProfessionalSpecialty]:
         """Get all existing specialties for a qualification."""
-        paginated = await self.specialty_repository.list_for_qualification(
-            qualification_id,
-            PaginationParams(page=1, page_size=100),
+        filters = ProfessionalSpecialtyFilter(
+            qualification_id=ListFilter(values=[qualification_id])
+        )
+        paginated = await self.specialty_repository.list(
+            filters=filters,
+            limit=100,
+            offset=0,
         )
         return paginated.items
 
@@ -396,6 +411,7 @@ class QualificationSyncService:
     async def _sync_educations(
         self,
         qualification_id: UUID,
+        organization_id: UUID,
         educations_data: list[EducationInput],
         updated_by: UUID,
     ) -> list[ProfessionalEducation]:
@@ -454,6 +470,7 @@ class QualificationSyncService:
                 # Create new
                 new_edu = await self._create_education(
                     qualification_id=qualification_id,
+                    organization_id=organization_id,
                     data=edu_data,
                     updated_by=updated_by,
                 )
@@ -472,20 +489,26 @@ class QualificationSyncService:
         qualification_id: UUID,
     ) -> list[ProfessionalEducation]:
         """Get all existing educations for a qualification."""
-        paginated = await self.education_repository.list_for_qualification(
-            qualification_id,
-            PaginationParams(page=1, page_size=100),
+        filters = ProfessionalEducationFilter(
+            qualification_id=ListFilter(values=[qualification_id])
+        )
+        paginated = await self.education_repository.list(
+            filters=filters,
+            limit=100,
+            offset=0,
         )
         return paginated.items
 
     async def _create_education(
         self,
         qualification_id: UUID,
+        organization_id: UUID,
         data: EducationInput,
         updated_by: UUID,
     ) -> ProfessionalEducation:
         """Create a new education."""
         education = ProfessionalEducation(
+            organization_id=organization_id,
             qualification_id=qualification_id,
             level=data.level,
             course_name=data.course_name,

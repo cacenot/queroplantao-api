@@ -95,6 +95,12 @@ class ProfessionalEducation(
             postgresql_ops={"": "gin_trgm_ops"},
             postgresql_where=text("deleted_at IS NULL"),
         ),
+        # B-tree index for organization scope
+        Index(
+            "idx_professional_educations_org",
+            "organization_id",
+            postgresql_where=text("deleted_at IS NULL"),
+        ),
         # B-tree index for level filtering
         Index(
             "idx_professional_educations_level",
@@ -107,6 +113,12 @@ class ProfessionalEducation(
             "is_completed",
             postgresql_where=text("deleted_at IS NULL"),
         ),
+    )
+
+    organization_id: UUID = Field(
+        foreign_key="organizations.id",
+        nullable=False,
+        description="Organization ID (denormalized for scope queries)",
     )
 
     qualification_id: UUID = Field(

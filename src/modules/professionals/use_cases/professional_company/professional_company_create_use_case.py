@@ -47,6 +47,7 @@ class CreateProfessionalCompanyUseCase:
             raise CompanyAlreadyLinkedError()
 
         professional_company = ProfessionalCompany(
+            organization_id=organization_id,
             organization_professional_id=professional_id,
             created_by=created_by,
             **data.model_dump(),

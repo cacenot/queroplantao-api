@@ -16,12 +16,13 @@ from src.modules.professionals.infrastructure.filters.professional_version_filte
 )
 from src.shared.infrastructure.repositories import (
     BaseRepository,
-    SoftDeletePaginationMixin,
+    OrganizationScopeMixin,
+    ScopePolicy,
 )
 
 
 class ProfessionalVersionRepository(
-    SoftDeletePaginationMixin[ProfessionalVersion],
+    OrganizationScopeMixin[ProfessionalVersion],
     BaseRepository[ProfessionalVersion],
 ):
     """
@@ -32,6 +33,7 @@ class ProfessionalVersionRepository(
     """
 
     model = ProfessionalVersion
+    default_scope_policy: ScopePolicy = "ORGANIZATION_ONLY"
 
     def __init__(self, session: AsyncSession) -> None:
         super().__init__(session)
@@ -139,10 +141,11 @@ class ProfessionalVersionRepository(
     ) -> PaginatedResponse[ProfessionalVersion]:
         """List version history for a professional with pagination."""
         base_query = self._base_query_for_professional(professional_id, organization_id)
-        return await self.list_paginated(
-            pagination,
+        return await self.list(
             filters=filters,
             sorting=sorting,
+            limit=pagination.page_size,
+            offset=(pagination.page - 1) * pagination.page_size,
             base_query=base_query,
         )
 

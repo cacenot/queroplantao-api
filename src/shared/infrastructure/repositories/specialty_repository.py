@@ -12,11 +12,11 @@ from src.shared.infrastructure.filters.specialty import (
     SpecialtySorting,
 )
 from src.shared.infrastructure.repositories.base import BaseRepository
-from src.shared.infrastructure.repositories.mixins import SoftDeletePaginationMixin
+from src.shared.infrastructure.repositories.mixins import SoftDeleteMixin
 
 
 class SpecialtyRepository(
-    SoftDeletePaginationMixin[Specialty],
+    SoftDeleteMixin[Specialty],
     BaseRepository[Specialty],
 ):
     """
@@ -42,7 +42,7 @@ class SpecialtyRepository(
             Specialty if found, None otherwise.
         """
         result = await self.session.execute(
-            self._exclude_deleted().where(Specialty.code == code)
+            self.get_query().where(Specialty.code == code)
         )
         return result.scalar_one_or_none()
 
@@ -64,10 +64,11 @@ class SpecialtyRepository(
         Returns:
             Paginated list of specialties.
         """
-        return await self.list_paginated(
-            pagination,
+        return await self.list(
             filters=filters,
             sorting=sorting,
+            limit=pagination.page_size,
+            offset=(pagination.page - 1) * pagination.page_size,
         )
 
     async def search_by_name(
@@ -88,10 +89,11 @@ class SpecialtyRepository(
         Returns:
             Paginated list of matching specialties.
         """
-        query = self._exclude_deleted().where(Specialty.name.ilike(f"%{name}%"))
-        return await self.list_paginated(
-            pagination,
+        query = self.get_query().where(Specialty.name.ilike(f"%{name}%"))
+        return await self.list(
             sorting=sorting,
+            limit=pagination.page_size,
+            offset=(pagination.page - 1) * pagination.page_size,
             base_query=query,
         )
 
@@ -109,7 +111,7 @@ class SpecialtyRepository(
             return []
 
         result = await self.session.execute(
-            self._exclude_deleted().where(Specialty.id.in_(ids))
+            self.get_query().where(Specialty.id.in_(ids))
         )
         return list(result.scalars().all())
 
@@ -129,7 +131,7 @@ class SpecialtyRepository(
         Returns:
             True if code exists, False otherwise.
         """
-        query = self._exclude_deleted().where(Specialty.code == code)
+        query = self.get_query().where(Specialty.code == code)
         if exclude_id:
             query = query.where(Specialty.id != exclude_id)
 

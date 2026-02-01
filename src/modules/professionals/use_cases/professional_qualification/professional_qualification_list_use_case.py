@@ -2,6 +2,7 @@
 
 from uuid import UUID
 
+from fastapi_restkit.filters import ListFilter
 from fastapi_restkit.pagination import PaginatedResponse, PaginationParams
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -30,6 +31,7 @@ class ListProfessionalQualificationsUseCase:
         organization_id: UUID,
         professional_id: UUID,
         pagination: PaginationParams,
+        family_org_ids: list[UUID] | tuple[UUID, ...] | None = None,
         *,
         filters: ProfessionalQualificationFilter | None = None,
         sorting: ProfessionalQualificationSorting | None = None,
@@ -49,14 +51,21 @@ class ListProfessionalQualificationsUseCase:
         """
         # Verify professional exists in organization
         professional = await self.professional_repository.get_by_id_for_organization(
-            professional_id, organization_id
+            professional_id,
+            organization_id,
+            family_org_ids=family_org_ids,
         )
         if professional is None:
             raise ProfessionalNotFoundError()
 
-        return await self.repository.list_for_professional(
-            professional_id,
-            pagination,
+        if filters is None:
+            filters = ProfessionalQualificationFilter()
+
+        filters.organization_professional_id = ListFilter(values=[professional_id])
+
+        return await self.repository.list(
             filters=filters,
             sorting=sorting,
+            limit=pagination.page_size,
+            offset=(pagination.page - 1) * pagination.page_size,
         )

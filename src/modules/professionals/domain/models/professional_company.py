@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 from uuid import UUID
 
 from pydantic import AwareDatetime
-from sqlalchemy import UniqueConstraint
+from sqlalchemy import Index, UniqueConstraint, text
 from sqlmodel import Field, Relationship
 
 from src.shared.domain.models import (
@@ -61,9 +61,19 @@ class ProfessionalCompany(
             "company_id",
             name="uq_professional_companies_org_professional_company",
         ),
+        Index(
+            "idx_professional_companies_org",
+            "organization_id",
+            postgresql_where=text("deleted_at IS NULL"),
+        ),
     )
 
     # Foreign keys
+    organization_id: UUID = Field(
+        foreign_key="organizations.id",
+        nullable=False,
+        description="Organization ID (denormalized for scope queries)",
+    )
     organization_professional_id: UUID = Field(
         foreign_key="organization_professionals.id",
         nullable=False,

@@ -2,10 +2,8 @@
 
 from uuid import UUID
 
-from fastapi_restkit.pagination import PaginatedResponse, PaginationParams
 from sqlalchemy import Select, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
 
 from src.shared.domain.models import BankAccount
 from src.shared.infrastructure.repositories import BaseRepository
@@ -40,26 +38,6 @@ class BankAccountRepository(BaseRepository[BankAccount]):
         return select(BankAccount).where(
             BankAccount.organization_professional_id == professional_id
         )
-
-    async def list_for_professional(
-        self,
-        professional_id: UUID,
-        pagination: PaginationParams,
-    ) -> PaginatedResponse[BankAccount]:
-        """
-        List bank accounts for a professional with pagination.
-
-        Args:
-            professional_id: The organization professional UUID.
-            pagination: Pagination parameters.
-
-        Returns:
-            Paginated list of bank accounts.
-        """
-        query = self._base_query_for_professional(professional_id).options(
-            selectinload(BankAccount.bank)
-        )
-        return await self.paginate(pagination, query)
 
     async def get_by_id_for_professional(
         self,

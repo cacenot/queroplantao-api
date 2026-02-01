@@ -2,6 +2,7 @@
 
 from uuid import UUID
 
+from fastapi_restkit.filters import ListFilter
 from fastapi_restkit.pagination import PaginatedResponse, PaginationParams
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -63,9 +64,14 @@ class ListProfessionalSpecialtiesUseCase:
         if qualification is None:
             raise QualificationNotFoundError()
 
-        return await self.repository.list_for_qualification(
-            qualification.id,
-            pagination,
+        if filters is None:
+            filters = ProfessionalSpecialtyFilter()
+
+        filters.qualification_id = ListFilter(values=[qualification.id])
+
+        return await self.repository.list(
             filters=filters,
             sorting=sorting,
+            limit=pagination.page_size,
+            offset=(pagination.page - 1) * pagination.page_size,
         )

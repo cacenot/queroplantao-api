@@ -52,6 +52,7 @@ async def create_qualification(
         professional_id=professional_id,
         data=data,
         created_by=ctx.user,
+        family_org_ids=ctx.family_org_ids,
     )
     return ProfessionalQualificationResponse.model_validate(result)
 
@@ -81,6 +82,7 @@ async def list_qualifications(
         pagination=pagination,
         filters=filters,
         sorting=sorting,
+        family_org_ids=ctx.family_org_ids,
     )
     return result
 
@@ -102,6 +104,7 @@ async def get_qualification(
         organization_id=ctx.organization,
         professional_id=professional_id,
         qualification_id=qualification_id,
+        family_org_ids=ctx.family_org_ids,
     )
     return ProfessionalQualificationResponse.model_validate(result)
 
@@ -126,6 +129,7 @@ async def update_qualification(
         qualification_id=qualification_id,
         data=data,
         updated_by=ctx.user,
+        family_org_ids=ctx.family_org_ids,
     )
     return ProfessionalQualificationResponse.model_validate(result)
 
@@ -148,4 +152,5 @@ async def delete_qualification(
         professional_id=professional_id,
         qualification_id=qualification_id,
         deleted_by=ctx.user,
+        family_org_ids=ctx.family_org_ids,
     )

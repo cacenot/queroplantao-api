@@ -3,11 +3,12 @@
 from datetime import datetime, time, timezone
 from uuid import UUID
 
-from fastapi_restkit.pagination import PaginationParams
+from fastapi_restkit.filters import ListFilter
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.modules.professionals.domain.models import ProfessionalCompany
 from src.modules.professionals.domain.schemas.professional_version import CompanyInput
+from src.modules.professionals.infrastructure.filters import ProfessionalCompanyFilter
 from src.modules.professionals.infrastructure.repositories import (
     CompanyRepository,
     ProfessionalCompanyRepository,
@@ -56,7 +57,11 @@ class CompanySyncService:
                 result.append(updated)
             else:
                 created = await self._create_link(
-                    professional_id, company.id, company_data, updated_by
+                    professional_id,
+                    organization_id,
+                    company.id,
+                    company_data,
+                    updated_by,
                 )
                 result.append(created)
 
@@ -73,19 +78,26 @@ class CompanySyncService:
     async def _get_existing_links(
         self, professional_id: UUID
     ) -> list[ProfessionalCompany]:
-        paginated = await self.professional_company_repository.list_for_professional(
-            professional_id, PaginationParams(page=1, page_size=100)
+        filters = ProfessionalCompanyFilter(
+            organization_professional_id=ListFilter(values=[professional_id])
+        )
+        paginated = await self.professional_company_repository.list(
+            filters=filters,
+            limit=100,
+            offset=0,
         )
         return paginated.items
 
     async def _create_link(
         self,
         professional_id: UUID,
+        organization_id: UUID,
         company_id: UUID,
         data: CompanyInput,
         updated_by: UUID,
     ) -> ProfessionalCompany:
         link = ProfessionalCompany(
+            organization_id=organization_id,
             organization_professional_id=professional_id,
             company_id=company_id,
             joined_at=self._to_datetime(data.started_at) or datetime.now(timezone.utc),

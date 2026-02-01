@@ -7,11 +7,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.shared.domain.models import DocumentCategory, DocumentType
 from src.shared.infrastructure.repositories.base import BaseRepository
-from src.shared.infrastructure.repositories.mixins import SoftDeletePaginationMixin
+from src.shared.infrastructure.repositories.mixins import SoftDeleteMixin
 
 
 class DocumentTypeRepository(
-    SoftDeletePaginationMixin[DocumentType],
+    SoftDeleteMixin[DocumentType],
     BaseRepository[DocumentType],
 ):
     """
@@ -42,7 +42,7 @@ class DocumentTypeRepository(
         Returns:
             Query with soft-delete filter.
         """
-        base = self._exclude_deleted()
+        base = self.get_query()
         if organization_id is None:
             return base.where(DocumentType.organization_id.is_(None))
         return base.where(

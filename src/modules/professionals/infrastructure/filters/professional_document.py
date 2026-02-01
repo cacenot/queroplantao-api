@@ -29,6 +29,21 @@ class ProfessionalDocumentFilter(FilterSet):
         description="Search by file name (partial, case-insensitive)",
     )
 
+    organization_professional_id: Optional[ListFilter[UUID]] = Field(
+        default=None,
+        description="Filter by organization professional ID",
+    )
+
+    qualification_id: Optional[ListFilter[UUID]] = Field(
+        default=None,
+        description="Filter by qualification ID",
+    )
+
+    specialty_id: Optional[ListFilter[UUID]] = Field(
+        default=None,
+        description="Filter by specialty ID",
+    )
+
     document_type_id: Optional[ListFilter[UUID]] = Field(
         default=None,
         description="Filter by document type ID",
@@ -49,6 +64,7 @@ class ProfessionalDocumentFilter(FilterSet):
 
         field_columns = {
             "search": ["file_name"],
+            "document_category": "document_type.category",
         }
 
 

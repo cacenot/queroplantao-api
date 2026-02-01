@@ -3,9 +3,10 @@ Filters and sorting for ProfessionalSpecialty entity.
 """
 
 from typing import Optional
+from uuid import UUID
 
 from pydantic import Field
-from fastapi_restkit.filters import BooleanFilter, SearchFilter
+from fastapi_restkit.filters import BooleanFilter, ListFilter, SearchFilter
 from fastapi_restkit.filterset import FilterSet
 from fastapi_restkit.sortingset import SortableField, SortingSet
 
@@ -22,6 +23,11 @@ class ProfessionalSpecialtyFilter(FilterSet):
     search: Optional[SearchFilter] = Field(
         default=None,
         description="Search by RQE number (partial, case-insensitive)",
+    )
+
+    qualification_id: Optional[ListFilter[UUID]] = Field(
+        default=None,
+        description="Filter by qualification ID",
     )
 
     is_verified: Optional[BooleanFilter] = Field(

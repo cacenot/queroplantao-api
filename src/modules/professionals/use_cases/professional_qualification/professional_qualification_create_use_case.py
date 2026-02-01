@@ -33,6 +33,7 @@ class CreateProfessionalQualificationUseCase:
         professional_id: UUID,
         organization_id: UUID,
         data: ProfessionalQualificationCreate,
+        family_org_ids: list[UUID] | tuple[UUID, ...] | None = None,
     ) -> ProfessionalQualification:
         """
         Create a new qualification for a professional.
@@ -44,7 +45,9 @@ class CreateProfessionalQualificationUseCase:
         """
         # Verify professional exists
         professional = await self.professional_repository.get_by_id_for_organization(
-            professional_id, organization_id
+            professional_id,
+            organization_id,
+            family_org_ids=family_org_ids,
         )
         if professional is None:
             raise ProfessionalNotFoundError()

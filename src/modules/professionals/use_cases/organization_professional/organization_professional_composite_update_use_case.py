@@ -3,6 +3,7 @@
 from datetime import datetime, timezone
 from uuid import UUID
 
+from fastapi_restkit.filters import ListFilter
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.app.exceptions import (
@@ -33,6 +34,10 @@ from src.modules.professionals.domain.schemas.organization_professional_composit
     OrganizationProfessionalCompositeUpdate,
     QualificationNestedUpdate,
     SpecialtyNestedUpdate,
+)
+from src.modules.professionals.infrastructure.filters import (
+    ProfessionalEducationFilter,
+    ProfessionalSpecialtyFilter,
 )
 from src.modules.professionals.infrastructure.repositories import (
     OrganizationProfessionalRepository,
@@ -207,7 +212,7 @@ class UpdateOrganizationProfessionalCompositeUseCase:
         # Handle educations (if provided - None means no changes)
         if qualification_data.educations is not None:
             await self._handle_educations_update(
-                qualification_id, qualification_data.educations
+                qualification_id, organization_id, qualification_data.educations
             )
 
     async def _validate_council_uniqueness(
@@ -333,11 +338,13 @@ class UpdateOrganizationProfessionalCompositeUseCase:
         self, qualification_id: UUID
     ) -> list[ProfessionalSpecialty]:
         """Get all existing specialties for a qualification."""
-        from fastapi_restkit.pagination import PaginationParams
-
-        result = await self.specialty_repository.list_for_qualification(
-            qualification_id,
-            PaginationParams(page=1, page_size=100),  # Assume max 100 specialties
+        filters = ProfessionalSpecialtyFilter(
+            qualification_id=ListFilter(values=[qualification_id])
+        )
+        result = await self.specialty_repository.list(
+            filters=filters,
+            limit=100,
+            offset=0,
         )
         return result.items
 
@@ -391,6 +398,7 @@ class UpdateOrganizationProfessionalCompositeUseCase:
     async def _handle_educations_update(
         self,
         qualification_id: UUID,
+        organization_id: UUID,
         educations_data: list[EducationNestedUpdate],
     ) -> None:
         """
@@ -431,7 +439,9 @@ class UpdateOrganizationProfessionalCompositeUseCase:
                 if education_data.institution is None:
                     raise InstitutionRequiredError()
 
-                await self._create_education(qualification_id, education_data)
+                await self._create_education(
+                    qualification_id, organization_id, education_data
+                )
 
         # Soft delete educations not in the list
         ids_to_delete = existing_ids - provided_ids
@@ -442,11 +452,13 @@ class UpdateOrganizationProfessionalCompositeUseCase:
         self, qualification_id: UUID
     ) -> list[ProfessionalEducation]:
         """Get all existing educations for a qualification."""
-        from fastapi_restkit.pagination import PaginationParams
-
-        result = await self.education_repository.list_for_qualification(
-            qualification_id,
-            PaginationParams(page=1, page_size=100),  # Assume max 100 educations
+        filters = ProfessionalEducationFilter(
+            qualification_id=ListFilter(values=[qualification_id])
+        )
+        result = await self.education_repository.list(
+            filters=filters,
+            limit=100,
+            offset=0,
         )
         return result.items
 
@@ -474,6 +486,7 @@ class UpdateOrganizationProfessionalCompositeUseCase:
     async def _create_education(
         self,
         qualification_id: UUID,
+        organization_id: UUID,
         data: EducationNestedUpdate,
     ) -> ProfessionalEducation:
         """Create a new education."""
@@ -484,6 +497,7 @@ class UpdateOrganizationProfessionalCompositeUseCase:
             education_data["is_completed"] = False
 
         education = ProfessionalEducation(
+            organization_id=organization_id,
             qualification_id=qualification_id,
             **education_data,
         )

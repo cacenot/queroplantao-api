@@ -52,6 +52,7 @@ async def create_education(
         professional_id=professional_id,
         data=data,
         created_by=ctx.user,
+        family_org_ids=ctx.family_org_ids,
     )
     return ProfessionalEducationResponse.model_validate(result)
 

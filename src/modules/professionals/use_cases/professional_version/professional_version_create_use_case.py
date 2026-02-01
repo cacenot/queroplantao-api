@@ -134,6 +134,7 @@ class CreateProfessionalVersionUseCase:
         # 8. Calculate and save diffs
         diffs = self.diff_calculator.calculate_diffs(
             version_id=version.id,
+            organization_id=organization_id,
             old_snapshot=current_snapshot,
             new_snapshot=new_snapshot,
         )

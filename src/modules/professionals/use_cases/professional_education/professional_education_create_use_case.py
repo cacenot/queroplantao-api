@@ -26,6 +26,7 @@ class CreateProfessionalEducationUseCase:
         qualification_id: UUID,
         organization_id: UUID,
         data: ProfessionalEducationCreate,
+        family_org_ids: list[UUID] | tuple[UUID, ...] | None = None,
     ) -> ProfessionalEducation:
         """
         Create a new education record for a qualification.
@@ -34,13 +35,16 @@ class CreateProfessionalEducationUseCase:
         - Qualification exists in organization
         """
         # Verify qualification exists
-        qualification = await self.qualification_repository.get_by_id_for_organization(
-            qualification_id, organization_id
+        qualification = await self.qualification_repository.get_by_organization(
+            id=qualification_id,
+            organization_id=organization_id,
+            family_org_ids=family_org_ids or (),
         )
         if qualification is None:
             raise QualificationNotFoundError()
 
         education = ProfessionalEducation(
+            organization_id=organization_id,
             qualification_id=qualification_id,
             **data.model_dump(),
         )

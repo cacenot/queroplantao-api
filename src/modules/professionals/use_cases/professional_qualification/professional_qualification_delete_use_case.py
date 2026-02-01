@@ -21,6 +21,7 @@ class DeleteProfessionalQualificationUseCase:
         self,
         qualification_id: UUID,
         organization_id: UUID,
+        family_org_ids: list[UUID] | tuple[UUID, ...] | None = None,
         professional_id: UUID | None = None,
         deleted_by: UUID | None = None,
     ) -> None:
@@ -33,8 +34,10 @@ class DeleteProfessionalQualificationUseCase:
             professional_id: The professional UUID (unused, for API consistency).
             deleted_by: UUID of the user deleting this record (unused, for future audit).
         """
-        qualification = await self.repository.get_by_id_for_organization(
-            qualification_id, organization_id
+        qualification = await self.repository.get_by_organization(
+            id=qualification_id,
+            organization_id=organization_id,
+            family_org_ids=family_org_ids or (),
         )
         if qualification is None:
             raise QualificationNotFoundError()

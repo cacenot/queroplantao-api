@@ -3,6 +3,7 @@ Filters and sorting for ProfessionalEducation entity.
 """
 
 from typing import Optional
+from uuid import UUID
 
 from pydantic import Field
 from fastapi_restkit.filters import BooleanFilter, ListFilter, SearchFilter
@@ -26,6 +27,11 @@ class ProfessionalEducationFilter(FilterSet):
     search: Optional[SearchFilter] = Field(
         default=None,
         description="Search by course name or institution (partial, case-insensitive)",
+    )
+
+    qualification_id: Optional[ListFilter[UUID]] = Field(
+        default=None,
+        description="Filter by qualification ID",
     )
 
     level: Optional[ListFilter[EducationLevel]] = Field(

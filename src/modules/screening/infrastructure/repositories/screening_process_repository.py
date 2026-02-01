@@ -275,8 +275,12 @@ class ScreeningProcessRepository(
         Returns:
             ScreeningProcess if found and not deleted, None otherwise.
         """
-        query = super().get_query().where(  # type: ignore[misc]
-            ScreeningProcess.access_token == access_token
+        query = (
+            super()
+            .get_query()
+            .where(  # type: ignore[misc]
+                ScreeningProcess.access_token == access_token
+            )
         )
         result = await self.session.execute(query)
         return result.scalar_one_or_none()
@@ -295,7 +299,8 @@ class ScreeningProcessRepository(
             ScreeningProcess with loaded relationships if found, None otherwise.
         """
         query = (
-            super().get_query()  # type: ignore[misc]
+            super()
+            .get_query()  # type: ignore[misc]
             .where(ScreeningProcess.access_token == access_token)
             .options(
                 # Load all step relationships

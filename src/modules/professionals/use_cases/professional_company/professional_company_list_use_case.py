@@ -2,6 +2,7 @@
 
 from uuid import UUID
 
+from fastapi_restkit.filters import ListFilter
 from fastapi_restkit.pagination import PaginatedResponse, PaginationParams
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -54,9 +55,14 @@ class ListProfessionalCompaniesUseCase:
         if professional is None:
             raise ProfessionalNotFoundError()
 
-        return await self.repository.list_for_professional(
-            professional_id,
-            pagination,
+        if filters is None:
+            filters = ProfessionalCompanyFilter()
+
+        filters.organization_professional_id = ListFilter(values=[professional_id])
+
+        return await self.repository.list(
             filters=filters,
             sorting=sorting,
+            limit=pagination.page_size,
+            offset=(pagination.page - 1) * pagination.page_size,
         )

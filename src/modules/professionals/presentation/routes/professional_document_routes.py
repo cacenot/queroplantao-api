@@ -52,6 +52,7 @@ async def create_document(
         professional_id=professional_id,
         data=data,
         created_by=ctx.user,
+        family_org_ids=ctx.family_org_ids,
     )
     return ProfessionalDocumentResponse.model_validate(result)
 

@@ -3,7 +3,6 @@
 from datetime import datetime, timezone
 from uuid import UUID
 
-from fastapi_restkit.pagination import PaginationParams
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -76,8 +75,13 @@ class BankAccountSyncService:
         return result
 
     async def _get_existing_accounts(self, professional_id: UUID) -> list[BankAccount]:
-        paginated = await self.bank_account_repository.list_for_professional(
-            professional_id, PaginationParams(page=1, page_size=100)
+        base_query = select(BankAccount).where(
+            BankAccount.organization_professional_id == professional_id
+        )
+        paginated = await self.bank_account_repository.list(
+            limit=100,
+            offset=0,
+            base_query=base_query,
         )
         return paginated.items
 

@@ -18,12 +18,15 @@ from src.modules.professionals.infrastructure.filters import (
 )
 from src.shared.infrastructure.repositories import (
     BaseRepository,
-    SoftDeletePaginationMixin,
+    OrganizationScopeMixin,
+    ScopePolicy,
+    SoftDeleteMixin,
 )
 
 
 class ProfessionalQualificationRepository(
-    SoftDeletePaginationMixin[ProfessionalQualification],
+    OrganizationScopeMixin[ProfessionalQualification],
+    SoftDeleteMixin[ProfessionalQualification],
     BaseRepository[ProfessionalQualification],
 ):
     """
@@ -33,26 +36,10 @@ class ProfessionalQualificationRepository(
     """
 
     model = ProfessionalQualification
+    default_scope_policy: ScopePolicy = "ORGANIZATION_ONLY"
 
     def __init__(self, session: AsyncSession) -> None:
         super().__init__(session)
-
-    def _base_query_for_organization(
-        self,
-        organization_id: UUID,
-    ) -> Select[tuple[ProfessionalQualification]]:
-        """
-        Get base query filtered by organization (multi-tenancy).
-
-        Args:
-            organization_id: The organization UUID.
-
-        Returns:
-            Query filtered by organization and excluding soft-deleted.
-        """
-        return self._exclude_deleted().where(
-            ProfessionalQualification.organization_id == organization_id
-        )
 
     def _base_query_for_professional(
         self,
@@ -67,36 +54,16 @@ class ProfessionalQualificationRepository(
         Returns:
             Query filtered by professional and excluding soft-deleted.
         """
-        return self._exclude_deleted().where(
+        return self.get_query().where(
             ProfessionalQualification.organization_professional_id == professional_id
         )
-
-    async def get_by_id_for_organization(
-        self,
-        id: UUID,
-        organization_id: UUID,
-    ) -> ProfessionalQualification | None:
-        """
-        Get qualification by ID for a specific organization.
-
-        Args:
-            id: The qualification UUID.
-            organization_id: The organization UUID.
-
-        Returns:
-            Qualification if found in organization, None otherwise.
-        """
-        result = await self.session.execute(
-            self._base_query_for_organization(organization_id).where(
-                ProfessionalQualification.id == id
-            )
-        )
-        return result.scalar_one_or_none()
 
     async def get_by_id_with_relations(
         self,
         id: UUID,
         organization_id: UUID,
+        family_org_ids: list[UUID] | tuple[UUID, ...] | None = None,
+        scope_policy: ScopePolicy | None = None,
     ) -> ProfessionalQualification | None:
         """
         Get qualification by ID with related data loaded.
@@ -108,44 +75,25 @@ class ProfessionalQualificationRepository(
         Returns:
             Qualification with specialties, educations, documents loaded.
         """
-        result = await self.session.execute(
-            self._base_query_for_organization(organization_id)
-            .where(ProfessionalQualification.id == id)
+        org_ids = self._get_effective_org_ids(
+            organization_id=organization_id,
+            family_org_ids=family_org_ids or (),
+            scope_policy=scope_policy,
+        )
+        base_query = (
+            super()
+            .get_query()
             .options(
                 selectinload(ProfessionalQualification.specialties),
                 selectinload(ProfessionalQualification.educations),
                 selectinload(ProfessionalQualification.documents),
             )
         )
-        return result.scalar_one_or_none()
-
-    async def list_for_professional(
-        self,
-        professional_id: UUID,
-        pagination: PaginationParams,
-        *,
-        filters: ProfessionalQualificationFilter | None = None,
-        sorting: ProfessionalQualificationSorting | None = None,
-    ) -> PaginatedResponse[ProfessionalQualification]:
-        """
-        List qualifications for a professional with pagination, filtering, and sorting.
-
-        Args:
-            professional_id: The organization professional UUID.
-            pagination: Pagination parameters.
-            filters: Optional filters (search, professional_type, council_type, etc.).
-            sorting: Optional sorting (id, professional_type, council_state, etc.).
-
-        Returns:
-            Paginated list of qualifications.
-        """
-        query = self._base_query_for_professional(professional_id)
-        return await self.list_paginated(
-            pagination,
-            filters=filters,
-            sorting=sorting,
-            base_query=query,
+        base_query = self._apply_org_scope(base_query, org_ids)
+        result = await self.session.execute(
+            base_query.where(ProfessionalQualification.id == id)
         )
+        return result.scalar_one_or_none()
 
     async def get_by_professional_type(
         self,
@@ -209,7 +157,10 @@ class ProfessionalQualificationRepository(
         Returns:
             True if council exists, False otherwise.
         """
-        query = self._base_query_for_organization(organization_id).where(
+        query = self._apply_org_scope(
+            super().get_query(),
+            [organization_id],
+        ).where(
             ProfessionalQualification.council_number == council_number,
             ProfessionalQualification.council_state == council_state,
         )
@@ -239,7 +190,7 @@ class ProfessionalQualificationRepository(
         Returns:
             True if council exists in the family, False otherwise.
         """
-        query = self._exclude_deleted().where(
+        query = self.get_query().where(
             ProfessionalQualification.organization_id.in_(list(family_org_ids)),
             ProfessionalQualification.council_number == council_number,
             ProfessionalQualification.council_state == council_state,
@@ -267,8 +218,12 @@ class ProfessionalQualificationRepository(
         Returns:
             Qualification if found, None otherwise.
         """
+        base_query = self._apply_org_scope(
+            super().get_query(),
+            [organization_id],
+        )
         result = await self.session.execute(
-            self._base_query_for_organization(organization_id).where(
+            base_query.where(
                 ProfessionalQualification.council_number == council_number,
                 ProfessionalQualification.council_state == council_state,
             )
@@ -297,12 +252,14 @@ class ProfessionalQualificationRepository(
         Returns:
             Paginated list of qualifications.
         """
-        query = self._base_query_for_organization(organization_id).where(
-            ProfessionalQualification.council_type == council_type
-        )
-        return await self.list_paginated(
-            pagination,
+        query = self._apply_org_scope(
+            super().get_query(),
+            [organization_id],
+        ).where(ProfessionalQualification.council_type == council_type)
+        return await self.list(
             filters=filters,
             sorting=sorting,
+            limit=pagination.page_size,
+            offset=(pagination.page - 1) * pagination.page_size,
             base_query=query,
         )

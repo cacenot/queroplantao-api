@@ -27,6 +27,7 @@ class UpdateProfessionalQualificationUseCase:
         qualification_id: UUID,
         organization_id: UUID,
         data: ProfessionalQualificationUpdate,
+        family_org_ids: list[UUID] | tuple[UUID, ...] | None = None,
         professional_id: UUID | None = None,
         updated_by: UUID | None = None,
     ) -> ProfessionalQualification:
@@ -40,8 +41,10 @@ class UpdateProfessionalQualificationUseCase:
             professional_id: The professional UUID (unused, for API consistency).
             updated_by: UUID of the user updating this record.
         """
-        qualification = await self.repository.get_by_id_for_organization(
-            qualification_id, organization_id
+        qualification = await self.repository.get_by_organization(
+            id=qualification_id,
+            organization_id=organization_id,
+            family_org_ids=family_org_ids or (),
         )
         if qualification is None:
             raise QualificationNotFoundError()

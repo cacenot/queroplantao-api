@@ -40,6 +40,7 @@ class CreateProfessionalDocumentUseCase:
         professional_id: UUID,
         organization_id: UUID,
         data: ProfessionalDocumentCreate,
+        family_org_ids: list[UUID] | tuple[UUID, ...] | None = None,
     ) -> ProfessionalDocument:
         """
         Create a new document for a professional.
@@ -52,17 +53,19 @@ class CreateProfessionalDocumentUseCase:
         """
         # Verify professional exists
         professional = await self.professional_repository.get_by_id_for_organization(
-            professional_id, organization_id
+            professional_id,
+            organization_id,
+            family_org_ids=family_org_ids,
         )
         if professional is None:
             raise ProfessionalNotFoundError()
 
         # Validate qualification if provided
         if data.qualification_id:
-            qualification = (
-                await self.qualification_repository.get_by_id_for_organization(
-                    data.qualification_id, organization_id
-                )
+            qualification = await self.qualification_repository.get_by_organization(
+                id=data.qualification_id,
+                organization_id=organization_id,
+                family_org_ids=family_org_ids or (),
             )
             if qualification is None:
                 raise QualificationNotFoundError()
@@ -89,6 +92,7 @@ class CreateProfessionalDocumentUseCase:
         )
 
         document = ProfessionalDocument(
+            organization_id=organization_id,
             organization_professional_id=professional_id,
             is_pending=is_screening_upload,
             source_type=source_type,

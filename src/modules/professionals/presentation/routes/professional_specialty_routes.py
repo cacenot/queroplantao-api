@@ -52,6 +52,7 @@ async def create_specialty(
         professional_id=professional_id,
         data=data,
         created_by=ctx.user,
+        family_org_ids=ctx.family_org_ids,
     )
     return ProfessionalSpecialtyResponse.model_validate(result)
 

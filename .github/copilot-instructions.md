@@ -269,6 +269,15 @@ class ProfessionalRepository(
             email=email,
         )
         return existing is not None
+
+    ### Listagem e Paginação (REQUIRED)
+
+    Evite criar métodos `list_*` específicos em repositórios para paginação.
+    Use sempre `BaseRepository.list()` com `FilterSet/SortingSet` e, quando necessário,
+    `base_query` para filtros mais complexos.
+
+    **Exceção:** repositórios com escopo organizacional podem usar
+    `OrganizationScopeMixin.list_by_organization()` quando fizer sentido.
 ```
 
 ## Core Patterns

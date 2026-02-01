@@ -110,6 +110,12 @@ class ProfessionalDocument(
             postgresql_ops={"": "gin_trgm_ops"},
             postgresql_where=text("deleted_at IS NULL"),
         ),
+        # B-tree index for organization scope
+        Index(
+            "idx_professional_documents_org",
+            "organization_id",
+            postgresql_where=text("deleted_at IS NULL"),
+        ),
         # B-tree index for document_type_id filtering
         Index(
             "idx_professional_documents_type_id",
@@ -135,6 +141,13 @@ class ProfessionalDocument(
         foreign_key="document_types.id",
         nullable=False,
         description="Reference to the document type configuration",
+    )
+
+    # Organization reference (denormalized for scope queries)
+    organization_id: UUID = Field(
+        foreign_key="organizations.id",
+        nullable=False,
+        description="Organization ID (denormalized for scope queries)",
     )
 
     # Always linked to organization professional (required for listing all docs)

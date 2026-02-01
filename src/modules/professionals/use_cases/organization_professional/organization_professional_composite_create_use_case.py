@@ -104,7 +104,7 @@ class CreateOrganizationProfessionalCompositeUseCase:
         await self._create_specialties(qualification.id, data)
 
         # 7. Create educations
-        await self._create_educations(qualification.id, data)
+        await self._create_educations(qualification.id, organization_id, data)
 
         # 8. Commit and return with relations
         await self.session.commit()
@@ -235,6 +235,7 @@ class CreateOrganizationProfessionalCompositeUseCase:
     async def _create_educations(
         self,
         qualification_id: UUID,
+        organization_id: UUID,
         data: OrganizationProfessionalCompositeCreate,
     ) -> list[ProfessionalEducation]:
         """Create education entities."""
@@ -242,6 +243,7 @@ class CreateOrganizationProfessionalCompositeUseCase:
 
         for education_data in data.qualification.educations:
             education = ProfessionalEducation(
+                organization_id=organization_id,
                 qualification_id=qualification_id,
                 **education_data.model_dump(),
             )
