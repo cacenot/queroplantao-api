@@ -39,5 +39,8 @@ class ListSpecialtiesUseCase:
             Paginated list of specialties.
         """
         return await self.repository.list_all(
-            pagination, filters=filters, sorting=sorting
+            filters=filters,
+            sorting=sorting,
+            limit=pagination.page_size,
+            offset=(pagination.page - 1) * pagination.page_size,
         )

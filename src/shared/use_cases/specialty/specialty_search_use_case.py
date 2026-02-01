@@ -35,4 +35,9 @@ class SearchSpecialtiesUseCase:
         Returns:
             Paginated list of matching specialties.
         """
-        return await self.repository.search_by_name(name, pagination, sorting=sorting)
+        return await self.repository.search_by_name(
+            name,
+            sorting=sorting,
+            limit=pagination.page_size,
+            offset=(pagination.page - 1) * pagination.page_size,
+        )

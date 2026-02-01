@@ -53,9 +53,10 @@ class ListOrganizationUsersUseCase:
         """
         result = await self.repository.list_for_organization(
             organization_id=organization_id,
-            pagination=pagination,
             filters=filters,
             sorting=sorting,
+            limit=pagination.page_size,
+            offset=(pagination.page - 1) * pagination.page_size,
             include_pending=include_pending,
         )
 
@@ -94,9 +95,10 @@ class ListOrganizationUsersUseCase:
         """
         result = await self.repository.list_for_organization(
             organization_id=organization_id,
-            pagination=pagination,
             filters=filters,
             sorting=sorting,
+            limit=pagination.page_size,
+            offset=(pagination.page - 1) * pagination.page_size,
             include_pending=include_pending,
         )
 

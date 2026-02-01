@@ -2,7 +2,7 @@
 
 from uuid import UUID
 
-from fastapi_restkit.pagination import PaginatedResponse, PaginationParams
+from fastapi_restkit.pagination import PaginatedResponse
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -48,10 +48,11 @@ class SpecialtyRepository(
 
     async def list_all(
         self,
-        pagination: PaginationParams,
         *,
         filters: SpecialtyFilter | None = None,
         sorting: SpecialtySorting | None = None,
+        limit: int = 25,
+        offset: int = 0,
     ) -> PaginatedResponse[Specialty]:
         """
         List all active specialties with pagination, filtering, and sorting.
@@ -67,16 +68,17 @@ class SpecialtyRepository(
         return await self.list(
             filters=filters,
             sorting=sorting,
-            limit=pagination.page_size,
-            offset=(pagination.page - 1) * pagination.page_size,
+            limit=limit,
+            offset=offset,
         )
 
     async def search_by_name(
         self,
         name: str,
-        pagination: PaginationParams,
         *,
         sorting: SpecialtySorting | None = None,
+        limit: int = 25,
+        offset: int = 0,
     ) -> PaginatedResponse[Specialty]:
         """
         Search specialties by name (case-insensitive partial match).
@@ -92,8 +94,8 @@ class SpecialtyRepository(
         query = self.get_query().where(Specialty.name.ilike(f"%{name}%"))
         return await self.list(
             sorting=sorting,
-            limit=pagination.page_size,
-            offset=(pagination.page - 1) * pagination.page_size,
+            limit=limit,
+            offset=offset,
             base_query=query,
         )
 

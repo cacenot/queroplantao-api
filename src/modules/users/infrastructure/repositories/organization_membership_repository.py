@@ -3,7 +3,7 @@
 from datetime import UTC, datetime
 from uuid import UUID
 
-from fastapi_restkit.pagination import PaginatedResponse, PaginationParams
+from fastapi_restkit.pagination import PaginatedResponse
 from sqlalchemy import and_, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -30,19 +30,24 @@ class OrganizationMembershipRepository(BaseRepository[OrganizationMembership]):
 
     def _base_query(self):
         """Base query with eager loading of relationships."""
-        return select(OrganizationMembership).options(
-            selectinload(OrganizationMembership.user),
-            selectinload(OrganizationMembership.role),
-            selectinload(OrganizationMembership.organization),
+        return (
+            select(OrganizationMembership)
+            .join(User, OrganizationMembership.user_id == User.id)
+            .options(
+                selectinload(OrganizationMembership.user),
+                selectinload(OrganizationMembership.role),
+                selectinload(OrganizationMembership.organization),
+            )
         )
 
     async def list_for_organization(
         self,
         organization_id: UUID,
-        pagination: PaginationParams,
         *,
         filters: OrganizationUserFilter | None = None,
         sorting: OrganizationUserSorting | None = None,
+        limit: int = 25,
+        offset: int = 0,
         include_pending: bool = True,
     ) -> PaginatedResponse[OrganizationMembership]:
         """
@@ -68,11 +73,12 @@ class OrganizationMembershipRepository(BaseRepository[OrganizationMembership]):
                 | OrganizationMembership.invited_at.is_(None)
             )
 
-        return await self.paginate(
-            pagination,
-            query,
+        return await self.list(
+            base_query=query,
             filters=filters,
             sorting=sorting,
+            limit=limit,
+            offset=offset,
         )
 
     async def get_by_id_for_organization(
