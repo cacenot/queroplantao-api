@@ -10,6 +10,18 @@ export type ListSpecialtiesApiV1SpecialtiesGetParams = {
   page?: number | null;
   pageSize?: number | null;
   /**
+   * Relationships to expand (eager load).
+   */
+  expand?: string[] | null;
+  /**
+   * Only include these relationships or columns.
+   */
+  only?: string[] | null;
+  /**
+   * Relationships or columns to omit.
+   */
+  omit?: string[] | null;
+  /**
    * Search by code or name (partial, case-insensitive, accent-insensitive)
    */
   search?: string | null;

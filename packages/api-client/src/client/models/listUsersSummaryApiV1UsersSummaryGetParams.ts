@@ -10,6 +10,18 @@ export type ListUsersSummaryApiV1UsersSummaryGetParams = {
   page?: number | null;
   pageSize?: number | null;
   /**
+   * Relationships to expand (eager load).
+   */
+  expand?: string[] | null;
+  /**
+   * Only include these relationships or columns.
+   */
+  only?: string[] | null;
+  /**
+   * Relationships or columns to omit.
+   */
+  omit?: string[] | null;
+  /**
    * Search by user name or email (partial, case-insensitive)
    */
   search?: string | null;

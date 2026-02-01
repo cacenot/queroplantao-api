@@ -11,6 +11,18 @@ export type ListEducationsApiV1ProfessionalsProfessionalIdEducationsGetParams =
     page?: number | null;
     pageSize?: number | null;
     /**
+     * Relationships to expand (eager load).
+     */
+    expand?: string[] | null;
+    /**
+     * Only include these relationships or columns.
+     */
+    only?: string[] | null;
+    /**
+     * Relationships or columns to omit.
+     */
+    omit?: string[] | null;
+    /**
      * Search by course name or institution (partial, case-insensitive)
      */
     search?: string | null;
@@ -18,6 +30,10 @@ export type ListEducationsApiV1ProfessionalsProfessionalIdEducationsGetParams =
      * Lookup operator for search (e.g. exact, icontains)
      */
     "search[lookup]"?: string | null;
+    /**
+     * Filter by qualification ID
+     */
+    qualificationId?: string[] | null;
     /**
      * Filter by education level
      */

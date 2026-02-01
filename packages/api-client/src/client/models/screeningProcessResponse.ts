@@ -6,6 +6,7 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { ScreeningStatus } from "./screeningStatus.js";
+import type { StepType } from "./stepType.js";
 import type { ScreeningProcessResponseProfessionalCpf } from "./screeningProcessResponseProfessionalCpf.js";
 import type { ScreeningProcessResponseProfessionalName } from "./screeningProcessResponseProfessionalName.js";
 import type { ScreeningProcessResponseProfessionalPhone } from "./screeningProcessResponseProfessionalPhone.js";
@@ -18,7 +19,6 @@ import type { ScreeningProcessResponseCurrentActorId } from "./screeningProcessR
 import type { ScreeningProcessResponseClientCompanyId } from "./screeningProcessResponseClientCompanyId.js";
 import type { ScreeningProcessResponseProfessionalContractId } from "./screeningProcessResponseProfessionalContractId.js";
 import type { ScreeningProcessResponseClientContractId } from "./screeningProcessResponseClientContractId.js";
-import type { ScreeningProcessResponseCurrentStepType } from "./screeningProcessResponseCurrentStepType.js";
 import type { ScreeningProcessResponseRejectionReason } from "./screeningProcessResponseRejectionReason.js";
 import type { ScreeningProcessResponseNotes } from "./screeningProcessResponseNotes.js";
 import type { ScreeningProcessResponseExpiresAt } from "./screeningProcessResponseExpiresAt.js";
@@ -33,6 +33,8 @@ export type ScreeningProcessResponse = {
   id: string;
   organizationId: string;
   status: ScreeningStatus;
+  currentStepType: StepType;
+  configuredStepTypes: string[];
   professionalCpf: ScreeningProcessResponseProfessionalCpf;
   professionalName: ScreeningProcessResponseProfessionalName;
   professionalPhone: ScreeningProcessResponseProfessionalPhone;
@@ -42,10 +44,10 @@ export type ScreeningProcessResponse = {
   expectedSpecialtyId: ScreeningProcessResponseExpectedSpecialtyId;
   ownerId: ScreeningProcessResponseOwnerId;
   currentActorId: ScreeningProcessResponseCurrentActorId;
+  supervisorId: string;
   clientCompanyId: ScreeningProcessResponseClientCompanyId;
   professionalContractId: ScreeningProcessResponseProfessionalContractId;
   clientContractId: ScreeningProcessResponseClientContractId;
-  currentStepType: ScreeningProcessResponseCurrentStepType;
   rejectionReason: ScreeningProcessResponseRejectionReason;
   notes: ScreeningProcessResponseNotes;
   createdAt: Date;

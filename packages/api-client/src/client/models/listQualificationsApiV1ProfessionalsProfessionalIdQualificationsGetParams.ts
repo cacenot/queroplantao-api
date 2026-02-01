@@ -11,6 +11,18 @@ export type ListQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetP
     page?: number | null;
     pageSize?: number | null;
     /**
+     * Relationships to expand (eager load).
+     */
+    expand?: string[] | null;
+    /**
+     * Only include these relationships or columns.
+     */
+    only?: string[] | null;
+    /**
+     * Relationships or columns to omit.
+     */
+    omit?: string[] | null;
+    /**
      * Search by council number (partial, case-insensitive)
      */
     search?: string | null;
@@ -18,6 +30,10 @@ export type ListQualificationsApiV1ProfessionalsProfessionalIdQualificationsGetP
      * Lookup operator for search (e.g. exact, icontains)
      */
     "search[lookup]"?: string | null;
+    /**
+     * Filter by organization professional ID
+     */
+    organizationProfessionalId?: string[] | null;
     /**
      * Filter by professional type (DOCTOR, NURSE, etc.)
      */

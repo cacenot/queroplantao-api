@@ -17,8 +17,8 @@ export type ScreeningStatus =
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const ScreeningStatus = {
-  DRAFT: "DRAFT",
   IN_PROGRESS: "IN_PROGRESS",
+  PENDING_SUPERVISOR: "PENDING_SUPERVISOR",
   APPROVED: "APPROVED",
   REJECTED: "REJECTED",
   EXPIRED: "EXPIRED",

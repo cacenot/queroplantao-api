@@ -18,8 +18,7 @@ Order (fixed for MVP):
 3. DOCUMENT_UPLOAD - Upload documents (required)
 4. DOCUMENT_REVIEW - Review uploaded documents (required)
 5. PAYMENT_INFO - Bank account + company if PJ (optional)
-6. SUPERVISOR_REVIEW - Escalated review (optional)
-7. CLIENT_VALIDATION - Client approval (optional)
+6. CLIENT_VALIDATION - Client approval (optional)
  */
 export type StepType = (typeof StepType)[keyof typeof StepType];
 
@@ -30,6 +29,5 @@ export const StepType = {
   DOCUMENT_UPLOAD: "DOCUMENT_UPLOAD",
   DOCUMENT_REVIEW: "DOCUMENT_REVIEW",
   PAYMENT_INFO: "PAYMENT_INFO",
-  SUPERVISOR_REVIEW: "SUPERVISOR_REVIEW",
   CLIENT_VALIDATION: "CLIENT_VALIDATION",
 } as const;

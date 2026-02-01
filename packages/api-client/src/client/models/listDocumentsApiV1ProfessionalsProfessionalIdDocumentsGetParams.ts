@@ -10,6 +10,18 @@ export type ListDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetParams = {
   page?: number | null;
   pageSize?: number | null;
   /**
+   * Relationships to expand (eager load).
+   */
+  expand?: string[] | null;
+  /**
+   * Only include these relationships or columns.
+   */
+  only?: string[] | null;
+  /**
+   * Relationships or columns to omit.
+   */
+  omit?: string[] | null;
+  /**
    * Search by file name (partial, case-insensitive)
    */
   search?: string | null;
@@ -17,6 +29,18 @@ export type ListDocumentsApiV1ProfessionalsProfessionalIdDocumentsGetParams = {
    * Lookup operator for search (e.g. exact, icontains)
    */
   "search[lookup]"?: string | null;
+  /**
+   * Filter by organization professional ID
+   */
+  organizationProfessionalId?: string[] | null;
+  /**
+   * Filter by qualification ID
+   */
+  qualificationId?: string[] | null;
+  /**
+   * Filter by specialty ID
+   */
+  specialtyId?: string[] | null;
   /**
    * Filter by document type ID
    */

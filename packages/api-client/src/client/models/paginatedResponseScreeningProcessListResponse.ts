@@ -5,10 +5,10 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { ScreeningProcessResponse } from "./screeningProcessResponse.js";
+import type { ScreeningProcessListResponse } from "./screeningProcessListResponse.js";
 
-export type PaginatedResponseScreeningProcessResponse = {
-  items: ScreeningProcessResponse[];
+export type PaginatedResponseScreeningProcessListResponse = {
+  items: ScreeningProcessListResponse[];
   total: number;
   page: number;
   pageSize: number;

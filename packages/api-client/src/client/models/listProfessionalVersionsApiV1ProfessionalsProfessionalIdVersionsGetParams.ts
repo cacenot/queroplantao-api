@@ -11,6 +11,18 @@ export type ListProfessionalVersionsApiV1ProfessionalsProfessionalIdVersionsGetP
     page?: number | null;
     pageSize?: number | null;
     /**
+     * Relationships to expand (eager load).
+     */
+    expand?: string[] | null;
+    /**
+     * Only include these relationships or columns.
+     */
+    only?: string[] | null;
+    /**
+     * Relationships or columns to omit.
+     */
+    omit?: string[] | null;
+    /**
      * Filter by current version status
      */
     isCurrent?: boolean | null;

@@ -11,6 +11,30 @@ export type ListCompanyLinksApiV1ProfessionalsProfessionalIdCompaniesGetParams =
     page?: number | null;
     pageSize?: number | null;
     /**
+     * Relationships to expand (eager load).
+     */
+    expand?: string[] | null;
+    /**
+     * Only include these relationships or columns.
+     */
+    only?: string[] | null;
+    /**
+     * Relationships or columns to omit.
+     */
+    omit?: string[] | null;
+    /**
+     * Filter by organization professional ID
+     */
+    organizationProfessionalId?: string[] | null;
+    /**
+     * Filter by active status (left_at is null)
+     */
+    isActive?: boolean | null;
+    /**
+     * Lookup operator for is_active (e.g. exact, icontains)
+     */
+    "is_active[lookup]"?: string | null;
+    /**
  * List of fields to sort by (format: field:asc or field:desc).
 
 **Available fields**

@@ -17,8 +17,7 @@
  * 3. DOCUMENT_UPLOAD - Upload documents (required)
  * 4. DOCUMENT_REVIEW - Review uploaded documents (required)
  * 5. PAYMENT_INFO - Bank account + company if PJ (optional)
- * 6. SUPERVISOR_REVIEW - Escalated review (optional)
- * 7. CLIENT_VALIDATION - Client approval (optional)
+ * 6. CLIENT_VALIDATION - Client approval (optional)
  */
 export enum StepType {
   CONVERSATION = "CONVERSATION",
@@ -26,7 +25,6 @@ export enum StepType {
   DOCUMENT_UPLOAD = "DOCUMENT_UPLOAD",
   DOCUMENT_REVIEW = "DOCUMENT_REVIEW",
   PAYMENT_INFO = "PAYMENT_INFO",
-  SUPERVISOR_REVIEW = "SUPERVISOR_REVIEW",
   CLIENT_VALIDATION = "CLIENT_VALIDATION",
 }
 
@@ -36,7 +34,6 @@ export const StepTypeLabels: Record<StepType, string> = {
   [StepType.DOCUMENT_UPLOAD]: "Upload de Documentos",
   [StepType.DOCUMENT_REVIEW]: "Revisão de Documentos",
   [StepType.PAYMENT_INFO]: "Informações de Pagamento",
-  [StepType.SUPERVISOR_REVIEW]: "Revisão do Supervisor",
   [StepType.CLIENT_VALIDATION]: "Validação do Cliente",
 };
 
@@ -95,8 +92,8 @@ export function getChangeTypeLabel(value: ChangeType): string {
  * Detailed progress is tracked via the status of each configured step.
  */
 export enum ScreeningStatus {
-  DRAFT = "DRAFT",
   IN_PROGRESS = "IN_PROGRESS",
+  PENDING_SUPERVISOR = "PENDING_SUPERVISOR",
   APPROVED = "APPROVED",
   REJECTED = "REJECTED",
   EXPIRED = "EXPIRED",
@@ -104,8 +101,8 @@ export enum ScreeningStatus {
 }
 
 export const ScreeningStatusLabels: Record<ScreeningStatus, string> = {
-  [ScreeningStatus.DRAFT]: "Rascunho",
   [ScreeningStatus.IN_PROGRESS]: "Em Andamento",
+  [ScreeningStatus.PENDING_SUPERVISOR]: "Aguardando Supervisor",
   [ScreeningStatus.APPROVED]: "Aprovado",
   [ScreeningStatus.REJECTED]: "Rejeitado",
   [ScreeningStatus.EXPIRED]: "Expirado",
@@ -219,4 +216,32 @@ export const ClientValidationOutcomeLabels: Record<ClientValidationOutcome, stri
 
 export function getClientValidationOutcomeLabel(value: ClientValidationOutcome): string {
   return ClientValidationOutcomeLabels[value];
+}
+
+/**
+ * Category of a screening alert.
+ * 
+ * Used to classify alerts raised during the screening process.
+ * Helps supervisors prioritize and filter alerts.
+ */
+export enum AlertCategory {
+  DOCUMENT = "DOCUMENT",
+  DATA = "DATA",
+  BEHAVIOR = "BEHAVIOR",
+  COMPLIANCE = "COMPLIANCE",
+  QUALIFICATION = "QUALIFICATION",
+  OTHER = "OTHER",
+}
+
+export const AlertCategoryLabels: Record<AlertCategory, string> = {
+  [AlertCategory.DOCUMENT]: "Documento",
+  [AlertCategory.DATA]: "Dados",
+  [AlertCategory.BEHAVIOR]: "Comportamento",
+  [AlertCategory.COMPLIANCE]: "Conformidade",
+  [AlertCategory.QUALIFICATION]: "Qualificação",
+  [AlertCategory.OTHER]: "Outros",
+};
+
+export function getAlertCategoryLabel(value: AlertCategory): string {
+  return AlertCategoryLabels[value];
 }

@@ -7209,12 +7209,6 @@ export type createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPos
     status: 422;
   };
 
-export type createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostResponse501 =
-  {
-    data: ErrorResponse;
-    status: 501;
-  };
-
 export type createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostResponseSuccess =
   createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostResponse201 & {
     headers: Headers;
@@ -7224,7 +7218,6 @@ export type createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPos
     | createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostResponse404
     | createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostResponse409
     | createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostResponse422
-    | createProfessionalVersionApiV1ProfessionalsProfessionalIdVersionsPostResponse501
   ) & {
     headers: Headers;
   };

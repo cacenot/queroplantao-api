@@ -30,13 +30,17 @@ import type {
   DocumentUploadStepResponse,
   ErrorResponse,
   HTTPValidationError,
-  ListMyScreeningProcessesApiV1ScreeningsMeGetParams,
   ListScreeningProcessesApiV1ScreeningsGetParams,
-  PaginatedResponseScreeningProcessResponse,
+  PaginatedResponseScreeningProcessListResponse,
   ProfessionalDataStepCompleteRequest,
   ProfessionalDataStepResponse,
   ReuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostParams,
   ReviewDocumentRequest,
+  ScreeningAlertCreate,
+  ScreeningAlertListResponse,
+  ScreeningAlertReject,
+  ScreeningAlertResolve,
+  ScreeningAlertResponse,
   ScreeningDocumentResponse,
   ScreeningProcessCancel,
   ScreeningProcessCreate,
@@ -193,9 +197,10 @@ export const useCreateScreeningProcessApiV1ScreeningsPost = <
  * Lista todos os processos de triagem da organização.
 
 **Filtros disponíveis:**
-- `status`: Filtra por status (DRAFT, IN_PROGRESS, APPROVED, REJECTED, CANCELLED)
+- `status`: Filtra por status (IN_PROGRESS, APPROVED, REJECTED, CANCELLED)
 - `search`: Busca por nome ou CPF do profissional
 - `owner_id`: Filtra por responsável
+- `actor_id`: Filtra por usuário responsável atual (current_actor_id)
 - `created_after`: Filtra por data de criação
 
 **Ordenação:**
@@ -205,7 +210,7 @@ export const useCreateScreeningProcessApiV1ScreeningsPost = <
  * @summary Listar triagens
  */
 export type listScreeningProcessesApiV1ScreeningsGetResponse200 = {
-  data: PaginatedResponseScreeningProcessResponse;
+  data: PaginatedResponseScreeningProcessListResponse;
   status: 200;
 };
 
@@ -406,255 +411,6 @@ export function useListScreeningProcessesApiV1ScreeningsGet<
     params,
     options,
   );
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData> };
-
-  query.queryKey = queryOptions.queryKey;
-
-  return query;
-}
-
-/**
- * Lista as triagens atribuídas ao usuário atual como `current_actor_id`.
-
-Útil para visualizar a fila de trabalho do usuário logado.
- * @summary Minhas triagens
- */
-export type listMyScreeningProcessesApiV1ScreeningsMeGetResponse200 = {
-  data: PaginatedResponseScreeningProcessResponse;
-  status: 200;
-};
-
-export type listMyScreeningProcessesApiV1ScreeningsMeGetResponse422 = {
-  data: HTTPValidationError;
-  status: 422;
-};
-
-export type listMyScreeningProcessesApiV1ScreeningsMeGetResponseSuccess =
-  listMyScreeningProcessesApiV1ScreeningsMeGetResponse200 & {
-    headers: Headers;
-  };
-export type listMyScreeningProcessesApiV1ScreeningsMeGetResponseError =
-  listMyScreeningProcessesApiV1ScreeningsMeGetResponse422 & {
-    headers: Headers;
-  };
-
-export type listMyScreeningProcessesApiV1ScreeningsMeGetResponse =
-  | listMyScreeningProcessesApiV1ScreeningsMeGetResponseSuccess
-  | listMyScreeningProcessesApiV1ScreeningsMeGetResponseError;
-
-export const getListMyScreeningProcessesApiV1ScreeningsMeGetUrl = (
-  params?: ListMyScreeningProcessesApiV1ScreeningsMeGetParams,
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? "null" : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/api/v1/screenings/me?${stringifiedParams}`
-    : `/api/v1/screenings/me`;
-};
-
-export const listMyScreeningProcessesApiV1ScreeningsMeGet = async (
-  params?: ListMyScreeningProcessesApiV1ScreeningsMeGetParams,
-  options?: RequestInit,
-): Promise<listMyScreeningProcessesApiV1ScreeningsMeGetResponse> => {
-  return customFetch<listMyScreeningProcessesApiV1ScreeningsMeGetResponse>(
-    getListMyScreeningProcessesApiV1ScreeningsMeGetUrl(params),
-    {
-      ...options,
-      method: "GET",
-    },
-  );
-};
-
-export const getListMyScreeningProcessesApiV1ScreeningsMeGetQueryKey = (
-  params?: ListMyScreeningProcessesApiV1ScreeningsMeGetParams,
-) => {
-  return [`/api/v1/screenings/me`, ...(params ? [params] : [])] as const;
-};
-
-export const getListMyScreeningProcessesApiV1ScreeningsMeGetQueryOptions = <
-  TData = Awaited<
-    ReturnType<typeof listMyScreeningProcessesApiV1ScreeningsMeGet>
-  >,
-  TError = HTTPValidationError,
->(
-  params?: ListMyScreeningProcessesApiV1ScreeningsMeGetParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<
-          ReturnType<typeof listMyScreeningProcessesApiV1ScreeningsMeGet>
-        >,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof customFetch>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ??
-    getListMyScreeningProcessesApiV1ScreeningsMeGetQueryKey(params);
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof listMyScreeningProcessesApiV1ScreeningsMeGet>>
-  > = ({ signal }) =>
-    listMyScreeningProcessesApiV1ScreeningsMeGet(params, {
-      signal,
-      ...requestOptions,
-    });
-
-  return {
-    queryKey,
-    queryFn,
-    staleTime: 30000,
-    ...queryOptions,
-  } as UseQueryOptions<
-    Awaited<ReturnType<typeof listMyScreeningProcessesApiV1ScreeningsMeGet>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData> };
-};
-
-export type ListMyScreeningProcessesApiV1ScreeningsMeGetQueryResult =
-  NonNullable<
-    Awaited<ReturnType<typeof listMyScreeningProcessesApiV1ScreeningsMeGet>>
-  >;
-export type ListMyScreeningProcessesApiV1ScreeningsMeGetQueryError =
-  HTTPValidationError;
-
-export function useListMyScreeningProcessesApiV1ScreeningsMeGet<
-  TData = Awaited<
-    ReturnType<typeof listMyScreeningProcessesApiV1ScreeningsMeGet>
-  >,
-  TError = HTTPValidationError,
->(
-  params: undefined | ListMyScreeningProcessesApiV1ScreeningsMeGetParams,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<
-          ReturnType<typeof listMyScreeningProcessesApiV1ScreeningsMeGet>
-        >,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<
-            ReturnType<typeof listMyScreeningProcessesApiV1ScreeningsMeGet>
-          >,
-          TError,
-          Awaited<
-            ReturnType<typeof listMyScreeningProcessesApiV1ScreeningsMeGet>
-          >
-        >,
-        "initialData"
-      >;
-    request?: SecondParameter<typeof customFetch>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData>;
-};
-export function useListMyScreeningProcessesApiV1ScreeningsMeGet<
-  TData = Awaited<
-    ReturnType<typeof listMyScreeningProcessesApiV1ScreeningsMeGet>
-  >,
-  TError = HTTPValidationError,
->(
-  params?: ListMyScreeningProcessesApiV1ScreeningsMeGetParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<
-          ReturnType<typeof listMyScreeningProcessesApiV1ScreeningsMeGet>
-        >,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<
-            ReturnType<typeof listMyScreeningProcessesApiV1ScreeningsMeGet>
-          >,
-          TError,
-          Awaited<
-            ReturnType<typeof listMyScreeningProcessesApiV1ScreeningsMeGet>
-          >
-        >,
-        "initialData"
-      >;
-    request?: SecondParameter<typeof customFetch>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
-export function useListMyScreeningProcessesApiV1ScreeningsMeGet<
-  TData = Awaited<
-    ReturnType<typeof listMyScreeningProcessesApiV1ScreeningsMeGet>
-  >,
-  TError = HTTPValidationError,
->(
-  params?: ListMyScreeningProcessesApiV1ScreeningsMeGetParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<
-          ReturnType<typeof listMyScreeningProcessesApiV1ScreeningsMeGet>
-        >,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof customFetch>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
-/**
- * @summary Minhas triagens
- */
-
-export function useListMyScreeningProcessesApiV1ScreeningsMeGet<
-  TData = Awaited<
-    ReturnType<typeof listMyScreeningProcessesApiV1ScreeningsMeGet>
-  >,
-  TError = HTTPValidationError,
->(
-  params?: ListMyScreeningProcessesApiV1ScreeningsMeGetParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<
-          ReturnType<typeof listMyScreeningProcessesApiV1ScreeningsMeGet>
-        >,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof customFetch>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
-  const queryOptions =
-    getListMyScreeningProcessesApiV1ScreeningsMeGetQueryOptions(
-      params,
-      options,
-    );
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
@@ -2866,6 +2622,778 @@ export const useReviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdRevie
   > => {
     const mutationOptions =
       getReviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPostMutationOptions(
+        options,
+      );
+
+    return useMutation(mutationOptions, queryClient);
+  };
+/**
+ * Cria um alerta para um processo de triagem.
+
+**Comportamento:**
+- Qualquer usuário autorizado pode criar um alerta
+- Apenas um alerta pendente por vez
+- O alerta bloqueia o andamento da triagem
+- O status da triagem muda para PENDING_SUPERVISOR
+
+**Categorias disponíveis:**
+- DOCUMENT: Problema com documentos
+- DATA: Dados inconsistentes
+- BEHAVIOR: Comportamento inadequado
+- COMPLIANCE: Problemas de conformidade
+- QUALIFICATION: Qualificação insuficiente
+- OTHER: Outros
+ * @summary Criar alerta
+ */
+export type createAlertApiV1ScreeningsScreeningIdAlertsPostResponse201 = {
+  data: ScreeningAlertResponse;
+  status: 201;
+};
+
+export type createAlertApiV1ScreeningsScreeningIdAlertsPostResponse404 = {
+  data: ErrorResponse;
+  status: 404;
+};
+
+export type createAlertApiV1ScreeningsScreeningIdAlertsPostResponse409 = {
+  data: ErrorResponse;
+  status: 409;
+};
+
+export type createAlertApiV1ScreeningsScreeningIdAlertsPostResponse422 = {
+  data: ErrorResponse;
+  status: 422;
+};
+
+export type createAlertApiV1ScreeningsScreeningIdAlertsPostResponseSuccess =
+  createAlertApiV1ScreeningsScreeningIdAlertsPostResponse201 & {
+    headers: Headers;
+  };
+export type createAlertApiV1ScreeningsScreeningIdAlertsPostResponseError = (
+  | createAlertApiV1ScreeningsScreeningIdAlertsPostResponse404
+  | createAlertApiV1ScreeningsScreeningIdAlertsPostResponse409
+  | createAlertApiV1ScreeningsScreeningIdAlertsPostResponse422
+) & {
+  headers: Headers;
+};
+
+export type createAlertApiV1ScreeningsScreeningIdAlertsPostResponse =
+  | createAlertApiV1ScreeningsScreeningIdAlertsPostResponseSuccess
+  | createAlertApiV1ScreeningsScreeningIdAlertsPostResponseError;
+
+export const getCreateAlertApiV1ScreeningsScreeningIdAlertsPostUrl = (
+  screeningId: string,
+) => {
+  return `/api/v1/screenings/${screeningId}/alerts`;
+};
+
+export const createAlertApiV1ScreeningsScreeningIdAlertsPost = async (
+  screeningId: string,
+  screeningAlertCreate: ScreeningAlertCreate,
+  options?: RequestInit,
+): Promise<createAlertApiV1ScreeningsScreeningIdAlertsPostResponse> => {
+  return customFetch<createAlertApiV1ScreeningsScreeningIdAlertsPostResponse>(
+    getCreateAlertApiV1ScreeningsScreeningIdAlertsPostUrl(screeningId),
+    {
+      ...options,
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...options?.headers },
+      body: JSON.stringify(screeningAlertCreate),
+    },
+  );
+};
+
+export const getCreateAlertApiV1ScreeningsScreeningIdAlertsPostMutationOptions =
+  <TError = ErrorResponse, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<typeof createAlertApiV1ScreeningsScreeningIdAlertsPost>
+      >,
+      TError,
+      { screeningId: string; data: ScreeningAlertCreate },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  }): UseMutationOptions<
+    Awaited<ReturnType<typeof createAlertApiV1ScreeningsScreeningIdAlertsPost>>,
+    TError,
+    { screeningId: string; data: ScreeningAlertCreate },
+    TContext
+  > => {
+    const mutationKey = ["createAlertApiV1ScreeningsScreeningIdAlertsPost"];
+    const { mutation: mutationOptions, request: requestOptions } = options
+      ? options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+        ? options
+        : { ...options, mutation: { ...options.mutation, mutationKey } }
+      : { mutation: { mutationKey }, request: undefined };
+
+    const mutationFn: MutationFunction<
+      Awaited<
+        ReturnType<typeof createAlertApiV1ScreeningsScreeningIdAlertsPost>
+      >,
+      { screeningId: string; data: ScreeningAlertCreate }
+    > = (props) => {
+      const { screeningId, data } = props ?? {};
+
+      return createAlertApiV1ScreeningsScreeningIdAlertsPost(
+        screeningId,
+        data,
+        requestOptions,
+      );
+    };
+
+    return { mutationFn, ...mutationOptions };
+  };
+
+export type CreateAlertApiV1ScreeningsScreeningIdAlertsPostMutationResult =
+  NonNullable<
+    Awaited<ReturnType<typeof createAlertApiV1ScreeningsScreeningIdAlertsPost>>
+  >;
+export type CreateAlertApiV1ScreeningsScreeningIdAlertsPostMutationBody =
+  ScreeningAlertCreate;
+export type CreateAlertApiV1ScreeningsScreeningIdAlertsPostMutationError =
+  ErrorResponse;
+
+/**
+ * @summary Criar alerta
+ */
+export const useCreateAlertApiV1ScreeningsScreeningIdAlertsPost = <
+  TError = ErrorResponse,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<typeof createAlertApiV1ScreeningsScreeningIdAlertsPost>
+      >,
+      TError,
+      { screeningId: string; data: ScreeningAlertCreate },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof createAlertApiV1ScreeningsScreeningIdAlertsPost>>,
+  TError,
+  { screeningId: string; data: ScreeningAlertCreate },
+  TContext
+> => {
+  const mutationOptions =
+    getCreateAlertApiV1ScreeningsScreeningIdAlertsPostMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
+/**
+ * Lista todos os alertas de um processo de triagem.
+
+**Retorna:**
+- Lista de alertas (resolvidos e pendentes)
+- Contagem total
+- Contagem de alertas pendentes
+ * @summary Listar alertas
+ */
+export type listAlertsApiV1ScreeningsScreeningIdAlertsGetResponse200 = {
+  data: ScreeningAlertListResponse;
+  status: 200;
+};
+
+export type listAlertsApiV1ScreeningsScreeningIdAlertsGetResponse404 = {
+  data: ErrorResponse;
+  status: 404;
+};
+
+export type listAlertsApiV1ScreeningsScreeningIdAlertsGetResponse422 = {
+  data: HTTPValidationError;
+  status: 422;
+};
+
+export type listAlertsApiV1ScreeningsScreeningIdAlertsGetResponseSuccess =
+  listAlertsApiV1ScreeningsScreeningIdAlertsGetResponse200 & {
+    headers: Headers;
+  };
+export type listAlertsApiV1ScreeningsScreeningIdAlertsGetResponseError = (
+  | listAlertsApiV1ScreeningsScreeningIdAlertsGetResponse404
+  | listAlertsApiV1ScreeningsScreeningIdAlertsGetResponse422
+) & {
+  headers: Headers;
+};
+
+export type listAlertsApiV1ScreeningsScreeningIdAlertsGetResponse =
+  | listAlertsApiV1ScreeningsScreeningIdAlertsGetResponseSuccess
+  | listAlertsApiV1ScreeningsScreeningIdAlertsGetResponseError;
+
+export const getListAlertsApiV1ScreeningsScreeningIdAlertsGetUrl = (
+  screeningId: string,
+) => {
+  return `/api/v1/screenings/${screeningId}/alerts`;
+};
+
+export const listAlertsApiV1ScreeningsScreeningIdAlertsGet = async (
+  screeningId: string,
+  options?: RequestInit,
+): Promise<listAlertsApiV1ScreeningsScreeningIdAlertsGetResponse> => {
+  return customFetch<listAlertsApiV1ScreeningsScreeningIdAlertsGetResponse>(
+    getListAlertsApiV1ScreeningsScreeningIdAlertsGetUrl(screeningId),
+    {
+      ...options,
+      method: "GET",
+    },
+  );
+};
+
+export const getListAlertsApiV1ScreeningsScreeningIdAlertsGetQueryKey = (
+  screeningId?: string,
+) => {
+  return [`/api/v1/screenings/${screeningId}/alerts`] as const;
+};
+
+export const getListAlertsApiV1ScreeningsScreeningIdAlertsGetQueryOptions = <
+  TData = Awaited<
+    ReturnType<typeof listAlertsApiV1ScreeningsScreeningIdAlertsGet>
+  >,
+  TError = ErrorResponse | HTTPValidationError,
+>(
+  screeningId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof listAlertsApiV1ScreeningsScreeningIdAlertsGet>
+        >,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getListAlertsApiV1ScreeningsScreeningIdAlertsGetQueryKey(screeningId);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof listAlertsApiV1ScreeningsScreeningIdAlertsGet>>
+  > = ({ signal }) =>
+    listAlertsApiV1ScreeningsScreeningIdAlertsGet(screeningId, {
+      signal,
+      ...requestOptions,
+    });
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!screeningId,
+    staleTime: 30000,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof listAlertsApiV1ScreeningsScreeningIdAlertsGet>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData> };
+};
+
+export type ListAlertsApiV1ScreeningsScreeningIdAlertsGetQueryResult =
+  NonNullable<
+    Awaited<ReturnType<typeof listAlertsApiV1ScreeningsScreeningIdAlertsGet>>
+  >;
+export type ListAlertsApiV1ScreeningsScreeningIdAlertsGetQueryError =
+  | ErrorResponse
+  | HTTPValidationError;
+
+export function useListAlertsApiV1ScreeningsScreeningIdAlertsGet<
+  TData = Awaited<
+    ReturnType<typeof listAlertsApiV1ScreeningsScreeningIdAlertsGet>
+  >,
+  TError = ErrorResponse | HTTPValidationError,
+>(
+  screeningId: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof listAlertsApiV1ScreeningsScreeningIdAlertsGet>
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<
+            ReturnType<typeof listAlertsApiV1ScreeningsScreeningIdAlertsGet>
+          >,
+          TError,
+          Awaited<
+            ReturnType<typeof listAlertsApiV1ScreeningsScreeningIdAlertsGet>
+          >
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData>;
+};
+export function useListAlertsApiV1ScreeningsScreeningIdAlertsGet<
+  TData = Awaited<
+    ReturnType<typeof listAlertsApiV1ScreeningsScreeningIdAlertsGet>
+  >,
+  TError = ErrorResponse | HTTPValidationError,
+>(
+  screeningId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof listAlertsApiV1ScreeningsScreeningIdAlertsGet>
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<
+            ReturnType<typeof listAlertsApiV1ScreeningsScreeningIdAlertsGet>
+          >,
+          TError,
+          Awaited<
+            ReturnType<typeof listAlertsApiV1ScreeningsScreeningIdAlertsGet>
+          >
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
+export function useListAlertsApiV1ScreeningsScreeningIdAlertsGet<
+  TData = Awaited<
+    ReturnType<typeof listAlertsApiV1ScreeningsScreeningIdAlertsGet>
+  >,
+  TError = ErrorResponse | HTTPValidationError,
+>(
+  screeningId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof listAlertsApiV1ScreeningsScreeningIdAlertsGet>
+        >,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
+/**
+ * @summary Listar alertas
+ */
+
+export function useListAlertsApiV1ScreeningsScreeningIdAlertsGet<
+  TData = Awaited<
+    ReturnType<typeof listAlertsApiV1ScreeningsScreeningIdAlertsGet>
+  >,
+  TError = ErrorResponse | HTTPValidationError,
+>(
+  screeningId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof listAlertsApiV1ScreeningsScreeningIdAlertsGet>
+        >,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+  const queryOptions =
+    getListAlertsApiV1ScreeningsScreeningIdAlertsGetQueryOptions(
+      screeningId,
+      options,
+    );
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+/**
+ * Resolve um alerta, permitindo que a triagem continue.
+
+**Comportamento:**
+- Apenas supervisores podem resolver alertas
+- O alerta é marcado como resolvido
+- O status da triagem volta para IN_PROGRESS
+- Uma nota é adicionada com a resolução
+ * @summary Resolver alerta
+ */
+export type resolveAlertApiV1ScreeningsScreeningIdAlertsAlertIdResolvePostResponse200 =
+  {
+    data: ScreeningAlertResponse;
+    status: 200;
+  };
+
+export type resolveAlertApiV1ScreeningsScreeningIdAlertsAlertIdResolvePostResponse404 =
+  {
+    data: ErrorResponse;
+    status: 404;
+  };
+
+export type resolveAlertApiV1ScreeningsScreeningIdAlertsAlertIdResolvePostResponse409 =
+  {
+    data: ErrorResponse;
+    status: 409;
+  };
+
+export type resolveAlertApiV1ScreeningsScreeningIdAlertsAlertIdResolvePostResponse422 =
+  {
+    data: HTTPValidationError;
+    status: 422;
+  };
+
+export type resolveAlertApiV1ScreeningsScreeningIdAlertsAlertIdResolvePostResponseSuccess =
+  resolveAlertApiV1ScreeningsScreeningIdAlertsAlertIdResolvePostResponse200 & {
+    headers: Headers;
+  };
+export type resolveAlertApiV1ScreeningsScreeningIdAlertsAlertIdResolvePostResponseError =
+  (
+    | resolveAlertApiV1ScreeningsScreeningIdAlertsAlertIdResolvePostResponse404
+    | resolveAlertApiV1ScreeningsScreeningIdAlertsAlertIdResolvePostResponse409
+    | resolveAlertApiV1ScreeningsScreeningIdAlertsAlertIdResolvePostResponse422
+  ) & {
+    headers: Headers;
+  };
+
+export type resolveAlertApiV1ScreeningsScreeningIdAlertsAlertIdResolvePostResponse =
+
+    | resolveAlertApiV1ScreeningsScreeningIdAlertsAlertIdResolvePostResponseSuccess
+    | resolveAlertApiV1ScreeningsScreeningIdAlertsAlertIdResolvePostResponseError;
+
+export const getResolveAlertApiV1ScreeningsScreeningIdAlertsAlertIdResolvePostUrl =
+  (screeningId: string, alertId: string) => {
+    return `/api/v1/screenings/${screeningId}/alerts/${alertId}/resolve`;
+  };
+
+export const resolveAlertApiV1ScreeningsScreeningIdAlertsAlertIdResolvePost =
+  async (
+    screeningId: string,
+    alertId: string,
+    screeningAlertResolve: ScreeningAlertResolve,
+    options?: RequestInit,
+  ): Promise<resolveAlertApiV1ScreeningsScreeningIdAlertsAlertIdResolvePostResponse> => {
+    return customFetch<resolveAlertApiV1ScreeningsScreeningIdAlertsAlertIdResolvePostResponse>(
+      getResolveAlertApiV1ScreeningsScreeningIdAlertsAlertIdResolvePostUrl(
+        screeningId,
+        alertId,
+      ),
+      {
+        ...options,
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...options?.headers },
+        body: JSON.stringify(screeningAlertResolve),
+      },
+    );
+  };
+
+export const getResolveAlertApiV1ScreeningsScreeningIdAlertsAlertIdResolvePostMutationOptions =
+  <TError = ErrorResponse | HTTPValidationError, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<
+          typeof resolveAlertApiV1ScreeningsScreeningIdAlertsAlertIdResolvePost
+        >
+      >,
+      TError,
+      { screeningId: string; alertId: string; data: ScreeningAlertResolve },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  }): UseMutationOptions<
+    Awaited<
+      ReturnType<
+        typeof resolveAlertApiV1ScreeningsScreeningIdAlertsAlertIdResolvePost
+      >
+    >,
+    TError,
+    { screeningId: string; alertId: string; data: ScreeningAlertResolve },
+    TContext
+  > => {
+    const mutationKey = [
+      "resolveAlertApiV1ScreeningsScreeningIdAlertsAlertIdResolvePost",
+    ];
+    const { mutation: mutationOptions, request: requestOptions } = options
+      ? options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+        ? options
+        : { ...options, mutation: { ...options.mutation, mutationKey } }
+      : { mutation: { mutationKey }, request: undefined };
+
+    const mutationFn: MutationFunction<
+      Awaited<
+        ReturnType<
+          typeof resolveAlertApiV1ScreeningsScreeningIdAlertsAlertIdResolvePost
+        >
+      >,
+      { screeningId: string; alertId: string; data: ScreeningAlertResolve }
+    > = (props) => {
+      const { screeningId, alertId, data } = props ?? {};
+
+      return resolveAlertApiV1ScreeningsScreeningIdAlertsAlertIdResolvePost(
+        screeningId,
+        alertId,
+        data,
+        requestOptions,
+      );
+    };
+
+    return { mutationFn, ...mutationOptions };
+  };
+
+export type ResolveAlertApiV1ScreeningsScreeningIdAlertsAlertIdResolvePostMutationResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof resolveAlertApiV1ScreeningsScreeningIdAlertsAlertIdResolvePost
+      >
+    >
+  >;
+export type ResolveAlertApiV1ScreeningsScreeningIdAlertsAlertIdResolvePostMutationBody =
+  ScreeningAlertResolve;
+export type ResolveAlertApiV1ScreeningsScreeningIdAlertsAlertIdResolvePostMutationError =
+  ErrorResponse | HTTPValidationError;
+
+/**
+ * @summary Resolver alerta
+ */
+export const useResolveAlertApiV1ScreeningsScreeningIdAlertsAlertIdResolvePost =
+  <TError = ErrorResponse | HTTPValidationError, TContext = unknown>(
+    options?: {
+      mutation?: UseMutationOptions<
+        Awaited<
+          ReturnType<
+            typeof resolveAlertApiV1ScreeningsScreeningIdAlertsAlertIdResolvePost
+          >
+        >,
+        TError,
+        { screeningId: string; alertId: string; data: ScreeningAlertResolve },
+        TContext
+      >;
+      request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+  ): UseMutationResult<
+    Awaited<
+      ReturnType<
+        typeof resolveAlertApiV1ScreeningsScreeningIdAlertsAlertIdResolvePost
+      >
+    >,
+    TError,
+    { screeningId: string; alertId: string; data: ScreeningAlertResolve },
+    TContext
+  > => {
+    const mutationOptions =
+      getResolveAlertApiV1ScreeningsScreeningIdAlertsAlertIdResolvePostMutationOptions(
+        options,
+      );
+
+    return useMutation(mutationOptions, queryClient);
+  };
+/**
+ * Rejeita a triagem através do alerta.
+
+**Comportamento:**
+- Apenas supervisores podem rejeitar
+- O alerta é marcado como resolvido
+- O status da triagem muda para REJECTED
+- O motivo de rejeição é registrado na triagem
+ * @summary Rejeitar triagem via alerta
+ */
+export type rejectViaAlertApiV1ScreeningsScreeningIdAlertsAlertIdRejectPostResponse200 =
+  {
+    data: ScreeningAlertResponse;
+    status: 200;
+  };
+
+export type rejectViaAlertApiV1ScreeningsScreeningIdAlertsAlertIdRejectPostResponse404 =
+  {
+    data: ErrorResponse;
+    status: 404;
+  };
+
+export type rejectViaAlertApiV1ScreeningsScreeningIdAlertsAlertIdRejectPostResponse409 =
+  {
+    data: ErrorResponse;
+    status: 409;
+  };
+
+export type rejectViaAlertApiV1ScreeningsScreeningIdAlertsAlertIdRejectPostResponse422 =
+  {
+    data: HTTPValidationError;
+    status: 422;
+  };
+
+export type rejectViaAlertApiV1ScreeningsScreeningIdAlertsAlertIdRejectPostResponseSuccess =
+  rejectViaAlertApiV1ScreeningsScreeningIdAlertsAlertIdRejectPostResponse200 & {
+    headers: Headers;
+  };
+export type rejectViaAlertApiV1ScreeningsScreeningIdAlertsAlertIdRejectPostResponseError =
+  (
+    | rejectViaAlertApiV1ScreeningsScreeningIdAlertsAlertIdRejectPostResponse404
+    | rejectViaAlertApiV1ScreeningsScreeningIdAlertsAlertIdRejectPostResponse409
+    | rejectViaAlertApiV1ScreeningsScreeningIdAlertsAlertIdRejectPostResponse422
+  ) & {
+    headers: Headers;
+  };
+
+export type rejectViaAlertApiV1ScreeningsScreeningIdAlertsAlertIdRejectPostResponse =
+
+    | rejectViaAlertApiV1ScreeningsScreeningIdAlertsAlertIdRejectPostResponseSuccess
+    | rejectViaAlertApiV1ScreeningsScreeningIdAlertsAlertIdRejectPostResponseError;
+
+export const getRejectViaAlertApiV1ScreeningsScreeningIdAlertsAlertIdRejectPostUrl =
+  (screeningId: string, alertId: string) => {
+    return `/api/v1/screenings/${screeningId}/alerts/${alertId}/reject`;
+  };
+
+export const rejectViaAlertApiV1ScreeningsScreeningIdAlertsAlertIdRejectPost =
+  async (
+    screeningId: string,
+    alertId: string,
+    screeningAlertReject: ScreeningAlertReject,
+    options?: RequestInit,
+  ): Promise<rejectViaAlertApiV1ScreeningsScreeningIdAlertsAlertIdRejectPostResponse> => {
+    return customFetch<rejectViaAlertApiV1ScreeningsScreeningIdAlertsAlertIdRejectPostResponse>(
+      getRejectViaAlertApiV1ScreeningsScreeningIdAlertsAlertIdRejectPostUrl(
+        screeningId,
+        alertId,
+      ),
+      {
+        ...options,
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...options?.headers },
+        body: JSON.stringify(screeningAlertReject),
+      },
+    );
+  };
+
+export const getRejectViaAlertApiV1ScreeningsScreeningIdAlertsAlertIdRejectPostMutationOptions =
+  <TError = ErrorResponse | HTTPValidationError, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<
+          typeof rejectViaAlertApiV1ScreeningsScreeningIdAlertsAlertIdRejectPost
+        >
+      >,
+      TError,
+      { screeningId: string; alertId: string; data: ScreeningAlertReject },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  }): UseMutationOptions<
+    Awaited<
+      ReturnType<
+        typeof rejectViaAlertApiV1ScreeningsScreeningIdAlertsAlertIdRejectPost
+      >
+    >,
+    TError,
+    { screeningId: string; alertId: string; data: ScreeningAlertReject },
+    TContext
+  > => {
+    const mutationKey = [
+      "rejectViaAlertApiV1ScreeningsScreeningIdAlertsAlertIdRejectPost",
+    ];
+    const { mutation: mutationOptions, request: requestOptions } = options
+      ? options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+        ? options
+        : { ...options, mutation: { ...options.mutation, mutationKey } }
+      : { mutation: { mutationKey }, request: undefined };
+
+    const mutationFn: MutationFunction<
+      Awaited<
+        ReturnType<
+          typeof rejectViaAlertApiV1ScreeningsScreeningIdAlertsAlertIdRejectPost
+        >
+      >,
+      { screeningId: string; alertId: string; data: ScreeningAlertReject }
+    > = (props) => {
+      const { screeningId, alertId, data } = props ?? {};
+
+      return rejectViaAlertApiV1ScreeningsScreeningIdAlertsAlertIdRejectPost(
+        screeningId,
+        alertId,
+        data,
+        requestOptions,
+      );
+    };
+
+    return { mutationFn, ...mutationOptions };
+  };
+
+export type RejectViaAlertApiV1ScreeningsScreeningIdAlertsAlertIdRejectPostMutationResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof rejectViaAlertApiV1ScreeningsScreeningIdAlertsAlertIdRejectPost
+      >
+    >
+  >;
+export type RejectViaAlertApiV1ScreeningsScreeningIdAlertsAlertIdRejectPostMutationBody =
+  ScreeningAlertReject;
+export type RejectViaAlertApiV1ScreeningsScreeningIdAlertsAlertIdRejectPostMutationError =
+  ErrorResponse | HTTPValidationError;
+
+/**
+ * @summary Rejeitar triagem via alerta
+ */
+export const useRejectViaAlertApiV1ScreeningsScreeningIdAlertsAlertIdRejectPost =
+  <TError = ErrorResponse | HTTPValidationError, TContext = unknown>(
+    options?: {
+      mutation?: UseMutationOptions<
+        Awaited<
+          ReturnType<
+            typeof rejectViaAlertApiV1ScreeningsScreeningIdAlertsAlertIdRejectPost
+          >
+        >,
+        TError,
+        { screeningId: string; alertId: string; data: ScreeningAlertReject },
+        TContext
+      >;
+      request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+  ): UseMutationResult<
+    Awaited<
+      ReturnType<
+        typeof rejectViaAlertApiV1ScreeningsScreeningIdAlertsAlertIdRejectPost
+      >
+    >,
+    TError,
+    { screeningId: string; alertId: string; data: ScreeningAlertReject },
+    TContext
+  > => {
+    const mutationOptions =
+      getRejectViaAlertApiV1ScreeningsScreeningIdAlertsAlertIdRejectPostMutationOptions(
         options,
       );
 

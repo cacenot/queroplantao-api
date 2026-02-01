@@ -48,10 +48,10 @@ export type ScreeningProcessCreate = {
   clientCompanyId?: ScreeningProcessCreateClientCompanyId;
   /** Include payment info step (bank account + company data) */
   includePaymentInfo?: boolean;
-  /** Include supervisor review step (escalated review) */
-  includeSupervisorReview?: boolean;
   /** Include client validation step (client approval). Automatically set to True if client_company_id is provided. */
   includeClientValidation?: boolean;
+  /** Supervisor responsible for alert resolution and document review */
+  supervisorId: string;
   /** Notes from the initial conversation */
   notes?: ScreeningProcessCreateNotes;
 };
