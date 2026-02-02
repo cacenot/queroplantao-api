@@ -7,10 +7,6 @@
  */
 
 /**
- * Role information.
+ * Professional's CPF (11 digits). Optional when organization_professional_id is provided.
  */
-export type RoleInfo = {
-  id: string;
-  code: string;
-  name: string;
-};
+export type ScreeningProcessCreateProfessionalCpf = string | null;

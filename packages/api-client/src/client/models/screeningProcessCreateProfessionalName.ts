@@ -7,10 +7,6 @@
  */
 
 /**
- * Role information.
+ * Professional's full name. Optional when organization_professional_id is provided.
  */
-export type RoleInfo = {
-  id: string;
-  code: string;
-  name: string;
-};
+export type ScreeningProcessCreateProfessionalName = string | null;

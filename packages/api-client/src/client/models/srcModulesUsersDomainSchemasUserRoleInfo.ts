@@ -7,9 +7,9 @@
  */
 
 /**
- * Role information.
+ * Simplified role info for responses.
  */
-export type SrcModulesUsersDomainSchemasOrganizationUserRoleInfo = {
+export type SrcModulesUsersDomainSchemasUserRoleInfo = {
   id: string;
   code: string;
   name: string;

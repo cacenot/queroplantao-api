@@ -5,6 +5,9 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
+import type { ScreeningProcessCreateOrganizationProfessionalId } from "./screeningProcessCreateOrganizationProfessionalId.js";
+import type { ScreeningProcessCreateProfessionalCpf } from "./screeningProcessCreateProfessionalCpf.js";
+import type { ScreeningProcessCreateProfessionalName } from "./screeningProcessCreateProfessionalName.js";
 import type { ScreeningProcessCreateProfessionalEmail } from "./screeningProcessCreateProfessionalEmail.js";
 import type { ScreeningProcessCreateExpectedSpecialtyId } from "./screeningProcessCreateExpectedSpecialtyId.js";
 import type { ScreeningProcessCreateOwnerId } from "./screeningProcessCreateOwnerId.js";
@@ -18,16 +21,12 @@ This creates the screening with initial professional data collected
 during the first phone call (conversation step).
  */
 export type ScreeningProcessCreate = {
-  /**
-   * Professional's CPF (11 digits)
-   * @pattern ^[0-9]{11}$
-   */
-  professionalCpf: string;
-  /**
-   * Professional's full name
-   * @maxLength 255
-   */
-  professionalName: string;
+  /** Existing organization professional ID. If provided, professional_cpf and professional_name may be omitted. */
+  organizationProfessionalId?: ScreeningProcessCreateOrganizationProfessionalId;
+  /** Professional's CPF (11 digits). Optional when organization_professional_id is provided. */
+  professionalCpf?: ScreeningProcessCreateProfessionalCpf;
+  /** Professional's full name. Optional when organization_professional_id is provided. */
+  professionalName?: ScreeningProcessCreateProfessionalName;
   /**
    * Professional's phone number
    * @pattern ^\+[1-9]\d{1,14}$
@@ -46,10 +45,6 @@ export type ScreeningProcessCreate = {
   ownerId?: ScreeningProcessCreateOwnerId;
   /** Client company (empresa contratante) */
   clientCompanyId?: ScreeningProcessCreateClientCompanyId;
-  /** Include payment info step (bank account + company data) */
-  includePaymentInfo?: boolean;
-  /** Include client validation step (client approval). Automatically set to True if client_company_id is provided. */
-  includeClientValidation?: boolean;
   /** Supervisor responsible for alert resolution and document review */
   supervisorId: string;
   /** Notes from the initial conversation */
