@@ -939,6 +939,60 @@ POST /screening/{id}/steps/document-upload/configure
 }
 ```
 
+#### Obtendo Tipos de Documento Disponíveis
+
+Os `document_type_id` utilizados na configuração **devem vir do endpoint de listagem de tipos de documento ativos**:
+
+```
+GET /document-types/all?is_active=true
+```
+
+**Fluxo no Frontend:**
+
+```
+┌──────────────────────────────────────────────────────────────────────────────┐
+│  1. Buscar tipos de documento disponíveis                                    │
+│                                                                              │
+│     GET /document-types/all?is_active=true                                   │
+│                                                                              │
+│     Response:                                                                │
+│     [                                                                        │
+│       { "id": "uuid-1", "name": "RG", "category": "PROFILE", ... },          │
+│       { "id": "uuid-2", "name": "Diploma", "category": "QUALIFICATION", ...},│
+│       { "id": "uuid-3", "name": "Certidão CRM", "category": "QUALIFICATION"},│
+│       ...                                                                    │
+│     ]                                                                        │
+│                                                                              │
+├──────────────────────────────────────────────────────────────────────────────┤
+│  2. Usuário seleciona quais documentos são necessários para esta triagem     │
+│                                                                              │
+│     Interface permite:                                                       │
+│     • Selecionar tipos de documento da lista                                 │
+│     • Marcar como obrigatório ou opcional                                    │
+│     • Definir ordem de exibição                                              │
+│     • Adicionar descrição/instruções customizadas                            │
+│                                                                              │
+├──────────────────────────────────────────────────────────────────────────────┤
+│  3. Enviar configuração para a API                                           │
+│                                                                              │
+│     POST /screening/{id}/steps/document-upload/configure                     │
+│     {                                                                        │
+│       "documents": [                                                         │
+│         { "document_type_id": "uuid-1", "is_required": true, "order": 1 },   │
+│         { "document_type_id": "uuid-3", "is_required": true, "order": 2 },   │
+│         ...                                                                  │
+│       ]                                                                      │
+│     }                                                                        │
+└──────────────────────────────────────────────────────────────────────────────┘
+```
+
+**Importante:**
+- O endpoint `/document-types/all` retorna tipos de documento **visíveis na família da organização** (parent + children)
+- Filtrar por `is_active=true` garante que apenas tipos ativos e válidos sejam exibidos
+- O campo `category` (`PROFILE`, `QUALIFICATION`, `SPECIALTY`) pode ser usado para agrupar documentos na interface
+- O campo `help_text` contém instruções para o profissional sobre como obter o documento
+- O campo `validation_instructions` contém orientações para o revisor sobre como validar
+
 #### Payload: Revisar Documento
 
 ```json
