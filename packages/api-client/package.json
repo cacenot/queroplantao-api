@@ -1,6 +1,6 @@
 {
     "name": "@cacenot/queroplantao-api-client",
-    "version": "0.3.0",
+    "version": "0.3.1",
     "description": "TypeScript API client for Quero Plantão API with React Query hooks",
     "type": "module",
     "main": "dist/index.js",
