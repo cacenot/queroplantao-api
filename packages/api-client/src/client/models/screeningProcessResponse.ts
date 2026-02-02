@@ -6,8 +6,7 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { ScreeningStatus } from "./screeningStatus.js";
-import type { ScreeningProcessResponseCurrentStepType } from "./screeningProcessResponseCurrentStepType.js";
-import type { ScreeningProcessResponseConfiguredStepTypesItem } from "./screeningProcessResponseConfiguredStepTypesItem.js";
+import type { StepTypeInfo } from "./stepTypeInfo.js";
 import type { ScreeningProcessResponseProfessionalCpf } from "./screeningProcessResponseProfessionalCpf.js";
 import type { ScreeningProcessResponseProfessionalName } from "./screeningProcessResponseProfessionalName.js";
 import type { ScreeningProcessResponseProfessionalPhone } from "./screeningProcessResponseProfessionalPhone.js";
@@ -39,8 +38,8 @@ export type ScreeningProcessResponse = {
   id: string;
   organizationId: string;
   status: ScreeningStatus;
-  currentStepType: ScreeningProcessResponseCurrentStepType;
-  configuredStepTypes: ScreeningProcessResponseConfiguredStepTypesItem[];
+  currentStepType: StepTypeInfo;
+  configuredStepTypes: StepTypeInfo[];
   professionalCpf: ScreeningProcessResponseProfessionalCpf;
   professionalName: ScreeningProcessResponseProfessionalName;
   professionalPhone: ScreeningProcessResponseProfessionalPhone;

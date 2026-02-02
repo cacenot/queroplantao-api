@@ -7,10 +7,10 @@
  */
 
 /**
- * Simplified role info for responses.
+ * Summary for a screening step type with pt-BR labels.
  */
-export type SrcModulesUsersDomainSchemasUserRoleInfo = {
-  id: string;
-  code: string;
-  name: string;
+export type StepTypeInfo = {
+  stepType: string;
+  title: string;
+  description: string;
 };

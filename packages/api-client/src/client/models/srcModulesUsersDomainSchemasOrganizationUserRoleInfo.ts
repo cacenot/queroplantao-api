@@ -6,6 +6,11 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export type ScreeningProcessListResponseConfiguredStepTypesItem = {
-  [key: string]: string;
+/**
+ * Role information.
+ */
+export type SrcModulesUsersDomainSchemasOrganizationUserRoleInfo = {
+  id: string;
+  code: string;
+  name: string;
 };
