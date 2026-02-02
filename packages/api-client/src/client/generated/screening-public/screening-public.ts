@@ -22,10 +22,10 @@ import type {
 } from "@tanstack/react-query";
 
 import type {
+  BodyUploadDocumentByTokenApiV1PublicScreeningTokenDocumentsDocumentIdUploadPost,
   HTTPValidationError,
   ScreeningDocumentResponse,
   ScreeningProcessDetailResponse,
-  UploadDocumentRequest,
 } from "../../models/index.js";
 
 import { customFetch } from "../../custom-fetch.js";
@@ -269,7 +269,7 @@ export function useGetScreeningByTokenApiV1PublicScreeningTokenGet<
 }
 
 /**
- * Faz upload de um documento usando o token público
+ * Faz upload de um documento usando o token público. O arquivo é enviado via multipart/form-data e o backend faz upload para o Firebase Storage, cria o ProfessionalDocument e o vincula ao ScreeningDocument.
  * @summary Upload de documento (público)
  */
 export type uploadDocumentByTokenApiV1PublicScreeningTokenDocumentsDocumentIdUploadPostResponse200 =
@@ -307,9 +307,37 @@ export const uploadDocumentByTokenApiV1PublicScreeningTokenDocumentsDocumentIdUp
   async (
     token: string,
     documentId: string,
-    uploadDocumentRequest: UploadDocumentRequest,
+    bodyUploadDocumentByTokenApiV1PublicScreeningTokenDocumentsDocumentIdUploadPost: BodyUploadDocumentByTokenApiV1PublicScreeningTokenDocumentsDocumentIdUploadPost,
     options?: RequestInit,
   ): Promise<uploadDocumentByTokenApiV1PublicScreeningTokenDocumentsDocumentIdUploadPostResponse> => {
+    const formData = new FormData();
+    formData.append(
+      `file`,
+      bodyUploadDocumentByTokenApiV1PublicScreeningTokenDocumentsDocumentIdUploadPost.file,
+    );
+    if (
+      bodyUploadDocumentByTokenApiV1PublicScreeningTokenDocumentsDocumentIdUploadPost.expires_at !==
+        undefined &&
+      bodyUploadDocumentByTokenApiV1PublicScreeningTokenDocumentsDocumentIdUploadPost.expires_at !==
+        null
+    ) {
+      formData.append(
+        `expires_at`,
+        bodyUploadDocumentByTokenApiV1PublicScreeningTokenDocumentsDocumentIdUploadPost.expires_at,
+      );
+    }
+    if (
+      bodyUploadDocumentByTokenApiV1PublicScreeningTokenDocumentsDocumentIdUploadPost.notes !==
+        undefined &&
+      bodyUploadDocumentByTokenApiV1PublicScreeningTokenDocumentsDocumentIdUploadPost.notes !==
+        null
+    ) {
+      formData.append(
+        `notes`,
+        bodyUploadDocumentByTokenApiV1PublicScreeningTokenDocumentsDocumentIdUploadPost.notes,
+      );
+    }
+
     return customFetch<uploadDocumentByTokenApiV1PublicScreeningTokenDocumentsDocumentIdUploadPostResponse>(
       getUploadDocumentByTokenApiV1PublicScreeningTokenDocumentsDocumentIdUploadPostUrl(
         token,
@@ -318,8 +346,7 @@ export const uploadDocumentByTokenApiV1PublicScreeningTokenDocumentsDocumentIdUp
       {
         ...options,
         method: "POST",
-        headers: { "Content-Type": "application/json", ...options?.headers },
-        body: JSON.stringify(uploadDocumentRequest),
+        body: formData,
       },
     );
   };
@@ -333,7 +360,11 @@ export const getUploadDocumentByTokenApiV1PublicScreeningTokenDocumentsDocumentI
         >
       >,
       TError,
-      { token: string; documentId: string; data: UploadDocumentRequest },
+      {
+        token: string;
+        documentId: string;
+        data: BodyUploadDocumentByTokenApiV1PublicScreeningTokenDocumentsDocumentIdUploadPost;
+      },
       TContext
     >;
     request?: SecondParameter<typeof customFetch>;
@@ -344,7 +375,11 @@ export const getUploadDocumentByTokenApiV1PublicScreeningTokenDocumentsDocumentI
       >
     >,
     TError,
-    { token: string; documentId: string; data: UploadDocumentRequest },
+    {
+      token: string;
+      documentId: string;
+      data: BodyUploadDocumentByTokenApiV1PublicScreeningTokenDocumentsDocumentIdUploadPost;
+    },
     TContext
   > => {
     const mutationKey = [
@@ -364,7 +399,11 @@ export const getUploadDocumentByTokenApiV1PublicScreeningTokenDocumentsDocumentI
           typeof uploadDocumentByTokenApiV1PublicScreeningTokenDocumentsDocumentIdUploadPost
         >
       >,
-      { token: string; documentId: string; data: UploadDocumentRequest }
+      {
+        token: string;
+        documentId: string;
+        data: BodyUploadDocumentByTokenApiV1PublicScreeningTokenDocumentsDocumentIdUploadPost;
+      }
     > = (props) => {
       const { token, documentId, data } = props ?? {};
 
@@ -388,7 +427,7 @@ export type UploadDocumentByTokenApiV1PublicScreeningTokenDocumentsDocumentIdUpl
     >
   >;
 export type UploadDocumentByTokenApiV1PublicScreeningTokenDocumentsDocumentIdUploadPostMutationBody =
-  UploadDocumentRequest;
+  BodyUploadDocumentByTokenApiV1PublicScreeningTokenDocumentsDocumentIdUploadPost;
 export type UploadDocumentByTokenApiV1PublicScreeningTokenDocumentsDocumentIdUploadPostMutationError =
   HTTPValidationError;
 
@@ -405,7 +444,11 @@ export const useUploadDocumentByTokenApiV1PublicScreeningTokenDocumentsDocumentI
           >
         >,
         TError,
-        { token: string; documentId: string; data: UploadDocumentRequest },
+        {
+          token: string;
+          documentId: string;
+          data: BodyUploadDocumentByTokenApiV1PublicScreeningTokenDocumentsDocumentIdUploadPost;
+        },
         TContext
       >;
       request?: SecondParameter<typeof customFetch>;
@@ -418,7 +461,11 @@ export const useUploadDocumentByTokenApiV1PublicScreeningTokenDocumentsDocumentI
       >
     >,
     TError,
-    { token: string; documentId: string; data: UploadDocumentRequest },
+    {
+      token: string;
+      documentId: string;
+      data: BodyUploadDocumentByTokenApiV1PublicScreeningTokenDocumentsDocumentIdUploadPost;
+    },
     TContext
   > => {
     const mutationOptions =

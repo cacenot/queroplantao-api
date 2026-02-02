@@ -110,6 +110,8 @@ export const ErrorMessages: Record<string, string> = {
   [ErrorCodes.USER_CANNOT_REMOVE_SELF]: "Não é possível remover a si mesmo da organização",
   [ErrorCodes.USER_ROLE_NOT_FOUND]: "Função não encontrada",
   [ErrorCodes.USER_INVALID_ROLE]: "Função inválida para esta operação",
+  [ErrorCodes.DOCUMENTTYPE_DOCUMENT_TYPE_NOT_FOUND]: "Tipo de documento não encontrado",
+  [ErrorCodes.DOCUMENTTYPE_DOCUMENT_TYPE_IN_USE]: "Tipo de documento não pode ser excluído pois está em uso",
 };
 
 /**
