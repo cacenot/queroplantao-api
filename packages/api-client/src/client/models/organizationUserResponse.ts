@@ -6,7 +6,7 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { UserInfo } from "./userInfo.js";
-import type { RoleInfo } from "./roleInfo.js";
+import type { SrcModulesUsersDomainSchemasOrganizationUserRoleInfo } from "./srcModulesUsersDomainSchemasOrganizationUserRoleInfo.js";
 import type { OrganizationUserResponseInvitedAt } from "./organizationUserResponseInvitedAt.js";
 import type { OrganizationUserResponseAcceptedAt } from "./organizationUserResponseAcceptedAt.js";
 import type { OrganizationUserResponseExpiresAt } from "./organizationUserResponseExpiresAt.js";
@@ -20,7 +20,7 @@ export type OrganizationUserResponse = {
   /** User information */
   user: UserInfo;
   /** Assigned role */
-  role: RoleInfo;
+  role: SrcModulesUsersDomainSchemasOrganizationUserRoleInfo;
   /** Organization ID */
   organizationId: string;
   /** Whether membership is active */

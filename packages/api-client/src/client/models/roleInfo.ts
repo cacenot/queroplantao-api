@@ -7,7 +7,7 @@
  */
 
 /**
- * Role information.
+ * Simplified role info for responses.
  */
 export type RoleInfo = {
   id: string;
