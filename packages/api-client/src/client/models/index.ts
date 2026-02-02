@@ -628,7 +628,7 @@ export * from "./specialtyResponseCreatedAt.js";
 export * from "./specialtyResponseDescription.js";
 export * from "./specialtyResponseUpdatedAt.js";
 export * from "./specialtySummary.js";
-export * from "./srcModulesUsersDomainSchemasOrganizationUserRoleInfo.js";
+export * from "./srcModulesUsersDomainSchemasUserRoleInfo.js";
 export * from "./stepStatus.js";
 export * from "./stepSummaryResponse.js";
 export * from "./stepType.js";
