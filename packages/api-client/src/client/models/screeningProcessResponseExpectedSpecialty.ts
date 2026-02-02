@@ -5,8 +5,6 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
+import type { SpecialtySummary } from "./specialtySummary.js";
 
-/**
- * User responsible for this screening (owner)
- */
-export type ScreeningProcessCreateOwnerId = string | null;
+export type ScreeningProcessResponseExpectedSpecialty = SpecialtySummary | null;

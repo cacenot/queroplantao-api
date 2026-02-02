@@ -10,7 +10,6 @@ import type { ScreeningProcessCreateProfessionalCpf } from "./screeningProcessCr
 import type { ScreeningProcessCreateProfessionalName } from "./screeningProcessCreateProfessionalName.js";
 import type { ScreeningProcessCreateProfessionalEmail } from "./screeningProcessCreateProfessionalEmail.js";
 import type { ScreeningProcessCreateExpectedSpecialtyId } from "./screeningProcessCreateExpectedSpecialtyId.js";
-import type { ScreeningProcessCreateOwnerId } from "./screeningProcessCreateOwnerId.js";
 import type { ScreeningProcessCreateClientCompanyId } from "./screeningProcessCreateClientCompanyId.js";
 import type { ScreeningProcessCreateNotes } from "./screeningProcessCreateNotes.js";
 
@@ -41,8 +40,6 @@ export type ScreeningProcessCreate = {
   expectedProfessionalType: string;
   /** Expected specialty ID (for doctors) */
   expectedSpecialtyId?: ScreeningProcessCreateExpectedSpecialtyId;
-  /** User responsible for this screening (owner) */
-  ownerId?: ScreeningProcessCreateOwnerId;
   /** Client company (empresa contratante) */
   clientCompanyId?: ScreeningProcessCreateClientCompanyId;
   /** Supervisor responsible for alert resolution and document review */
