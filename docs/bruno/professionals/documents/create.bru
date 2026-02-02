@@ -16,16 +16,17 @@ params:path {
 
 headers {
   Content-Type: application/json
+  X-Organization-ID: {{organizationId}}
 }
 
 body:json {
-  "document_type": "CRM_REGISTRATION_CERTIFICATE",
-  "document_category": "QUALIFICATION",
-  "file_url": "https://storage.example.com/documents/crm-cert.pdf",
-  "file_name": "crm-certificate.pdf",
-  "file_size": 1024000,
-  "mime_type": "application/pdf",
-  "qualification_id": "qualification-uuid-here"
+  {
+    "document_type_id": "{{documentTypeId}}",
+    "file_url": "https://storage.example.com/documents/crm-cert.pdf",
+    "file_name": "crm-certificate.pdf",
+    "file_size": 1024000,
+    "mime_type": "application/pdf"
+  }
 }
 
 docs {
@@ -35,11 +36,7 @@ docs {
   
   ## Campos obrigatórios
   
-  - `document_type`: Tipo do documento (ver lista abaixo)
-  - `document_category`: Categoria do documento
-    - `PROFILE`: Documentos pessoais (RG, foto, etc.)
-    - `QUALIFICATION`: Documentos da qualificação (diploma, registro CRM, etc.)
-    - `SPECIALTY`: Documentos da especialidade (título de especialista, etc.)
+  - `document_type_id`: ID do tipo de documento configurado
   - `file_url`: URL do arquivo
   - `file_name`: Nome do arquivo
   
@@ -49,30 +46,22 @@ docs {
   - `mime_type`: Tipo MIME (ex: application/pdf, image/jpeg)
   - `expires_at`: Data de expiração do documento (ISO 8601)
   - `notes`: Observações adicionais
-  - `qualification_id`: UUID da qualificação (obrigatório para category=QUALIFICATION)
-  - `specialty_id`: UUID da especialidade (obrigatório para category=SPECIALTY)
+  - `qualification_id`: UUID da qualificação (obrigatório para documentos da categoria QUALIFICATION)
+  - `specialty_id`: UUID da especialidade (obrigatório para documentos da categoria SPECIALTY)
+  - `screening_id`: UUID da triagem (quando o documento é criado via fluxo de triagem)
   
-  ## Tipos de documento (document_type)
-  
-  | Tipo | Descrição |
-  |------|-----------|
-  | ID_DOCUMENT | Documento de identidade (RG, CNH) |
-  | PHOTO | Foto do profissional |
-  | CRIMINAL_RECORD | Certidão de antecedentes criminais |
-  | ADDRESS_PROOF | Comprovante de endereço |
-  | CV | Currículo |
-  | DIPLOMA | Diploma de graduação |
-  | CRM_REGISTRATION_CERTIFICATE | Carteira do CRM |
-  | CRM_FINANCIAL_CERTIFICATE | Certidão de regularidade financeira CRM |
-  | CRM_ETHICS_CERTIFICATE | Certidão ético-profissional CRM |
-  | RESIDENCY_CERTIFICATE | Certificado de residência médica |
-  | SPECIALIST_TITLE | Título de especialista |
-  | SBA_DIPLOMA | Diploma SBA (anestesiologia) |
-  | OTHER | Outro tipo de documento |
+  ## Observação
+
+  O tipo do documento é configurável por organização. Utilize o endpoint de tipos de documento
+  para obter os IDs disponíveis e suas categorias.
   
   ## Error Codes
   
   | Status | Code | Descrição |
   |--------|------|-----------|
   | 404 | `PROF_NOT_FOUND` | Profissional não encontrado |
+  | 404 | `PROF_QUALIFICATION_NOT_FOUND` | Qualificação não encontrada |
+  | 404 | `PROF_SPECIALTY_NOT_FOUND` | Especialidade não encontrada |
+  | 422 | `PROF_DOCUMENT_QUALIFICATION_CATEGORY` | Categoria inválida para documento de qualificação |
+  | 422 | `PROF_DOCUMENT_SPECIALTY_CATEGORY` | Categoria inválida para documento de especialidade |
 }

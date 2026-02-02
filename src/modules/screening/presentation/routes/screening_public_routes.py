@@ -14,7 +14,7 @@ from src.modules.screening.presentation.dependencies import (
     UploadDocumentUC,
 )
 
-router = APIRouter()
+router = APIRouter(tags=["Screening - Public"])
 
 
 @router.get(

@@ -17,13 +17,16 @@ params:path {
 
 headers {
   Content-Type: application/json
+  X-Organization-ID: {{organizationId}}
 }
 
 body:json {
-  "is_primary": true,
-  "graduation_year": 2015,
-  "council_number": "654321",
-  "council_state": "RJ"
+  {
+    "is_primary": true,
+    "graduation_year": 2015,
+    "council_number": "654321",
+    "council_state": "RJ"
+  }
 }
 
 docs {

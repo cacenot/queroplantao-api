@@ -10,9 +10,13 @@ get {
   auth: inherit
 }
 
-query {
-  ~page: 1
-  ~size: 20
+headers {
+  X-Organization-ID: {{organizationId}}
+}
+
+params:query {
+  page: 1
+  page_size: 20
   ~is_current: 
   ~is_applied: 
   ~is_rejected: 
@@ -28,7 +32,7 @@ docs {
   
   ### Paginação
   - `page`: Número da página (default: 1)
-  - `size`: Itens por página (default: 20, max: 100)
+  - `page_size`: Itens por página (default: 20, max: 100)
   
   ### Filtros
   - `is_current`: Filtrar por versão atual (true/false)

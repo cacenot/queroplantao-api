@@ -16,16 +16,19 @@ params:path {
 
 headers {
   Content-Type: application/json
+  X-Organization-ID: {{organizationId}}
 }
 
 body:json {
-  "specialty_id": "specialty-uuid-here",
-  "is_primary": true,
-  "residency_status": "COMPLETED",
-  "rqe_number": "12345",
-  "rqe_state": "SP",
-  "residency_institution": "Hospital das Clínicas - FMUSP",
-  "certificate_url": "https://storage.example.com/certificates/specialty.pdf"
+  {
+    "specialty_id": "specialty-uuid-here",
+    "is_primary": true,
+    "residency_status": "COMPLETED",
+    "rqe_number": "12345",
+    "rqe_state": "SP",
+    "residency_institution": "Hospital das Clínicas - FMUSP",
+    "certificate_url": "https://storage.example.com/certificates/specialty.pdf"
+  }
 }
 
 docs {

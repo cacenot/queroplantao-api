@@ -17,10 +17,13 @@ params:path {
 
 headers {
   Content-Type: application/json
+  X-Organization-ID: {{organizationId}}
 }
 
 body:json {
-  "left_at": "2024-12-31T23:59:59Z"
+  {
+    "left_at": "2024-12-31T23:59:59Z"
+  }
 }
 
 docs {

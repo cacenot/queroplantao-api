@@ -29,7 +29,7 @@ from src.modules.screening.presentation.dependencies import (
 )
 from src.shared.domain.schemas import ErrorResponse
 
-router = APIRouter()
+router = APIRouter(tags=["Screening - Steps"])
 
 
 # =============================================================================

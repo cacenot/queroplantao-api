@@ -12,24 +12,27 @@ post {
 
 headers {
   Content-Type: application/json
+  X-Organization-ID: {{organizationId}}
 }
 
 body:json {
-  "full_name": "Dr. João Silva",
-  "email": "joao.silva@example.com",
-  "phone": "+5511999999999",
-  "cpf": "12345678901",
-  "birth_date": "1985-05-15",
-  "nationality": "Brasileiro",
-  "gender": "MALE",
-  "marital_status": "SINGLE",
-  "city": "São Paulo",
-  "state_code": "SP",
-  "postal_code": "01310-100",
-  "address": "Avenida Paulista",
-  "number": "1000",
-  "complement": "Sala 101",
-  "neighborhood": "Bela Vista"
+  {
+    "full_name": "Dr. João Silva",
+    "email": "joao.silva@example.com",
+    "phone": "+5511999999999",
+    "cpf": "12345678901",
+    "birth_date": "1985-05-15",
+    "nationality": "Brasileiro",
+    "gender": "MALE",
+    "marital_status": "SINGLE",
+    "city": "São Paulo",
+    "state_code": "SP",
+    "postal_code": "01310-100",
+    "address": "Avenida Paulista",
+    "number": "1000",
+    "complement": "Sala 101",
+    "neighborhood": "Bela Vista"
+  }
 }
 
 docs {

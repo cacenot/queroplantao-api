@@ -24,7 +24,7 @@ from src.modules.screening.presentation.dependencies.screening_document import (
 )
 from src.modules.screening.presentation.dependencies import ReuseDocumentUC
 
-router = APIRouter()
+router = APIRouter(tags=["Screening - Documents"])
 
 
 # =============================================================================

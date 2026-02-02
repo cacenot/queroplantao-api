@@ -17,11 +17,14 @@ params:path {
 
 headers {
   Content-Type: application/json
+  X-Organization-ID: {{organizationId}}
 }
 
 body:json {
-  "notes": "Documento verificado",
-  "expires_at": "2026-12-31T23:59:59Z"
+  {
+    "notes": "Documento verificado",
+    "expires_at": "2026-12-31T23:59:59Z"
+  }
 }
 
 docs {
@@ -38,7 +41,7 @@ docs {
   - `expires_at`: Nova data de expiração (ISO 8601)
   - `notes`: Observações
   
-  **Nota:** Não é possível alterar `document_type`, `document_category`, `qualification_id` ou `specialty_id` após criação.
+  **Nota:** Não é possível alterar `document_type_id`, `qualification_id` ou `specialty_id` após criação.
   
   ## Error Codes
   

@@ -16,18 +16,21 @@ params:path {
 
 headers {
   Content-Type: application/json
+  X-Organization-ID: {{organizationId}}
 }
 
 body:json {
-  "level": "UNDERGRADUATE",
-  "course_name": "Medicina",
-  "institution": "Universidade Federal de São Paulo",
-  "start_year": 2010,
-  "end_year": 2015,
-  "is_completed": true,
-  "workload_hours": 8000,
-  "certificate_url": "https://storage.example.com/diplomas/medicina.pdf",
-  "notes": "Formação com ênfase em emergência"
+  {
+    "level": "UNDERGRADUATE",
+    "course_name": "Medicina",
+    "institution": "Universidade Federal de São Paulo",
+    "start_year": 2010,
+    "end_year": 2015,
+    "is_completed": true,
+    "workload_hours": 8000,
+    "certificate_url": "https://storage.example.com/diplomas/medicina.pdf",
+    "notes": "Formação com ênfase em emergência"
+  }
 }
 
 docs {

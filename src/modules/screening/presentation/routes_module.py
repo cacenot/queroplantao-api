@@ -11,7 +11,7 @@ from src.modules.screening.presentation.routes import (
 )
 
 # Main router for authenticated endpoints
-router = APIRouter(prefix="/screenings", tags=["Screening"])
+router = APIRouter(prefix="/screenings")
 
 # Include sub-routers
 router.include_router(process_router)
@@ -20,7 +20,5 @@ router.include_router(document_router)
 router.include_router(alert_router)
 
 # Public router for token-based access (no auth required)
-public_screening_router = APIRouter(
-    prefix="/public/screening", tags=["Screening Public"]
-)
+public_screening_router = APIRouter(prefix="/public/screening")
 public_screening_router.include_router(public_router)

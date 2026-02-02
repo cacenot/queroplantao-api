@@ -12,25 +12,28 @@ post {
 
 headers {
   Content-Type: application/json
+  X-Organization-ID: {{organizationId}}
 }
 
 body:json {
-  "personal_info": {
-    "full_name": "Dr. João Silva Atualizado",
-    "email": "joao.silva.novo@example.com",
-    "phone": "+5511999999999",
-    "cpf": "12345678901",
-    "birth_date": "1985-05-15",
-    "nationality": "Brasileiro",
-    "gender": "MALE",
-    "marital_status": "MARRIED",
-    "city": "São Paulo",
-    "state_code": "SP",
-    "postal_code": "01310-100",
-    "is_verified": false
-  },
-  "source_type": "DIRECT",
-  "notes": "Atualização de dados pessoais"
+  {
+    "personal_info": {
+      "full_name": "Dr. João Silva Atualizado",
+      "email": "joao.silva.novo@example.com",
+      "phone": "+5511999999999",
+      "cpf": "12345678901",
+      "birth_date": "1985-05-15",
+      "nationality": "Brasileiro",
+      "gender": "MALE",
+      "marital_status": "MARRIED",
+      "city": "São Paulo",
+      "state_code": "SP",
+      "postal_code": "01310-100",
+      "is_verified": false
+    },
+    "source_type": "DIRECT",
+    "notes": "Atualização de dados pessoais"
+  }
 }
 
 docs {

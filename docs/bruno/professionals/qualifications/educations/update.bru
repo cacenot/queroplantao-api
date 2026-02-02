@@ -17,12 +17,15 @@ params:path {
 
 headers {
   Content-Type: application/json
+  X-Organization-ID: {{organizationId}}
 }
 
 body:json {
-  "is_completed": true,
-  "end_year": 2015,
-  "certificate_url": "https://storage.example.com/diplomas/medicina.pdf"
+  {
+    "is_completed": true,
+    "end_year": 2015,
+    "certificate_url": "https://storage.example.com/diplomas/medicina.pdf"
+  }
 }
 
 docs {

@@ -12,10 +12,13 @@ post {
 
 headers {
   Content-Type: application/json
+  X-Organization-ID: {{organizationId}}
 }
 
 body:json {
-  "rejection_reason": "Dados inconsistentes - CPF não confere com documento"
+  {
+    "rejection_reason": "Dados inconsistentes - CPF não confere com documento"
+  }
 }
 
 docs {

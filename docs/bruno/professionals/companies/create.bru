@@ -16,11 +16,14 @@ params:path {
 
 headers {
   Content-Type: application/json
+  X-Organization-ID: {{organizationId}}
 }
 
 body:json {
-  "company_id": "company-uuid-here",
-  "joined_at": "2024-01-01T00:00:00Z"
+  {
+    "company_id": "company-uuid-here",
+    "joined_at": "2024-01-01T00:00:00Z"
+  }
 }
 
 docs {
