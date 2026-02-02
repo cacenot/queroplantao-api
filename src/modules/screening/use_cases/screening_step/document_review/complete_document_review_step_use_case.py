@@ -15,6 +15,7 @@ from src.modules.screening.domain.models import ScreeningProcess
 from src.modules.screening.domain.models.enums import (
     ScreeningDocumentStatus,
     StepStatus,
+    StepType,
 )
 from src.modules.screening.domain.schemas.steps import (
     DocumentForReview,
@@ -139,6 +140,7 @@ class CompleteDocumentReviewStepUseCase:
                 step=review_step,
                 completed_by=completed_by,
                 status=StepStatus.APPROVED,
+                process=process,
             )
 
             # Determine and start next step
@@ -181,6 +183,10 @@ class CompleteDocumentReviewStepUseCase:
         upload_step = process.document_upload_step
         if upload_step:
             upload_step.status = StepStatus.CORRECTION_NEEDED
+            StepWorkflowService.update_step_status(process, upload_step)
+
+        StepWorkflowService.update_step_status(process, review_step)
+        StepWorkflowService.set_current_step(process, StepType.DOCUMENT_UPLOAD)
 
     async def _load_process_with_steps(
         self,

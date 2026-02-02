@@ -52,7 +52,9 @@ class ListScreeningProcessesUseCase:
             filters=filters,
             sorting=sorting,
         )
-        items = [
-            ScreeningProcessListResponse.model_validate(item) for item in result.items
-        ]
+        items = []
+        for item in result.items:
+            response = ScreeningProcessListResponse.model_validate(item)
+            response = response.model_copy(update={"step_info": item.step_info})
+            items.append(response)
         return result.model_copy(update={"items": items})

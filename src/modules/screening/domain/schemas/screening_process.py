@@ -18,6 +18,7 @@ from src.modules.professionals.domain.schemas import SpecialtySummary
 from src.modules.screening.domain.models.enums import (
     STEP_TYPE_METADATA,
     ScreeningStatus,
+    StepStatus,
     StepType,
 )
 from src.modules.users.domain.schemas.organization_user import UserInfo
@@ -32,26 +33,62 @@ class StepTypeInfo(BaseModel):
     step_type: str
     title: str
     description: str
+    status: StepStatus | None = None
+    completed: bool = False
+    current_step: bool = False
 
 
-def _build_step_type_payload(step_type: StepType | str) -> StepTypeInfo:
+def _extract_step_type_value(step_type: StepType | StepTypeInfo | str) -> str:
+    if isinstance(step_type, StepTypeInfo):
+        return step_type.step_type
+    if isinstance(step_type, StepType):
+        return step_type.value
+    return str(step_type)
+
+
+def _build_step_type_payload(
+    step_type: StepType | str,
+    step_info: dict[str, dict[str, object]] | None = None,
+    *,
+    is_current: bool = False,
+) -> StepTypeInfo:
     try:
         step_enum = (
             step_type if isinstance(step_type, StepType) else StepType(step_type)
         )
     except ValueError:
+        step_type_value = str(step_type)
+        step_state = step_info.get(step_type_value) if step_info else None
         return StepTypeInfo(
-            step_type=str(step_type),
-            title=str(step_type),
+            step_type=step_type_value,
+            title=step_type_value,
             description="",
+            status=_coerce_step_status((step_state or {}).get("status")),
+            completed=bool((step_state or {}).get("completed", False)),
+            current_step=bool((step_state or {}).get("current_step", is_current)),
         )
 
     metadata = STEP_TYPE_METADATA[step_enum]
+    step_state = step_info.get(step_enum.value) if step_info else None
     return StepTypeInfo(
         step_type=step_enum.value,
         title=metadata["title"],
         description=metadata["description"],
+        status=_coerce_step_status((step_state or {}).get("status")),
+        completed=bool((step_state or {}).get("completed", False)),
+        current_step=bool((step_state or {}).get("current_step", is_current)),
     )
+
+
+def _coerce_step_status(value: object | None) -> StepStatus | None:
+    if value is None:
+        return None
+    if isinstance(value, StepStatus):
+        return value
+    try:
+        return StepStatus(str(value))
+    except ValueError:
+        return None
 
 
 class ScreeningProcessCreate(BaseModel):
@@ -177,6 +214,10 @@ class ScreeningProcessListResponse(BaseModel):
     # Step tracking (denormalized - no joins required)
     current_step_type: StepTypeInfo
     configured_step_types: list[StepTypeInfo]
+    step_info: dict[str, dict[str, object]] | None = Field(
+        default=None,
+        exclude=True,
+    )
 
     # Professional info
     professional_cpf: Optional[str]
@@ -237,6 +278,30 @@ class ScreeningProcessListResponse(BaseModel):
             return value  # type: ignore[return-value]
         return [_build_step_type_payload(step_type) for step_type in value]  # type: ignore[arg-type]
 
+    @model_validator(mode="after")
+    def _apply_step_info(self) -> "ScreeningProcessListResponse":
+        step_info = self.step_info or {}
+        has_step_info = bool(step_info)
+        current_type = _extract_step_type_value(self.current_step_type)
+        configured_types = [
+            _extract_step_type_value(step_type)
+            for step_type in self.configured_step_types
+        ]
+        self.current_step_type = _build_step_type_payload(
+            current_type,
+            step_info,
+            is_current=not has_step_info,
+        )
+        self.configured_step_types = [
+            _build_step_type_payload(
+                step_type,
+                step_info,
+                is_current=not has_step_info and step_type == current_type,
+            )
+            for step_type in configured_types
+        ]
+        return self
+
 
 class OrganizationProfessionalSummary(BaseModel):
     """Summary of an organization professional for screening responses."""
@@ -263,6 +328,10 @@ class ScreeningProcessResponse(BaseModel):
     # Step tracking (denormalized)
     current_step_type: StepTypeInfo
     configured_step_types: list[StepTypeInfo]
+    step_info: dict[str, dict[str, object]] | None = Field(
+        default=None,
+        exclude=True,
+    )
 
     # Professional data
     professional_cpf: Optional[str]
@@ -343,6 +412,30 @@ class ScreeningProcessResponse(BaseModel):
         if isinstance(value[0], StepTypeInfo):
             return value  # type: ignore[return-value]
         return [_build_step_type_payload(step_type) for step_type in value]  # type: ignore[arg-type]
+
+    @model_validator(mode="after")
+    def _apply_step_info(self) -> "ScreeningProcessResponse":
+        step_info = self.step_info or {}
+        has_step_info = bool(step_info)
+        current_type = _extract_step_type_value(self.current_step_type)
+        configured_types = [
+            _extract_step_type_value(step_type)
+            for step_type in self.configured_step_types
+        ]
+        self.current_step_type = _build_step_type_payload(
+            current_type,
+            step_info,
+            is_current=not has_step_info,
+        )
+        self.configured_step_types = [
+            _build_step_type_payload(
+                step_type,
+                step_info,
+                is_current=not has_step_info and step_type == current_type,
+            )
+            for step_type in configured_types
+        ]
+        return self
 
 
 class ScreeningProcessDetailResponse(ScreeningProcessResponse):

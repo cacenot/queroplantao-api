@@ -18,6 +18,7 @@ from src.modules.screening.domain.schemas import ScreeningProcessStepResponse
 from src.modules.screening.infrastructure.repositories import (
     ScreeningProcessRepository,
 )
+from src.modules.screening.use_cases.screening_step.helpers import StepWorkflowService
 
 # Steps that cannot be revisited
 NON_REVERSIBLE_STEPS = {
@@ -105,10 +106,13 @@ class GoBackToStepUseCase:
                     step.started_at = None
                     step.submitted_at = None
                     step.submitted_by = None
+                StepWorkflowService.update_step_status(process, step)
 
         # 7. Set target step as in progress
         target_step.status = StepStatus.IN_PROGRESS
         target_step.started_at = datetime.now(timezone.utc)
+        StepWorkflowService.update_step_status(process, target_step)
+        StepWorkflowService.set_current_step(process, target_step.step_type)
 
         # 8. Process status stays as IN_PROGRESS
         # (status is already IN_PROGRESS for active screenings)

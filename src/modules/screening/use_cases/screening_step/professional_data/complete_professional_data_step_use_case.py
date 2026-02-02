@@ -141,6 +141,7 @@ class CompleteProfessionalDataStepUseCase:
             step=step,
             completed_by=completed_by,
             status=StepStatus.APPROVED,
+            process=process,
         )
 
         # Start process if not in progress (legacy, should not happen)

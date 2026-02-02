@@ -135,12 +135,13 @@ class StepWorkflowService:
         next_step_type = StepType(next_step_type_value)
 
         # Update process current_step_type
-        process.current_step_type = next_step_type
+        StepWorkflowService.set_current_step(process, next_step_type)
 
         # If next step model is provided, start it
         if next_step is not None:
             next_step.status = StepStatus.IN_PROGRESS
             next_step.started_at = datetime.now(timezone.utc)
+            StepWorkflowService.update_step_status(process, next_step)
 
         return next_step_type
 
@@ -171,6 +172,7 @@ class StepWorkflowService:
         completed_by: UUID,
         *,
         status: StepStatus = StepStatus.APPROVED,
+        process: ScreeningProcess | None = None,
     ) -> None:
         """
         Mark a step as completed.
@@ -183,3 +185,67 @@ class StepWorkflowService:
         step.status = status
         step.completed_at = datetime.now(timezone.utc)
         step.completed_by = completed_by
+
+        if process is not None:
+            StepWorkflowService.update_step_info(
+                process=process,
+                step_type=step.step_type,
+                status=status,
+                completed=status == StepStatus.APPROVED,
+            )
+
+    @staticmethod
+    def update_step_status(process: ScreeningProcess, step: ScreeningStepMixin) -> None:
+        """Update denormalized step_info from a step instance."""
+        StepWorkflowService.update_step_info(
+            process=process,
+            step_type=step.step_type,
+            status=step.status,
+            completed=step.status == StepStatus.APPROVED,
+        )
+
+    @staticmethod
+    def set_current_step(process: ScreeningProcess, step_type: StepType) -> None:
+        """Set the current step pointer in the process and step_info."""
+        StepWorkflowService._ensure_step_info(process)
+        for state in process.step_info.values():
+            state["current_step"] = False
+        StepWorkflowService.update_step_info(
+            process=process,
+            step_type=step_type,
+            current_step=True,
+        )
+        process.current_step_type = step_type
+
+    @staticmethod
+    def clear_current_step(process: ScreeningProcess) -> None:
+        """Clear current_step flag for all steps in step_info."""
+        StepWorkflowService._ensure_step_info(process)
+        for state in process.step_info.values():
+            state["current_step"] = False
+
+    @staticmethod
+    def update_step_info(
+        *,
+        process: ScreeningProcess,
+        step_type: StepType,
+        status: StepStatus | None = None,
+        completed: bool | None = None,
+        current_step: bool | None = None,
+    ) -> None:
+        """Update a step entry in the denormalized step_info map."""
+        StepWorkflowService._ensure_step_info(process)
+        step_key = step_type.value
+        step_state = process.step_info.get(step_key, {})
+        if status is not None:
+            step_state["status"] = status.value
+        if completed is not None:
+            step_state["completed"] = completed
+        if current_step is not None:
+            step_state["current_step"] = current_step
+        process.step_info[step_key] = step_state
+
+    @staticmethod
+    def _ensure_step_info(process: ScreeningProcess) -> None:
+        if process.step_info is None:
+            process.step_info = {}

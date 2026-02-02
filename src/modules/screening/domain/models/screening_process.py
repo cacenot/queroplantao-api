@@ -6,7 +6,8 @@ from uuid import UUID
 from pydantic import AwareDatetime
 from sqlalchemy import ARRAY, Index, String
 from sqlalchemy import Enum as SAEnum
-from sqlmodel import Field, Relationship
+from sqlalchemy.dialects.postgresql import JSONB
+from sqlmodel import Column, Field, Relationship
 
 from src.modules.screening.domain.models.enums import ScreeningStatus, StepType
 from src.shared.domain.models.base import BaseModel
@@ -83,6 +84,11 @@ class ScreeningProcessBase(BaseModel):
         default_factory=list,
         sa_type=ARRAY(String),
         description="List of step types configured for this process (in order)",
+    )
+    step_info: dict[str, dict[str, object]] = Field(
+        default_factory=dict,
+        sa_column=Column(JSONB, nullable=False, default={}),
+        description="Denormalized step info (status/completed/current_step per step)",
     )
 
     # Professional identification (used for lookup/creation)

@@ -107,6 +107,7 @@ class CompleteDocumentUploadStepUseCase:
             step=step,
             completed_by=completed_by,
             status=StepStatus.COMPLETED,
+            process=process,
         )
 
         # 7. Start process if not in progress (legacy, should not happen)

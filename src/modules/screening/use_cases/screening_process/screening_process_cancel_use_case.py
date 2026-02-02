@@ -16,6 +16,7 @@ from src.modules.screening.domain.models.enums import ScreeningStatus, StepStatu
 from src.modules.screening.domain.models.screening_process import ScreeningProcess
 from src.modules.screening.domain.schemas import ScreeningProcessResponse
 from src.modules.screening.infrastructure.repositories import ScreeningProcessRepository
+from src.modules.screening.use_cases.screening_step.helpers import StepWorkflowService
 
 
 class CancelScreeningProcessUseCase:
@@ -109,3 +110,6 @@ class CancelScreeningProcessUseCase:
         for step in all_steps:
             if step is not None and step.status in active_statuses:
                 step.status = StepStatus.CANCELLED
+                StepWorkflowService.update_step_status(process, step)
+
+        StepWorkflowService.clear_current_step(process)

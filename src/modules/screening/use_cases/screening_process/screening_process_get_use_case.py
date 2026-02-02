@@ -85,6 +85,7 @@ class GetScreeningProcessUseCase:
             )
 
         response = ScreeningProcessDetailResponse.model_validate(process)
+        response = response.model_copy(update={"step_info": process.step_info})
         return response.model_copy(
             update={
                 "professional": professional_summary,
@@ -153,6 +154,7 @@ class GetScreeningProcessByTokenUseCase:
             )
 
         response = ScreeningProcessDetailResponse.model_validate(process)
+        response = response.model_copy(update={"step_info": process.step_info})
         return response.model_copy(
             update={
                 "professional": professional_summary,

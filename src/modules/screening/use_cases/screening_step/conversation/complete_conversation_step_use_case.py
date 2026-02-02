@@ -169,6 +169,7 @@ class CompleteConversationStepUseCase:
             step=step,
             completed_by=completed_by,
             status=StepStatus.REJECTED,
+            process=process,
         )
         step.rejection_reason = data.notes
         StepWorkflowService.reject_screening_process(
@@ -187,6 +188,7 @@ class CompleteConversationStepUseCase:
             step=step,
             completed_by=completed_by,
             status=StepStatus.APPROVED,
+            process=process,
         )
 
         if process.status != ScreeningStatus.IN_PROGRESS:

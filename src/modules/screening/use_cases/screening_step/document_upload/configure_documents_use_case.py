@@ -28,6 +28,7 @@ from src.modules.screening.infrastructure.repositories import (
     ScreeningDocumentRepository,
     ScreeningProcessRepository,
 )
+from src.modules.screening.use_cases.screening_step.helpers import StepWorkflowService
 from src.shared.domain.models import DocumentType
 from src.shared.infrastructure.repositories import DocumentTypeRepository
 
@@ -130,6 +131,7 @@ class ConfigureDocumentsUseCase:
         # 6. Update step to IN_PROGRESS
         step.status = StepStatus.IN_PROGRESS
         step.started_at = datetime.now(timezone.utc)
+        StepWorkflowService.update_step_status(process, step)
 
         # 7. Update step counts
         step.total_documents = len(documents)

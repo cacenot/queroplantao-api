@@ -202,6 +202,10 @@ class CreateScreeningProcessUseCase:
             )
 
         response = ScreeningProcessDetailResponse.model_validate(process_with_details)
+        if process_with_details:
+            response = response.model_copy(
+                update={"step_info": process_with_details.step_info}
+            )
         return response.model_copy(
             update={
                 "professional": professional_summary,
@@ -341,6 +345,7 @@ class CreateScreeningProcessUseCase:
             status=ScreeningStatus.IN_PROGRESS,
             current_step_type=StepType.CONVERSATION,
             configured_step_types=configured_step_types,
+            step_info=self._build_step_info(configured_step_types),
             expected_professional_type=data.expected_professional_type,
             expected_specialty_id=data.expected_specialty_id,
             owner_id=created_by,
@@ -353,6 +358,21 @@ class CreateScreeningProcessUseCase:
             created_by=created_by,
             updated_by=created_by,
         )
+
+    def _build_step_info(
+        self, configured_step_types: list[str]
+    ) -> dict[str, dict[str, object]]:
+        step_info: dict[str, dict[str, object]] = {}
+        for step_type in configured_step_types:
+            is_current = step_type == StepType.CONVERSATION.value
+            step_info[step_type] = {
+                "status": StepStatus.IN_PROGRESS.value
+                if is_current
+                else StepStatus.PENDING.value,
+                "completed": False,
+                "current_step": is_current,
+            }
+        return step_info
 
     async def _create_steps(
         self,
