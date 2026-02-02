@@ -94,6 +94,11 @@ from src.app.exceptions.user_exceptions import (
     UserException,
     UserNotMemberError,
 )
+from src.app.exceptions.document_type_exceptions import (
+    DocumentTypeException,
+    DocumentTypeInUseError,
+    DocumentTypeNotFoundError,
+)
 
 __all__ = [
     # Base exceptions
@@ -185,4 +190,8 @@ __all__ = [
     "UserAlreadyMemberError",
     "UserException",
     "UserNotMemberError",
+    # Document type exceptions
+    "DocumentTypeException",
+    "DocumentTypeInUseError",
+    "DocumentTypeNotFoundError",
 ]

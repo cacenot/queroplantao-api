@@ -1,0 +1,36 @@
+meta {
+  name: Deactivate Document Type
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{baseUrl}}/api/v1/document-types/:documentTypeId/deactivate
+  body: none
+  auth: inherit
+}
+
+headers {
+  X-Organization-ID: {{organizationId}}
+}
+
+params:path {
+  documentTypeId: {{documentTypeId}}
+}
+
+docs {
+  # Deactivate Document Type
+  
+  Desativa um tipo de documento.
+  
+  Tipos inativos não aparecem em listagens padrão e não podem ser usados para novos documentos.
+  Documentos existentes não são afetados.
+  
+  **Prefira desativar ao invés de deletar** para manter histórico.
+  
+  ## Error Codes
+  
+  | Status | Code | Descrição |
+  |--------|------|-----------|
+  | 404 | `DOC_TYPE_NOT_FOUND` | Tipo de documento não encontrado |
+}

@@ -175,3 +175,11 @@ class UserErrorCodes(StrEnum):
     # Role errors
     ROLE_NOT_FOUND = "USER_ROLE_NOT_FOUND"
     INVALID_ROLE = "USER_INVALID_ROLE"
+
+
+class DocumentTypeErrorCodes(StrEnum):
+    """DocumentType module error codes."""
+
+    # Document type errors
+    DOCUMENT_TYPE_NOT_FOUND = "DOC_TYPE_NOT_FOUND"
+    DOCUMENT_TYPE_IN_USE = "DOC_TYPE_IN_USE"

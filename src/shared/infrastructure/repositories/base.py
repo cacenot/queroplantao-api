@@ -141,3 +141,40 @@ class BaseRepository(Generic[ModelT]):
         entity = await self.get_by_id_or_raise(id)
         await self.session.delete(entity)
         await self.session.flush()
+
+    async def list_all(
+        self,
+        *,
+        filters: "FilterSet | None" = None,
+        sorting: "SortingSet | None" = None,
+        base_query: Select[tuple[ModelT]] | None = None,
+    ) -> list[ModelT]:
+        """
+        List all entities without pagination.
+
+        Use this method for dropdown lists, caching scenarios,
+        or when the dataset is known to be small.
+
+        Args:
+            filters: Optional FilterSet to apply.
+            sorting: Optional SortingSet to apply.
+            base_query: Optional custom base query. If not provided, uses get_query().
+
+        Returns:
+            List of all matching entities.
+        """
+        # Build base query
+        query = base_query if base_query is not None else self.get_query()
+
+        # Apply filters using FilterSet.apply_to_query()
+        if filters:
+            query = filters.apply_to_query(query, self.model)
+
+        # Apply sorting using SortingSet.apply_to_query()
+        if sorting:
+            query = sorting.apply_to_query(query, self.model)
+        elif hasattr(self.model, "created_at"):
+            query = query.order_by(desc(self.model.created_at))  # type: ignore[attr-defined]
+
+        result = await self.session.execute(query)
+        return list(result.scalars().all())

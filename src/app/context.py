@@ -26,6 +26,7 @@ class RequestContext:
     organization_role_name: str | None = None
     child_organization_id: UUID | None = None
     child_organization_name: str | None = None
+    parent_organization_id: UUID | None = None
 
     # Family organization IDs for hierarchical data scope
     # Contains all org IDs in the family (parent + children/siblings)

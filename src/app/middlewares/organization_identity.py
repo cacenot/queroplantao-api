@@ -193,6 +193,15 @@ class OrganizationIdentityMiddleware(BaseHTTPMiddleware):
                 )
 
             # Update context with organization data
+            # Determine parent_organization_id:
+            # - If org has a parent_id, use that (org is a child)
+            # - If org has no parent_id, use the org's own ID (org is the parent)
+            parent_org_id = (
+                UUID(org_data["parent_id"])
+                if org_data.get("parent_id")
+                else organization_id
+            )
+
             updated_context = replace(
                 current_context,
                 organization_id=organization_id,
@@ -205,6 +214,7 @@ class OrganizationIdentityMiddleware(BaseHTTPMiddleware):
                 child_organization_name=(
                     child_org_data["name"] if child_org_data else None
                 ),
+                parent_organization_id=parent_org_id,
                 family_org_ids=tuple(family_org_ids),
             )
             set_request_context(updated_context)

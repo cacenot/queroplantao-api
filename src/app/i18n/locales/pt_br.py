@@ -2,6 +2,7 @@
 
 from src.app.i18n.messages import (
     AuthMessages,
+    DocumentTypeMessages,
     OrganizationMessages,
     ProfessionalMessages,
     ResourceMessages,
@@ -169,6 +170,11 @@ MESSAGES: dict[str, str] = {
     ScreeningMessages.ALERT_ALREADY_EXISTS: "Já existe um alerta pendente para esta triagem",
     ScreeningMessages.ALERT_ALREADY_RESOLVED: "Este alerta já foi resolvido",
     ScreeningMessages.PROCESS_BLOCKED_BY_ALERT: "Processo de triagem bloqueado por alerta pendente",
+    # ==========================================================================
+    # Document Type messages
+    # ==========================================================================
+    DocumentTypeMessages.DOCUMENT_TYPE_NOT_FOUND: "Tipo de documento não encontrado",
+    DocumentTypeMessages.DOCUMENT_TYPE_IN_USE: "Tipo de documento não pode ser excluído pois está em uso",
 }
 
 # =============================================================================
@@ -200,4 +206,5 @@ RESOURCE_NAMES: dict[str, str] = {
     # Shared
     "Company": "Empresa",
     "BankAccount": "Conta bancária",
+    "DocumentType": "Tipo de documento",
 }

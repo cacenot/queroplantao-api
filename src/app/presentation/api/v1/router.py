@@ -17,7 +17,7 @@ from src.modules.screening.presentation.routes_module import (
     public_screening_router,
 )
 from src.modules.shifts.presentation.routes import router as shifts_router
-from src.shared.presentation import enum_router, specialty_router
+from src.shared.presentation import document_type_router, enum_router, specialty_router
 
 
 # Create main v1 router
@@ -34,5 +34,6 @@ router.include_router(screening_router)
 router.include_router(public_screening_router)
 
 # Include shared routers (global reference data)
+router.include_router(document_type_router)
 router.include_router(enum_router)
 router.include_router(specialty_router)

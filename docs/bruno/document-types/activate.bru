@@ -1,0 +1,33 @@
+meta {
+  name: Activate Document Type
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{baseUrl}}/api/v1/document-types/:documentTypeId/activate
+  body: none
+  auth: inherit
+}
+
+headers {
+  X-Organization-ID: {{organizationId}}
+}
+
+params:path {
+  documentTypeId: {{documentTypeId}}
+}
+
+docs {
+  # Activate Document Type
+  
+  Ativa um tipo de documento que estava inativo.
+  
+  Tipos ativos aparecem em listagens e podem ser usados para novos documentos.
+  
+  ## Error Codes
+  
+  | Status | Code | Descrição |
+  |--------|------|-----------|
+  | 404 | `DOC_TYPE_NOT_FOUND` | Tipo de documento não encontrado |
+}

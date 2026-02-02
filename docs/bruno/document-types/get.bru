@@ -1,0 +1,35 @@
+meta {
+  name: Get Document Type
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/v1/document-types/:documentTypeId
+  body: none
+  auth: inherit
+}
+
+params:path {
+  documentTypeId: {{documentTypeId}}
+}
+
+headers {
+  X-Organization-ID: {{organizationId}}
+}
+
+vars:pre-request {
+  documentTypeId: 652835c4-8335-40bf-8cc6-0f85d63cc72a
+}
+
+docs {
+  # Get Document Type by ID
+  
+  Retorna os detalhes de um tipo de documento pelo seu UUID.
+  
+  ## Error Codes
+  
+  | Status | Code | Descrição |
+  |--------|------|-----------|
+  | 404 | `DOC_TYPE_NOT_FOUND` | Tipo de documento não encontrado |
+}

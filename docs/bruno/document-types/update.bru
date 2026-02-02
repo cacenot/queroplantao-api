@@ -1,0 +1,58 @@
+meta {
+  name: Update Document Type
+  type: http
+  seq: 5
+}
+
+patch {
+  url: {{baseUrl}}/api/v1/document-types/:documentTypeId
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  X-Organization-ID: {{organizationId}}
+}
+
+params:path {
+  documentTypeId: {{documentTypeId}}
+}
+
+body:json {
+  {
+    "name": "Registro Geral (RG) - Atualizado",
+    "description": "Documento de identidade civil brasileiro emitido pela SSP",
+    "display_order": 5
+  }
+}
+
+docs {
+  # Update Document Type (PATCH)
+  
+  Atualiza parcialmente um tipo de documento.
+  
+  Apenas os campos enviados serão atualizados (PATCH semantics).
+  
+  ## Campos atualizáveis
+  
+  | Campo | Tipo | Descrição |
+  |-------|------|-----------|
+  | name | string | Nome de exibição |
+  | category | string | `PROFILE`, `QUALIFICATION` ou `SPECIALTY` |
+  | description | string | Descrição breve |
+  | help_text | string | Texto de ajuda detalhado |
+  | validation_instructions | string | Instruções para revisores |
+  | validation_url | string | URL para validação online |
+  | requires_expiration | boolean | Se tem data de validade |
+  | default_validity_days | integer | Período de validade padrão |
+  | required_for_professional_types | array | Tipos de profissional que requerem |
+  | is_active | boolean | Status ativo/inativo |
+  | display_order | integer | Ordem de exibição |
+  
+  ## Error Codes
+  
+  | Status | Code | Descrição |
+  |--------|------|-----------|
+  | 404 | `DOC_TYPE_NOT_FOUND` | Tipo de documento não encontrado |
+}

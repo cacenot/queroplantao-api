@@ -1,0 +1,34 @@
+meta {
+  name: Delete Document Type
+  type: http
+  seq: 6
+}
+
+delete {
+  url: {{baseUrl}}/api/v1/document-types/:documentTypeId
+  body: none
+  auth: inherit
+}
+
+headers {
+  X-Organization-ID: {{organizationId}}
+}
+
+params:path {
+  documentTypeId: {{documentTypeId}}
+}
+
+docs {
+  # Delete Document Type (Soft Delete)
+  
+  Remove um tipo de documento (soft delete).
+  
+  **Nota:** Não é possível deletar tipos que possuem documentos vinculados.
+  
+  ## Error Codes
+  
+  | Status | Code | Descrição |
+  |--------|------|-----------|
+  | 404 | `DOC_TYPE_NOT_FOUND` | Tipo de documento não encontrado |
+  | 409 | `DOC_TYPE_IN_USE` | Tipo possui documentos vinculados e não pode ser deletado |
+}

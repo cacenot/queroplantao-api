@@ -1,0 +1,65 @@
+meta {
+  name: Create Document Type
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/api/v1/document-types/
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  X-Organization-ID: {{organizationId}}
+}
+
+body:json {
+  {
+    "name": "Registro Geral (RG)",
+    "category": "PROFILE",
+    "description": "Documento de identidade civil brasileiro",
+    "help_text": "Acesse o site da Secretaria de Segurança Pública do seu estado para solicitar a segunda via.",
+    "validation_instructions": "Verificar se o documento está legível e dentro da validade.",
+    "validation_url": null,
+    "requires_expiration": false,
+    "default_validity_days": null,
+    "required_for_professional_types": null,
+    "is_active": true,
+    "display_order": 10
+  }
+}
+
+docs {
+  # Create Document Type
+  
+  Cria um novo tipo de documento na organização.
+  
+  ## Campos obrigatórios
+  
+  | Campo | Tipo | Descrição |
+  |-------|------|-----------|
+  | name | string | Nome de exibição em português |
+  | category | string | `PROFILE`, `QUALIFICATION` ou `SPECIALTY` |
+  
+  ## Campos opcionais
+  
+  | Campo | Tipo | Descrição |
+  |-------|------|-----------|
+  | description | string | Descrição breve do documento (máx 500 chars) |
+  | help_text | string | Texto de ajuda detalhado sobre como obter o documento |
+  | validation_instructions | string | Instruções para revisores validarem o documento |
+  | validation_url | string | URL para validação online (ex: portal do CRM) |
+  | requires_expiration | boolean | Se o documento tem data de validade (default: false) |
+  | default_validity_days | integer | Período de validade padrão em dias |
+  | required_for_professional_types | array | Lista de tipos de profissional que requerem este doc (null = todos) |
+  | is_active | boolean | Se o tipo está ativo (default: true) |
+  | display_order | integer | Ordem de exibição em listas (default: 0) |
+  
+  ## Categorias
+  
+  - `PROFILE`: Documentos pessoais do profissional (RG, CPF, comprovante de residência)
+  - `QUALIFICATION`: Documentos da qualificação/conselho (CRM, CRO, diploma)
+  - `SPECIALTY`: Documentos da especialidade (título de especialista, RQE)
+}

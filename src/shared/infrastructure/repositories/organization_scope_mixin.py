@@ -234,3 +234,45 @@ class OrganizationScopeMixin(Generic[ModelT]):
 
         result = await self.session.execute(query)
         return result.scalar_one_or_none()
+
+    async def list_all_by_organization(
+        self,
+        organization_id: UUID,
+        family_org_ids: list[UUID] | tuple[UUID, ...],
+        *,
+        filters: "FilterSet | None" = None,
+        sorting: "SortingSet | None" = None,
+        scope_policy: ScopePolicy | None = None,
+    ) -> list[ModelT]:
+        """
+        List all entities within organization scope without pagination.
+
+        Use this method for dropdown lists, caching scenarios,
+        or when the dataset is known to be small.
+
+        Args:
+            organization_id: The current organization UUID.
+            family_org_ids: List of all organization IDs in the family.
+            filters: Optional FilterSet to apply.
+            sorting: Optional SortingSet to apply.
+            scope_policy: The scope policy to apply. Uses default if None.
+
+        Returns:
+            List of all matching entities within organization scope.
+        """
+        org_ids = self._get_effective_org_ids(
+            organization_id=organization_id,
+            family_org_ids=family_org_ids,
+            scope_policy=scope_policy,
+        )
+
+        # Use parent's get_query() to respect soft-delete filter
+        base_query = super().get_query()  # type: ignore[misc]
+        base_query = self._apply_org_scope(base_query, org_ids)
+
+        # Delegate to parent's list_all() method
+        return await super().list_all(  # type: ignore[misc]
+            filters=filters,
+            sorting=sorting,
+            base_query=base_query,
+        )

@@ -215,3 +215,13 @@ class ValidationMessages(StrEnum):
     UF_MUST_BE_STRING = "validation.uf_must_be_string"
     UF_INVALID_LENGTH = "validation.uf_invalid_length"
     UF_INVALID_CODE = "validation.uf_invalid_code"
+
+
+class DocumentTypeMessages(StrEnum):
+    """DocumentType module message keys."""
+
+    # Not found
+    DOCUMENT_TYPE_NOT_FOUND = "document_type.not_found"
+
+    # In use
+    DOCUMENT_TYPE_IN_USE = "document_type.in_use"

@@ -1,0 +1,48 @@
+meta {
+  name: List Document Types
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/v1/document-types/
+  body: none
+  auth: inherit
+}
+
+headers {
+  X-Organization-ID: {{organizationId}}
+}
+
+params:query {
+  page: 1
+  page_size: 20
+  ~search: 
+  ~category: 
+  ~is_active: 
+  ~id: 
+  ~name: 
+  ~display_order: 
+}
+
+docs {
+  # List Document Types
+  
+  Lista os tipos de documento da organização com paginação.
+  
+  ## Filtros disponíveis
+  
+  | Parâmetro | Tipo | Descrição |
+  |-----------|------|-----------|
+  | search | string | Busca textual por nome |
+  | category | string | Categoria: `PROFILE`, `QUALIFICATION`, `SPECIALTY` |
+  | is_active | boolean | Filtrar por status ativo/inativo |
+  
+  ## Ordenação
+  
+  Campos disponíveis: `id`, `name`, `display_order`
+  
+  Formato: `campo:asc` ou `campo:desc`
+  
+  Default: `display_order:asc`
+}

@@ -4,7 +4,7 @@ from enum import Enum
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID
 
-from sqlalchemy import Index, Text, UniqueConstraint, text
+from sqlalchemy import Index, Text
 from sqlalchemy import Enum as SAEnum
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Column, Field, Relationship
@@ -42,10 +42,6 @@ class DocumentTypeBase(BaseModel):
     """Base fields for DocumentType."""
 
     # Identification
-    code: str = Field(
-        max_length=50,
-        description="Unique code for this document type (e.g., 'ID_DOCUMENT', 'CRM_CERTIFICATE')",
-    )
     name: str = Field(
         max_length=255,
         description="Display name in Portuguese (e.g., 'Documento de Identidade')",
@@ -121,34 +117,16 @@ class DocumentType(
     DocumentType table model.
 
     Stores configurable document types with help text and validation instructions.
-    This is a global table with optional organization-specific customizations.
-
-    Document types can be:
-    - Global (organization_id=None): Available to all organizations, system-defined
-    - Organization-specific: Custom types created by an organization
+    Document types are organization-scoped and shared within the organization family.
 
     Example entries:
-    - code: "CRM_REGISTRATION_CERTIFICATE"
-      name: "Certidão de Regularidade de Inscrição"
+    - name: "Certidão de Regularidade de Inscrição"
       help_text: "Acesse o portal do CRM do seu estado e solicite a certidão..."
       validation_url: "https://portal.cfm.org.br"
     """
 
     __tablename__ = "document_types"
     __table_args__ = (
-        # Unique code per organization (null org = global)
-        UniqueConstraint(
-            "code",
-            "organization_id",
-            name="uq_document_types_code_org",
-        ),
-        # Unique index for active global types
-        Index(
-            "ix_document_types_code_global_active",
-            "code",
-            unique=True,
-            postgresql_where=text("deleted_at IS NULL AND organization_id IS NULL"),
-        ),
         # Index for category filtering
         Index("ix_document_types_category", "category"),
         # Index for active documents
@@ -157,12 +135,11 @@ class DocumentType(
         Index("ix_document_types_organization_id", "organization_id"),
     )
 
-    # Organization scope (optional - null means global/system-defined)
-    organization_id: Optional[UUID] = Field(
-        default=None,
+    # Organization scope (required)
+    organization_id: UUID = Field(
         foreign_key="organizations.id",
-        nullable=True,
-        description="Organization that created this type (null = system-defined)",
+        nullable=False,
+        description="Organization that owns this document type",
     )
 
     # Relationships

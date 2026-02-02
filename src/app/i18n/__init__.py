@@ -26,6 +26,7 @@ from typing import Any
 from src.app.i18n.locales import PT_BR_MESSAGES, PT_BR_RESOURCE_NAMES
 from src.app.i18n.messages import (
     AuthMessages,
+    DocumentTypeMessages,
     OrganizationMessages,
     ProfessionalMessages,
     ResourceMessages,
@@ -113,6 +114,7 @@ __all__ = [
     "DEFAULT_LOCALE",
     # Message keys
     "AuthMessages",
+    "DocumentTypeMessages",
     "OrganizationMessages",
     "ProfessionalMessages",
     "ResourceMessages",

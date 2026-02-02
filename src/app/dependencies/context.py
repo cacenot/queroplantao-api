@@ -38,6 +38,21 @@ class ValidatedContext(RequestContext):
             )
         return org_id
 
+    @property
+    def parent_org_id(self) -> UUID:
+        """
+        Get the parent organization ID.
+
+        For parent organizations, this is the same as organization_id.
+        For child organizations, this is the parent's ID.
+        Raises AuthorizationError if no organization context is set.
+        """
+        if self.parent_organization_id is None:
+            raise AuthorizationError(
+                message="Organization context required. Set X-Organization-Id header."
+            )
+        return self.parent_organization_id
+
     @classmethod
     def from_request_context(cls, ctx: RequestContext) -> "ValidatedContext":
         """Create a ValidatedContext from a RequestContext."""
@@ -56,6 +71,7 @@ class ValidatedContext(RequestContext):
             organization_role=ctx.organization_role,
             child_organization_id=ctx.child_organization_id,
             child_organization_name=ctx.child_organization_name,
+            parent_organization_id=ctx.parent_organization_id,
             family_org_ids=ctx.family_org_ids,
         )
 

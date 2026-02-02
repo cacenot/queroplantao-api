@@ -1,0 +1,41 @@
+meta {
+  name: List All Document Types
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/v1/document-types/all
+  body: none
+  auth: inherit
+}
+
+headers {
+  X-Organization-ID: {{organizationId}}
+}
+
+params:query {
+  ~category: 
+  ~is_active: 
+}
+
+docs {
+  # List All Document Types
+  
+  Lista todos os tipos de documento sem paginação.
+  
+  **Ideal para dropdowns e seletores.**
+  
+  ## Cache
+  
+  - Resultados são cacheados por 1 hora por organização (pai)
+  - Cache é invalidado automaticamente ao criar, atualizar, ativar/desativar ou deletar tipos
+  - Se filtros forem aplicados, o cache é ignorado
+  
+  ## Filtros disponíveis
+  
+  | Parâmetro | Tipo | Descrição |
+  |-----------|------|-----------|
+  | category | string | Categoria: `PROFILE`, `QUALIFICATION`, `SPECIALTY` |
+  | is_active | boolean | Filtrar por status ativo/inativo |
+}
