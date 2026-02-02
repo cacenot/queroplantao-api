@@ -171,7 +171,7 @@ Status unificado de um documento de triagem.
 | PENDING_REVIEW | Upload feito, aguardando revisão |
 | APPROVED | Documento aprovado |
 | CORRECTION_NEEDED | Documento precisa de correção, re-upload necessário |
-| REUSED | Documento reaproveitado de triagem anterior |
+| REUSED | **Legado (não usar como status no fluxo novo)**. Regra do produto: tratar como **origem** e manter `status = PENDING_REVIEW` (segue para revisão) |
 | SKIPPED | Documento não obrigatório, pulado |
 
 ### SourceType
@@ -577,6 +577,37 @@ A qualquer momento durante a triagem (desde que `status = IN_PROGRESS`), um aler
 
 O processo de documentos é dividido em duas etapas com um fluxo de estados bem definido.
 
+#### Guia de Frontend (para agente de IA)
+
+**Objetivo:** o frontend deve tratar o backend como **fonte de verdade** do workflow.
+
+**Carregar estado (sempre):**
+- Gestor (autenticado): `GET /api/v1/screenings/{screening_id}`
+- Profissional (público): `GET /api/v1/public/screening/{token}`
+
+**Como renderizar estado por documento (recomendação):**
+- Use `ScreeningDocument.status` (e flags como `needs_upload`, `needs_review`, `needs_correction`) para decidir UI.
+- Use contadores do step (`total_required`, `total_uploaded`, etc.) apenas como *informação auxiliar*.
+
+**Ações por documento:**
+- Upload novo:
+  - Gestor: `POST /api/v1/screenings/{screening_id}/documents/{document_id}/upload`
+  - Público: `POST /api/v1/public/screening/{token}/documents/{document_id}/upload`
+  - `multipart/form-data`: `file` + `expires_at?` + `notes?`
+  - Retorno: `ScreeningDocumentResponse` atualizado (use isso para atualizar o card imediatamente).
+
+- Reutilização (gestor):
+  - `POST /api/v1/screenings/{screening_id}/documents/{document_id}/reuse?professional_document_id=...`
+  - Retorno: `ScreeningDocumentResponse` atualizado.
+  - Regra do produto: reutilização é equivalente ao upload no workflow; muda apenas a origem.
+
+**Revisão (gestor):**
+- `POST /api/v1/screenings/{screening_id}/documents/{document_id}/review`
+- Body: `{ approved: boolean, notes?: string, rejection_reason?: string }`
+
+**Refresh recomendado (robustez):**
+- Após uma sequência de uploads/reuse/reviews, faça `GET` do processo novamente para sincronizar contadores e status de steps.
+
 #### Diagrama do Fluxo de Documentos
 
 ```
@@ -590,7 +621,7 @@ O processo de documentos é dividido em duas etapas com um fluxo de estados bem 
 │  Nenhum documento foi selecionado ainda.                                                │
 │                                                                                         │
 │       │                                                                                 │
-│       │ POST /screening/{id}/steps/document-upload/configure                            │
+│       │ POST /api/v1/screenings/{screening_id}/steps/document-upload/configure          │
 │       │ Payload: lista de document_type_ids com is_required, order, description         │
 │       ▼                                                                                 │
 │                                                                                         │
@@ -600,9 +631,22 @@ O processo de documentos é dividido em duas etapas com um fluxo de estados bem 
 │  ScreeningDocument records criados com status PENDING_UPLOAD.                           │
 │                                                                                         │
 │       │                                                                                 │
-│       │ POST /screening/{id}/documents/{doc_id}/upload (para cada documento)            │
-│       │ Linka ProfessionalDocument ao ScreeningDocument (upload via Firebase)           │
-│       │ ScreeningDocument.status → PENDING_REVIEW                                       │
+│       │ Para cada documento (duas opções equivalentes):                                 │
+│       │                                                                                 │
+│       │ 1) Upload (arquivo novo, fluxo atômico na API)                                  │
+│       │    POST /api/v1/screenings/{screening_id}/documents/{document_id}/upload         │
+│       │    POST /api/v1/public/screening/{token}/documents/{document_id}/upload          │
+│       │    Form: file (binary), expires_at (opcional), notes (opcional)                 │
+│       │                                                                                 │
+│       │ 2) Reutilização (sem upload de arquivo, fluxo equivalente)                       │
+│       │    POST /api/v1/screenings/{screening_id}/documents/{document_id}/reuse          │
+│       │      ?professional_document_id={uuid}                                            │
+│       │                                                                                 │
+│       │ Em ambos os casos (regra do produto):                                            │
+│       │ - Backend vincula ProfessionalDocument ao ScreeningDocument                       │
+│       │ - Atualiza DocumentUploadStep.uploaded_documents (contador)                       │
+│       │ - ScreeningDocument.status → PENDING_REVIEW                                       │
+│       │ - DOCUMENT_REVIEW é obrigatório (sempre passa por revisão)                       │
 │       ▼                                                                                 │
 │                                                                                         │
 │  Uploads Completos                                                                      │
@@ -610,8 +654,12 @@ O processo de documentos é dividido em duas etapas com um fluxo de estados bem 
 │  Todos os documentos obrigatórios (is_required=true) foram enviados.                    │
 │                                                                                         │
 │       │                                                                                 │
-│       │ POST /screening/{id}/steps/document-upload/complete                             │
-│       │ Valida: todos required docs com status != PENDING_UPLOAD                        │
+│       │ Regra do produto: o backend pode marcar automaticamente o step como COMPLETED   │
+│       │ quando todos os required docs saírem de PENDING_UPLOAD.                          │
+│                                                                                         │
+│       │ Endpoint explícito (fallback/idempotente):                                       │
+│       │ POST /api/v1/screenings/{screening_id}/steps/{step_id}/document-upload/complete │
+│       │ Valida: todos required docs com status != PENDING_UPLOAD                         │
 │       ▼                                                                                 │
 │                                                                                         │
 │  Status: COMPLETED                                                                      │
@@ -632,8 +680,8 @@ O processo de documentos é dividido em duas etapas com um fluxo de estados bem 
 │  Gestor revisa cada documento individualmente.                                          │
 │                                                                                         │
 │       │                                                                                 │
-│       │ POST /screening/{id}/documents/{doc_id}/review                                  │
-│       │ Payload: { status: APPROVED | CORRECTION_NEEDED, notes, reason }                │
+│       │ POST /api/v1/screenings/{screening_id}/documents/{document_id}/review            │
+│       │ Payload: { approved: true|false, notes?, rejection_reason? }                     │
 │       │                                                                                 │
 │       │ Para cada documento:                                                            │
 │       │   • APPROVED: documento válido                                                  │
@@ -645,7 +693,11 @@ O processo de documentos é dividido em duas etapas com um fluxo de estados bem 
 │  Nenhum documento com status PENDING_REVIEW.                                            │
 │                                                                                         │
 │       │                                                                                 │
-│       │ POST /screening/{id}/steps/document-review/complete                             │
+│       │ Regra do produto: o backend pode completar automaticamente o step                │
+│       │ quando não houver PENDING_REVIEW.                                                │
+│                                                                                         │
+│       │ Endpoint explícito (fallback/idempotente):                                       │
+│       │ POST /api/v1/screenings/{screening_id}/steps/{step_id}/document-review/complete │
 │       ▼                                                                                 │
 │                                                                                         │
 │  ┌─────────────────────────────────────────────────────────────────────────────────┐    │
@@ -684,7 +736,8 @@ O processo de documentos é dividido em duas etapas com um fluxo de estados bem 
 │  Profissional notificado para re-upload                                               │
 │                                                                                       │
 │       │                                                                               │
-│       │ POST /screening/{id}/documents/{doc_id}/upload (re-upload)                    │
+│       │ POST /api/v1/screenings/{screening_id}/documents/{document_id}/upload (re-upload)│
+│       │ POST /api/v1/public/screening/{token}/documents/{document_id}/upload (re-upload) │
 │       │ ScreeningDocument.status → PENDING_REVIEW                                     │
 │       │ Histórico de revisão mantido em review_history[]                              │
 │       ▼                                                                               │
@@ -692,7 +745,7 @@ O processo de documentos é dividido em duas etapas com um fluxo de estados bem 
 │  Todos re-uploads feitos                                                              │
 │                                                                                       │
 │       │                                                                               │
-│       │ POST /screening/{id}/steps/document-upload/complete                           │
+│       │ POST /api/v1/screenings/{screening_id}/steps/{step_id}/document-upload/complete│
 │       │ DocumentUploadStep.status → COMPLETED                                         │
 │       ▼                                                                               │
 │                                                                                       │
@@ -732,11 +785,17 @@ O processo de documentos é dividido em duas etapas com um fluxo de estados bem 
 
 
     Estados Especiais:
-    ┌───────────┐    ┌───────────┐
-    │  REUSED   │    │  SKIPPED  │
-    └───────────┘    └───────────┘
-    (doc de triagem   (doc opcional
-     anterior)         não enviado)
+    ┌───────────┐
+    │  SKIPPED  │
+    └───────────┘
+    (doc opcional não enviado)
+
+    Origem (para auditoria/UX):
+    - Upload novo: cria ProfessionalDocument (is_pending=True)
+    - Reutilização: vincula ProfessionalDocument existente (is_pending=False)
+
+    Importante: "REUSED" deve ser tratado como ORIGEM (não como status).
+    Mesmo em reutilização, o status segue o fluxo normal: PENDING_REVIEW → review().
 ```
 
 ### Documentos Pendentes (Pending Documents)
@@ -778,7 +837,8 @@ Isso significa que o documento existe no sistema, mas **não substitui a versão
 │                                                                                         │
 │       │                                                                                 │
 │       │ 1. Frontend envia arquivo via multipart/form-data                               │
-│       │    POST /screening/{id}/documents/{doc_id}/upload                               │
+│       │    POST /api/v1/screenings/{screening_id}/documents/{document_id}/upload         │
+│       │    POST /api/v1/public/screening/{token}/documents/{document_id}/upload          │
 │       │    → Form: file (binary), expires_at, notes                                     │
 │       │                                                                                 │
 │       │ 2. Backend faz upload para Firebase Storage                                     │
@@ -856,8 +916,8 @@ Profissionais podem reutilizar documentos já aprovados de triagens anteriores, 
 │  (is_pending = False, source_type = SCREENING ou DIRECT)                                │
 │                                                                                         │
 │       │                                                                                 │
-│       │ POST /screening/{id}/documents/{doc_id}/reuse                                   │
-│       │ Payload: { professional_document_id: "uuid-do-doc-existente" }                  │
+│       │ POST /api/v1/screenings/{screening_id}/documents/{document_id}/reuse             │
+│       │   ?professional_document_id={uuid-do-doc-existente}                              │
 │       ▼                                                                                 │
 │                                                                                         │
 │  Validações:                                                                            │
@@ -869,22 +929,23 @@ Profissionais podem reutilizar documentos já aprovados de triagens anteriores, 
 │       │                                                                                 │
 │       │ Vinculação:                                                                     │
 │       │ • ScreeningDocument.professional_document_id = uuid-doc-existente               │
-│       │ • ScreeningDocument.status = REUSED                                             │
-│       │ • Registra em review_history                                                    │
+│       │ • ScreeningDocument.status = PENDING_REVIEW                                     │
+│       │ • Registra em review_history (origem = REUSED / ação = REUSE)                   │
+│       │ • Atualiza DocumentUploadStep.uploaded_documents (contador)                     │
 │       ▼                                                                                 │
 │                                                                                         │
-│  Documento reutilizado não precisa de revisão                                           │
-│  (já foi aprovado anteriormente)                                                        │
+│  Regra do produto: documento reutilizado PASSA por DOCUMENT_REVIEW                      │
+│  (mesmas regras do upload: revisão obrigatória e avanço automático/contadores iguais). │
 │                                                                                         │
 └─────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-**Importante:** Documentos reutilizados (status `REUSED`) **não criam novo ProfessionalDocument** - apenas vinculam o existente ao ScreeningDocument.
+**Importante:** Documentos reutilizados (origem `REUSED` / ação `REUSE` no `review_history`) **não criam novo ProfessionalDocument** - apenas vinculam o existente ao `ScreeningDocument`.
 
 ### Endpoint de Finalização
 
 ```
-POST /screening/{id}/finalize
+POST /api/v1/screenings/{screening_id}/finalize
 ```
 
 Finaliza a triagem e promove todos os documentos pendentes.
