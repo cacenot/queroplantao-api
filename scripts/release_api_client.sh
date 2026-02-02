@@ -76,6 +76,17 @@ make client-all || {
 }
 
 echo ""
+echo -e "${YELLOW}Building API client...${NC}"
+cd packages/api-client
+npm run build || {
+  echo -e "${RED}Failed to build client${NC}"
+  git checkout package.json
+  cd ../..
+  exit 1
+}
+cd ../..
+
+echo ""
 echo -e "${GREEN}✓${NC} Client generated successfully"
 echo ""
 
