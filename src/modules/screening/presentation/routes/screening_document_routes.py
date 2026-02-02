@@ -9,7 +9,9 @@ from uuid import UUID
 
 from fastapi import APIRouter, File, Form, UploadFile, status
 
+from src.app.constants.error_codes import ProfessionalErrorCodes, ScreeningErrorCodes
 from src.app.dependencies import OrganizationContext
+from src.shared.domain.schemas import ErrorResponse
 from src.modules.screening.domain.schemas.screening_document import (
     ScreeningDocumentResponse,
 )
@@ -104,8 +106,79 @@ async def upload_document(
     description=(
         "Reutiliza um documento já aprovado de triagens anteriores. "
         "Apenas documentos que não estão pendentes (is_pending=False) podem ser reutilizados. "
-        "O documento reutilizado recebe status REUSED e não precisa de revisão."
+        "O documento reutilizado recebe status PENDING_REVIEW e segue para revisão."
     ),
+    responses={
+        404: {
+            "model": ErrorResponse,
+            "description": "Não encontrado",
+            "content": {
+                "application/json": {
+                    "examples": {
+                        "screening_document_not_found": {
+                            "summary": "Documento de triagem não encontrado",
+                            "value": {
+                                "code": ScreeningErrorCodes.SCREENING_DOCUMENT_NOT_FOUND,
+                                "message": "Documento de triagem não encontrado",
+                            },
+                        },
+                        "professional_document_not_found": {
+                            "summary": "Documento do profissional não encontrado",
+                            "value": {
+                                "code": ProfessionalErrorCodes.DOCUMENT_NOT_FOUND,
+                                "message": "Documento do profissional não encontrado",
+                            },
+                        },
+                        "step_not_found": {
+                            "summary": "Etapa não encontrada",
+                            "value": {
+                                "code": ScreeningErrorCodes.SCREENING_STEP_NOT_FOUND,
+                                "message": "Etapa de triagem não encontrada",
+                            },
+                        },
+                    }
+                }
+            },
+        },
+        422: {
+            "model": ErrorResponse,
+            "description": "Erro de validação",
+            "content": {
+                "application/json": {
+                    "examples": {
+                        "step_not_in_progress": {
+                            "summary": "Etapa não está em andamento",
+                            "value": {
+                                "code": ScreeningErrorCodes.SCREENING_STEP_NOT_IN_PROGRESS,
+                                "message": "Esta etapa não está em andamento",
+                            },
+                        },
+                        "invalid_status": {
+                            "summary": "Status inválido para reutilização",
+                            "value": {
+                                "code": ScreeningErrorCodes.SCREENING_DOCUMENT_INVALID_STATUS,
+                                "message": "Documento não pode ser reutilizado no status APPROVED",
+                            },
+                        },
+                        "reuse_pending": {
+                            "summary": "Documento pendente",
+                            "value": {
+                                "code": ScreeningErrorCodes.SCREENING_DOCUMENT_REUSE_PENDING,
+                                "message": "Documento pendente não pode ser reutilizado. Apenas documentos aprovados podem ser reutilizados.",
+                            },
+                        },
+                        "type_mismatch": {
+                            "summary": "Tipo de documento não corresponde",
+                            "value": {
+                                "code": ScreeningErrorCodes.SCREENING_DOCUMENT_TYPE_MISMATCH,
+                                "message": "Tipo de documento não corresponde ao requisitado. Esperado: 00000000-0000-0000-0000-000000000000, encontrado: 11111111-1111-1111-1111-111111111111",
+                            },
+                        },
+                    }
+                }
+            },
+        },
+    },
 )
 async def reuse_document(
     screening_id: UUID,

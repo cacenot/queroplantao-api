@@ -289,6 +289,59 @@ class ScreeningSpecialtyMismatchError(AppException):
 # =============================================================================
 
 
+class ScreeningDocumentNotFoundError(AppException):
+    """Raised when screening document is not found."""
+
+    def __init__(self, document_id: str) -> None:
+        super().__init__(
+            message=get_message(ScreeningMessages.DOCUMENT_NOT_FOUND),
+            code=ScreeningErrorCodes.SCREENING_DOCUMENT_NOT_FOUND,
+            status_code=status.HTTP_404_NOT_FOUND,
+            details={"document_id": document_id},
+        )
+
+
+class ScreeningDocumentInvalidStatusError(AppException):
+    """Raised when document status does not allow an operation."""
+
+    def __init__(self, current_status: str) -> None:
+        super().__init__(
+            message=get_message(
+                ScreeningMessages.DOCUMENT_INVALID_STATUS, status=current_status
+            ),
+            code=ScreeningErrorCodes.SCREENING_DOCUMENT_INVALID_STATUS,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            details={"current_status": current_status},
+        )
+
+
+class ScreeningDocumentTypeMismatchError(AppException):
+    """Raised when document type does not match expected type."""
+
+    def __init__(self, expected: str, found: str) -> None:
+        super().__init__(
+            message=get_message(
+                ScreeningMessages.DOCUMENT_TYPE_MISMATCH,
+                expected=expected,
+                found=found,
+            ),
+            code=ScreeningErrorCodes.SCREENING_DOCUMENT_TYPE_MISMATCH,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            details={"expected": expected, "found": found},
+        )
+
+
+class ScreeningDocumentReusePendingError(AppException):
+    """Raised when trying to reuse a pending professional document."""
+
+    def __init__(self) -> None:
+        super().__init__(
+            message=get_message(ScreeningMessages.DOCUMENT_REUSE_PENDING),
+            code=ScreeningErrorCodes.SCREENING_DOCUMENT_REUSE_PENDING,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        )
+
+
 class ScreeningDocumentsNotUploadedError(AppException):
     """Raised when required documents are still pending upload."""
 

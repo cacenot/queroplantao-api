@@ -142,6 +142,10 @@ class ScreeningMessages(StrEnum):
     DOCUMENTS_NOT_UPLOADED = "screening.documents.not_uploaded"
     DOCUMENTS_MISSING_REQUIRED = "screening.documents.missing_required"
     DOCUMENTS_PENDING_REVIEW = "screening.documents.pending_review"
+    DOCUMENT_NOT_FOUND = "screening.document.not_found"
+    DOCUMENT_INVALID_STATUS = "screening.document.invalid_status"
+    DOCUMENT_TYPE_MISMATCH = "screening.document.type_mismatch"
+    DOCUMENT_REUSE_PENDING = "screening.document.reuse_pending"
 
     # Alert messages
     ALERT_NOT_FOUND = "screening.alert.not_found"

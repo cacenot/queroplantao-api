@@ -6,9 +6,13 @@ from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.app.exceptions import (
-    NotFoundError,
+    DocumentNotFoundError,
+    ScreeningDocumentInvalidStatusError,
+    ScreeningDocumentNotFoundError,
+    ScreeningDocumentReusePendingError,
+    ScreeningDocumentTypeMismatchError,
+    ScreeningStepNotFoundError,
     ScreeningStepNotInProgressError,
-    ValidationError,
 )
 from src.modules.professionals.infrastructure.repositories import (
     ProfessionalDocumentRepository,
@@ -38,7 +42,7 @@ class ReuseDocumentUseCase:
     2. Validate step is in progress
     3. Validate ProfessionalDocument exists and is not pending (already approved)
     4. Validate document type matches
-    5. Link ProfessionalDocument to ScreeningDocument with REUSED status
+    5. Link ProfessionalDocument to ScreeningDocument with PENDING_REVIEW status
     6. Update step upload count
     """
 
@@ -66,25 +70,23 @@ class ReuseDocumentUseCase:
             Updated screening document response.
 
         Raises:
-            NotFoundError: If screening document or professional document not found.
+            ScreeningDocumentNotFoundError: If screening document not found.
+            DocumentNotFoundError: If professional document not found.
+            ScreeningStepNotFoundError: If upload step not found.
             ScreeningStepNotInProgressError: If step is not in progress.
-            ValidationError: If document status doesn't allow reuse, or document is pending.
+            ScreeningDocumentInvalidStatusError: If document status doesn't allow reuse.
+            ScreeningDocumentReusePendingError: If professional document is pending.
+            ScreeningDocumentTypeMismatchError: If document type doesn't match.
         """
         # 1. Get screening document with type
         doc = await self.document_repository.get_by_id_with_type(screening_document_id)
         if not doc:
-            raise NotFoundError(
-                resource="ScreeningDocument",
-                identifier=str(screening_document_id),
-            )
+            raise ScreeningDocumentNotFoundError(document_id=str(screening_document_id))
 
         # 2. Get the upload step
         step = await self.step_repository.get_by_id(doc.upload_step_id)
         if not step:
-            raise NotFoundError(
-                resource="DocumentUploadStep",
-                identifier=str(doc.upload_step_id),
-            )
+            raise ScreeningStepNotFoundError(step_id=str(doc.upload_step_id))
 
         # 3. Validate step is in progress or correction needed
         if step.status not in (StepStatus.IN_PROGRESS, StepStatus.CORRECTION_NEEDED):
@@ -99,36 +101,29 @@ class ReuseDocumentUseCase:
             ScreeningDocumentStatus.CORRECTION_NEEDED,
         ]
         if doc.status not in allowed_statuses:
-            raise ValidationError(
-                message=f"Documento não pode ser reutilizado no status {doc.status.value}",
-            )
+            raise ScreeningDocumentInvalidStatusError(current_status=doc.status.value)
 
         # 5. Validate ProfessionalDocument exists
         professional_doc = await self.professional_document_repository.get_by_id(
             professional_document_id
         )
         if not professional_doc:
-            raise NotFoundError(
-                resource="ProfessionalDocument",
-                identifier=str(professional_document_id),
-            )
+            raise DocumentNotFoundError(details={"document_id": str(professional_document_id)})
 
         # 6. Validate document is not pending (must be an approved document)
         if professional_doc.is_pending:
-            raise ValidationError(
-                message="Documento pendente não pode ser reutilizado. "
-                "Apenas documentos aprovados podem ser reutilizados.",
-            )
+            raise ScreeningDocumentReusePendingError()
 
         # 7. Validate document type matches
         if professional_doc.document_type_id != doc.document_type_id:
-            raise ValidationError(
-                message="Tipo de documento não corresponde ao requisitado",
+            raise ScreeningDocumentTypeMismatchError(
+                expected=str(doc.document_type_id),
+                found=str(professional_doc.document_type_id),
             )
 
-        # 8. Link ProfessionalDocument to ScreeningDocument with REUSED status
+        # 8. Link ProfessionalDocument to ScreeningDocument (reuse follows normal review flow)
         doc.professional_document_id = professional_document_id
-        doc.status = ScreeningDocumentStatus.REUSED
+        doc.status = ScreeningDocumentStatus.PENDING_REVIEW
         doc.uploaded_at = datetime.now(timezone.utc)
         doc.uploaded_by = reused_by
         doc.updated_by = reused_by
@@ -137,7 +132,7 @@ class ReuseDocumentUseCase:
         doc.review_history.append(
             {
                 "user_id": str(reused_by),
-                "action": "REUSED",
+                "action": "REUSE",
                 "notes": f"Documento reutilizado: {professional_doc.file_name}",
                 "timestamp": datetime.now(timezone.utc).isoformat(),
             }

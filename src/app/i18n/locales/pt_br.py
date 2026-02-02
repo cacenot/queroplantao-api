@@ -165,6 +165,10 @@ MESSAGES: dict[str, str] = {
     ScreeningMessages.DOCUMENTS_NOT_UPLOADED: "Documentos obrigatórios pendentes de envio: {documents}",
     ScreeningMessages.DOCUMENTS_MISSING_REQUIRED: "Documentos obrigatórios não foram enviados: {missing}",
     ScreeningMessages.DOCUMENTS_PENDING_REVIEW: "Documentos pendentes de verificação: {documents}",
+    ScreeningMessages.DOCUMENT_NOT_FOUND: "Documento de triagem não encontrado",
+    ScreeningMessages.DOCUMENT_INVALID_STATUS: "Documento não pode ser reutilizado no status {status}",
+    ScreeningMessages.DOCUMENT_TYPE_MISMATCH: "Tipo de documento não corresponde ao requisitado. Esperado: {expected}, encontrado: {found}",
+    ScreeningMessages.DOCUMENT_REUSE_PENDING: "Documento pendente não pode ser reutilizado. Apenas documentos aprovados podem ser reutilizados.",
     # Alert
     ScreeningMessages.ALERT_NOT_FOUND: "Alerta de triagem não encontrado",
     ScreeningMessages.ALERT_ALREADY_EXISTS: "Já existe um alerta pendente para esta triagem",

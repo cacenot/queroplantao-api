@@ -21,7 +21,7 @@ docs {
   2. Valida que o ProfessionalDocument existe e **não está pendente** (`is_pending=False`)
   3. Valida que o tipo de documento (`document_type_id`) corresponde
   4. Vincula o ProfessionalDocument ao ScreeningDocument
-  5. Define o status como `REUSED`
+  5. Define o status como `PENDING_REVIEW`
   6. Registra a ação no `review_history`
   
   ## Diferença entre Upload e Reuse
@@ -30,8 +30,8 @@ docs {
   |---------|--------|-------|
   | Cria novo ProfessionalDocument | Sim | Não |
   | Documento fica pendente | Sim (`is_pending=True`) | N/A |
-  | Status do ScreeningDocument | `PENDING_REVIEW` | `REUSED` |
-  | Precisa de revisão | Sim | Não |
+  | Status do ScreeningDocument | `PENDING_REVIEW` | `PENDING_REVIEW` |
+  | Precisa de revisão | Sim | Sim |
   
   ## Quando usar
   
@@ -50,7 +50,11 @@ docs {
   
   | Status | Code | Descrição |
   |--------|------|-----------|
-  | 404 | `NOT_FOUND` | ScreeningDocument ou ProfessionalDocument não encontrado |
-  | 409 | `SCREENING_STEP_NOT_IN_PROGRESS` | Step não está em andamento |
-  | 422 | `VALIDATION_ERROR` | Documento pendente, tipo incorreto, ou status inválido |
+  | 404 | `SCREENING_DOCUMENT_NOT_FOUND` | Documento de triagem não encontrado |
+  | 404 | `SCREENING_STEP_NOT_FOUND` | Etapa de triagem não encontrada |
+  | 404 | `PROF_DOCUMENT_NOT_FOUND` | Documento do profissional não encontrado |
+  | 422 | `SCREENING_STEP_NOT_IN_PROGRESS` | Etapa não está em andamento |
+  | 422 | `SCREENING_DOCUMENT_INVALID_STATUS` | Documento não pode ser reutilizado no status atual |
+  | 422 | `SCREENING_DOCUMENT_REUSE_PENDING` | Documento pendente não pode ser reutilizado |
+  | 422 | `SCREENING_DOCUMENT_TYPE_MISMATCH` | Tipo de documento não corresponde |
 }
