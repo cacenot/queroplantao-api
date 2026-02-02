@@ -208,8 +208,12 @@ class StepWorkflowService:
     def set_current_step(process: ScreeningProcess, step_type: StepType) -> None:
         """Set the current step pointer in the process and step_info."""
         StepWorkflowService._ensure_step_info(process)
-        for state in process.step_info.values():
-            state["current_step"] = False
+        cleared_step_info: dict[str, dict[str, object]] = {}
+        for key, state in process.step_info.items():
+            updated_state = dict(state)
+            updated_state["current_step"] = False
+            cleared_step_info[key] = updated_state
+        process.step_info = cleared_step_info
         StepWorkflowService.update_step_info(
             process=process,
             step_type=step_type,
@@ -221,8 +225,12 @@ class StepWorkflowService:
     def clear_current_step(process: ScreeningProcess) -> None:
         """Clear current_step flag for all steps in step_info."""
         StepWorkflowService._ensure_step_info(process)
-        for state in process.step_info.values():
-            state["current_step"] = False
+        cleared_step_info: dict[str, dict[str, object]] = {}
+        for key, state in process.step_info.items():
+            updated_state = dict(state)
+            updated_state["current_step"] = False
+            cleared_step_info[key] = updated_state
+        process.step_info = cleared_step_info
 
     @staticmethod
     def update_step_info(
@@ -236,14 +244,16 @@ class StepWorkflowService:
         """Update a step entry in the denormalized step_info map."""
         StepWorkflowService._ensure_step_info(process)
         step_key = step_type.value
-        step_state = process.step_info.get(step_key, {})
+        step_info = dict(process.step_info)
+        step_state = dict(step_info.get(step_key, {}))
         if status is not None:
             step_state["status"] = status.value
         if completed is not None:
             step_state["completed"] = completed
         if current_step is not None:
             step_state["current_step"] = current_step
-        process.step_info[step_key] = step_state
+        step_info[step_key] = step_state
+        process.step_info = step_info
 
     @staticmethod
     def _ensure_step_info(process: ScreeningProcess) -> None:
