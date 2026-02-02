@@ -41,6 +41,9 @@ from src.modules.screening.domain.schemas import (
     ScreeningProcessCreate,
     ScreeningProcessDetailResponse,
 )
+from src.modules.screening.domain.schemas.screening_process import (
+    OrganizationProfessionalSummary,
+)
 from src.modules.screening.infrastructure.repositories import (
     ClientValidationStepRepository,
     ConversationStepRepository,
@@ -51,6 +54,12 @@ from src.modules.screening.infrastructure.repositories import (
     ProfessionalDataStepRepository,
     ScreeningProcessRepository,
 )
+from src.modules.users.domain.schemas.organization_user import UserInfo
+from src.modules.users.infrastructure.repositories import UserRepository
+from src.shared.infrastructure.repositories.specialty_repository import (
+    SpecialtyRepository,
+)
+from src.modules.professionals.domain.schemas import SpecialtySummary
 
 
 class CreateScreeningProcessUseCase:
@@ -83,6 +92,8 @@ class CreateScreeningProcessUseCase:
         self.repository = ScreeningProcessRepository(session)
         self.settings_repository = OrganizationScreeningSettingsRepository(session)
         self.professional_repository = OrganizationProfessionalRepository(session)
+        self.user_repository = UserRepository(session)
+        self.specialty_repository = SpecialtyRepository(session)
         # Step repositories
         self.conversation_step_repo = ConversationStepRepository(session)
         self.professional_data_step_repo = ProfessionalDataStepRepository(session)
@@ -184,7 +195,46 @@ class CreateScreeningProcessUseCase:
             family_org_ids=family_org_ids,
         )
 
-        return ScreeningProcessDetailResponse.model_validate(process_with_details)
+        professional_summary: OrganizationProfessionalSummary | None = None
+        if process_with_details and process_with_details.organization_professional:
+            professional_summary = OrganizationProfessionalSummary.model_validate(
+                process_with_details.organization_professional
+            )
+
+        response = ScreeningProcessDetailResponse.model_validate(process_with_details)
+        return response.model_copy(
+            update={
+                "professional": professional_summary,
+                "expected_specialty": await self._get_specialty_summary(
+                    process_with_details.expected_specialty_id
+                    if process_with_details
+                    else None
+                ),
+                "owner": await self._get_user_summary(created_by),
+                "current_actor": await self._get_user_summary(created_by),
+                "supervisor": await self._get_user_summary(
+                    process_with_details.supervisor_id if process_with_details else None
+                ),
+            }
+        )
+
+    async def _get_user_summary(self, user_id: UUID | None) -> UserInfo | None:
+        if user_id is None:
+            return None
+        user = await self.user_repository.get_by_id(user_id)
+        if user is None:
+            return None
+        return UserInfo.model_validate(user)
+
+    async def _get_specialty_summary(
+        self, specialty_id: UUID | None
+    ) -> SpecialtySummary | None:
+        if specialty_id is None:
+            return None
+        specialty = await self.specialty_repository.get_by_id(specialty_id)
+        if specialty is None:
+            return None
+        return SpecialtySummary.model_validate(specialty)
 
     async def _get_settings(
         self,

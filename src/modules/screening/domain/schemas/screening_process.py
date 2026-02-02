@@ -23,24 +23,34 @@ from src.modules.users.domain.schemas.organization_user import UserInfo
 from src.shared.domain.value_objects import CPF, Phone
 
 
-def _build_step_type_payload(step_type: StepType | str) -> dict[str, str]:
+class StepTypeInfo(BaseModel):
+    """Summary for a screening step type with pt-BR labels."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    step_type: str
+    title: str
+    description: str
+
+
+def _build_step_type_payload(step_type: StepType | str) -> StepTypeInfo:
     try:
         step_enum = (
             step_type if isinstance(step_type, StepType) else StepType(step_type)
         )
     except ValueError:
-        return {
-            "step_type": str(step_type),
-            "title": str(step_type),
-            "description": "",
-        }
+        return StepTypeInfo(
+            step_type=str(step_type),
+            title=str(step_type),
+            description="",
+        )
 
     metadata = STEP_TYPE_METADATA[step_enum]
-    return {
-        "step_type": step_enum.value,
-        "title": metadata["title"],
-        "description": metadata["description"],
-    }
+    return StepTypeInfo(
+        step_type=step_enum.value,
+        title=metadata["title"],
+        description=metadata["description"],
+    )
 
 
 class ScreeningProcessCreate(BaseModel):
@@ -164,8 +174,8 @@ class ScreeningProcessListResponse(BaseModel):
     status: ScreeningStatus
 
     # Step tracking (denormalized - no joins required)
-    current_step_type: StepType
-    configured_step_types: list[str]
+    current_step_type: StepTypeInfo
+    configured_step_types: list[StepTypeInfo]
 
     # Professional info
     professional_cpf: Optional[str]
@@ -189,13 +199,13 @@ class ScreeningProcessListResponse(BaseModel):
     expires_at: Optional[datetime]
 
     @field_serializer("current_step_type")
-    def _serialize_current_step_type(self, value: StepType) -> dict[str, str]:
+    def _serialize_current_step_type(self, value: StepType) -> StepTypeInfo:
         return _build_step_type_payload(value)
 
     @field_serializer("configured_step_types")
     def _serialize_configured_step_types(
         self, value: list[str]
-    ) -> list[dict[str, str]]:
+    ) -> list[StepTypeInfo]:
         return [_build_step_type_payload(step_type) for step_type in value]
 
 
@@ -222,8 +232,8 @@ class ScreeningProcessResponse(BaseModel):
     status: ScreeningStatus
 
     # Step tracking (denormalized)
-    current_step_type: StepType
-    configured_step_types: list[str]
+    current_step_type: StepTypeInfo
+    configured_step_types: list[StepTypeInfo]
 
     # Professional data
     professional_cpf: Optional[str]
@@ -268,13 +278,13 @@ class ScreeningProcessResponse(BaseModel):
     updated_by: Optional[UUID]
 
     @field_serializer("current_step_type")
-    def _serialize_current_step_type(self, value: StepType) -> dict[str, str]:
+    def _serialize_current_step_type(self, value: StepType) -> StepTypeInfo:
         return _build_step_type_payload(value)
 
     @field_serializer("configured_step_types")
     def _serialize_configured_step_types(
         self, value: list[str]
-    ) -> list[dict[str, str]]:
+    ) -> list[StepTypeInfo]:
         return [_build_step_type_payload(step_type) for step_type in value]
 
 
