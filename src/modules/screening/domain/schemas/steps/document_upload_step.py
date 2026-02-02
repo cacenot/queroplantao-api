@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import AwareDatetime, BaseModel, ConfigDict, Field
 
 from src.modules.screening.domain.schemas.steps.base import StepResponseBase
 
@@ -44,17 +44,33 @@ class ConfigureDocumentsRequest(BaseModel):
     )
 
 
-class UploadDocumentRequest(BaseModel):
-    """Request schema for uploading a document.
+class UploadDocumentFormData(BaseModel):
+    """Form data for uploading a document.
 
-    The actual file is uploaded directly to Firebase by the frontend.
-    This endpoint registers the uploaded file in the screening workflow.
+    This is used for validation of Form() parameters.
+    The actual file is received via UploadFile.
+
+    The backend:
+    1. Uploads the file to Firebase Storage
+    2. Creates a ProfessionalDocument with is_pending=True
+    3. Links it to the ScreeningDocument
+    4. Updates status to PENDING_REVIEW
+
+    The backend automatically infers:
+    - qualification_id: from professional's primary qualification (for QUALIFICATION/SPECIALTY docs)
+    - specialty_id: from screening's expected_specialty_id (for SPECIALTY docs)
     """
 
     model_config = ConfigDict(from_attributes=True)
 
-    professional_document_id: UUID = Field(
-        description="ID of the ProfessionalDocument created after Firebase upload",
+    expires_at: Optional[AwareDatetime] = Field(
+        default=None,
+        description="Expiration date for documents with validity (UTC)",
+    )
+    notes: Optional[str] = Field(
+        default=None,
+        max_length=2000,
+        description="Additional notes about this document",
     )
 
 

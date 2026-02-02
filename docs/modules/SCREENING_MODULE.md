@@ -774,16 +774,39 @@ Isso significa que o documento existe no sistema, mas **não substitui a versão
 │                         FLUXO DE DOCUMENTOS PENDENTES                                   │
 ├─────────────────────────────────────────────────────────────────────────────────────────┤
 │                                                                                         │
-│  Upload de documento durante triagem                                                    │
+│  Upload de documento durante triagem (FLUXO CONSOLIDADO)                                │
 │                                                                                         │
 │       │                                                                                 │
-│       │ 1. Frontend faz upload do arquivo para Firebase                                 │
-│       │ 2. Frontend cria ProfessionalDocument com screening_id                          │
+│       │ 1. Frontend envia arquivo via multipart/form-data                               │
+│       │    POST /screening/{id}/documents/{doc_id}/upload                               │
+│       │    → Form: file (binary), expires_at, notes                                     │
+│       │                                                                                 │
+│       │ 2. Backend faz upload para Firebase Storage                                     │
+│       │                                                                                 │
+│       │ 3. Backend cria ProfessionalDocument automaticamente:                           │
 │       │    → is_pending = True                                                          │
 │       │    → source_type = SCREENING                                                    │
-│       │ 3. POST /screening/{id}/documents/{doc_id}/upload                               │
-│       │    → Linka ao ScreeningDocument                                                 │
+│       │    → screening_id = ID do processo                                              │
+│       │    → qualification_id = inferido (ver tabela abaixo)                            │
+│       │    → specialty_id = inferido (ver tabela abaixo)                                │
+│       │                                                                                 │
+│       │ 4. Backend vincula ProfessionalDocument ao ScreeningDocument                    │
 │       ▼                                                                                 │
+│                                                                                         │
+│  Inferência Automática de qualification_id e specialty_id                               │
+│  ─────────────────────────────────────────────────────────────────────────              │
+│  ┌─────────────┬──────────────────────────────┬─────────────────────────┐               │
+│  │  Categoria  │  qualification_id            │  specialty_id           │               │
+│  ├─────────────┼──────────────────────────────┼─────────────────────────┤               │
+│  │  PROFILE    │  null                        │  null                   │               │
+│  │  QUALIFIC.  │  primary/first qualification │  null                   │               │
+│  │  SPECIALTY  │  primary/first qualification │  expected_specialty_id  │               │
+│  └─────────────┴──────────────────────────────┴─────────────────────────┘               │
+│                                                                                         │
+│  Notas:                                                                                 │
+│  • Médicos podem não ter especialidade (generalista/clínico geral)                      │
+│  • Se não houver qualificação cadastrada, o campo fica null                             │
+│  • A qualificação é atualizada posteriormente se necessário                             │
 │                                                                                         │
 │  Documento criado como PENDENTE                                                         │
 │  ─────────────────────────────                                                          │
@@ -902,13 +925,59 @@ Finaliza a triagem e promove todos os documentos pendentes.
 |--------|----------|-----------|----------|
 | POST | `/screening/{id}/steps/document-upload/configure` | Configura lista de documentos necessários | Gestor |
 | GET | `/screening/{id}/documents` | Lista documentos da triagem | Ambos |
-| POST | `/screening/{id}/documents/{doc_id}/upload` | Upload de arquivo | Profissional/Gestor |
+| POST | `/screening/{id}/documents/{doc_id}/upload` | Upload de arquivo (consolidado) | Profissional/Gestor |
 | POST | `/screening/{id}/documents/{doc_id}/reuse` | Reutiliza documento aprovado | Profissional/Gestor |
 | DELETE | `/screening/{id}/documents/{doc_id}/upload` | Remove upload (antes da revisão) | Profissional/Gestor |
 | POST | `/screening/{id}/steps/document-upload/complete` | Finaliza etapa de upload | Profissional/Gestor |
 | POST | `/screening/{id}/documents/{doc_id}/review` | Revisa documento individual | Gestor |
 | POST | `/screening/{id}/steps/document-review/complete` | Finaliza etapa de revisão | Gestor |
 | POST | `/screening/{id}/finalize` | Finaliza triagem e promove documentos | Gestor |
+
+#### Payload: Upload de Documento (Consolidado)
+
+O endpoint de upload agora recebe o arquivo diretamente via `multipart/form-data`. O backend faz upload para o Firebase Storage e cria o `ProfessionalDocument` automaticamente:
+
+```http
+POST /screening/{id}/documents/{doc_id}/upload
+Content-Type: multipart/form-data
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="diploma.pdf"
+Content-Type: application/pdf
+
+<binary file content>
+--boundary
+Content-Disposition: form-data; name="expires_at"
+
+2027-12-31T23:59:59Z
+--boundary
+Content-Disposition: form-data; name="notes"
+
+Documento original
+--boundary--
+```
+
+**Campos (multipart/form-data):**
+| Campo | Tipo | Obrigatório | Descrição |
+|-------|------|-------------|-----------|
+| file | binary | Sim | Arquivo do documento (PDF, JPEG, PNG, WebP, HEIC) |
+| expires_at | datetime | Não | Data de validade (UTC) |
+| notes | string | Não | Notas sobre o documento |
+
+**Tipos de arquivo permitidos:**
+- `application/pdf`
+- `image/jpeg`
+- `image/png`
+- `image/webp`
+- `image/heic`, `image/heif`
+
+**Tamanho máximo:** 10 MB
+
+**Comportamento:**
+1. Backend faz upload do arquivo para Firebase Storage
+2. Backend cria `ProfessionalDocument` automaticamente com `is_pending=True`
+3. Backend infere `qualification_id` e `specialty_id` baseado na categoria do documento
+4. Backend vincula ao `ScreeningDocument` e atualiza status para `PENDING_REVIEW`
 
 #### Payload: Configurar Documentos
 

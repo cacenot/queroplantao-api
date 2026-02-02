@@ -129,3 +129,13 @@ class ScreeningStepMixin(
     def is_skipped(self) -> bool:
         """Check if step was skipped."""
         return self.status == StepStatus.SKIPPED
+
+    @property
+    def screening_process_id(self) -> "UUID":
+        """
+        Alias for process_id for semantic clarity.
+
+        Each concrete step defines its own process_id FK.
+        This property provides a consistent interface.
+        """
+        return self.process_id  # type: ignore[attr-defined]

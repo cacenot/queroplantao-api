@@ -103,6 +103,10 @@ class Settings(BaseSettings):
         default="",
         description="Firebase service account credentials JSON encoded in base64",
     )
+    FIREBASE_STORAGE_BUCKET: str = Field(
+        default="",
+        description="Firebase Storage bucket name (e.g., project-id.appspot.com)",
+    )
 
     # Redis Cache
     REDIS_URL: str = Field(

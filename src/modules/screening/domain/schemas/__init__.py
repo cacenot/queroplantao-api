@@ -56,7 +56,7 @@ from src.modules.screening.domain.schemas.steps import (
     ReviewDocumentRequest,
     ScreeningDocumentSummary,
     StepResponseBase,
-    UploadDocumentRequest,
+    UploadDocumentFormData,
 )
 
 __all__ = [
@@ -109,5 +109,5 @@ __all__ = [
     "ReviewDocumentRequest",
     "ScreeningDocumentSummary",
     "StepResponseBase",
-    "UploadDocumentRequest",
+    "UploadDocumentFormData",
 ]

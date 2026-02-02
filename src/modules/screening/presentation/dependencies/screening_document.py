@@ -4,7 +4,7 @@ from typing import Annotated
 
 from fastapi import Depends
 
-from src.app.dependencies import SessionDep
+from src.app.dependencies import SessionDep, SettingsDep
 from src.modules.screening.use_cases.screening_step.document_review import (
     ReviewDocumentUseCase,
 )
@@ -28,9 +28,10 @@ def get_configure_documents_use_case(
 
 def get_upload_document_use_case(
     session: SessionDep,
+    settings: SettingsDep,
 ) -> UploadDocumentUseCase:
     """Factory for UploadDocumentUseCase."""
-    return UploadDocumentUseCase(session)
+    return UploadDocumentUseCase(session, settings)
 
 
 # =============================================================================

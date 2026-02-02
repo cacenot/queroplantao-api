@@ -16,7 +16,7 @@ from src.modules.screening.domain.schemas.steps.document_upload_step import (
     DocumentUploadStepCompleteRequest,
     DocumentUploadStepResponse,
     ScreeningDocumentSummary,
-    UploadDocumentRequest,
+    UploadDocumentFormData,
 )
 from src.modules.screening.domain.schemas.steps.professional_data_step import (
     ProfessionalDataStepCompleteRequest,
@@ -37,7 +37,7 @@ __all__ = [
     "DocumentUploadStepCompleteRequest",
     "DocumentUploadStepResponse",
     "ScreeningDocumentSummary",
-    "UploadDocumentRequest",
+    "UploadDocumentFormData",
     # Document Review
     "DocumentForReview",
     "DocumentReviewStepCompleteRequest",

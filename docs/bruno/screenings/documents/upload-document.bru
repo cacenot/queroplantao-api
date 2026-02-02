@@ -6,7 +6,7 @@ meta {
 
 post {
   url: {{baseUrl}}/api/v1/screenings/{{screeningId}}/documents/{{documentId}}/upload
-  body: json
+  body: multipartForm
   auth: inherit
 }
 
@@ -14,32 +14,71 @@ headers {
   X-Organization-ID: {{organizationId}}
 }
 
-body:json {
-  {
-    "professional_document_id": "{{professionalDocumentId}}",
-    "notes": "Documento enviado via app mobile"
-  }
+body:multipart-form {
+  file: @file(/path/to/diploma.pdf)
+  expires_at: 2027-12-31T23:59:59Z
+  notes: Documento enviado via app
 }
 
 docs {
-  # Upload de Documento (Etapa 3 - Fase 2)
+  # Upload de Documento (Etapa 3 - Document Upload)
   
-  auth: inherit
-  1. Frontend faz upload do arquivo para Firebase Storage
-  2. Frontend cria ProfessionalDocument via `/professionals/{id}/documents`
-  3. Frontend chama este endpoint para vincular ao screening
+  Faz upload de um documento para cumprir um requisito de triagem.
+  
+  ## Fluxo Consolidado
+  
+  1. Frontend envia o arquivo via multipart/form-data
+  2. Backend faz upload do arquivo para o Firebase Storage
+  3. Backend cria automaticamente o ProfessionalDocument (is_pending=True)
+  4. Backend vincula o ProfessionalDocument ao ScreeningDocument
+  5. Backend infere qualification_id e specialty_id baseado na categoria do documento
+  
+  ## Inferência Automática de Vínculos
+  
+  | Categoria | qualification_id | specialty_id |
+  |-----------|------------------|--------------|
+  | PROFILE | null | null |
+  | QUALIFICATION | primary/first qualification | null |
+  | SPECIALTY | primary/first qualification | expected_specialty_id |
+  
+  - Médicos podem não ter especialidade (generalista/clínico geral)
+  - Se não houver qualificação cadastrada, o campo fica null
+  
+  ## Request Body (multipart/form-data)
+  
+  | Campo | Tipo | Obrigatório | Descrição |
+  |-------|------|-------------|-----------|
+  | file | binary | Sim | Arquivo do documento (PDF, JPEG, PNG, WebP) |
+  | expires_at | datetime | Não | Data de validade do documento (UTC) |
+  | notes | string | Não | Notas adicionais sobre o documento |
+  
+  ## Tipos de Arquivo Permitidos
+  
+  - `application/pdf`
+  - `image/jpeg`
+  - `image/png`
+  - `image/webp`
+  - `image/heic`
+  - `image/heif`
+  
+  **Tamanho máximo:** 10 MB
   
   ## Comportamento
   
-  - Vincula ProfessionalDocument ao ScreeningDocument
+  - Faz upload do arquivo para Firebase Storage
+  - Cria ProfessionalDocument com source_type=SCREENING e is_pending=True
   - Atualiza ScreeningDocument.status: PENDING_UPLOAD → PENDING_REVIEW
   - Atualiza contadores no DocumentUploadStep
+  - Em caso de re-upload (após correção), registra histórico
   
   ## Error Codes
   
   | Status | Code | Descrição |
   |--------|------|-----------|
-  | 404 | `SCREENING_DOCUMENT_NOT_FOUND` | Documento de triagem não encontrado |
-  | 404 | `PROFESSIONAL_DOCUMENT_NOT_FOUND` | Documento profissional não encontrado |
-  | 422 | `SCREENING_DOCUMENT_ALREADY_UPLOADED` | Documento já foi enviado |
+  | 404 | `NOT_FOUND` | Documento de triagem não encontrado |
+  | 422 | `VALIDATION_ERROR` | Status do documento não permite upload |
+  | 422 | `VALIDATION_ERROR` | Tipo de arquivo não permitido |
+  | 422 | `VALIDATION_ERROR` | Arquivo muito grande (máx. 10 MB) |
+  | 422 | `VALIDATION_ERROR` | Processo de triagem não possui profissional vinculado |
+  | 422 | `STEP_NOT_IN_PROGRESS` | Step não está em progresso |
 }

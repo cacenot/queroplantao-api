@@ -1,5 +1,6 @@
 """Shared infrastructure filters."""
 
+from src.shared.infrastructure.filters.base import ExcludeListFilter
 from src.shared.infrastructure.filters.document_type import (
     DocumentTypeFilter,
     DocumentTypeSorting,
@@ -12,6 +13,7 @@ from src.shared.infrastructure.filters.specialty import (
 __all__ = [
     "DocumentTypeFilter",
     "DocumentTypeSorting",
+    "ExcludeListFilter",
     "SpecialtyFilter",
     "SpecialtySorting",
 ]

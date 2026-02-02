@@ -135,6 +135,35 @@ class ProfessionalQualificationRepository(
         )
         return result.scalar_one_or_none()
 
+    async def get_first_qualification(
+        self,
+        professional_id: UUID,
+    ) -> ProfessionalQualification | None:
+        """
+        Get the first qualification for a professional (primary or any).
+
+        Tries to get primary qualification first, falls back to any qualification.
+        Useful for document upload where we need any qualification to link to.
+
+        Args:
+            professional_id: The organization professional UUID.
+
+        Returns:
+            Primary qualification if exists, otherwise first available, or None.
+        """
+        # Try primary first
+        primary = await self.get_primary_qualification(professional_id)
+        if primary:
+            return primary
+
+        # Fallback to any qualification (ordered by created_at)
+        result = await self.session.execute(
+            self._base_query_for_professional(professional_id)
+            .order_by(ProfessionalQualification.created_at)
+            .limit(1)
+        )
+        return result.scalar_one_or_none()
+
     async def council_exists_in_organization(
         self,
         council_number: str,

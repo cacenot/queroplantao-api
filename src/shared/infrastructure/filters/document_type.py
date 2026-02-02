@@ -10,6 +10,7 @@ from fastapi_restkit.filterset import FilterSet
 from fastapi_restkit.sortingset import SortableField, SortingSet
 
 from src.shared.domain.models import DocumentCategory
+from src.shared.infrastructure.filters.base import ExcludeListFilter
 
 
 class DocumentTypeFilter(FilterSet):
@@ -18,7 +19,8 @@ class DocumentTypeFilter(FilterSet):
 
     Supports:
     - search: Search by name (using pg_trgm for fuzzy matching)
-    - category: Filter by document category
+    - category: Filter by document category (include)
+    - exclude_categories: Exclude specific categories (NOT IN)
     - is_active: Filter by active status
     """
 
@@ -29,6 +31,10 @@ class DocumentTypeFilter(FilterSet):
     category: Optional[DocumentCategory] = Field(
         default=None,
         description="Filter by document category (PROFILE, QUALIFICATION, SPECIALTY)",
+    )
+    exclude_categories: Optional[ExcludeListFilter[DocumentCategory]] = Field(
+        default=None,
+        description="Exclude specific categories (NOT IN clause)",
     )
     is_active: Optional[bool] = Field(
         default=None,
@@ -41,6 +47,7 @@ class DocumentTypeFilter(FilterSet):
         field_columns = {
             "search": ["name"],
             "category": "category",
+            "exclude_categories": "category",
             "is_active": "is_active",
         }
 

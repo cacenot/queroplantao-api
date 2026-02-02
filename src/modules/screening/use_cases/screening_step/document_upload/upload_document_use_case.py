@@ -3,73 +3,100 @@
 from datetime import datetime, timezone
 from uuid import UUID
 
+from fastapi import UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.app.config import Settings
+from src.app.dependencies.settings import get_settings
 from src.app.exceptions import (
     NotFoundError,
     ScreeningStepNotInProgressError,
+    ValidationError,
 )
+from src.modules.professionals.domain.models import (
+    DocumentSourceType,
+    ProfessionalDocument,
+)
+from src.modules.professionals.infrastructure.repositories import (
+    ProfessionalDocumentRepository,
+    ProfessionalQualificationRepository,
+)
+from src.modules.screening.domain.models import ScreeningProcess
 from src.modules.screening.domain.models.enums import (
     ScreeningDocumentStatus,
     StepStatus,
 )
+from src.modules.screening.domain.models.screening_document import ScreeningDocument
 from src.modules.screening.domain.schemas.screening_document import (
     ScreeningDocumentResponse,
 )
-from src.modules.screening.domain.schemas.steps import UploadDocumentRequest
 from src.modules.screening.infrastructure.repositories import (
     DocumentUploadStepRepository,
     ScreeningDocumentRepository,
 )
-from src.modules.professionals.infrastructure.repositories import (
-    ProfessionalDocumentRepository,
-)
+from src.shared.domain.models import DocumentCategory, DocumentType
+from src.shared.infrastructure.firebase import FirebaseStorageService
 
 
 class UploadDocumentUseCase:
     """
     Upload a document to fulfill a screening document requirement.
 
-    The actual file is uploaded to Firebase by the frontend.
-    This use case links the ProfessionalDocument to the ScreeningDocument.
+    Consolidated flow:
+    1. Receive file via multipart/form-data
+    2. Validate ScreeningDocument and step status
+    3. Upload file to Firebase Storage
+    4. Create ProfessionalDocument internally (is_pending=True)
+    5. Infer qualification_id and specialty_id from document category
+    6. Link ProfessionalDocument to ScreeningDocument
+    7. Update status to PENDING_REVIEW
+    8. Update step upload count
 
-    Flow:
-    1. Validate document exists and is PENDING_UPLOAD or CORRECTION_NEEDED
-    2. Validate ProfessionalDocument exists
-    3. Link ProfessionalDocument to ScreeningDocument
-    4. Update status to PENDING_REVIEW
-    5. Update step upload count
+    The backend handles the entire upload process - the frontend only needs
+    to send the file in a single API call.
     """
 
-    def __init__(self, session: AsyncSession) -> None:
+    def __init__(
+        self,
+        session: AsyncSession,
+        settings: Settings | None = None,
+    ) -> None:
         self.session = session
+        self.settings = settings or get_settings()
         self.step_repository = DocumentUploadStepRepository(session)
         self.document_repository = ScreeningDocumentRepository(session)
         self.professional_document_repository = ProfessionalDocumentRepository(session)
+        self.qualification_repository = ProfessionalQualificationRepository(session)
+        self.storage_service = FirebaseStorageService(self.settings)
 
     async def execute(
         self,
         screening_document_id: UUID,
-        data: UploadDocumentRequest,
-        uploaded_by: UUID,
+        file: UploadFile,
+        uploaded_by: UUID | None,
+        *,
+        expires_at: datetime | None = None,
+        notes: str | None = None,
     ) -> ScreeningDocumentResponse:
         """
         Upload a document.
 
         Args:
             screening_document_id: The screening document ID.
-            data: Upload data with professional_document_id.
-            uploaded_by: User uploading the document.
+            file: The uploaded file (from multipart/form-data).
+            uploaded_by: User uploading the document (None for public access).
+            expires_at: Optional expiration date for the document.
+            notes: Optional notes about the document.
 
         Returns:
             Updated screening document response.
 
         Raises:
-            NotFoundError: If screening document or professional document not found.
+            NotFoundError: If screening document not found.
             ScreeningStepNotInProgressError: If step is not in progress.
-            ValidationError: If document status doesn't allow upload.
+            ValidationError: If document status doesn't allow upload or file is invalid.
         """
-        # 1. Get screening document with step
+        # 1. Get screening document with document type
         doc = await self.document_repository.get_by_id_with_type(screening_document_id)
         if not doc:
             raise NotFoundError(
@@ -77,8 +104,8 @@ class UploadDocumentUseCase:
                 identifier=str(screening_document_id),
             )
 
-        # 2. Get the upload step
-        step = await self.step_repository.get_by_id(doc.upload_step_id)
+        # 2. Get the upload step with process
+        step = await self.step_repository.get_by_id_with_process(doc.upload_step_id)
         if not step:
             raise NotFoundError(
                 resource="DocumentUploadStep",
@@ -98,62 +125,169 @@ class UploadDocumentUseCase:
             ScreeningDocumentStatus.CORRECTION_NEEDED,
         ]
         if doc.status not in allowed_statuses:
-            from src.app.exceptions import ValidationError
-
             raise ValidationError(
                 message=f"Documento não pode receber upload no status {doc.status.value}",
             )
 
-        # 5. Validate ProfessionalDocument exists
-        professional_doc = await self.professional_document_repository.get_by_id(
-            data.professional_document_id
-        )
-        if not professional_doc:
-            raise NotFoundError(
-                resource="ProfessionalDocument",
-                identifier=str(data.professional_document_id),
-            )
+        # 5. Get document type for category inference
+        document_type: DocumentType = doc.document_type
+        process: ScreeningProcess = step.process
 
-        # 5.1 Validate screening_id matches if document was created for a screening
-        if (
-            professional_doc.screening_id is not None
-            and professional_doc.screening_id != step.screening_process_id
-        ):
-            from src.app.exceptions import ValidationError
-
+        # 6. Validate we have an organization_professional_id
+        if not process.organization_professional_id:
             raise ValidationError(
-                message="Documento pertence a outro processo de triagem",
+                message="Processo de triagem não possui profissional vinculado",
             )
 
-        # 6. Link ProfessionalDocument to ScreeningDocument
-        doc.professional_document_id = data.professional_document_id
-        doc.status = ScreeningDocumentStatus.PENDING_REVIEW
-        doc.uploaded_at = datetime.now(timezone.utc)
-        doc.uploaded_by = uploaded_by
-        doc.updated_by = uploaded_by
+        # 7. Upload file to Firebase Storage
+        file_size = file.size or 0
+        uploaded_file = await self.storage_service.upload_file(
+            file=file.file,
+            file_name=file.filename or "document",
+            file_size=file_size,
+            content_type=file.content_type,
+            organization_id=process.organization_id,
+            professional_id=process.organization_professional_id,
+            screening_id=process.id,
+            document_type_id=doc.document_type_id,
+        )
 
-        # 7. Clear previous rejection reason if this is a re-upload
+        # 8. Infer qualification_id and specialty_id based on document category
+        qualification_id, specialty_id = await self._infer_document_links(
+            process=process,
+            document_category=document_type.category,
+        )
+
+        # 9. Create ProfessionalDocument
+        professional_doc = ProfessionalDocument(
+            organization_id=process.organization_id,
+            organization_professional_id=process.organization_professional_id,
+            document_type_id=doc.document_type_id,
+            file_url=uploaded_file.url,
+            file_name=file.filename or "document",
+            file_size=uploaded_file.size,
+            mime_type=uploaded_file.content_type,
+            expires_at=expires_at,
+            notes=notes,
+            qualification_id=qualification_id,
+            specialty_id=specialty_id,
+            # Screening workflow fields
+            is_pending=True,
+            source_type=DocumentSourceType.SCREENING,
+            screening_id=process.id,
+            created_by=uploaded_by,
+            updated_by=uploaded_by,
+        )
+        professional_doc = await self.professional_document_repository.create(
+            professional_doc
+        )
+
+        # 10. Link ProfessionalDocument to ScreeningDocument
+        self._link_document_to_screening(
+            doc=doc,
+            professional_doc=professional_doc,
+            uploaded_by=uploaded_by,
+        )
+
+        # 11. Update step upload count
+        step.uploaded_documents = await self._count_uploaded_documents(step.id)
+        step.updated_by = uploaded_by
+
+        # 12. Persist changes
+        await self.session.flush()
+        await self.session.refresh(doc)
+
+        # 13. Build response
+        return self._build_response(doc)
+
+    async def _infer_document_links(
+        self,
+        process: ScreeningProcess,
+        document_category: DocumentCategory,
+    ) -> tuple[UUID | None, UUID | None]:
+        """
+        Infer qualification_id and specialty_id based on document category.
+
+        Rules:
+        - PROFILE: No links (personal documents)
+        - QUALIFICATION: Link to professional's primary/first qualification
+        - SPECIALTY: Link to qualification + expected_specialty_id (if doctor)
+
+        Args:
+            process: The screening process.
+            document_category: The document's category.
+
+        Returns:
+            Tuple of (qualification_id, specialty_id).
+        """
+        qualification_id: UUID | None = None
+        specialty_id: UUID | None = None
+
+        if document_category == DocumentCategory.PROFILE:
+            # Personal documents don't link to qualification/specialty
+            return None, None
+
+        # For QUALIFICATION and SPECIALTY docs, get qualification
+        if process.organization_professional_id:
+            qualification = await self.qualification_repository.get_first_qualification(
+                professional_id=process.organization_professional_id,
+            )
+            if qualification:
+                qualification_id = qualification.id
+
+        # For SPECIALTY docs, also link to expected specialty
+        # Doctors may not have specialty (generalista/clínico geral)
+        if document_category == DocumentCategory.SPECIALTY:
+            specialty_id = process.expected_specialty_id
+
+        return qualification_id, specialty_id
+
+    def _link_document_to_screening(
+        self,
+        doc: ScreeningDocument,
+        professional_doc: ProfessionalDocument,
+        uploaded_by: UUID | None,
+    ) -> None:
+        """
+        Link ProfessionalDocument to ScreeningDocument and update status.
+
+        Args:
+            doc: The screening document.
+            professional_doc: The created professional document.
+            uploaded_by: User who uploaded.
+        """
+        now = datetime.now(timezone.utc)
+
+        # Handle re-upload case
         if doc.rejection_reason:
-            # Add to review history before clearing
             doc.review_history.append(
                 {
-                    "user_id": str(uploaded_by),
+                    "user_id": str(uploaded_by) if uploaded_by else None,
                     "action": "RE_UPLOAD",
                     "notes": f"Re-upload após correção. Motivo anterior: {doc.rejection_reason}",
-                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "timestamp": now.isoformat(),
                 }
             )
             doc.rejection_reason = None
 
-        # 8. Update step upload count
-        step.uploaded_documents = await self._count_uploaded_documents(step.id)
-        step.updated_by = uploaded_by
+        # Link and update status
+        doc.professional_document_id = professional_doc.id
+        doc.status = ScreeningDocumentStatus.PENDING_REVIEW
+        doc.uploaded_at = now
+        doc.uploaded_by = uploaded_by
+        doc.updated_by = uploaded_by
 
-        # 9. Persist changes
-        await self.session.flush()
-        await self.session.refresh(doc)
+    async def _count_uploaded_documents(self, step_id: UUID) -> int:
+        """Count documents that have been uploaded."""
+        status_counts = await self.document_repository.count_by_status(step_id)
+        # Count all documents that are not PENDING_UPLOAD or CORRECTION_NEEDED
+        pending = status_counts.get(ScreeningDocumentStatus.PENDING_UPLOAD, 0)
+        correction = status_counts.get(ScreeningDocumentStatus.CORRECTION_NEEDED, 0)
+        total = sum(status_counts.values())
+        return total - pending - correction
 
-        # 10. Build response
+    def _build_response(self, doc: ScreeningDocument) -> ScreeningDocumentResponse:
+        """Build response from screening document."""
         return ScreeningDocumentResponse(
             id=doc.id,
             upload_step_id=doc.upload_step_id,
@@ -182,12 +316,3 @@ class UploadDocumentUseCase:
             needs_correction=doc.needs_correction,
             is_complete=doc.is_complete,
         )
-
-    async def _count_uploaded_documents(self, step_id: UUID) -> int:
-        """Count documents that have been uploaded."""
-        status_counts = await self.document_repository.count_by_status(step_id)
-        # Count all documents that are not PENDING_UPLOAD
-        pending = status_counts.get(ScreeningDocumentStatus.PENDING_UPLOAD, 0)
-        correction = status_counts.get(ScreeningDocumentStatus.CORRECTION_NEEDED, 0)
-        total = sum(status_counts.values())
-        return total - pending - correction

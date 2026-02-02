@@ -11,47 +11,75 @@ post {
 }
 
 body:multipart-form {
-  file: @file(./sample-document.pdf)
-  expiration_date: 2025-12-31
+  file: @file(/path/to/diploma.pdf)
+  expires_at: 2027-12-31T23:59:59Z
+  notes: Documento enviado via link público
 }
 
 docs {
   # Upload de Documento (Acesso Público)
   
-  Permite que o profissional envie documentos via link público.
+  Permite que o profissional envie documentos via link público (sem autenticação).
   
   ## Parâmetros de URL
   
   | Parâmetro | Tipo | Descrição |
   |-----------|------|-----------|
   | accessToken | string | Token único de acesso à triagem |
-  | documentId | UUID | ID do documento requerido |
+  | documentId | UUID | ID do ScreeningDocument |
   
-  ## Campos do Form
+  ## Fluxo Consolidado
+  
+  1. Frontend envia o arquivo via multipart/form-data
+  2. Backend valida o token de acesso
+  3. Backend faz upload do arquivo para o Firebase Storage
+  4. Backend cria ProfessionalDocument (is_pending=True, source_type=SCREENING)
+  5. Backend vincula ao ScreeningDocument
+  6. Backend infere qualification_id e specialty_id baseado na categoria
+  
+  ## Request Body (multipart/form-data)
   
   | Campo | Tipo | Obrigatório | Descrição |
   |-------|------|-------------|-----------|
-  | file | file | Sim | Arquivo do documento |
-  | expiration_date | date | Condicional | Data de validade |
+  | file | binary | Sim | Arquivo do documento (PDF, JPEG, PNG, WebP) |
+  | expires_at | datetime | Não | Data de validade do documento (UTC) |
+  | notes | string | Não | Notas adicionais |
+  
+  ## Tipos de Arquivo Permitidos
+  
+  - `application/pdf`
+  - `image/jpeg`
+  - `image/png`
+  - `image/webp`
+  - `image/heic`
+  - `image/heif`
+  
+  **Tamanho máximo:** 10 MB
+  
+  ## Inferência Automática
+  
+  | Categoria | qualification_id | specialty_id |
+  |-----------|------------------|--------------|
+  | PROFILE | null | null |
+  | QUALIFICATION | primary qualification | null |
+  | SPECIALTY | primary qualification | expected_specialty_id |
   
   ## Comportamento
   
   - Não requer autenticação
   - Token deve estar válido e não expirado
-  - Triagem deve estar na etapa de upload (3)
-  
-  ## Formatos Aceitos
-  
-  - PDF, JPG, PNG, WEBP
-  - Tamanho máximo: 10MB
+  - Triagem deve estar na etapa de upload (status IN_PROGRESS ou CORRECTION_NEEDED)
+  - uploaded_by será null (acesso público)
   
   ## Error Codes
   
   | Status | Code | Descrição |
   |--------|------|-----------|
-  | 404 | `SCREENING_NOT_FOUND` | Token inválido |
-  | 404 | `REQUIRED_DOCUMENT_NOT_FOUND` | Documento não encontrado |
+  | 404 | `NOT_FOUND` | Token inválido ou triagem não encontrada |
+  | 404 | `NOT_FOUND` | Documento de triagem não encontrado |
   | 410 | `SCREENING_EXPIRED` | Triagem expirou |
-  | 422 | `WRONG_STEP` | Triagem não está na etapa de upload |
-  | 422 | `INVALID_FILE_TYPE` | Tipo de arquivo não suportado |
+  | 422 | `VALIDATION_ERROR` | Status do documento não permite upload |
+  | 422 | `VALIDATION_ERROR` | Tipo de arquivo não permitido |
+  | 422 | `VALIDATION_ERROR` | Arquivo muito grande (máx. 10 MB) |
+  | 422 | `STEP_NOT_IN_PROGRESS` | Triagem não está na etapa de upload |
 }

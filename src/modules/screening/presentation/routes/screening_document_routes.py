@@ -3,9 +3,11 @@
 Handles document configuration, upload, and review within a screening workflow.
 """
 
+from datetime import datetime
+from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, status
+from fastapi import APIRouter, File, Form, UploadFile, status
 
 from src.app.dependencies import OrganizationContext
 from src.modules.screening.domain.schemas.screening_document import (
@@ -15,7 +17,6 @@ from src.modules.screening.domain.schemas.steps import (
     ConfigureDocumentsRequest,
     DocumentUploadStepResponse,
     ReviewDocumentRequest,
-    UploadDocumentRequest,
 )
 from src.modules.screening.presentation.dependencies.screening_document import (
     ConfigureDocumentsUC,
@@ -62,26 +63,37 @@ async def configure_documents(
     response_model=ScreeningDocumentResponse,
     summary="Upload de documento",
     description=(
-        "Registra o upload de um documento. "
-        "O arquivo deve ser previamente enviado ao Firebase pelo frontend. "
-        "Após o upload, cria-se um ProfessionalDocument com screening_id para "
-        "vincular o documento à triagem (is_pending=True)."
+        "Faz upload de um documento para a triagem. "
+        "O arquivo é enviado via multipart/form-data e o backend faz upload "
+        "para o Firebase Storage, cria o ProfessionalDocument (is_pending=True) "
+        "e o vincula ao ScreeningDocument, inferindo qualification_id e specialty_id "
+        "com base na categoria do documento."
     ),
 )
 async def upload_document(
     screening_id: UUID,
     document_id: UUID,
-    data: UploadDocumentRequest,
     ctx: OrganizationContext,
     use_case: UploadDocumentUC,
+    file: Annotated[
+        UploadFile, File(description="Arquivo do documento (PDF, JPEG, PNG, WebP)")
+    ],
+    expires_at: Annotated[
+        datetime | None, Form(description="Data de validade do documento (UTC)")
+    ] = None,
+    notes: Annotated[
+        str | None, Form(description="Observações sobre o documento")
+    ] = None,
 ) -> ScreeningDocumentResponse:
-    """Register a document upload."""
+    """Upload a document to the screening workflow."""
     # Note: screening_id is used for authorization check in the future
     _ = screening_id
     return await use_case.execute(
         screening_document_id=document_id,
-        data=data,
+        file=file,
         uploaded_by=ctx.user,
+        expires_at=expires_at,
+        notes=notes,
     )
 
 

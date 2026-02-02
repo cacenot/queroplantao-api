@@ -175,6 +175,30 @@ class DocumentUploadStepRepository(BaseStepRepository[DocumentUploadStep]):
         result = await self.session.execute(query)
         return result.scalar_one_or_none()
 
+    async def get_by_id_with_process(
+        self,
+        id: UUID,
+    ) -> DocumentUploadStep | None:
+        """
+        Get step by ID with screening process loaded.
+
+        Useful for document upload where we need process info
+        (organization_professional_id, expected_specialty_id, etc.).
+
+        Args:
+            id: The step UUID.
+
+        Returns:
+            Step with process loaded, or None.
+        """
+        query = (
+            self._base_query()
+            .where(DocumentUploadStep.id == id)
+            .options(selectinload(DocumentUploadStep.process))
+        )
+        result = await self.session.execute(query)
+        return result.scalar_one_or_none()
+
 
 class DocumentReviewStepRepository(BaseStepRepository[DocumentReviewStep]):
     """

@@ -1,13 +1,14 @@
 """Public screening routes (token-based access)."""
 
+from datetime import datetime
+from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter
+from fastapi import APIRouter, File, Form, UploadFile
 
 from src.modules.screening.domain.schemas import (
     ScreeningDocumentResponse,
     ScreeningProcessDetailResponse,
-    UploadDocumentRequest,
 )
 from src.modules.screening.presentation.dependencies import (
     GetScreeningProcessByTokenUC,
@@ -35,23 +36,36 @@ async def get_screening_by_token(
     "/{token}/documents/{document_id}/upload",
     response_model=ScreeningDocumentResponse,
     summary="Upload de documento (público)",
-    description="Faz upload de um documento usando o token público",
+    description=(
+        "Faz upload de um documento usando o token público. "
+        "O arquivo é enviado via multipart/form-data e o backend faz upload "
+        "para o Firebase Storage, cria o ProfessionalDocument e o vincula ao ScreeningDocument."
+    ),
 )
 async def upload_document_by_token(
     token: str,
     document_id: UUID,
-    data: UploadDocumentRequest,
     get_screening_use_case: GetScreeningProcessByTokenUC,
     upload_use_case: UploadDocumentUC,
+    file: Annotated[
+        UploadFile, File(description="Arquivo do documento (PDF, JPEG, PNG, WebP)")
+    ],
+    expires_at: Annotated[
+        datetime | None, Form(description="Data de validade do documento (UTC)")
+    ] = None,
+    notes: Annotated[
+        str | None, Form(description="Observações sobre o documento")
+    ] = None,
 ) -> ScreeningDocumentResponse:
     """Upload a document using public token."""
-    # First validate the token and get screening
-    screening = await get_screening_use_case.execute(token=token)
+    # Validate the token and get screening (ensures token is valid)
+    await get_screening_use_case.execute(token=token)
 
-    # Then upload the document (without user context)
+    # Upload the document (without user context)
     return await upload_use_case.execute(
-        screening_id=screening.id,
-        required_document_id=document_id,
-        data=data,
+        screening_document_id=document_id,
+        file=file,
         uploaded_by=None,  # No authenticated user
+        expires_at=expires_at,
+        notes=notes,
     )
