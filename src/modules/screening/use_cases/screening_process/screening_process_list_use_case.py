@@ -9,7 +9,7 @@ from uuid import UUID
 from fastapi_restkit.pagination import PaginatedResponse, PaginationParams
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.modules.screening.domain.models import ScreeningProcess
+from src.modules.screening.domain.schemas import ScreeningProcessListResponse
 from src.modules.screening.infrastructure.filters import (
     ScreeningProcessFilter,
     ScreeningProcessSorting,
@@ -31,7 +31,7 @@ class ListScreeningProcessesUseCase:
         family_org_ids: tuple[UUID, ...] | list[UUID] | None,
         filters: ScreeningProcessFilter | None = None,
         sorting: ScreeningProcessSorting | None = None,
-    ) -> PaginatedResponse[ScreeningProcess]:
+    ) -> PaginatedResponse[ScreeningProcessListResponse]:
         """
         List screening processes with pagination.
 
@@ -45,10 +45,14 @@ class ListScreeningProcessesUseCase:
         Returns:
             Paginated list of screening processes.
         """
-        return await self.repository.list_for_organization(
+        result = await self.repository.list_for_organization(
             organization_id=organization_id,
             pagination=pagination,
             family_org_ids=family_org_ids,
             filters=filters,
             sorting=sorting,
         )
+        items = [
+            ScreeningProcessListResponse.model_validate(item) for item in result.items
+        ]
+        return result.model_copy(update={"items": items})

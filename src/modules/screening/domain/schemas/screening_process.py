@@ -10,6 +10,7 @@ from pydantic import (
     EmailStr,
     Field,
     field_serializer,
+    field_validator,
     model_validator,
 )
 
@@ -199,14 +200,42 @@ class ScreeningProcessListResponse(BaseModel):
     expires_at: Optional[datetime]
 
     @field_serializer("current_step_type")
-    def _serialize_current_step_type(self, value: StepType) -> StepTypeInfo:
+    def _serialize_current_step_type(
+        self, value: StepType | StepTypeInfo
+    ) -> StepTypeInfo:
+        if isinstance(value, StepTypeInfo):
+            return value
         return _build_step_type_payload(value)
 
     @field_serializer("configured_step_types")
     def _serialize_configured_step_types(
-        self, value: list[str]
+        self, value: list[StepTypeInfo] | list[str]
     ) -> list[StepTypeInfo]:
-        return [_build_step_type_payload(step_type) for step_type in value]
+        if not value:
+            return []
+        if isinstance(value[0], StepTypeInfo):
+            return value  # type: ignore[return-value]
+        return [_build_step_type_payload(step_type) for step_type in value]  # type: ignore[arg-type]
+
+    @field_validator("current_step_type", mode="before")
+    @classmethod
+    def _parse_current_step_type(
+        cls, value: StepType | StepTypeInfo | str
+    ) -> StepTypeInfo:
+        if isinstance(value, StepTypeInfo):
+            return value
+        return _build_step_type_payload(value)
+
+    @field_validator("configured_step_types", mode="before")
+    @classmethod
+    def _parse_configured_step_types(
+        cls, value: list[StepTypeInfo] | list[str]
+    ) -> list[StepTypeInfo]:
+        if not value:
+            return []
+        if isinstance(value[0], StepTypeInfo):
+            return value  # type: ignore[return-value]
+        return [_build_step_type_payload(step_type) for step_type in value]  # type: ignore[arg-type]
 
 
 class OrganizationProfessionalSummary(BaseModel):
@@ -278,14 +307,42 @@ class ScreeningProcessResponse(BaseModel):
     updated_by: Optional[UUID]
 
     @field_serializer("current_step_type")
-    def _serialize_current_step_type(self, value: StepType) -> StepTypeInfo:
+    def _serialize_current_step_type(
+        self, value: StepType | StepTypeInfo
+    ) -> StepTypeInfo:
+        if isinstance(value, StepTypeInfo):
+            return value
         return _build_step_type_payload(value)
 
     @field_serializer("configured_step_types")
     def _serialize_configured_step_types(
-        self, value: list[str]
+        self, value: list[StepTypeInfo] | list[str]
     ) -> list[StepTypeInfo]:
-        return [_build_step_type_payload(step_type) for step_type in value]
+        if not value:
+            return []
+        if isinstance(value[0], StepTypeInfo):
+            return value  # type: ignore[return-value]
+        return [_build_step_type_payload(step_type) for step_type in value]  # type: ignore[arg-type]
+
+    @field_validator("current_step_type", mode="before")
+    @classmethod
+    def _parse_current_step_type(
+        cls, value: StepType | StepTypeInfo | str
+    ) -> StepTypeInfo:
+        if isinstance(value, StepTypeInfo):
+            return value
+        return _build_step_type_payload(value)
+
+    @field_validator("configured_step_types", mode="before")
+    @classmethod
+    def _parse_configured_step_types(
+        cls, value: list[StepTypeInfo] | list[str]
+    ) -> list[StepTypeInfo]:
+        if not value:
+            return []
+        if isinstance(value[0], StepTypeInfo):
+            return value  # type: ignore[return-value]
+        return [_build_step_type_payload(step_type) for step_type in value]  # type: ignore[arg-type]
 
 
 class ScreeningProcessDetailResponse(ScreeningProcessResponse):
