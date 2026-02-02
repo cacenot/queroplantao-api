@@ -675,6 +675,160 @@ export function useGetScreeningProcessApiV1ScreeningsScreeningIdGet<
 }
 
 /**
+ * Remove um processo de triagem (soft delete).
+ * @summary Excluir triagem
+ */
+export type deleteScreeningProcessApiV1ScreeningsScreeningIdDeleteResponse204 =
+  {
+    data: void;
+    status: 204;
+  };
+
+export type deleteScreeningProcessApiV1ScreeningsScreeningIdDeleteResponse404 =
+  {
+    data: ErrorResponse;
+    status: 404;
+  };
+
+export type deleteScreeningProcessApiV1ScreeningsScreeningIdDeleteResponse422 =
+  {
+    data: HTTPValidationError;
+    status: 422;
+  };
+
+export type deleteScreeningProcessApiV1ScreeningsScreeningIdDeleteResponseSuccess =
+  deleteScreeningProcessApiV1ScreeningsScreeningIdDeleteResponse204 & {
+    headers: Headers;
+  };
+export type deleteScreeningProcessApiV1ScreeningsScreeningIdDeleteResponseError =
+  (
+    | deleteScreeningProcessApiV1ScreeningsScreeningIdDeleteResponse404
+    | deleteScreeningProcessApiV1ScreeningsScreeningIdDeleteResponse422
+  ) & {
+    headers: Headers;
+  };
+
+export type deleteScreeningProcessApiV1ScreeningsScreeningIdDeleteResponse =
+  | deleteScreeningProcessApiV1ScreeningsScreeningIdDeleteResponseSuccess
+  | deleteScreeningProcessApiV1ScreeningsScreeningIdDeleteResponseError;
+
+export const getDeleteScreeningProcessApiV1ScreeningsScreeningIdDeleteUrl = (
+  screeningId: string,
+) => {
+  return `/api/v1/screenings/${screeningId}`;
+};
+
+export const deleteScreeningProcessApiV1ScreeningsScreeningIdDelete = async (
+  screeningId: string,
+  options?: RequestInit,
+): Promise<deleteScreeningProcessApiV1ScreeningsScreeningIdDeleteResponse> => {
+  return customFetch<deleteScreeningProcessApiV1ScreeningsScreeningIdDeleteResponse>(
+    getDeleteScreeningProcessApiV1ScreeningsScreeningIdDeleteUrl(screeningId),
+    {
+      ...options,
+      method: "DELETE",
+    },
+  );
+};
+
+export const getDeleteScreeningProcessApiV1ScreeningsScreeningIdDeleteMutationOptions =
+  <TError = ErrorResponse | HTTPValidationError, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<
+          typeof deleteScreeningProcessApiV1ScreeningsScreeningIdDelete
+        >
+      >,
+      TError,
+      { screeningId: string },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  }): UseMutationOptions<
+    Awaited<
+      ReturnType<typeof deleteScreeningProcessApiV1ScreeningsScreeningIdDelete>
+    >,
+    TError,
+    { screeningId: string },
+    TContext
+  > => {
+    const mutationKey = [
+      "deleteScreeningProcessApiV1ScreeningsScreeningIdDelete",
+    ];
+    const { mutation: mutationOptions, request: requestOptions } = options
+      ? options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+        ? options
+        : { ...options, mutation: { ...options.mutation, mutationKey } }
+      : { mutation: { mutationKey }, request: undefined };
+
+    const mutationFn: MutationFunction<
+      Awaited<
+        ReturnType<
+          typeof deleteScreeningProcessApiV1ScreeningsScreeningIdDelete
+        >
+      >,
+      { screeningId: string }
+    > = (props) => {
+      const { screeningId } = props ?? {};
+
+      return deleteScreeningProcessApiV1ScreeningsScreeningIdDelete(
+        screeningId,
+        requestOptions,
+      );
+    };
+
+    return { mutationFn, ...mutationOptions };
+  };
+
+export type DeleteScreeningProcessApiV1ScreeningsScreeningIdDeleteMutationResult =
+  NonNullable<
+    Awaited<
+      ReturnType<typeof deleteScreeningProcessApiV1ScreeningsScreeningIdDelete>
+    >
+  >;
+
+export type DeleteScreeningProcessApiV1ScreeningsScreeningIdDeleteMutationError =
+  ErrorResponse | HTTPValidationError;
+
+/**
+ * @summary Excluir triagem
+ */
+export const useDeleteScreeningProcessApiV1ScreeningsScreeningIdDelete = <
+  TError = ErrorResponse | HTTPValidationError,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<
+          typeof deleteScreeningProcessApiV1ScreeningsScreeningIdDelete
+        >
+      >,
+      TError,
+      { screeningId: string },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<
+    ReturnType<typeof deleteScreeningProcessApiV1ScreeningsScreeningIdDelete>
+  >,
+  TError,
+  { screeningId: string },
+  TContext
+> => {
+  const mutationOptions =
+    getDeleteScreeningProcessApiV1ScreeningsScreeningIdDeleteMutationOptions(
+      options,
+    );
+
+  return useMutation(mutationOptions, queryClient);
+};
+/**
  * Cancela o processo de triagem com motivo obrigatório.
 
 **Regras:**

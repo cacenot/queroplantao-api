@@ -5,6 +5,7 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
+import type { StepTypeInfoStatus } from "./stepTypeInfoStatus.js";
 
 /**
  * Summary for a screening step type with pt-BR labels.
@@ -13,4 +14,7 @@ export type StepTypeInfo = {
   stepType: string;
   title: string;
   description: string;
+  status?: StepTypeInfoStatus;
+  completed?: boolean;
+  currentStep?: boolean;
 };

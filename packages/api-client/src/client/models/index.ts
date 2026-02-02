@@ -633,6 +633,7 @@ export * from "./stepStatus.js";
 export * from "./stepSummaryResponse.js";
 export * from "./stepType.js";
 export * from "./stepTypeInfo.js";
+export * from "./stepTypeInfoStatus.js";
 export * from "./uploadDocumentRequest.js";
 export * from "./userInfo.js";
 export * from "./userInfoAvatarUrl.js";
