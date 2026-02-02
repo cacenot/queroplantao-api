@@ -79,6 +79,8 @@ echo ""
 echo -e "${GREEN}✓${NC} Client generated successfully"
 echo ""
 
+sleep 2
+
 # Confirm
 echo "Ready to release version ${YELLOW}$NEW_VERSION${NC}"
 echo ""
@@ -131,7 +133,7 @@ if [[ $push_confirm =~ ^[Yy]$ ]]; then
   echo "  https://github.com/queroplantao/queroplantao-api/actions"
   echo ""
   echo "After publishing, install with:"
-  echo -e "  ${YELLOW}npm install @queroplantao/api-client@$NEW_VERSION${NC}"
+  echo -e "  ${YELLOW}npm install @cacenot/queroplantao-api-client@$NEW_VERSION${NC}"
 else
   echo ""
   echo "Tag created locally. Push manually with:"

@@ -4,7 +4,7 @@ on:
   push:
     tags:
       - "api-client-v*.*.*"
-  
+
   # Allow manual trigger
   workflow_dispatch:
     inputs:
@@ -15,12 +15,21 @@ on:
 
 env:
   NODE_VERSION: "20"
+  # ✅ keep this consistent with package.json "name"
+  PACKAGE_NAME: "@cacenot/queroplantao-api-client"
+  REGISTRY_URL: "https://npm.pkg.github.com"
+  # ✅ scope used by setup-node to write ~/.npmrc for GitHub Packages
+  NPM_SCOPE: "@cacenot"
 
 jobs:
   publish:
     name: Build and Publish API Client
-    runs-on: ubuntu-latest
-    
+    runs-on: ubuntu-22.04
+    timeout-minutes: 20
+    concurrency:
+      group: publish-api-client
+      cancel-in-progress: false
+
     permissions:
       contents: write
       packages: write
@@ -31,22 +40,28 @@ jobs:
 
       - name: Extract version from tag
         id: version
+        shell: bash
         run: |
-          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+          set -euo pipefail
+
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             VERSION="${{ inputs.version }}"
           else
             # Extract version from tag (api-client-v0.1.0 -> 0.1.0)
-            VERSION=${GITHUB_REF#refs/tags/api-client-v}
+            VERSION="${GITHUB_REF#refs/tags/api-client-v}"
           fi
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "📦 Publishing version: $VERSION"
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          registry-url: "https://npm.pkg.github.com"
-          scope: "@queroplantao"
+          registry-url: ${{ env.REGISTRY_URL }}
+          scope: ${{ env.NPM_SCOPE }}
+          cache: "pnpm"
+          cache-dependency-path: packages/api-client/pnpm-lock.yaml
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -55,7 +70,7 @@ jobs:
 
       - name: Install Node dependencies
         working-directory: packages/api-client
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
       - name: Build package
         working-directory: packages/api-client
@@ -70,12 +85,19 @@ jobs:
         working-directory: packages/api-client
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
         run: |
-          if pnpm view @cacenot/queroplantao-api-client@${{ steps.version.outputs.version }} version --registry https://npm.pkg.github.com >/dev/null 2>&1; then
-            echo "published=true" >> $GITHUB_OUTPUT
-            echo "Version already published. Skipping publish step."
+          set -euo pipefail
+
+          PKG="${{ env.PACKAGE_NAME }}"
+          VER="${{ steps.version.outputs.version }}"
+
+          if pnpm view "${PKG}@${VER}" version --registry "${{ env.REGISTRY_URL }}" >/dev/null 2>&1; then
+            echo "published=true" >> "$GITHUB_OUTPUT"
+            echo "✅ Version already published (${PKG}@${VER}). Skipping publish + release."
           else
-            echo "published=false" >> $GITHUB_OUTPUT
+            echo "published=false" >> "$GITHUB_OUTPUT"
+            echo "ℹ️ Version not found in registry (${PKG}@${VER}). Will publish."
           fi
 
       - name: Publish to GitHub Packages
@@ -85,22 +107,21 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      # ✅ Use a maintained release action instead of actions/create-release@v1
       - name: Create GitHub Release
         if: steps.published.outputs.published != 'true'
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.ref }}
-          release_name: API Client v${{ steps.version.outputs.version }}
+          tag_name: ${{ github.ref_name }}
+          name: API Client v${{ steps.version.outputs.version }}
           body: |
             ## 📦 API Client v${{ steps.version.outputs.version }}
-            
+
             **Installation:**
             ```bash
-            npm install @queroplantao/api-client@${{ steps.version.outputs.version }}
+            npm install ${{ env.PACKAGE_NAME }}@${{ steps.version.outputs.version }}
             ```
-            
+
             **What's included:**
             - TypeScript client with React Query hooks
             - Enums with PT-BR labels
@@ -110,14 +131,17 @@ jobs:
           prerelease: false
 
       - name: Create release summary
+        shell: bash
         run: |
-          echo "## 📦 API Client Published" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Version:** ${{ steps.version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
-          echo "**Registry:** GitHub Packages" >> $GITHUB_STEP_SUMMARY
-          echo "**Tag:** \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Installation" >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
-          echo "npm install @queroplantao/api-client@${{ steps.version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          set -euo pipefail
+
+          echo "## 📦 API Client Published" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "**Version:** ${{ steps.version.outputs.version }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "**Registry:** GitHub Packages" >> "$GITHUB_STEP_SUMMARY"
+          echo "**Tag:** \`${{ github.ref_name }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "### Installation" >> "$GITHUB_STEP_SUMMARY"
+          echo "\`\`\`bash" >> "$GITHUB_STEP_SUMMARY"
+          echo "npm install ${{ env.PACKAGE_NAME }}@${{ steps.version.outputs.version }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "\`\`\`" >> "$GITHUB_STEP_SUMMARY"
