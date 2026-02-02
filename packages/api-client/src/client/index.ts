@@ -22,4 +22,5 @@ export * from "./models/index.js";
 // Re-export custom fetch
 export { customFetch } from "./custom-fetch.js";
 
-export const CLIENT_VERSION = "0.1.0";
+// Re-export case transformation utilities
+export { toCamelCase, toSnakeCase } from "./case-transformer.js";
