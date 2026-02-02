@@ -316,14 +316,14 @@ export const uploadDocumentByTokenApiV1PublicScreeningTokenDocumentsDocumentIdUp
       bodyUploadDocumentByTokenApiV1PublicScreeningTokenDocumentsDocumentIdUploadPost.file,
     );
     if (
-      bodyUploadDocumentByTokenApiV1PublicScreeningTokenDocumentsDocumentIdUploadPost.expires_at !==
+      bodyUploadDocumentByTokenApiV1PublicScreeningTokenDocumentsDocumentIdUploadPost.expiresAt !==
         undefined &&
-      bodyUploadDocumentByTokenApiV1PublicScreeningTokenDocumentsDocumentIdUploadPost.expires_at !==
+      bodyUploadDocumentByTokenApiV1PublicScreeningTokenDocumentsDocumentIdUploadPost.expiresAt !==
         null
     ) {
       formData.append(
         `expires_at`,
-        bodyUploadDocumentByTokenApiV1PublicScreeningTokenDocumentsDocumentIdUploadPost.expires_at,
+        bodyUploadDocumentByTokenApiV1PublicScreeningTokenDocumentsDocumentIdUploadPost.expiresAt.toISOString(),
       );
     }
     if (

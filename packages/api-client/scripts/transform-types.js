@@ -15,6 +15,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const MODELS_DIR = path.join(__dirname, "..", "src", "client", "models");
+const GENERATED_DIR = path.join(__dirname, "..", "src", "client", "generated");
 
 /**
  * Convert snake_case to camelCase
@@ -53,6 +54,43 @@ function processFile(filePath) {
 }
 
 /**
+ * Transform generated client files to match camelCase model fields.
+ */
+function transformGeneratedClient(content) {
+    let updated = content.replace(/\.expires_at\b/g, ".expiresAt");
+    updated = updated.replace(
+        /(`expires_at`,\s*)([A-Za-z0-9_.$]+\.expiresAt)(\s*,)/g,
+        "$1$2.toISOString()$3",
+    );
+    return updated;
+}
+
+function processGeneratedFile(filePath) {
+    const content = fs.readFileSync(filePath, "utf-8");
+    const transformed = transformGeneratedClient(content);
+
+    if (content !== transformed) {
+        fs.writeFileSync(filePath, transformed, "utf-8");
+        console.log(`✓ Transformed: ${path.relative(GENERATED_DIR, filePath)}`);
+    }
+}
+
+function processGeneratedDirectory(dirPath) {
+    const files = fs.readdirSync(dirPath);
+
+    for (const file of files) {
+        const filePath = path.join(dirPath, file);
+        const stat = fs.statSync(filePath);
+
+        if (stat.isDirectory()) {
+            processGeneratedDirectory(filePath);
+        } else if (file.endsWith(".ts") && !file.endsWith(".d.ts")) {
+            processGeneratedFile(filePath);
+        }
+    }
+}
+
+/**
  * Process all TypeScript files in a directory
  */
 function processDirectory(dirPath) {
@@ -79,5 +117,10 @@ if (!fs.existsSync(MODELS_DIR)) {
 }
 
 processDirectory(MODELS_DIR);
+
+if (fs.existsSync(GENERATED_DIR)) {
+    console.log("\n🔄 Aligning generated client field access...\n");
+    processGeneratedDirectory(GENERATED_DIR);
+}
 
 console.log("\n✅ Type transformation complete!");

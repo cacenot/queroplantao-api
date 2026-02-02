@@ -13,7 +13,6 @@ export * from "./generated/health/health.js";
 export * from "./generated/invitations/invitations.js";
 export * from "./generated/organization-users/organization-users.js";
 export * from "./generated/professionals/professionals.js";
-export * from "./generated/screening/screening.js";
 export * from "./generated/screening-alerts/screening-alerts.js";
 export * from "./generated/screening-documents/screening-documents.js";
 export * from "./generated/screening-process/screening-process.js";
