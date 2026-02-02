@@ -17,6 +17,7 @@ import type {
   BodyUploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPost,
   ConfigureDocumentsRequest,
   DocumentUploadStepResponse,
+  ErrorResponse,
   HTTPValidationError,
   ReuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostParams,
   ReviewDocumentRequest,
@@ -392,7 +393,7 @@ export const useUploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploa
     return useMutation(mutationOptions, queryClient);
   };
 /**
- * Reutiliza um documento já aprovado de triagens anteriores. Apenas documentos que não estão pendentes (is_pending=False) podem ser reutilizados. O documento reutilizado recebe status REUSED e não precisa de revisão.
+ * Reutiliza um documento já aprovado de triagens anteriores. Apenas documentos que não estão pendentes (is_pending=False) podem ser reutilizados. O documento reutilizado recebe status PENDING_REVIEW e segue para revisão.
  * @summary Reutilizar documento existente
  */
 export type reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostResponse200 =
@@ -401,9 +402,15 @@ export type reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostR
     status: 200;
   };
 
+export type reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostResponse404 =
+  {
+    data: ErrorResponse;
+    status: 404;
+  };
+
 export type reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostResponse422 =
   {
-    data: HTTPValidationError;
+    data: ErrorResponse;
     status: 422;
   };
 
@@ -412,7 +419,10 @@ export type reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostR
     headers: Headers;
   };
 export type reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostResponseError =
-  reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostResponse422 & {
+  (
+    | reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostResponse404
+    | reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostResponse422
+  ) & {
     headers: Headers;
   };
 
@@ -466,7 +476,7 @@ export const reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePost
   };
 
 export const getReuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostMutationOptions =
-  <TError = HTTPValidationError, TContext = unknown>(options?: {
+  <TError = ErrorResponse, TContext = unknown>(options?: {
     mutation?: UseMutationOptions<
       Awaited<
         ReturnType<
@@ -542,13 +552,13 @@ export type ReuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostM
   >;
 
 export type ReuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostMutationError =
-  HTTPValidationError;
+  ErrorResponse;
 
 /**
  * @summary Reutilizar documento existente
  */
 export const useReuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePost =
-  <TError = HTTPValidationError, TContext = unknown>(
+  <TError = ErrorResponse, TContext = unknown>(
     options?: {
       mutation?: UseMutationOptions<
         Awaited<

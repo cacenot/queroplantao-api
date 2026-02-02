@@ -56,7 +56,7 @@ export const ErrorMessages: Record<string, string> = {
   [ErrorCodes.PROFESSIONAL_LEVEL_REQUIRED]: "level é obrigatório ao criar uma nova formação",
   [ErrorCodes.PROFESSIONAL_COURSE_NAME_REQUIRED]: "course_name é obrigatório ao criar uma nova formação",
   [ErrorCodes.PROFESSIONAL_INSTITUTION_REQUIRED]: "institution é obrigatório ao criar uma nova formação",
-  [ErrorCodes.PROFESSIONAL_DOCUMENT_NOT_FOUND]: "Documento não encontrado",
+  [ErrorCodes.PROFESSIONAL_DOCUMENT_NOT_FOUND]: "Documento de triagem não encontrado",
   [ErrorCodes.PROFESSIONAL_DOCUMENT_QUALIFICATION_CATEGORY]: "Documentos vinculados a uma qualificação devem ter categoria QUALIFICATION",
   [ErrorCodes.PROFESSIONAL_DOCUMENT_SPECIALTY_CATEGORY]: "Documentos vinculados a uma especialidade devem ter categoria SPECIALTY",
   [ErrorCodes.PROFESSIONAL_COMPANY_NOT_FOUND]: "Empresa não encontrada",
