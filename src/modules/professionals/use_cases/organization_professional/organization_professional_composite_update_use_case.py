@@ -3,7 +3,7 @@
 from datetime import datetime, timezone
 from uuid import UUID
 
-from fastapi_restkit.filters import ListFilter
+from fastapi_restkit.filters import UUIDListFilter
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.app.exceptions import (
@@ -164,6 +164,8 @@ class UpdateOrganizationProfessionalCompositeUseCase:
         update_data = data.model_dump(exclude_unset=True, exclude={"qualification"})
 
         for field, value in update_data.items():
+            if field == "avatar_url" and value is not None:
+                value = str(value)
             setattr(professional, field, value)
 
         professional.updated_by = updated_by
@@ -339,7 +341,7 @@ class UpdateOrganizationProfessionalCompositeUseCase:
     ) -> list[ProfessionalSpecialty]:
         """Get all existing specialties for a qualification."""
         filters = ProfessionalSpecialtyFilter(
-            qualification_id=ListFilter(values=[qualification_id])
+            qualification_id=UUIDListFilter(values=[qualification_id])
         )
         result = await self.specialty_repository.list(
             filters=filters,
@@ -453,7 +455,7 @@ class UpdateOrganizationProfessionalCompositeUseCase:
     ) -> list[ProfessionalEducation]:
         """Get all existing educations for a qualification."""
         filters = ProfessionalEducationFilter(
-            qualification_id=ListFilter(values=[qualification_id])
+            qualification_id=UUIDListFilter(values=[qualification_id])
         )
         result = await self.education_repository.list(
             filters=filters,

@@ -260,8 +260,8 @@ class OrganizationProfessionalRepository(
         return await self.list(
             filters=filters,
             sorting=sorting,
-            limit=pagination.page_size,
-            offset=(pagination.page - 1) * pagination.page_size,
+            limit=pagination.limit,
+            offset=pagination.offset,
             base_query=query,
         )
 
@@ -359,8 +359,8 @@ class OrganizationProfessionalRepository(
         return await self.list(
             filters=filters,
             sorting=sorting,
-            limit=pagination.page_size,
-            offset=(pagination.page - 1) * pagination.page_size,
+            limit=pagination.limit,
+            offset=pagination.offset,
             base_query=query,
         )
 

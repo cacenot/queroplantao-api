@@ -15,6 +15,7 @@ from src.modules.screening.domain.models.enums import (
     ScreeningStatus,
     StepStatus,
 )
+from src.modules.screening.domain.models.steps import ConversationStep
 from src.modules.screening.domain.schemas.screening_step_complete import (
     ConversationStepCompleteRequest,
 )
@@ -74,65 +75,132 @@ class CompleteConversationStepUseCase:
             ScreeningStepNotInProgressError: If step is not in progress.
             ScreeningStepNotAssignedToUserError: If step is not assigned to user.
         """
-        # 1. Load process with all steps
-        process = await self._load_process_with_steps(organization_id, screening_id)
+        process = await self._get_process_or_raise(
+            organization_id=organization_id,
+            screening_id=screening_id,
+        )
+        step = self._get_conversation_step_or_raise(process)
+        self._validate_step_can_complete(step, completed_by)
+        self._apply_step_data(step, data)
+        self._handle_outcome(
+            process=process,
+            step=step,
+            data=data,
+            completed_by=completed_by,
+        )
+
+        await self._persist_step(step)
+
+        return ConversationStepResponse.model_validate(step)
+
+    async def _get_process_or_raise(
+        self,
+        organization_id: UUID,
+        screening_id: UUID,
+    ) -> ScreeningProcess:
+        process = await self._load_process_with_steps(
+            organization_id=organization_id,
+            screening_id=screening_id,
+        )
         if not process:
             raise ScreeningProcessNotFoundError(screening_id=str(screening_id))
 
-        # 2. Get conversation step
+        return process
+
+    @staticmethod
+    def _get_conversation_step_or_raise(
+        process: ScreeningProcess,
+    ) -> ConversationStep:
         step = process.conversation_step
         if not step:
             raise ScreeningStepNotFoundError(step_id="conversation")
 
-        # 3. Validate step can be completed
+        return step
+
+    @staticmethod
+    def _validate_step_can_complete(
+        step: ConversationStep,
+        completed_by: UUID,
+    ) -> None:
         StepWorkflowService.validate_step_can_complete(
             step=step,
             user_id=completed_by,
             check_assignment=True,
         )
 
-        # 4. Apply conversation data
+    @staticmethod
+    def _apply_step_data(
+        step: ConversationStep,
+        data: ConversationStepCompleteRequest,
+    ) -> None:
         step.notes = data.notes
         step.outcome = data.outcome
 
-        # 5. Handle outcome
+    def _handle_outcome(
+        self,
+        process: ScreeningProcess,
+        step: ConversationStep,
+        data: ConversationStepCompleteRequest,
+        completed_by: UUID,
+    ) -> None:
         if data.outcome == ConversationOutcome.REJECT:
-            # Reject the step and the entire process
-            StepWorkflowService.complete_step(
-                step=step,
-                completed_by=completed_by,
-                status=StepStatus.REJECTED,
-            )
-            step.rejection_reason = data.notes
-            StepWorkflowService.reject_screening_process(
+            self._reject_step_and_process(
                 process=process,
-                reason=f"Rejeitado na conversa inicial: {data.notes}",
-                rejected_by=completed_by,
-            )
-        else:
-            # Approve the step and advance to next
-            StepWorkflowService.complete_step(
                 step=step,
+                data=data,
                 completed_by=completed_by,
-                status=StepStatus.APPROVED,
             )
+            return
 
-            # Start process if still in DRAFT (legacy, should not happen)
-            if process.status != ScreeningStatus.IN_PROGRESS:
-                process.status = ScreeningStatus.IN_PROGRESS
+        self._approve_and_advance(
+            process=process,
+            step=step,
+            completed_by=completed_by,
+        )
 
-            # Advance to next step (professional_data_step)
-            StepWorkflowService.advance_to_next_step(
-                process=process,
-                current_step=step,
-                next_step=process.professional_data_step,
-            )
+    @staticmethod
+    def _reject_step_and_process(
+        process: ScreeningProcess,
+        step: ConversationStep,
+        data: ConversationStepCompleteRequest,
+        completed_by: UUID,
+    ) -> None:
+        StepWorkflowService.complete_step(
+            step=step,
+            completed_by=completed_by,
+            status=StepStatus.REJECTED,
+        )
+        step.rejection_reason = data.notes
+        StepWorkflowService.reject_screening_process(
+            process=process,
+            reason=f"Rejeitado na conversa inicial: {data.notes}",
+            rejected_by=completed_by,
+        )
 
-        # 6. Persist changes
+    @staticmethod
+    def _approve_and_advance(
+        process: ScreeningProcess,
+        step: ConversationStep,
+        completed_by: UUID,
+    ) -> None:
+        StepWorkflowService.complete_step(
+            step=step,
+            completed_by=completed_by,
+            status=StepStatus.APPROVED,
+        )
+
+        if process.status != ScreeningStatus.IN_PROGRESS:
+            process.status = ScreeningStatus.IN_PROGRESS
+
+        StepWorkflowService.advance_to_next_step(
+            process=process,
+            current_step=step,
+            next_step=process.professional_data_step,
+        )
+
+    async def _persist_step(self, step: ConversationStep) -> None:
         await self.session.flush()
         await self.session.refresh(step)
-
-        return ConversationStepResponse.model_validate(step)
 
     async def _load_process_with_steps(
         self,

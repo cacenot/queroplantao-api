@@ -8,7 +8,7 @@ natural key for matching qualifications.
 from datetime import datetime, timezone
 from uuid import UUID
 
-from fastapi_restkit.filters import ListFilter
+from fastapi_restkit.filters import UUIDListFilter
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.app.exceptions import (
@@ -337,7 +337,7 @@ class QualificationSyncService:
     ) -> list[ProfessionalSpecialty]:
         """Get all existing specialties for a qualification."""
         filters = ProfessionalSpecialtyFilter(
-            qualification_id=ListFilter(values=[qualification_id])
+            qualification_id=UUIDListFilter(values=[qualification_id])
         )
         paginated = await self.specialty_repository.list(
             filters=filters,
@@ -490,7 +490,7 @@ class QualificationSyncService:
     ) -> list[ProfessionalEducation]:
         """Get all existing educations for a qualification."""
         filters = ProfessionalEducationFilter(
-            qualification_id=ListFilter(values=[qualification_id])
+            qualification_id=UUIDListFilter(values=[qualification_id])
         )
         paginated = await self.education_repository.list(
             filters=filters,

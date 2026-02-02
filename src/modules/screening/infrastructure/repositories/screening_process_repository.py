@@ -133,6 +133,7 @@ class ScreeningProcessRepository(
                 # Load alerts
                 selectinload(ScreeningProcess.alerts),
                 # Load other relationships
+                selectinload(ScreeningProcess.organization_professional),
                 selectinload(ScreeningProcess.client_company),
             )
         )
@@ -317,6 +318,7 @@ class ScreeningProcessRepository(
                 # Load alerts
                 selectinload(ScreeningProcess.alerts),
                 # Load other relationships
+                selectinload(ScreeningProcess.organization_professional),
                 selectinload(ScreeningProcess.client_company),
             )
         )

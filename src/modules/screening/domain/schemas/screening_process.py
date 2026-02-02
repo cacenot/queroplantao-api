@@ -4,10 +4,43 @@ from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, EmailStr, Field
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    EmailStr,
+    Field,
+    field_serializer,
+    model_validator,
+)
 
-from src.modules.screening.domain.models.enums import ScreeningStatus, StepType
+from src.modules.professionals.domain.schemas import SpecialtySummary
+from src.modules.screening.domain.models.enums import (
+    STEP_TYPE_METADATA,
+    ScreeningStatus,
+    StepType,
+)
+from src.modules.users.domain.schemas.organization_user import UserInfo
 from src.shared.domain.value_objects import CPF, Phone
+
+
+def _build_step_type_payload(step_type: StepType | str) -> dict[str, str]:
+    try:
+        step_enum = (
+            step_type if isinstance(step_type, StepType) else StepType(step_type)
+        )
+    except ValueError:
+        return {
+            "step_type": str(step_type),
+            "title": str(step_type),
+            "description": "",
+        }
+
+    metadata = STEP_TYPE_METADATA[step_enum]
+    return {
+        "step_type": step_enum.value,
+        "title": metadata["title"],
+        "description": metadata["description"],
+    }
 
 
 class ScreeningProcessCreate(BaseModel):
@@ -20,13 +53,21 @@ class ScreeningProcessCreate(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-    # Professional identification (from conversation)
-    professional_cpf: CPF = Field(
-        description="Professional's CPF (11 digits)",
+    # Link to existing professional (optional)
+    organization_professional_id: Optional[UUID] = Field(
+        default=None,
+        description="Existing organization professional ID. If provided, professional_cpf and professional_name may be omitted.",
     )
-    professional_name: str = Field(
+
+    # Professional identification (from conversation)
+    professional_cpf: Optional[CPF] = Field(
+        default=None,
+        description="Professional's CPF (11 digits). Optional when organization_professional_id is provided.",
+    )
+    professional_name: Optional[str] = Field(
+        default=None,
         max_length=255,
-        description="Professional's full name",
+        description="Professional's full name. Optional when organization_professional_id is provided.",
     )
     professional_phone: Phone = Field(
         description="Professional's phone number",
@@ -46,27 +87,10 @@ class ScreeningProcessCreate(BaseModel):
         description="Expected specialty ID (for doctors)",
     )
 
-    # Assignment
-    owner_id: Optional[UUID] = Field(
-        default=None,
-        description="User responsible for this screening (owner)",
-    )
-
     # Client company (for outsourcing scenarios)
     client_company_id: Optional[UUID] = Field(
         default=None,
         description="Client company (empresa contratante)",
-    )
-
-    # Step configuration (optional steps)
-    include_payment_info: bool = Field(
-        default=True,
-        description="Include payment info step (bank account + company data)",
-    )
-    include_client_validation: bool = Field(
-        default=False,
-        description="Include client validation step (client approval). "
-        "Automatically set to True if client_company_id is provided.",
     )
 
     # Supervisor for alerts and document review
@@ -80,6 +104,19 @@ class ScreeningProcessCreate(BaseModel):
         max_length=2000,
         description="Notes from the initial conversation",
     )
+
+    @model_validator(mode="after")
+    def _validate_identification(self) -> "ScreeningProcessCreate":
+        if self.organization_professional_id is None:
+            if self.professional_cpf is None:
+                raise ValueError(
+                    "professional_cpf is required when organization_professional_id is not provided"
+                )
+            if self.professional_name is None:
+                raise ValueError(
+                    "professional_name is required when organization_professional_id is not provided"
+                )
+        return self
 
 
 class ScreeningProcessUpdate(BaseModel):
@@ -151,6 +188,29 @@ class ScreeningProcessListResponse(BaseModel):
     updated_at: datetime
     expires_at: Optional[datetime]
 
+    @field_serializer("current_step_type")
+    def _serialize_current_step_type(self, value: StepType) -> dict[str, str]:
+        return _build_step_type_payload(value)
+
+    @field_serializer("configured_step_types")
+    def _serialize_configured_step_types(
+        self, value: list[str]
+    ) -> list[dict[str, str]]:
+        return [_build_step_type_payload(step_type) for step_type in value]
+
+
+class OrganizationProfessionalSummary(BaseModel):
+    """Summary of an organization professional for screening responses."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    full_name: str
+    cpf: Optional[str] = None
+    phone: Optional[str] = None
+    email: Optional[str] = None
+    avatar_url: Optional[str] = None
+
 
 class ScreeningProcessResponse(BaseModel):
     """Schema for full screening process response."""
@@ -171,15 +231,20 @@ class ScreeningProcessResponse(BaseModel):
     professional_phone: Optional[str]
     professional_email: Optional[str]
     organization_professional_id: Optional[UUID]
+    professional: Optional[OrganizationProfessionalSummary] = None
 
     # Expected profile
     expected_professional_type: Optional[str]
     expected_specialty_id: Optional[UUID]
+    expected_specialty: Optional[SpecialtySummary] = None
 
     # Assignment
     owner_id: Optional[UUID]
     current_actor_id: Optional[UUID]
     supervisor_id: UUID
+    owner: Optional[UserInfo] = None
+    current_actor: Optional[UserInfo] = None
+    supervisor: Optional[UserInfo] = None
 
     # Client company
     client_company_id: Optional[UUID]
@@ -202,6 +267,16 @@ class ScreeningProcessResponse(BaseModel):
     created_by: Optional[UUID]
     updated_by: Optional[UUID]
 
+    @field_serializer("current_step_type")
+    def _serialize_current_step_type(self, value: StepType) -> dict[str, str]:
+        return _build_step_type_payload(value)
+
+    @field_serializer("configured_step_types")
+    def _serialize_configured_step_types(
+        self, value: list[str]
+    ) -> list[dict[str, str]]:
+        return [_build_step_type_payload(step_type) for step_type in value]
+
 
 class ScreeningProcessDetailResponse(ScreeningProcessResponse):
     """Schema for detailed screening process response with nested data."""
@@ -214,7 +289,6 @@ class ScreeningProcessDetailResponse(ScreeningProcessResponse):
     required_documents: Optional[list["ScreeningDocumentResponse"]] = None
 
 
-# Forward references
 from src.modules.screening.domain.schemas.screening_document import (  # noqa: E402
     ScreeningDocumentResponse,
 )

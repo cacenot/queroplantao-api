@@ -338,7 +338,9 @@ for field, value in update_data.items():
     setattr(entity, field, value)
 ```
 
-### Pagination in Routes
+### Pagination in Routes (REQUIRED)
+Always use `PaginationParams` as a dependency instead of `limit/offset` query params.
+
 ```python
 @router.get("/", response_model=PaginatedResponse[EntityResponse])
 async def list_entities(
@@ -346,18 +348,21 @@ async def list_entities(
     use_case: ListEntitiesUC,
     filters: Annotated[EntityFilter, Depends()],
     sorting: Annotated[EntitySorting, Depends()],
-    limit: Annotated[int, Query(ge=1, le=100)] = 25,
-    offset: Annotated[int, Query(ge=0)] = 0,
+    pagination: Annotated[PaginationParams, Depends()],
 ) -> PaginatedResponse[EntityResponse]:
     return await use_case.execute(
         organization_id=ctx.organization,
         family_org_ids=ctx.family_org_ids,
         filters=filters,
         sorting=sorting,
-        limit=limit,
-        offset=offset,
+        pagination=pagination,
     )
 ```
+
+### PaginationParams in Use Cases (REQUIRED)
+When a use case receives `PaginationParams`, always pass `pagination.limit` and
+`pagination.offset` to repositories. Do not recompute `offset` from `page` and
+`page_size`.
 
 ### FilterSet/SortingSet Definition
 ```python

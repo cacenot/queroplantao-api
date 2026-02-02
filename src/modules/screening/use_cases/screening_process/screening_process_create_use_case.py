@@ -10,8 +10,13 @@ from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.app.exceptions import ScreeningProcessActiveExistsError
-from src.modules.professionals.domain.models.enums import ProfessionalType
+from src.app.exceptions import (
+    ProfessionalNotFoundError,
+    ScreeningProcessActiveExistsError,
+)
+from src.modules.professionals.domain.models.organization_professional import (
+    OrganizationProfessional,
+)
 from src.modules.professionals.infrastructure.repositories import (
     OrganizationProfessionalRepository,
 )
@@ -19,6 +24,9 @@ from src.modules.screening.domain.models.enums import (
     ScreeningStatus,
     StepStatus,
     StepType,
+)
+from src.modules.screening.domain.models.organization_screening_settings import (
+    OrganizationScreeningSettings,
 )
 from src.modules.screening.domain.models.screening_process import ScreeningProcess
 from src.modules.screening.domain.models.steps import (
@@ -43,7 +51,6 @@ from src.modules.screening.infrastructure.repositories import (
     ProfessionalDataStepRepository,
     ScreeningProcessRepository,
 )
-from src.shared.domain.value_objects import CPF
 
 
 class CreateScreeningProcessUseCase:
@@ -55,15 +62,15 @@ class CreateScreeningProcessUseCase:
     - Expected professional type and specialty
     - Assignee and client company (if required)
 
-    The professional is created or linked, and the screening steps
-    are generated based on the configuration provided.
+    The professional is linked if it already exists in the organization family.
+    If it doesn't exist yet, `organization_professional_id` is left as `None` and
+    will be filled later during the PROFESSIONAL_DATA step.
 
-    Steps configuration:
-    - Required steps (always created): CONVERSATION, PROFESSIONAL_DATA,
-      DOCUMENT_UPLOAD, DOCUMENT_REVIEW
-    - Optional steps (configurable via include_* fields):
-      - PAYMENT_INFO (default: True)
-      - CLIENT_VALIDATION (default: False, auto-enabled if client_company_id set)
+        Steps configuration:
+        - Required steps (always created): CONVERSATION, PROFESSIONAL_DATA,
+            DOCUMENT_UPLOAD, DOCUMENT_REVIEW
+        - Optional steps (PAYMENT_INFO, CLIENT_VALIDATION) are temporarily disabled
+            during creation and will be enabled again in a future iteration.
 
     Alert system:
     - Supervisor review is now handled via alerts, not as a step
@@ -106,69 +113,56 @@ class CreateScreeningProcessUseCase:
         Raises:
             ScreeningProcessActiveExistsError: If professional has active screening.
         """
-        # Get organization settings
-        settings = await self.settings_repository.get_or_create_default(
+        settings = await self._get_settings(
             organization_id=organization_id,
             family_org_ids=family_org_ids,
         )
 
-        # Check for existing active screening by CPF
-        existing = await self.repository.get_active_by_cpf(
+        existing_professional = await self._resolve_existing_professional(
             organization_id=organization_id,
-            cpf=data.professional_cpf,
+            professional_id=data.organization_professional_id,
             family_org_ids=family_org_ids,
         )
-        if existing:
-            raise ScreeningProcessActiveExistsError()
 
-        # Check if professional exists or create new one
-        professional = await self._get_or_create_professional(
-            organization_id=organization_id,
-            cpf=data.professional_cpf,
-            name=data.professional_name,
-            phone=data.professional_phone,
-            family_org_ids=family_org_ids,
-            created_by=created_by,
+        professional_cpf = self._get_professional_cpf(
+            data=data,
+            existing_professional=existing_professional,
         )
 
-        # Generate access token
+        await self._ensure_no_active_screening(
+            organization_id=organization_id,
+            professional_cpf=professional_cpf,
+            family_org_ids=family_org_ids,
+        )
+
+        if existing_professional is None and professional_cpf is not None:
+            existing_professional = await self._link_professional_by_cpf(
+                organization_id=organization_id,
+                professional_cpf=professional_cpf,
+                family_org_ids=family_org_ids,
+            )
+
+        include_payment_info = False
+        include_client_validation = False
+        configured_step_types = self._build_configured_step_types(
+            include_payment_info=include_payment_info,
+            include_client_validation=include_client_validation,
+        )
+
         access_token = self._generate_access_token()
         token_expires_at = datetime.now(UTC) + timedelta(
             hours=settings.token_expiry_hours
         )
 
-        # Determine which steps will be configured
-        # Client validation is auto-enabled if client company is provided
-        include_client_validation = (
-            data.include_client_validation or data.client_company_id is not None
-        )
-        configured_step_types = self._build_configured_step_types(
-            include_payment_info=data.include_payment_info,
-            include_client_validation=include_client_validation,
-        )
-
-        # Create the screening process with step tracking
-        process = ScreeningProcess(
+        process = self._build_screening_process(
             organization_id=organization_id,
-            organization_professional_id=professional.id,
-            professional_cpf=data.professional_cpf,
-            professional_name=data.professional_name,
-            professional_phone=data.professional_phone,
-            professional_email=data.professional_email,
-            status=ScreeningStatus.IN_PROGRESS,
-            current_step_type=StepType.CONVERSATION,
-            configured_step_types=configured_step_types,
-            expected_professional_type=data.expected_professional_type,
-            expected_specialty_id=data.expected_specialty_id,
-            owner_id=data.owner_id or created_by,
-            current_actor_id=data.owner_id or created_by,
-            supervisor_id=data.supervisor_id,
-            client_company_id=data.client_company_id,
-            access_token=access_token,
-            access_token_expires_at=token_expires_at,
-            notes=data.notes,
+            data=data,
             created_by=created_by,
-            updated_by=created_by,
+            existing_professional=existing_professional,
+            professional_cpf=professional_cpf,
+            configured_step_types=configured_step_types,
+            access_token=access_token,
+            token_expires_at=token_expires_at,
         )
         process = await self.repository.create(process)
         await self.session.flush()
@@ -176,7 +170,7 @@ class CreateScreeningProcessUseCase:
         # Create steps based on configuration
         await self._create_steps(
             process=process,
-            include_payment_info=data.include_payment_info,
+            include_payment_info=include_payment_info,
             include_client_validation=include_client_validation,
         )
 
@@ -192,39 +186,123 @@ class CreateScreeningProcessUseCase:
 
         return ScreeningProcessDetailResponse.model_validate(process_with_details)
 
-    async def _get_or_create_professional(
+    async def _get_settings(
         self,
         organization_id: UUID,
-        cpf: CPF,
-        name: str,
-        phone: str | None,
         family_org_ids: tuple[UUID, ...] | None,
-        created_by: UUID,
-    ):
-        """Get existing professional or create new one with minimal data."""
-        from src.modules.professionals.domain.models import OrganizationProfessional
-
-        # Check if professional exists in family
-        existing = await self.professional_repository.get_by_cpf(
+    ) -> OrganizationScreeningSettings:
+        return await self.settings_repository.get_or_create_default(
             organization_id=organization_id,
-            cpf=str(cpf),
+            family_org_ids=family_org_ids,
+        )
+
+    async def _resolve_existing_professional(
+        self,
+        organization_id: UUID,
+        professional_id: UUID | None,
+        family_org_ids: tuple[UUID, ...] | None,
+    ) -> OrganizationProfessional | None:
+        if professional_id is None:
+            return None
+
+        existing_professional = (
+            await self.professional_repository.get_by_id_for_organization(
+                id=professional_id,
+                organization_id=organization_id,
+                family_org_ids=family_org_ids,
+            )
+        )
+        if not existing_professional:
+            raise ProfessionalNotFoundError(
+                details={"professional_id": str(professional_id)}
+            )
+
+        return existing_professional
+
+    def _get_professional_cpf(
+        self,
+        data: ScreeningProcessCreate,
+        existing_professional: OrganizationProfessional | None,
+    ) -> str | None:
+        if data.professional_cpf is not None:
+            return str(data.professional_cpf)
+
+        return existing_professional.cpf if existing_professional else None
+
+    async def _ensure_no_active_screening(
+        self,
+        organization_id: UUID,
+        professional_cpf: str | None,
+        family_org_ids: tuple[UUID, ...] | None,
+    ) -> None:
+        if professional_cpf is None:
+            return
+
+        existing = await self.repository.get_active_by_cpf(
+            organization_id=organization_id,
+            cpf=professional_cpf,
             family_org_ids=family_org_ids,
         )
         if existing:
-            return existing
+            raise ScreeningProcessActiveExistsError()
 
-        # Create new professional with minimal data
-        professional = OrganizationProfessional(
+    async def _link_professional_by_cpf(
+        self,
+        organization_id: UUID,
+        professional_cpf: str,
+        family_org_ids: tuple[UUID, ...] | None,
+    ) -> OrganizationProfessional | None:
+        return await self.professional_repository.get_by_cpf(
             organization_id=organization_id,
-            cpf=str(cpf),
-            full_name=name,
-            phone=phone,
-            professional_type=ProfessionalType.MEDICO,  # Will be updated later
-            is_complete=False,  # Mark as incomplete until full data
+            cpf=professional_cpf,
+            family_org_ids=family_org_ids,
+        )
+
+    def _build_screening_process(
+        self,
+        organization_id: UUID,
+        data: ScreeningProcessCreate,
+        created_by: UUID,
+        existing_professional: OrganizationProfessional | None,
+        professional_cpf: str | None,
+        configured_step_types: list[str],
+        access_token: str,
+        token_expires_at: datetime,
+    ) -> ScreeningProcess:
+        professional_name = (
+            data.professional_name
+            if data.professional_name is not None
+            else (existing_professional.full_name if existing_professional else None)
+        )
+        professional_phone = str(data.professional_phone)
+        professional_email = data.professional_email or (
+            existing_professional.email if existing_professional else None
+        )
+
+        return ScreeningProcess(
+            organization_id=organization_id,
+            organization_professional_id=(
+                existing_professional.id if existing_professional else None
+            ),
+            professional_cpf=professional_cpf,
+            professional_name=professional_name,
+            professional_phone=professional_phone,
+            professional_email=professional_email,
+            status=ScreeningStatus.IN_PROGRESS,
+            current_step_type=StepType.CONVERSATION,
+            configured_step_types=configured_step_types,
+            expected_professional_type=data.expected_professional_type,
+            expected_specialty_id=data.expected_specialty_id,
+            owner_id=created_by,
+            current_actor_id=created_by,
+            supervisor_id=data.supervisor_id,
+            client_company_id=data.client_company_id,
+            access_token=access_token,
+            access_token_expires_at=token_expires_at,
+            notes=data.notes,
             created_by=created_by,
             updated_by=created_by,
         )
-        return await self.professional_repository.create(professional)
 
     async def _create_steps(
         self,

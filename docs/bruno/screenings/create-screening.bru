@@ -16,17 +16,15 @@ headers {
 
 body:json {
   {
+    "organization_professional_id": null,
     "professional_cpf": "12345678901",
     "professional_name": "Dr. João Silva",
     "professional_phone": "+5511999999999",
     "professional_email": "joao.silva@email.com",
     "expected_professional_type": "MEDICO",
     "expected_specialty_id": "{{specialtyId}}",
-    "owner_id": null,
     "client_company_id": null,
-    "include_payment_info": true,
-    "include_supervisor_review": false,
-    "include_client_validation": false,
+    "supervisor_id": "{{supervisorId}}",
     "notes": "Profissional indicado por parceiro"
   }
 }
@@ -40,28 +38,21 @@ docs {
   
   | Campo | Tipo | Descrição |
   |-------|------|-----------|
-  | professional_cpf | string | CPF do profissional (11 dígitos) |
-  | professional_name | string | Nome completo do profissional |
   | professional_phone | string | Telefone no formato E.164 |
   | expected_professional_type | string | Tipo esperado (MEDICO, ENFERMEIRO, etc.) |
+  | supervisor_id | UUID | Supervisor responsável |
   
   ## Campos Opcionais
   
   | Campo | Tipo | Default | Descrição |
   |-------|------|---------|-----------|
+  | organization_professional_id | UUID | null | ID do profissional já existente (se informado, CPF e nome podem ser omitidos) |
+  | professional_cpf | string | null | CPF do profissional (obrigatório se organization_professional_id não for informado) |
+  | professional_name | string | null | Nome completo do profissional (obrigatório se organization_professional_id não for informado) |
   | professional_email | string | null | Email do profissional |
   | expected_specialty_id | UUID | null | ID da especialidade esperada |
-  | owner_id | UUID | null | ID do responsável (default: usuário atual) |
   | client_company_id | UUID | null | ID da empresa contratante |
   | notes | string | null | Notas da conversa inicial |
-  
-  ## Configuração de Steps
-  
-  | Campo | Tipo | Default | Descrição |
-  |-------|------|---------|-----------|
-  | include_payment_info | bool | true | Incluir step de dados bancários |
-  | include_supervisor_review | bool | false | Incluir step de revisão por supervisor |
-  | include_client_validation | bool | false | Incluir step de validação do cliente (auto-habilitado se client_company_id fornecido) |
   
   ## Steps Criados
   
@@ -71,14 +62,13 @@ docs {
   3. DOCUMENT_UPLOAD - Upload de documentos
   4. DOCUMENT_REVIEW - Revisão dos documentos
   
-  **Opcionais (configuráveis):**
-  5. PAYMENT_INFO - Dados bancários
-  6. SUPERVISOR_REVIEW - Revisão por supervisor
-  7. CLIENT_VALIDATION - Validação pelo cliente
+  **Opcionais:**
+  - PAYMENT_INFO e CLIENT_VALIDATION estão temporariamente desabilitados na criação.
   
   ## Comportamento
   
-  - Se o profissional não existe, será criado com dados mínimos
+  - Se o profissional existir e `organization_professional_id` for informado, ele será vinculado
+  - Se o profissional não existe, `organization_professional_id` fica nulo e será preenchido no step PROFESSIONAL_DATA
   - Se já existe triagem ativa para o CPF, retorna erro 409
   - Um token de acesso público é gerado para o profissional
   

@@ -38,6 +38,34 @@ class StepType(str, Enum):
     CLIENT_VALIDATION = "CLIENT_VALIDATION"
 
 
+STEP_TYPE_METADATA: dict[StepType, dict[str, str]] = {
+    StepType.CONVERSATION: {
+        "title": "Conversa",
+        "description": "Contato inicial para confirmar interesse e alinhar expectativas.",
+    },
+    StepType.PROFESSIONAL_DATA: {
+        "title": "Dados Profissionais",
+        "description": "Coleta de informações pessoais, qualificação e especialidades.",
+    },
+    StepType.DOCUMENT_UPLOAD: {
+        "title": "Envio de Documentos",
+        "description": "Upload dos documentos obrigatórios e opcionais.",
+    },
+    StepType.DOCUMENT_REVIEW: {
+        "title": "Revisão de Documentos",
+        "description": "Análise e validação dos documentos enviados.",
+    },
+    StepType.PAYMENT_INFO: {
+        "title": "Dados de Pagamento",
+        "description": "Cadastro de informações bancárias e empresa (se PJ).",
+    },
+    StepType.CLIENT_VALIDATION: {
+        "title": "Validação do Cliente",
+        "description": "Aprovação final pelo cliente contratante.",
+    },
+}
+
+
 class SourceType(str, Enum):
     """
     Source of a professional version change.

@@ -55,8 +55,8 @@ class ListOrganizationUsersUseCase:
             organization_id=organization_id,
             filters=filters,
             sorting=sorting,
-            limit=pagination.page_size,
-            offset=(pagination.page - 1) * pagination.page_size,
+            limit=pagination.limit,
+            offset=pagination.offset,
             include_pending=include_pending,
         )
 
@@ -68,7 +68,9 @@ class ListOrganizationUsersUseCase:
             total=result.total,
             page=result.page,
             page_size=result.page_size,
-            pages=result.pages,
+            total_pages=result.total_pages,
+            has_next=result.has_next,
+            has_previous=result.has_previous,
         )
 
     async def execute_summary(
@@ -97,8 +99,8 @@ class ListOrganizationUsersUseCase:
             organization_id=organization_id,
             filters=filters,
             sorting=sorting,
-            limit=pagination.page_size,
-            offset=(pagination.page - 1) * pagination.page_size,
+            limit=pagination.limit,
+            offset=pagination.offset,
             include_pending=include_pending,
         )
 
@@ -109,5 +111,7 @@ class ListOrganizationUsersUseCase:
             total=result.total,
             page=result.page,
             page_size=result.page_size,
-            pages=result.pages,
+            total_pages=result.total_pages,
+            has_next=result.has_next,
+            has_previous=result.has_previous,
         )

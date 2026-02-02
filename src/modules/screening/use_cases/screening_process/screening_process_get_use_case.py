@@ -9,8 +9,17 @@ from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.app.exceptions import ScreeningProcessNotFoundError
+from src.modules.professionals.domain.schemas import SpecialtySummary
 from src.modules.screening.domain.schemas import ScreeningProcessDetailResponse
+from src.modules.screening.domain.schemas.screening_process import (
+    OrganizationProfessionalSummary,
+)
 from src.modules.screening.infrastructure.repositories import ScreeningProcessRepository
+from src.modules.users.domain.schemas.organization_user import UserInfo
+from src.modules.users.infrastructure.repositories import UserRepository
+from src.shared.infrastructure.repositories.specialty_repository import (
+    SpecialtyRepository,
+)
 
 
 class GetScreeningProcessUseCase:
@@ -19,6 +28,26 @@ class GetScreeningProcessUseCase:
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
         self.repository = ScreeningProcessRepository(session)
+        self.user_repository = UserRepository(session)
+        self.specialty_repository = SpecialtyRepository(session)
+
+    async def _get_user_summary(self, user_id: UUID | None) -> UserInfo | None:
+        if user_id is None:
+            return None
+        user = await self.user_repository.get_by_id(user_id)
+        if user is None:
+            return None
+        return UserInfo.model_validate(user)
+
+    async def _get_specialty_summary(
+        self, specialty_id: UUID | None
+    ) -> SpecialtySummary | None:
+        if specialty_id is None:
+            return None
+        specialty = await self.specialty_repository.get_by_id(specialty_id)
+        if specialty is None:
+            return None
+        return SpecialtySummary.model_validate(specialty)
 
     async def execute(
         self,
@@ -49,7 +78,24 @@ class GetScreeningProcessUseCase:
         if not process:
             raise ScreeningProcessNotFoundError(screening_id=str(screening_id))
 
-        return ScreeningProcessDetailResponse.model_validate(process)
+        professional_summary: OrganizationProfessionalSummary | None = None
+        if process.organization_professional:
+            professional_summary = OrganizationProfessionalSummary.model_validate(
+                process.organization_professional
+            )
+
+        response = ScreeningProcessDetailResponse.model_validate(process)
+        return response.model_copy(
+            update={
+                "professional": professional_summary,
+                "expected_specialty": await self._get_specialty_summary(
+                    process.expected_specialty_id
+                ),
+                "owner": await self._get_user_summary(process.owner_id),
+                "current_actor": await self._get_user_summary(process.current_actor_id),
+                "supervisor": await self._get_user_summary(process.supervisor_id),
+            }
+        )
 
 
 class GetScreeningProcessByTokenUseCase:
@@ -58,6 +104,26 @@ class GetScreeningProcessByTokenUseCase:
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
         self.repository = ScreeningProcessRepository(session)
+        self.user_repository = UserRepository(session)
+        self.specialty_repository = SpecialtyRepository(session)
+
+    async def _get_user_summary(self, user_id: UUID | None) -> UserInfo | None:
+        if user_id is None:
+            return None
+        user = await self.user_repository.get_by_id(user_id)
+        if user is None:
+            return None
+        return UserInfo.model_validate(user)
+
+    async def _get_specialty_summary(
+        self, specialty_id: UUID | None
+    ) -> SpecialtySummary | None:
+        if specialty_id is None:
+            return None
+        specialty = await self.specialty_repository.get_by_id(specialty_id)
+        if specialty is None:
+            return None
+        return SpecialtySummary.model_validate(specialty)
 
     async def execute(
         self,
@@ -80,4 +146,21 @@ class GetScreeningProcessByTokenUseCase:
         if not process:
             raise ScreeningProcessNotFoundError(screening_id="token")
 
-        return ScreeningProcessDetailResponse.model_validate(process)
+        professional_summary: OrganizationProfessionalSummary | None = None
+        if process.organization_professional:
+            professional_summary = OrganizationProfessionalSummary.model_validate(
+                process.organization_professional
+            )
+
+        response = ScreeningProcessDetailResponse.model_validate(process)
+        return response.model_copy(
+            update={
+                "professional": professional_summary,
+                "expected_specialty": await self._get_specialty_summary(
+                    process.expected_specialty_id
+                ),
+                "owner": await self._get_user_summary(process.owner_id),
+                "current_actor": await self._get_user_summary(process.current_actor_id),
+                "supervisor": await self._get_user_summary(process.supervisor_id),
+            }
+        )

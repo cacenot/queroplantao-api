@@ -14,6 +14,10 @@ headers {
   X-Organization-ID: {{organizationId}}
 }
 
+vars:pre-request {
+  screeningId: 019c1c16-6611-7279-a706-1cac59fa85dc
+}
+
 docs {
   # Obter Triagem
   
@@ -23,6 +27,12 @@ docs {
   
   Inclui:
   - Dados do profissional (CPF, nome, telefone, email)
+  - `professional`: Summary do profissional vinculado
+    - `id`, `full_name`, `cpf`, `phone`, `email`, `avatar_url`
+  - `expected_specialty`: Summary da especialidade esperada
+    - `id`, `name`
+  - `owner`, `current_actor`, `supervisor`: Summary do usuário
+    - `id`, `email`, `full_name`, `avatar_url`, `is_active`
   - Status atual do processo
   - Lista de steps com resumo:
     - `id`: UUID do step
