@@ -3,7 +3,7 @@
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID
 
-from sqlalchemy import Enum as SAEnum
+from sqlalchemy import Column, Enum as SAEnum, ForeignKey
 from sqlalchemy import Index, UniqueConstraint, text
 from sqlmodel import Field, Relationship
 
@@ -11,7 +11,6 @@ from src.modules.professionals.domain.models.enums import CouncilType, Professio
 from src.shared.domain.models import (
     BaseModel,
     PrimaryKeyMixin,
-    SoftDeleteMixin,
     TimestampMixin,
     VerificationMixin,
 )
@@ -70,7 +69,6 @@ class ProfessionalQualification(
     VerificationMixin,
     PrimaryKeyMixin,
     TimestampMixin,
-    SoftDeleteMixin,
     table=True,
 ):
     """
@@ -99,7 +97,7 @@ class ProfessionalQualification(
             "professional_type",
             name="uq_professional_qualifications_org_professional_type",
         ),
-        # Unique council registration per organization (when not soft-deleted)
+        # Unique council registration per organization
         # The same professional can exist in multiple organizations
         Index(
             "uq_professional_qualifications_council_org",
@@ -107,7 +105,6 @@ class ProfessionalQualification(
             "council_number",
             "council_state",
             unique=True,
-            postgresql_where=text("deleted_at IS NULL"),
         ),
         # GIN trigram index for council number search
         Index(
@@ -115,27 +112,23 @@ class ProfessionalQualification(
             text("lower(council_number)"),
             postgresql_using="gin",
             postgresql_ops={"": "gin_trgm_ops"},
-            postgresql_where=text("deleted_at IS NULL"),
         ),
         # B-tree index for professional type filtering
         Index(
             "idx_professional_qualifications_type",
             "professional_type",
-            postgresql_where=text("deleted_at IS NULL"),
         ),
         # B-tree index for council type + state filtering
         Index(
             "idx_professional_qualifications_council",
             "council_type",
             "council_state",
-            postgresql_where=text("deleted_at IS NULL"),
         ),
         # B-tree composite index for org + type filtering
         Index(
             "idx_professional_qualifications_org_type",
             "organization_id",
             "professional_type",
-            postgresql_where=text("deleted_at IS NULL"),
         ),
     )
 
@@ -147,8 +140,10 @@ class ProfessionalQualification(
     )
 
     organization_professional_id: UUID = Field(
-        foreign_key="organization_professionals.id",
-        nullable=False,
+        sa_column=Column(
+            ForeignKey("organization_professionals.id", ondelete="CASCADE"),
+            nullable=False,
+        ),
         description="Organization professional ID",
     )
 
@@ -158,13 +153,16 @@ class ProfessionalQualification(
         back_populates="qualifications"
     )
     specialties: list["ProfessionalSpecialty"] = Relationship(
-        back_populates="qualification"
+        back_populates="qualification",
+        sa_relationship_kwargs={"cascade": "all, delete-orphan"},
     )
     educations: list["ProfessionalEducation"] = Relationship(
-        back_populates="qualification"
+        back_populates="qualification",
+        sa_relationship_kwargs={"cascade": "all, delete-orphan"},
     )
     documents: list["ProfessionalDocument"] = Relationship(
-        back_populates="qualification"
+        back_populates="qualification",
+        sa_relationship_kwargs={"cascade": "all, delete-orphan"},
     )
 
     @property

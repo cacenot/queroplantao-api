@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Optional
 from uuid import UUID
 
 from pydantic import AwareDatetime
-from sqlalchemy import Enum as SAEnum, Index, text
+from sqlalchemy import Column, Enum as SAEnum, ForeignKey, Index, text
 from sqlmodel import Field, Relationship
 
 from src.modules.professionals.domain.models.enums import DocumentSourceType
@@ -160,14 +160,18 @@ class ProfessionalDocument(
     # Optional links for QUALIFICATION and SPECIALTY category documents
     qualification_id: Optional[UUID] = Field(
         default=None,
-        foreign_key="professional_qualifications.id",
-        nullable=True,
+        sa_column=Column(
+            ForeignKey("professional_qualifications.id", ondelete="CASCADE"),
+            nullable=True,
+        ),
         description="Professional qualification ID (for QUALIFICATION category)",
     )
     specialty_id: Optional[UUID] = Field(
         default=None,
-        foreign_key="professional_specialties.id",
-        nullable=True,
+        sa_column=Column(
+            ForeignKey("professional_specialties.id", ondelete="CASCADE"),
+            nullable=True,
+        ),
         description="Professional specialty ID (for SPECIALTY category)",
     )
 

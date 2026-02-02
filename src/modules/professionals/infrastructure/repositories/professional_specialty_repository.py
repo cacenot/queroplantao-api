@@ -9,18 +9,16 @@ from sqlalchemy.orm import selectinload
 from src.modules.professionals.domain.models import ProfessionalSpecialty
 from src.shared.infrastructure.repositories import (
     BaseRepository,
-    SoftDeleteMixin,
 )
 
 
 class ProfessionalSpecialtyRepository(
-    SoftDeleteMixin[ProfessionalSpecialty],
     BaseRepository[ProfessionalSpecialty],
 ):
     """
     Repository for ProfessionalSpecialty model.
 
-    Provides CRUD operations with soft delete support.
+    Provides CRUD operations.
     """
 
     model = ProfessionalSpecialty

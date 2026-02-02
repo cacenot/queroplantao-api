@@ -391,11 +391,8 @@ class UpdateOrganizationProfessionalCompositeUseCase:
         return specialty
 
     async def _soft_delete_specialty(self, specialty_id: UUID) -> None:
-        """Soft delete a specialty."""
-        specialty = await self.specialty_repository.get_by_id(specialty_id)
-        if specialty:
-            specialty.deleted_at = datetime.now(timezone.utc)
-            await self.session.flush()
+        """Delete a specialty."""
+        await self.specialty_repository.delete(specialty_id)
 
     async def _handle_educations_update(
         self,
@@ -509,8 +506,5 @@ class UpdateOrganizationProfessionalCompositeUseCase:
         return education
 
     async def _soft_delete_education(self, education_id: UUID) -> None:
-        """Soft delete an education."""
-        education = await self.education_repository.get_by_id(education_id)
-        if education:
-            education.deleted_at = datetime.now(timezone.utc)
-            await self.session.flush()
+        """Delete an education."""
+        await self.education_repository.delete(education_id)

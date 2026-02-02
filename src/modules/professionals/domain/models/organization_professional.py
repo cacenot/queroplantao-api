@@ -164,7 +164,8 @@ class OrganizationProfessional(
     # Relationships
     organization: "Organization" = Relationship(back_populates="professionals")
     qualifications: list["ProfessionalQualification"] = Relationship(
-        back_populates="professional"
+        back_populates="professional",
+        sa_relationship_kwargs={"cascade": "all, delete-orphan"},
     )
     documents: list["ProfessionalDocument"] = Relationship(
         back_populates="professional"

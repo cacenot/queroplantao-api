@@ -3,7 +3,7 @@
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID
 
-from sqlalchemy import Enum as SAEnum
+from sqlalchemy import Column, Enum as SAEnum, ForeignKey
 from sqlalchemy import UniqueConstraint
 from sqlmodel import Field, Relationship
 
@@ -11,7 +11,6 @@ from src.modules.professionals.domain.models.enums import ResidencyStatus
 from src.shared.domain.models import (
     BaseModel,
     PrimaryKeyMixin,
-    SoftDeleteMixin,
     TimestampMixin,
     VerificationMixin,
 )
@@ -77,7 +76,6 @@ class ProfessionalSpecialty(
     VerificationMixin,
     PrimaryKeyMixin,
     TimestampMixin,
-    SoftDeleteMixin,
     table=True,
 ):
     """
@@ -99,8 +97,10 @@ class ProfessionalSpecialty(
     )
 
     qualification_id: UUID = Field(
-        foreign_key="professional_qualifications.id",
-        nullable=False,
+        sa_column=Column(
+            ForeignKey("professional_qualifications.id", ondelete="CASCADE"),
+            nullable=False,
+        ),
         description="Professional qualification ID",
     )
     specialty_id: UUID = Field(
@@ -114,4 +114,7 @@ class ProfessionalSpecialty(
         back_populates="specialties"
     )
     specialty: "Specialty" = Relationship(back_populates="professionals")
-    documents: list["ProfessionalDocument"] = Relationship(back_populates="specialty")
+    documents: list["ProfessionalDocument"] = Relationship(
+        back_populates="specialty",
+        sa_relationship_kwargs={"cascade": "all, delete-orphan"},
+    )

@@ -3,14 +3,13 @@
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID
 
-from sqlalchemy import Enum as SAEnum, Index, text
+from sqlalchemy import Column, Enum as SAEnum, ForeignKey, Index, text
 from sqlmodel import Field, Relationship
 
 from src.modules.professionals.domain.models.enums import EducationLevel
 from src.shared.domain.models import (
     BaseModel,
     PrimaryKeyMixin,
-    SoftDeleteMixin,
     TimestampMixin,
     VerificationMixin,
 )
@@ -68,7 +67,6 @@ class ProfessionalEducation(
     VerificationMixin,
     PrimaryKeyMixin,
     TimestampMixin,
-    SoftDeleteMixin,
     table=True,
 ):
     """
@@ -93,25 +91,21 @@ class ProfessionalEducation(
             ),
             postgresql_using="gin",
             postgresql_ops={"": "gin_trgm_ops"},
-            postgresql_where=text("deleted_at IS NULL"),
         ),
         # B-tree index for organization scope
         Index(
             "idx_professional_educations_org",
             "organization_id",
-            postgresql_where=text("deleted_at IS NULL"),
         ),
         # B-tree index for level filtering
         Index(
             "idx_professional_educations_level",
             "level",
-            postgresql_where=text("deleted_at IS NULL"),
         ),
         # B-tree index for is_completed filtering
         Index(
             "idx_professional_educations_completed",
             "is_completed",
-            postgresql_where=text("deleted_at IS NULL"),
         ),
     )
 
@@ -122,8 +116,10 @@ class ProfessionalEducation(
     )
 
     qualification_id: UUID = Field(
-        foreign_key="professional_qualifications.id",
-        nullable=False,
+        sa_column=Column(
+            ForeignKey("professional_qualifications.id", ondelete="CASCADE"),
+            nullable=False,
+        ),
         description="Professional qualification ID",
     )
 

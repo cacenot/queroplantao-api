@@ -246,13 +246,11 @@ class OrganizationProfessionalRepository(
             and filters.professional_type
             and filters.professional_type.is_active()
         ):
-            subquery = (
-                select(ProfessionalQualification.organization_professional_id)
-                .where(ProfessionalQualification.deleted_at.is_(None))
-                .where(
-                    ProfessionalQualification.professional_type.in_(
-                        filters.professional_type.values
-                    )
+            subquery = select(
+                ProfessionalQualification.organization_professional_id
+            ).where(
+                ProfessionalQualification.professional_type.in_(
+                    filters.professional_type.values
                 )
             )
             query = query.where(OrganizationProfessional.id.in_(subquery))
@@ -309,13 +307,11 @@ class OrganizationProfessionalRepository(
             and filters.professional_type
             and filters.professional_type.is_active()
         ):
-            subquery = (
-                select(ProfessionalQualification.organization_professional_id)
-                .where(ProfessionalQualification.deleted_at.is_(None))
-                .where(
-                    ProfessionalQualification.professional_type.in_(
-                        filters.professional_type.values
-                    )
+            subquery = select(
+                ProfessionalQualification.organization_professional_id
+            ).where(
+                ProfessionalQualification.professional_type.in_(
+                    filters.professional_type.values
                 )
             )
             query = query.where(OrganizationProfessional.id.in_(subquery))
@@ -335,7 +331,6 @@ class OrganizationProfessionalRepository(
             # Load primary qualification with only needed columns
             selectinload(
                 OrganizationProfessional.qualifications.and_(
-                    ProfessionalQualification.deleted_at.is_(None),
                     ProfessionalQualification.is_primary.is_(True),
                 )
             )
@@ -346,11 +341,7 @@ class OrganizationProfessionalRepository(
                 ProfessionalQualification.council_number,
                 ProfessionalQualification.council_state,
             )
-            .selectinload(
-                ProfessionalQualification.specialties.and_(
-                    ProfessionalSpecialty.deleted_at.is_(None)
-                )
-            )
+            .selectinload(ProfessionalQualification.specialties)
             .load_only(ProfessionalSpecialty.id, ProfessionalSpecialty.specialty_id)
             .selectinload(ProfessionalSpecialty.specialty)
             .load_only(Specialty.id, Specialty.name),

@@ -20,19 +20,17 @@ from src.shared.infrastructure.repositories import (
     BaseRepository,
     OrganizationScopeMixin,
     ScopePolicy,
-    SoftDeleteMixin,
 )
 
 
 class ProfessionalQualificationRepository(
     OrganizationScopeMixin[ProfessionalQualification],
-    SoftDeleteMixin[ProfessionalQualification],
     BaseRepository[ProfessionalQualification],
 ):
     """
     Repository for ProfessionalQualification model.
 
-    Provides CRUD operations with soft delete support and multi-tenancy filtering.
+    Provides CRUD operations with multi-tenancy filtering.
     """
 
     model = ProfessionalQualification

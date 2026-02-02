@@ -208,7 +208,6 @@ class CompleteProfessionalDataStepUseCase:
                 == professional_id
             )
             .where(ProfessionalQualification.organization_id == organization_id)
-            .where(ProfessionalQualification.deleted_at.is_(None))
             .options(
                 selectinload(ProfessionalQualification.specialties),
                 selectinload(ProfessionalQualification.educations),

@@ -8,18 +8,16 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.modules.professionals.domain.models import ProfessionalEducation
 from src.shared.infrastructure.repositories import (
     BaseRepository,
-    SoftDeleteMixin,
 )
 
 
 class ProfessionalEducationRepository(
-    SoftDeleteMixin[ProfessionalEducation],
     BaseRepository[ProfessionalEducation],
 ):
     """
     Repository for ProfessionalEducation model.
 
-    Provides CRUD operations with soft delete support.
+    Provides CRUD operations.
     """
 
     model = ProfessionalEducation

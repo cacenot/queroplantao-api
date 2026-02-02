@@ -53,7 +53,7 @@ class QualificationSyncService:
     - Match by council_type + council_number + council_state (natural key)
     - If match found: update existing qualification
     - If no match: create new qualification
-    - Existing qualifications not in snapshot: soft delete
+    - Existing qualifications not in snapshot: delete
     """
 
     def __init__(self, session: AsyncSession) -> None:
@@ -145,10 +145,10 @@ class QualificationSyncService:
                 )
                 result.append(new_qual)
 
-        # Soft delete qualifications not in snapshot
+        # Delete qualifications not in snapshot
         for qual in existing_qualifications:
             if qual.id not in matched_ids:
-                await self._soft_delete_qualification(qual)
+                await self._delete_qualification(qual)
 
         await self.session.flush()
         return result
@@ -159,7 +159,7 @@ class QualificationSyncService:
     ) -> list[ProfessionalQualification]:
         """Get all existing qualifications for a professional."""
         filters = ProfessionalQualificationFilter(
-            organization_professional_id=ListFilter(values=[professional_id])
+            organization_professional_id=UUIDListFilter(values=[professional_id])
         )
         paginated = await self.qualification_repository.list(
             filters=filters,
@@ -237,23 +237,12 @@ class QualificationSyncService:
 
         return qualification
 
-    async def _soft_delete_qualification(
+    async def _delete_qualification(
         self,
         qualification: ProfessionalQualification,
     ) -> None:
-        """Soft delete a qualification and its nested entities."""
-        qualification.deleted_at = datetime.now(timezone.utc)
-
-        # Also soft delete nested entities
-        existing_specialties = await self._get_existing_specialties(qualification.id)
-        for specialty in existing_specialties:
-            specialty.deleted_at = datetime.now(timezone.utc)
-
-        existing_educations = await self._get_existing_educations(qualification.id)
-        for education in existing_educations:
-            education.deleted_at = datetime.now(timezone.utc)
-
-        await self.session.flush()
+        """Delete a qualification and rely on cascade for nested entities."""
+        await self.qualification_repository.delete(qualification.id)
 
     # =========================================================================
     # Specialties Sync
@@ -272,7 +261,7 @@ class QualificationSyncService:
         - Match by specialty_id (reference to global specialty)
         - If match found: update existing
         - If no match: create new
-        - Existing not in snapshot: soft delete
+        - Existing not in snapshot: delete
         """
         existing_specialties = await self._get_existing_specialties(qualification_id)
 
@@ -323,12 +312,10 @@ class QualificationSyncService:
                 )
                 result.append(new_spec)
 
-        # Soft delete specialties not in snapshot
+        # Delete specialties not in snapshot
         for spec in existing_specialties:
             if spec.id not in matched_ids:
-                spec.deleted_at = datetime.now(timezone.utc)
-
-        await self.session.flush()
+                await self.specialty_repository.delete(spec.id)
         return result
 
     async def _get_existing_specialties(
@@ -422,7 +409,7 @@ class QualificationSyncService:
         - Match by (level, course_name, institution) as natural key
         - If match found: update existing
         - If no match: create new
-        - Existing not in snapshot: soft delete
+        - Existing not in snapshot: delete
         """
         existing_educations = await self._get_existing_educations(qualification_id)
 
@@ -476,12 +463,10 @@ class QualificationSyncService:
                 )
                 result.append(new_edu)
 
-        # Soft delete educations not in snapshot
+        # Delete educations not in snapshot
         for edu in existing_educations:
             if edu.id not in matched_ids:
-                edu.deleted_at = datetime.now(timezone.utc)
-
-        await self.session.flush()
+                await self.education_repository.delete(edu.id)
         return result
 
     async def _get_existing_educations(
