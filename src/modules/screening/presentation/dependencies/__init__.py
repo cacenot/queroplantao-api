@@ -3,6 +3,7 @@
 from src.modules.screening.presentation.dependencies.screening import (
     CancelScreeningProcessUC,
     CreateScreeningProcessUC,
+    DeleteScreeningProcessUC,
     FinalizeScreeningProcessUC,
     GetScreeningProcessByTokenUC,
     GetScreeningProcessUC,
@@ -44,6 +45,7 @@ from src.modules.screening.presentation.dependencies.screening_step import (
 __all__ = [
     "CancelScreeningProcessUC",
     "CreateScreeningProcessUC",
+    "DeleteScreeningProcessUC",
     "FinalizeScreeningProcessUC",
     "GetScreeningProcessByTokenUC",
     "GetScreeningProcessUC",

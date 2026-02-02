@@ -8,6 +8,7 @@ from src.app.dependencies import SessionDep
 from src.modules.screening.use_cases import (
     CancelScreeningProcessUseCase,
     CreateScreeningProcessUseCase,
+    DeleteScreeningProcessUseCase,
     FinalizeScreeningProcessUseCase,
     GetScreeningProcessByTokenUseCase,
     GetScreeningProcessUseCase,
@@ -59,6 +60,12 @@ def get_cancel_screening_process_use_case(
     return CancelScreeningProcessUseCase(session)
 
 
+def get_delete_screening_process_use_case(
+    session: SessionDep,
+) -> DeleteScreeningProcessUseCase:
+    return DeleteScreeningProcessUseCase(session)
+
+
 def get_finalize_screening_process_use_case(
     session: SessionDep,
 ) -> FinalizeScreeningProcessUseCase:
@@ -91,6 +98,9 @@ ListScreeningProcessesUC = Annotated[
 ]
 CancelScreeningProcessUC = Annotated[
     CancelScreeningProcessUseCase, Depends(get_cancel_screening_process_use_case)
+]
+DeleteScreeningProcessUC = Annotated[
+    DeleteScreeningProcessUseCase, Depends(get_delete_screening_process_use_case)
 ]
 FinalizeScreeningProcessUC = Annotated[
     FinalizeScreeningProcessUseCase, Depends(get_finalize_screening_process_use_case)

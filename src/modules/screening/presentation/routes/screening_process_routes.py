@@ -23,6 +23,7 @@ from src.modules.screening.infrastructure.filters import (
 from src.modules.screening.presentation.dependencies import (
     CancelScreeningProcessUC,
     CreateScreeningProcessUC,
+    DeleteScreeningProcessUC,
     FinalizeScreeningProcessUC,
     GetScreeningProcessUC,
     ListScreeningProcessesUC,
@@ -170,6 +171,45 @@ async def get_screening_process(
     return await use_case.execute(
         organization_id=ctx.organization,
         screening_id=screening_id,
+        family_org_ids=ctx.family_org_ids,
+    )
+
+
+@router.delete(
+    "/{screening_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Excluir triagem",
+    description="Remove um processo de triagem (soft delete).",
+    responses={
+        404: {
+            "model": ErrorResponse,
+            "description": "Não encontrado",
+            "content": {
+                "application/json": {
+                    "examples": {
+                        "not_found": {
+                            "summary": "Triagem não encontrada",
+                            "value": {
+                                "code": ScreeningErrorCodes.SCREENING_PROCESS_NOT_FOUND,
+                                "message": "Processo de triagem não encontrado",
+                            },
+                        },
+                    }
+                }
+            },
+        },
+    },
+)
+async def delete_screening_process(
+    screening_id: UUID,
+    ctx: OrganizationContext,
+    use_case: DeleteScreeningProcessUC,
+) -> None:
+    """Soft delete a screening process."""
+    await use_case.execute(
+        organization_id=ctx.organization,
+        screening_id=screening_id,
+        deleted_by=ctx.user,
         family_org_ids=ctx.family_org_ids,
     )
 

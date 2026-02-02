@@ -1,0 +1,31 @@
+meta {
+  name: Delete Screening
+  type: http
+  seq: 6
+}
+
+delete {
+  url: {{baseUrl}}/api/v1/screenings/{{screeningId}}
+  body: none
+  auth: inherit
+}
+
+headers {
+  X-Organization-ID: {{organizationId}}
+}
+
+vars:pre-request {
+  screeningId: 019c09bf-ea52-7794-ab0e-1b5d8be86d96
+}
+
+docs {
+  # Excluir Triagem
+  
+  Remove um processo de triagem (soft delete).
+  
+  ## Error Codes
+  
+  | Status | Code | Descrição |
+  |--------|------|-----------|
+  | 404 | `SCREENING_PROCESS_NOT_FOUND` | Triagem não encontrada |
+}

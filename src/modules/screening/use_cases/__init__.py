@@ -12,6 +12,7 @@ from src.modules.screening.use_cases.screening_alert import (
 from src.modules.screening.use_cases.screening_process import (
     CancelScreeningProcessUseCase,
     CreateScreeningProcessUseCase,
+    DeleteScreeningProcessUseCase,
     FinalizeScreeningProcessUseCase,
     GetScreeningProcessByTokenUseCase,
     GetScreeningProcessUseCase,
@@ -54,6 +55,7 @@ __all__ = [
     # Process
     "CancelScreeningProcessUseCase",
     "CreateScreeningProcessUseCase",
+    "DeleteScreeningProcessUseCase",
     "FinalizeScreeningProcessUseCase",
     "GetScreeningProcessByTokenUseCase",
     "GetScreeningProcessUseCase",
