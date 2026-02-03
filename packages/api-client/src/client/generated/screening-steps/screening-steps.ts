@@ -5,20 +5,31 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import type {
+  DataTag,
+  DefinedInitialDataOptions,
+  DefinedUseQueryResult,
   MutationFunction,
   QueryClient,
+  QueryFunction,
+  QueryKey,
+  UndefinedInitialDataOptions,
   UseMutationOptions,
   UseMutationResult,
+  UseQueryOptions,
+  UseQueryResult,
 } from "@tanstack/react-query";
 
 import type {
   ConversationStepCompleteRequest,
   ConversationStepResponse,
   DocumentReviewStepCompleteRequest,
+  DocumentReviewStepResponse,
   DocumentUploadStepCompleteRequest,
+  DocumentUploadStepResponse,
   ErrorResponse,
+  HTTPValidationError,
   ProfessionalDataStepCompleteRequest,
   ProfessionalDataStepResponse,
   ScreeningProcessStepResponse,
@@ -400,6 +411,310 @@ export const useCompleteProfessionalDataStepApiV1ScreeningsScreeningIdStepsProfe
     return useMutation(mutationOptions, queryClient);
   };
 /**
+ * Retorna os detalhes da etapa de upload de documentos, incluindo todos os documentos
+configurados e seus status.
+
+**Informações retornadas:**
+- Status da etapa (PENDING, IN_PROGRESS, COMPLETED, etc.)
+- Configuração: se a etapa foi configurada
+- Contadores: total de documentos, obrigatórios, enviados
+- Progresso do upload
+- Lista de documentos com seus tipos e status
+
+**Validações:**
+- Processo deve existir e pertencer à organização atual
+- Etapa de upload de documentos deve existir para o processo
+ * @summary Obter detalhes da etapa de upload de documentos
+ */
+export type getDocumentUploadStepApiV1ScreeningsScreeningIdStepsDocumentUploadGetResponse200 =
+  {
+    data: DocumentUploadStepResponse;
+    status: 200;
+  };
+
+export type getDocumentUploadStepApiV1ScreeningsScreeningIdStepsDocumentUploadGetResponse404 =
+  {
+    data: ErrorResponse;
+    status: 404;
+  };
+
+export type getDocumentUploadStepApiV1ScreeningsScreeningIdStepsDocumentUploadGetResponse422 =
+  {
+    data: HTTPValidationError;
+    status: 422;
+  };
+
+export type getDocumentUploadStepApiV1ScreeningsScreeningIdStepsDocumentUploadGetResponseSuccess =
+  getDocumentUploadStepApiV1ScreeningsScreeningIdStepsDocumentUploadGetResponse200 & {
+    headers: Headers;
+  };
+export type getDocumentUploadStepApiV1ScreeningsScreeningIdStepsDocumentUploadGetResponseError =
+  (
+    | getDocumentUploadStepApiV1ScreeningsScreeningIdStepsDocumentUploadGetResponse404
+    | getDocumentUploadStepApiV1ScreeningsScreeningIdStepsDocumentUploadGetResponse422
+  ) & {
+    headers: Headers;
+  };
+
+export type getDocumentUploadStepApiV1ScreeningsScreeningIdStepsDocumentUploadGetResponse =
+
+    | getDocumentUploadStepApiV1ScreeningsScreeningIdStepsDocumentUploadGetResponseSuccess
+    | getDocumentUploadStepApiV1ScreeningsScreeningIdStepsDocumentUploadGetResponseError;
+
+export const getGetDocumentUploadStepApiV1ScreeningsScreeningIdStepsDocumentUploadGetUrl =
+  (screeningId: string) => {
+    return `/api/v1/screenings/${screeningId}/steps/document-upload`;
+  };
+
+export const getDocumentUploadStepApiV1ScreeningsScreeningIdStepsDocumentUploadGet =
+  async (
+    screeningId: string,
+    options?: RequestInit,
+  ): Promise<getDocumentUploadStepApiV1ScreeningsScreeningIdStepsDocumentUploadGetResponse> => {
+    return customFetch<getDocumentUploadStepApiV1ScreeningsScreeningIdStepsDocumentUploadGetResponse>(
+      getGetDocumentUploadStepApiV1ScreeningsScreeningIdStepsDocumentUploadGetUrl(
+        screeningId,
+      ),
+      {
+        ...options,
+        method: "GET",
+      },
+    );
+  };
+
+export const getGetDocumentUploadStepApiV1ScreeningsScreeningIdStepsDocumentUploadGetQueryKey =
+  (screeningId?: string) => {
+    return [`/api/v1/screenings/${screeningId}/steps/document-upload`] as const;
+  };
+
+export const getGetDocumentUploadStepApiV1ScreeningsScreeningIdStepsDocumentUploadGetQueryOptions =
+  <
+    TData = Awaited<
+      ReturnType<
+        typeof getDocumentUploadStepApiV1ScreeningsScreeningIdStepsDocumentUploadGet
+      >
+    >,
+    TError = ErrorResponse | HTTPValidationError,
+  >(
+    screeningId: string,
+    options?: {
+      query?: Partial<
+        UseQueryOptions<
+          Awaited<
+            ReturnType<
+              typeof getDocumentUploadStepApiV1ScreeningsScreeningIdStepsDocumentUploadGet
+            >
+          >,
+          TError,
+          TData
+        >
+      >;
+      request?: SecondParameter<typeof customFetch>;
+    },
+  ) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
+
+    const queryKey =
+      queryOptions?.queryKey ??
+      getGetDocumentUploadStepApiV1ScreeningsScreeningIdStepsDocumentUploadGetQueryKey(
+        screeningId,
+      );
+
+    const queryFn: QueryFunction<
+      Awaited<
+        ReturnType<
+          typeof getDocumentUploadStepApiV1ScreeningsScreeningIdStepsDocumentUploadGet
+        >
+      >
+    > = ({ signal }) =>
+      getDocumentUploadStepApiV1ScreeningsScreeningIdStepsDocumentUploadGet(
+        screeningId,
+        { signal, ...requestOptions },
+      );
+
+    return {
+      queryKey,
+      queryFn,
+      enabled: !!screeningId,
+      staleTime: 30000,
+      ...queryOptions,
+    } as UseQueryOptions<
+      Awaited<
+        ReturnType<
+          typeof getDocumentUploadStepApiV1ScreeningsScreeningIdStepsDocumentUploadGet
+        >
+      >,
+      TError,
+      TData
+    > & { queryKey: DataTag<QueryKey, TData> };
+  };
+
+export type GetDocumentUploadStepApiV1ScreeningsScreeningIdStepsDocumentUploadGetQueryResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof getDocumentUploadStepApiV1ScreeningsScreeningIdStepsDocumentUploadGet
+      >
+    >
+  >;
+export type GetDocumentUploadStepApiV1ScreeningsScreeningIdStepsDocumentUploadGetQueryError =
+  ErrorResponse | HTTPValidationError;
+
+export function useGetDocumentUploadStepApiV1ScreeningsScreeningIdStepsDocumentUploadGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getDocumentUploadStepApiV1ScreeningsScreeningIdStepsDocumentUploadGet
+    >
+  >,
+  TError = ErrorResponse | HTTPValidationError,
+>(
+  screeningId: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getDocumentUploadStepApiV1ScreeningsScreeningIdStepsDocumentUploadGet
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<
+            ReturnType<
+              typeof getDocumentUploadStepApiV1ScreeningsScreeningIdStepsDocumentUploadGet
+            >
+          >,
+          TError,
+          Awaited<
+            ReturnType<
+              typeof getDocumentUploadStepApiV1ScreeningsScreeningIdStepsDocumentUploadGet
+            >
+          >
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData>;
+};
+export function useGetDocumentUploadStepApiV1ScreeningsScreeningIdStepsDocumentUploadGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getDocumentUploadStepApiV1ScreeningsScreeningIdStepsDocumentUploadGet
+    >
+  >,
+  TError = ErrorResponse | HTTPValidationError,
+>(
+  screeningId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getDocumentUploadStepApiV1ScreeningsScreeningIdStepsDocumentUploadGet
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<
+            ReturnType<
+              typeof getDocumentUploadStepApiV1ScreeningsScreeningIdStepsDocumentUploadGet
+            >
+          >,
+          TError,
+          Awaited<
+            ReturnType<
+              typeof getDocumentUploadStepApiV1ScreeningsScreeningIdStepsDocumentUploadGet
+            >
+          >
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
+export function useGetDocumentUploadStepApiV1ScreeningsScreeningIdStepsDocumentUploadGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getDocumentUploadStepApiV1ScreeningsScreeningIdStepsDocumentUploadGet
+    >
+  >,
+  TError = ErrorResponse | HTTPValidationError,
+>(
+  screeningId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getDocumentUploadStepApiV1ScreeningsScreeningIdStepsDocumentUploadGet
+          >
+        >,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
+/**
+ * @summary Obter detalhes da etapa de upload de documentos
+ */
+
+export function useGetDocumentUploadStepApiV1ScreeningsScreeningIdStepsDocumentUploadGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getDocumentUploadStepApiV1ScreeningsScreeningIdStepsDocumentUploadGet
+    >
+  >,
+  TError = ErrorResponse | HTTPValidationError,
+>(
+  screeningId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getDocumentUploadStepApiV1ScreeningsScreeningIdStepsDocumentUploadGet
+          >
+        >,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+  const queryOptions =
+    getGetDocumentUploadStepApiV1ScreeningsScreeningIdStepsDocumentUploadGetQueryOptions(
+      screeningId,
+      options,
+    );
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+/**
  * Finaliza a etapa de upload de documentos.
  * @summary Finalizar etapa de upload de documentos
  */
@@ -588,6 +903,309 @@ export const useCompleteDocumentUploadStepApiV1ScreeningsScreeningIdStepsStepIdD
 
     return useMutation(mutationOptions, queryClient);
   };
+/**
+ * Retorna os detalhes da etapa de revisão de documentos, incluindo todos os documentos
+para revisão e seus status.
+
+**Informações retornadas:**
+- Status da etapa (PENDING, IN_PROGRESS, COMPLETED, APPROVED, etc.)
+- Contadores: total para revisar, revisados, aprovados, com correção necessária
+- Progresso da revisão
+- Lista de documentos com informações de upload e revisão
+
+**Validações:**
+- Processo deve existir e pertencer à organização atual
+- Etapa de revisão de documentos deve existir para o processo
+ * @summary Obter detalhes da etapa de revisão de documentos
+ */
+export type getDocumentReviewStepApiV1ScreeningsScreeningIdStepsDocumentReviewGetResponse200 =
+  {
+    data: DocumentReviewStepResponse;
+    status: 200;
+  };
+
+export type getDocumentReviewStepApiV1ScreeningsScreeningIdStepsDocumentReviewGetResponse404 =
+  {
+    data: ErrorResponse;
+    status: 404;
+  };
+
+export type getDocumentReviewStepApiV1ScreeningsScreeningIdStepsDocumentReviewGetResponse422 =
+  {
+    data: HTTPValidationError;
+    status: 422;
+  };
+
+export type getDocumentReviewStepApiV1ScreeningsScreeningIdStepsDocumentReviewGetResponseSuccess =
+  getDocumentReviewStepApiV1ScreeningsScreeningIdStepsDocumentReviewGetResponse200 & {
+    headers: Headers;
+  };
+export type getDocumentReviewStepApiV1ScreeningsScreeningIdStepsDocumentReviewGetResponseError =
+  (
+    | getDocumentReviewStepApiV1ScreeningsScreeningIdStepsDocumentReviewGetResponse404
+    | getDocumentReviewStepApiV1ScreeningsScreeningIdStepsDocumentReviewGetResponse422
+  ) & {
+    headers: Headers;
+  };
+
+export type getDocumentReviewStepApiV1ScreeningsScreeningIdStepsDocumentReviewGetResponse =
+
+    | getDocumentReviewStepApiV1ScreeningsScreeningIdStepsDocumentReviewGetResponseSuccess
+    | getDocumentReviewStepApiV1ScreeningsScreeningIdStepsDocumentReviewGetResponseError;
+
+export const getGetDocumentReviewStepApiV1ScreeningsScreeningIdStepsDocumentReviewGetUrl =
+  (screeningId: string) => {
+    return `/api/v1/screenings/${screeningId}/steps/document-review`;
+  };
+
+export const getDocumentReviewStepApiV1ScreeningsScreeningIdStepsDocumentReviewGet =
+  async (
+    screeningId: string,
+    options?: RequestInit,
+  ): Promise<getDocumentReviewStepApiV1ScreeningsScreeningIdStepsDocumentReviewGetResponse> => {
+    return customFetch<getDocumentReviewStepApiV1ScreeningsScreeningIdStepsDocumentReviewGetResponse>(
+      getGetDocumentReviewStepApiV1ScreeningsScreeningIdStepsDocumentReviewGetUrl(
+        screeningId,
+      ),
+      {
+        ...options,
+        method: "GET",
+      },
+    );
+  };
+
+export const getGetDocumentReviewStepApiV1ScreeningsScreeningIdStepsDocumentReviewGetQueryKey =
+  (screeningId?: string) => {
+    return [`/api/v1/screenings/${screeningId}/steps/document-review`] as const;
+  };
+
+export const getGetDocumentReviewStepApiV1ScreeningsScreeningIdStepsDocumentReviewGetQueryOptions =
+  <
+    TData = Awaited<
+      ReturnType<
+        typeof getDocumentReviewStepApiV1ScreeningsScreeningIdStepsDocumentReviewGet
+      >
+    >,
+    TError = ErrorResponse | HTTPValidationError,
+  >(
+    screeningId: string,
+    options?: {
+      query?: Partial<
+        UseQueryOptions<
+          Awaited<
+            ReturnType<
+              typeof getDocumentReviewStepApiV1ScreeningsScreeningIdStepsDocumentReviewGet
+            >
+          >,
+          TError,
+          TData
+        >
+      >;
+      request?: SecondParameter<typeof customFetch>;
+    },
+  ) => {
+    const { query: queryOptions, request: requestOptions } = options ?? {};
+
+    const queryKey =
+      queryOptions?.queryKey ??
+      getGetDocumentReviewStepApiV1ScreeningsScreeningIdStepsDocumentReviewGetQueryKey(
+        screeningId,
+      );
+
+    const queryFn: QueryFunction<
+      Awaited<
+        ReturnType<
+          typeof getDocumentReviewStepApiV1ScreeningsScreeningIdStepsDocumentReviewGet
+        >
+      >
+    > = ({ signal }) =>
+      getDocumentReviewStepApiV1ScreeningsScreeningIdStepsDocumentReviewGet(
+        screeningId,
+        { signal, ...requestOptions },
+      );
+
+    return {
+      queryKey,
+      queryFn,
+      enabled: !!screeningId,
+      staleTime: 30000,
+      ...queryOptions,
+    } as UseQueryOptions<
+      Awaited<
+        ReturnType<
+          typeof getDocumentReviewStepApiV1ScreeningsScreeningIdStepsDocumentReviewGet
+        >
+      >,
+      TError,
+      TData
+    > & { queryKey: DataTag<QueryKey, TData> };
+  };
+
+export type GetDocumentReviewStepApiV1ScreeningsScreeningIdStepsDocumentReviewGetQueryResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof getDocumentReviewStepApiV1ScreeningsScreeningIdStepsDocumentReviewGet
+      >
+    >
+  >;
+export type GetDocumentReviewStepApiV1ScreeningsScreeningIdStepsDocumentReviewGetQueryError =
+  ErrorResponse | HTTPValidationError;
+
+export function useGetDocumentReviewStepApiV1ScreeningsScreeningIdStepsDocumentReviewGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getDocumentReviewStepApiV1ScreeningsScreeningIdStepsDocumentReviewGet
+    >
+  >,
+  TError = ErrorResponse | HTTPValidationError,
+>(
+  screeningId: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getDocumentReviewStepApiV1ScreeningsScreeningIdStepsDocumentReviewGet
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<
+            ReturnType<
+              typeof getDocumentReviewStepApiV1ScreeningsScreeningIdStepsDocumentReviewGet
+            >
+          >,
+          TError,
+          Awaited<
+            ReturnType<
+              typeof getDocumentReviewStepApiV1ScreeningsScreeningIdStepsDocumentReviewGet
+            >
+          >
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData>;
+};
+export function useGetDocumentReviewStepApiV1ScreeningsScreeningIdStepsDocumentReviewGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getDocumentReviewStepApiV1ScreeningsScreeningIdStepsDocumentReviewGet
+    >
+  >,
+  TError = ErrorResponse | HTTPValidationError,
+>(
+  screeningId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getDocumentReviewStepApiV1ScreeningsScreeningIdStepsDocumentReviewGet
+          >
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<
+            ReturnType<
+              typeof getDocumentReviewStepApiV1ScreeningsScreeningIdStepsDocumentReviewGet
+            >
+          >,
+          TError,
+          Awaited<
+            ReturnType<
+              typeof getDocumentReviewStepApiV1ScreeningsScreeningIdStepsDocumentReviewGet
+            >
+          >
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
+export function useGetDocumentReviewStepApiV1ScreeningsScreeningIdStepsDocumentReviewGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getDocumentReviewStepApiV1ScreeningsScreeningIdStepsDocumentReviewGet
+    >
+  >,
+  TError = ErrorResponse | HTTPValidationError,
+>(
+  screeningId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getDocumentReviewStepApiV1ScreeningsScreeningIdStepsDocumentReviewGet
+          >
+        >,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> };
+/**
+ * @summary Obter detalhes da etapa de revisão de documentos
+ */
+
+export function useGetDocumentReviewStepApiV1ScreeningsScreeningIdStepsDocumentReviewGet<
+  TData = Awaited<
+    ReturnType<
+      typeof getDocumentReviewStepApiV1ScreeningsScreeningIdStepsDocumentReviewGet
+    >
+  >,
+  TError = ErrorResponse | HTTPValidationError,
+>(
+  screeningId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<
+            typeof getDocumentReviewStepApiV1ScreeningsScreeningIdStepsDocumentReviewGet
+          >
+        >,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData> } {
+  const queryOptions =
+    getGetDocumentReviewStepApiV1ScreeningsScreeningIdStepsDocumentReviewGetQueryOptions(
+      screeningId,
+      options,
+    );
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
 /**
  * Finaliza a etapa de revisão de documentos. Todos os documentos devem estar aprovados ou rejeitados.
  * @summary Finalizar etapa de revisão de documentos
