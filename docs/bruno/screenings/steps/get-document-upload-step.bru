@@ -1,0 +1,78 @@
+meta {
+  name: Get Document Upload Step
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{baseUrl}}/api/v1/screenings/{{screeningId}}/steps/document-upload
+  body: none
+  auth: inherit
+}
+
+headers {
+  X-Organization-ID: {{organizationId}}
+}
+
+vars:pre-request {
+  screeningId: 019c1ee5-e835-777c-9e3a-d9f814ab95ce
+}
+
+docs {
+  # Obter Detalhes da Etapa de Upload de Documentos
+  
+  Retorna os detalhes completos da etapa de upload de documentos, incluindo
+  todos os documentos configurados e seus status.
+  
+  ## Informações Retornadas
+  
+  - **Status da etapa**: PENDING, IN_PROGRESS, COMPLETED, etc.
+  - **Configuração**: se a etapa foi configurada (`is_configured`)
+  - **Contadores**: total de documentos, obrigatórios, enviados
+  - **Progresso**: percentual de upload (`upload_progress`)
+  - **Lista de documentos**: com tipos, status e datas de upload
+  
+  ## Response Body
+  
+  ```json
+  {
+    "id": "uuid",
+    "step_type": "DOCUMENT_UPLOAD",
+    "order": 3,
+    "status": "IN_PROGRESS",
+    "assigned_to": null,
+    "is_configured": true,
+    "total_documents": 3,
+    "required_documents": 2,
+    "uploaded_documents": 1,
+    "upload_progress": 0.33,
+    "all_required_uploaded": false,
+    "documents": [
+      {
+        "id": "uuid",
+        "document_type_id": "uuid",
+        "document_type_name": "RG",
+        "is_required": true,
+        "order": 0,
+        "status": "PENDING_REVIEW",
+        "is_uploaded": true,
+        "uploaded_at": "2026-02-03T10:00:00Z"
+      }
+    ],
+    "created_at": "2026-02-03T09:00:00Z",
+    "updated_at": "2026-02-03T10:00:00Z"
+  }
+  ```
+  
+  ## Validações
+  
+  - Processo deve existir e pertencer à organização atual
+  - Etapa de upload de documentos deve existir para o processo
+  
+  ## Error Codes
+  
+  | Status | Code | Descrição |
+  |--------|------|-----------|
+  | 404 | `SCREENING_PROCESS_NOT_FOUND` | Processo não encontrado |
+  | 404 | `SCREENING_STEP_NOT_FOUND` | Etapa não encontrada |
+}

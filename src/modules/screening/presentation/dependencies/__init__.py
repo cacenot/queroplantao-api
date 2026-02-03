@@ -29,6 +29,8 @@ from src.modules.screening.presentation.dependencies.screening_step import (
     CompleteDocumentReviewStepUC,
     CompleteDocumentUploadStepUC,
     CompleteProfessionalDataStepUC,
+    GetDocumentReviewStepUC,
+    GetDocumentUploadStepUC,
     GoBackToStepUC,
 )
 
@@ -64,6 +66,8 @@ __all__ = [
     "CompleteDocumentReviewStepUC",
     "CompleteDocumentUploadStepUC",
     "CompleteProfessionalDataStepUC",
+    "GetDocumentReviewStepUC",
+    "GetDocumentUploadStepUC",
     "GoBackToStepUC",
     # Document step dependencies
     "ConfigureDocumentsUC",

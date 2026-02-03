@@ -15,6 +15,8 @@ from src.modules.screening.domain.schemas import (
 )
 from src.modules.screening.domain.schemas.steps import (
     ConversationStepResponse,
+    DocumentReviewStepResponse,
+    DocumentUploadStepResponse,
     ProfessionalDataStepCompleteRequest,
     ProfessionalDataStepResponse,
 )
@@ -24,6 +26,8 @@ from src.modules.screening.presentation.dependencies import (
     CompleteDocumentReviewStepUC,
     CompleteDocumentUploadStepUC,
     CompleteProfessionalDataStepUC,
+    GetDocumentReviewStepUC,
+    GetDocumentUploadStepUC,
     GoBackToStepUC,
     # SkipClientValidationUC,  # BROKEN - commented out
 )
@@ -282,6 +286,65 @@ async def complete_professional_data_step(
 # =============================================================================
 
 
+@router.get(
+    "/{screening_id}/steps/document-upload",
+    response_model=DocumentUploadStepResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Obter detalhes da etapa de upload de documentos",
+    description="""
+Retorna os detalhes da etapa de upload de documentos, incluindo todos os documentos
+configurados e seus status.
+
+**Informações retornadas:**
+- Status da etapa (PENDING, IN_PROGRESS, COMPLETED, etc.)
+- Configuração: se a etapa foi configurada
+- Contadores: total de documentos, obrigatórios, enviados
+- Progresso do upload
+- Lista de documentos com seus tipos e status
+
+**Validações:**
+- Processo deve existir e pertencer à organização atual
+- Etapa de upload de documentos deve existir para o processo
+""",
+    responses={
+        404: {
+            "model": ErrorResponse,
+            "description": "Não encontrado",
+            "content": {
+                "application/json": {
+                    "examples": {
+                        "process_not_found": {
+                            "summary": "Processo não encontrado",
+                            "value": {
+                                "code": ScreeningErrorCodes.SCREENING_PROCESS_NOT_FOUND,
+                                "message": "Processo de triagem não encontrado",
+                            },
+                        },
+                        "step_not_found": {
+                            "summary": "Etapa não encontrada",
+                            "value": {
+                                "code": ScreeningErrorCodes.SCREENING_STEP_NOT_FOUND,
+                                "message": "Etapa de triagem não encontrada",
+                            },
+                        },
+                    }
+                }
+            },
+        },
+    },
+)
+async def get_document_upload_step(
+    screening_id: UUID,
+    ctx: OrganizationContext,
+    use_case: GetDocumentUploadStepUC,
+) -> DocumentUploadStepResponse:
+    """Get document upload step details."""
+    return await use_case.execute(
+        organization_id=ctx.organization,
+        screening_id=screening_id,
+    )
+
+
 @router.post(
     "/{screening_id}/steps/{step_id}/document-upload/complete",
     response_model=ScreeningProcessStepResponse,
@@ -329,6 +392,64 @@ async def complete_document_upload_step(
 # =============================================================================
 # DOCUMENT REVIEW STEP
 # =============================================================================
+
+
+@router.get(
+    "/{screening_id}/steps/document-review",
+    response_model=DocumentReviewStepResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Obter detalhes da etapa de revisão de documentos",
+    description="""
+Retorna os detalhes da etapa de revisão de documentos, incluindo todos os documentos
+para revisão e seus status.
+
+**Informações retornadas:**
+- Status da etapa (PENDING, IN_PROGRESS, COMPLETED, APPROVED, etc.)
+- Contadores: total para revisar, revisados, aprovados, com correção necessária
+- Progresso da revisão
+- Lista de documentos com informações de upload e revisão
+
+**Validações:**
+- Processo deve existir e pertencer à organização atual
+- Etapa de revisão de documentos deve existir para o processo
+""",
+    responses={
+        404: {
+            "model": ErrorResponse,
+            "description": "Não encontrado",
+            "content": {
+                "application/json": {
+                    "examples": {
+                        "process_not_found": {
+                            "summary": "Processo não encontrado",
+                            "value": {
+                                "code": ScreeningErrorCodes.SCREENING_PROCESS_NOT_FOUND,
+                                "message": "Processo de triagem não encontrado",
+                            },
+                        },
+                        "step_not_found": {
+                            "summary": "Etapa não encontrada",
+                            "value": {
+                                "code": ScreeningErrorCodes.SCREENING_STEP_NOT_FOUND,
+                                "message": "Etapa de triagem não encontrada",
+                            },
+                        },
+                    }
+                }
+            },
+        },
+    },
+)
+async def get_document_review_step(
+    screening_id: UUID,
+    ctx: OrganizationContext,
+    use_case: GetDocumentReviewStepUC,
+) -> DocumentReviewStepResponse:
+    """Get document review step details."""
+    return await use_case.execute(
+        organization_id=ctx.organization,
+        screening_id=screening_id,
+    )
 
 
 @router.post(

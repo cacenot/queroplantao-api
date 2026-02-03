@@ -9,6 +9,8 @@ from src.modules.screening.use_cases.screening_step import (
     # CompleteClientValidationStepUseCase,  # BROKEN - commented out
     CompleteDocumentReviewStepUseCase,
     CompleteDocumentUploadStepUseCase,
+    GetDocumentReviewStepUseCase,
+    GetDocumentUploadStepUseCase,
     GoBackToStepUseCase,
 )
 from src.modules.screening.use_cases.screening_step.conversation import (
@@ -47,6 +49,20 @@ def get_complete_document_review_step_use_case(
     return CompleteDocumentReviewStepUseCase(session)
 
 
+def get_document_upload_step_use_case(
+    session: SessionDep,
+) -> GetDocumentUploadStepUseCase:
+    """Factory for GetDocumentUploadStepUseCase."""
+    return GetDocumentUploadStepUseCase(session)
+
+
+def get_document_review_step_use_case(
+    session: SessionDep,
+) -> GetDocumentReviewStepUseCase:
+    """Factory for GetDocumentReviewStepUseCase."""
+    return GetDocumentReviewStepUseCase(session)
+
+
 # =============================================================================
 # COMMENTED OUT - BROKEN DUE TO REFACTORING
 # CompleteClientValidationStepUseCase needs reimplementation
@@ -83,6 +99,16 @@ CompleteDocumentUploadStepUC = Annotated[
 CompleteDocumentReviewStepUC = Annotated[
     CompleteDocumentReviewStepUseCase,
     Depends(get_complete_document_review_step_use_case),
+]
+
+GetDocumentUploadStepUC = Annotated[
+    GetDocumentUploadStepUseCase,
+    Depends(get_document_upload_step_use_case),
+]
+
+GetDocumentReviewStepUC = Annotated[
+    GetDocumentReviewStepUseCase,
+    Depends(get_document_review_step_use_case),
 ]
 
 # =============================================================================

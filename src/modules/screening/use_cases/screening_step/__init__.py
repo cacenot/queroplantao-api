@@ -14,12 +14,14 @@ from src.modules.screening.use_cases.screening_step.conversation import (
 )
 from src.modules.screening.use_cases.screening_step.document_review import (
     CompleteDocumentReviewStepUseCase,
+    GetDocumentReviewStepUseCase,
     ReviewDocumentUseCase,
 )
 from src.modules.screening.use_cases.screening_step.document_upload import (
     CompleteDocumentUploadStepUseCase,
     ConfigureDocumentsUseCase,
     DeleteScreeningDocumentUseCase,
+    GetDocumentUploadStepUseCase,
     ReuseDocumentUseCase,
     UploadDocumentUseCase,
 )
@@ -40,11 +42,13 @@ __all__ = [
     "CompleteConversationStepUseCase",
     # Document Review
     "CompleteDocumentReviewStepUseCase",
+    "GetDocumentReviewStepUseCase",
     "ReviewDocumentUseCase",
     # Document Upload
     "CompleteDocumentUploadStepUseCase",
     "ConfigureDocumentsUseCase",
     "DeleteScreeningDocumentUseCase",
+    "GetDocumentUploadStepUseCase",
     "ReuseDocumentUseCase",
     "UploadDocumentUseCase",
     # Professional Data

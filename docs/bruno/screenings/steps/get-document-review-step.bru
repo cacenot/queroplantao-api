@@ -1,0 +1,90 @@
+meta {
+  name: Get Document Review Step
+  type: http
+  seq: 10
+}
+
+get {
+  url: {{baseUrl}}/api/v1/screenings/{{screeningId}}/steps/document-review
+  body: none
+  auth: inherit
+}
+
+headers {
+  X-Organization-ID: {{organizationId}}
+}
+
+docs {
+  # Obter Detalhes da Etapa de Revisão de Documentos
+  
+  Retorna os detalhes completos da etapa de revisão de documentos, incluindo
+  todos os documentos para revisão e seus status.
+  
+  ## Informações Retornadas
+  
+  - **Status da etapa**: PENDING, IN_PROGRESS, COMPLETED, APPROVED, etc.
+  - **Referência ao upload step**: `upload_step_id`
+  - **Contadores**: total para revisar, revisados, aprovados, com correção necessária
+  - **Progresso**: percentual de revisão (`review_progress`)
+  - **Lista de documentos**: com informações de upload e revisão
+  
+  ## Response Body
+  
+  ```json
+  {
+    "id": "uuid",
+    "step_type": "DOCUMENT_REVIEW",
+    "order": 4,
+    "status": "IN_PROGRESS",
+    "assigned_to": "uuid",
+    "upload_step_id": "uuid",
+    "total_to_review": 3,
+    "reviewed_count": 1,
+    "approved_count": 1,
+    "correction_needed_count": 0,
+    "review_progress": 0.33,
+    "all_approved": false,
+    "has_corrections_needed": false,
+    "documents": [
+      {
+        "id": "uuid",
+        "document_type_id": "uuid",
+        "document_type_name": "RG",
+        "is_required": true,
+        "order": 0,
+        "status": "APPROVED",
+        "professional_document_id": "uuid",
+        "uploaded_at": "2026-02-03T10:00:00Z",
+        "uploaded_by": "uuid",
+        "review_notes": "Documento legível",
+        "rejection_reason": null,
+        "reviewed_at": "2026-02-03T11:00:00Z",
+        "reviewed_by": "uuid"
+      }
+    ],
+    "created_at": "2026-02-03T09:00:00Z",
+    "updated_at": "2026-02-03T11:00:00Z"
+  }
+  ```
+  
+  ## Status dos Documentos
+  
+  | Status | Descrição |
+  |--------|-----------|
+  | `PENDING_UPLOAD` | Aguardando upload |
+  | `PENDING_REVIEW` | Enviado, aguardando revisão |
+  | `APPROVED` | Aprovado pelo revisor |
+  | `CORRECTION_NEEDED` | Precisa de correção/reenvio |
+  
+  ## Validações
+  
+  - Processo deve existir e pertencer à organização atual
+  - Etapa de revisão de documentos deve existir para o processo
+  
+  ## Error Codes
+  
+  | Status | Code | Descrição |
+  |--------|------|-----------|
+  | 404 | `SCREENING_PROCESS_NOT_FOUND` | Processo não encontrado |
+  | 404 | `SCREENING_STEP_NOT_FOUND` | Etapa não encontrada |
+}
