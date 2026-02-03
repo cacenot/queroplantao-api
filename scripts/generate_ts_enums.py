@@ -46,15 +46,31 @@ ENUM_SOURCES: list[tuple[str, Path]] = [
         / "enums.py",
     ),
     (
-        "users",
-        PROJECT_ROOT / "src" / "modules" / "users" / "domain" / "models" / "enums.py",
-    ),
-    (
         "organizations",
         PROJECT_ROOT
         / "src"
         / "modules"
         / "organizations"
+        / "domain"
+        / "models"
+        / "enums.py",
+    ),
+    (
+        "contracts",
+        PROJECT_ROOT
+        / "src"
+        / "modules"
+        / "contracts"
+        / "domain"
+        / "models"
+        / "enums.py",
+    ),
+    (
+        "units",
+        PROJECT_ROOT
+        / "src"
+        / "modules"
+        / "units"
         / "domain"
         / "models"
         / "enums.py",
@@ -240,17 +256,29 @@ ENUM_LABELS: dict[str, dict[str, str]] = {
         "QUALIFICATION": "Qualificação",
         "SPECIALTY": "Especialidade",
     },
-    # Document type
-    "DocumentType": {
-        "RG": "RG",
-        "CPF": "CPF",
-        "CNH": "CNH",
-        "PASSPORT": "Passaporte",
-        "DIPLOMA": "Diploma",
-        "CERTIFICATE": "Certificado",
-        "RQE_CERTIFICATE": "Certificado RQE",
-        "COUNCIL_CARD": "Carteira do Conselho",
-        "PROOF_OF_ADDRESS": "Comprovante de Endereço",
+    # Contract status
+    "ContractStatus": {
+        "DRAFT": "Rascunho",
+        "PENDING_SIGNATURES": "Aguardando Assinaturas",
+        "ACTIVE": "Ativo",
+        "SUSPENDED": "Suspenso",
+        "TERMINATED": "Rescindido",
+        "EXPIRED": "Expirado",
+    },
+    # Unit type
+    "UnitType": {
+        "HOSPITAL": "Hospital",
+        "CLINIC": "Clínica",
+        "UPA": "UPA",
+        "UBS": "UBS",
+        "EMERGENCY_ROOM": "Pronto Socorro",
+        "LABORATORY": "Laboratório",
+        "HOME_CARE": "Home Care",
+        "SURGERY_CENTER": "Centro Cirúrgico",
+        "DIALYSIS_CENTER": "Centro de Diálise",
+        "IMAGING_CENTER": "Centro de Imagem",
+        "MATERNITY": "Maternidade",
+        "REHABILITATION": "Centro de Reabilitação",
         "OTHER": "Outro",
     },
 }
@@ -273,30 +301,7 @@ class EnumDefinition:
     docstring: str | None = None
 
 
-MANUAL_ENUM_DEFINITIONS: dict[str, list[EnumDefinition]] = {
-    "shared": [
-        EnumDefinition(
-            name="DocumentType",
-            docstring=(
-                "Types of documents that can be uploaded.\n\n"
-                "Used to identify specific document types in the screening\n"
-                "and professional document management flows."
-            ),
-            members=[
-                EnumMember(name="RG", value="RG"),
-                EnumMember(name="CPF", value="CPF"),
-                EnumMember(name="CNH", value="CNH"),
-                EnumMember(name="PASSPORT", value="PASSPORT"),
-                EnumMember(name="DIPLOMA", value="DIPLOMA"),
-                EnumMember(name="CERTIFICATE", value="CERTIFICATE"),
-                EnumMember(name="RQE_CERTIFICATE", value="RQE_CERTIFICATE"),
-                EnumMember(name="COUNCIL_CARD", value="COUNCIL_CARD"),
-                EnumMember(name="PROOF_OF_ADDRESS", value="PROOF_OF_ADDRESS"),
-                EnumMember(name="OTHER", value="OTHER"),
-            ],
-        ),
-    ]
-}
+MANUAL_ENUM_DEFINITIONS: dict[str, list[EnumDefinition]] = {}
 
 
 def parse_enums_from_file(file_path: Path) -> Iterator[EnumDefinition]:
