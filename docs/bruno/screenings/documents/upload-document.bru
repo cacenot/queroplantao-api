@@ -65,17 +65,25 @@ docs {
   
   ## Comportamento
   
+  - Valida que o step foi configurado (`is_configured = true`)
   - Faz upload do arquivo para Firebase Storage
   - Cria ProfessionalDocument com source_type=SCREENING e is_pending=True
   - Atualiza ScreeningDocument.status: PENDING_UPLOAD → PENDING_REVIEW
   - Atualiza contadores no DocumentUploadStep
   - Em caso de re-upload (após correção), registra histórico
   
+  ## Pré-requisitos
+  
+  O step de upload de documentos deve estar na **Fase 2 (Upload)**, ou seja:
+  - `is_configured = true` (endpoint `/configure` foi chamado)
+  - Step em status `IN_PROGRESS` ou `CORRECTION_NEEDED`
+  
   ## Error Codes
   
   | Status | Code | Descrição |
   |--------|------|-----------|
   | 404 | `NOT_FOUND` | Documento de triagem não encontrado |
+  | 422 | `SCREENING_STEP_NOT_CONFIGURED` | Step não foi configurado (is_configured=false) |
   | 422 | `VALIDATION_ERROR` | Status do documento não permite upload |
   | 422 | `VALIDATION_ERROR` | Tipo de arquivo não permitido |
   | 422 | `VALIDATION_ERROR` | Arquivo muito grande (máx. 10 MB) |

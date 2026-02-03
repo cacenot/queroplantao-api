@@ -43,15 +43,31 @@ docs {
   # Configurar Documentos (Etapa 3 - Fase 1)
   
   auth: inherit
+  
   ## Comportamento
   
-  1. Valida que o step está em PENDING ou IN_PROGRESS
-  2. Cria ScreeningDocument para cada item
-  3. Transiciona step para IN_PROGRESS (se estava em PENDING)
-  4. Retorna step com lista de documentos
+  1. Valida que o step ainda não foi configurado (`is_configured = false`)
+  2. Valida que o step está em PENDING ou IN_PROGRESS
+  3. Cria ScreeningDocument para cada item
+  4. Define `is_configured = true` (bloqueia reconfiguração)
+  5. Transiciona step para IN_PROGRESS (se estava em PENDING)
+  6. Retorna step com lista de documentos
+  
+  ## Fases do Document Upload
+  
+  O step de upload de documentos possui duas fases controladas pela flag `is_configured`:
+  
+  | Fase | is_configured | Ações Permitidas | Ações Bloqueadas |
+  |------|---------------|-------------------|-------------------|
+  | Configuração | false | Configure | Upload, Reuse, Complete |
+  | Upload | true | Upload, Reuse, Complete | Configure |
+  
+  **IMPORTANTE:** Este endpoint só pode ser chamado UMA VEZ por processo de triagem.
+  Após a configuração, a lista de documentos é imutável.
   
   ## Pré-requisitos
   
+  - `is_configured` deve ser `false` (step ainda não configurado)
   - DocumentUploadStep deve estar em status PENDING ou IN_PROGRESS
   - Steps anteriores (CONVERSATION, PROFESSIONAL_DATA) devem estar COMPLETED/APPROVED
   
@@ -61,6 +77,7 @@ docs {
   |--------|------|-----------|
   | 404 | `SCREENING_PROCESS_NOT_FOUND` | Processo não encontrado |
   | 404 | `SCREENING_STEP_NOT_FOUND` | Step não encontrado |
+  | 409 | `SCREENING_STEP_ALREADY_CONFIGURED` | Step já foi configurado (is_configured=true) |
   | 422 | `SCREENING_STEP_NOT_PENDING` | Step não está em PENDING ou IN_PROGRESS |
   | 422 | `DOCUMENT_TYPE_NOT_FOUND` | Tipo de documento não encontrado |
 }

@@ -7,7 +7,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from src.app.exceptions import (
+    NotFoundError,
     ScreeningProcessNotFoundError,
+    ScreeningStepAlreadyConfiguredError,
     ScreeningStepNotFoundError,
     ScreeningStepNotPendingError,
 )
@@ -40,13 +42,13 @@ class ConfigureDocumentsUseCase:
     This use case creates ScreeningDocument records for each document
     that the professional needs to upload.
 
-    The step transitions from PENDING to IN_PROGRESS after configuration
-    (or stays IN_PROGRESS if already started).
+    The step transitions from PENDING to IN_PROGRESS after configuration.
+    Reconfiguration is not allowed once configured.
 
     Validations:
     - Process must exist and belong to organization
     - Document upload step must exist for the process
-    - Step must be PENDING or IN_PROGRESS
+    - Step must be PENDING (not already configured)
     - All document types must exist
     """
 
@@ -79,7 +81,8 @@ class ConfigureDocumentsUseCase:
         Raises:
             ScreeningProcessNotFoundError: If process doesn't exist.
             ScreeningStepNotFoundError: If document upload step doesn't exist.
-            ScreeningStepNotPendingError: If step is not PENDING or IN_PROGRESS.
+            ScreeningStepNotPendingError: If step is not PENDING.
+            ScreeningStepAlreadyConfiguredError: If step is already configured.
             NotFoundError: If any document type doesn't exist.
         """
         # 1. Load process with steps
@@ -92,28 +95,30 @@ class ConfigureDocumentsUseCase:
         if not step:
             raise ScreeningStepNotFoundError(step_id="document_upload")
 
-        # 3. Validate step is PENDING or IN_PROGRESS
-        if step.status not in (StepStatus.PENDING, StepStatus.IN_PROGRESS):
+        # 3. Validate step is PENDING
+        if step.status != StepStatus.PENDING:
             raise ScreeningStepNotPendingError(
                 step_id=str(step.id),
                 current_status=step.status.value,
             )
 
-        # 4. Validate all document types exist
+        # 4. Validate step is not already configured
+        if step.is_configured:
+            raise ScreeningStepAlreadyConfiguredError(step_id=str(step.id))
+
+        # 5. Validate all document types exist
         doc_type_ids = [d.document_type_id for d in data.documents]
         doc_types = await self.document_type_repository.get_by_ids(doc_type_ids)
         doc_type_map = {dt.id: dt for dt in doc_types}
 
         missing_types = set(doc_type_ids) - set(doc_type_map.keys())
         if missing_types:
-            from src.app.exceptions import NotFoundError
-
             raise NotFoundError(
                 resource="DocumentType",
                 identifier=str(list(missing_types)[0]),
             )
 
-        # 5. Create ScreeningDocument records
+        # 6. Create ScreeningDocument records
         documents: list[ScreeningDocument] = []
         for item in data.documents:
             doc = ScreeningDocument(
@@ -129,21 +134,21 @@ class ConfigureDocumentsUseCase:
 
         await self.document_repository.bulk_create(documents)
 
-        # 6. Update step to IN_PROGRESS if it was PENDING
-        if step.status == StepStatus.PENDING:
-            step.status = StepStatus.IN_PROGRESS
-            step.started_at = datetime.now(timezone.utc)
-            StepWorkflowService.update_step_status(process, step)
+        # 7. Update step to IN_PROGRESS and mark as configured
+        step.status = StepStatus.IN_PROGRESS
+        step.started_at = datetime.now(timezone.utc)
+        step.is_configured = True
+        StepWorkflowService.update_step_status(process, step)
 
-        # 7. Update step counts
+        # 8. Update step counts
         step.total_documents = len(documents)
         step.required_documents = sum(1 for d in documents if d.is_required)
         step.uploaded_documents = 0
 
-        # 8. Start process
+        # 9. Start process
         process.status = ScreeningStatus.IN_PROGRESS
 
-        # 9. Persist changes
+        # 10. Persist changes
         await self.session.flush()
         await self.session.refresh(step)
 
@@ -211,6 +216,7 @@ class ConfigureDocumentsUseCase:
             completed_by=step.completed_by,
             reviewed_at=step.reviewed_at,
             reviewed_by=step.reviewed_by,
+            is_configured=step.is_configured,
             total_documents=step.total_documents,
             required_documents=step.required_documents,
             uploaded_documents=step.uploaded_documents,

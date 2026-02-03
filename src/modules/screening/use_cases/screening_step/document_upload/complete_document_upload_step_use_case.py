@@ -8,6 +8,7 @@ from sqlalchemy.orm import selectinload
 from src.app.exceptions import (
     ScreeningDocumentsNotUploadedError,
     ScreeningProcessNotFoundError,
+    ScreeningStepNotConfiguredError,
     ScreeningStepNotFoundError,
 )
 from src.modules.screening.domain.models import ScreeningProcess
@@ -70,6 +71,7 @@ class CompleteDocumentUploadStepUseCase:
         Raises:
             ScreeningProcessNotFoundError: If process doesn't exist.
             ScreeningStepNotFoundError: If document upload step doesn't exist.
+            ScreeningStepNotConfiguredError: If step is not configured.
             ScreeningDocumentsNotUploadedError: If required documents are missing.
         """
         # 1. Load process with steps
@@ -82,14 +84,18 @@ class CompleteDocumentUploadStepUseCase:
         if not step:
             raise ScreeningStepNotFoundError(step_id="document_upload")
 
-        # 3. Validate step can be completed
+        # 3. Validate step is configured
+        if not step.is_configured:
+            raise ScreeningStepNotConfiguredError(step_id=str(step.id))
+
+        # 4. Validate step can be completed
         StepWorkflowService.validate_step_can_complete(
             step=step,
             user_id=completed_by,
             check_assignment=True,
         )
 
-        # 4. Check all required documents are uploaded
+        # 5. Check all required documents are uploaded
         pending_docs = await self._get_pending_required_documents(step.id)
         if pending_docs:
             doc_names = [
@@ -98,11 +104,11 @@ class CompleteDocumentUploadStepUseCase:
             ]
             raise ScreeningDocumentsNotUploadedError(document_names=doc_names)
 
-        # 5. Save notes if provided
+        # 6. Save notes if provided
         if data.notes:
             step.review_notes = data.notes
 
-        # 6. Complete the step
+        # 7. Complete the step
         StepWorkflowService.complete_step(
             step=step,
             completed_by=completed_by,
@@ -110,11 +116,11 @@ class CompleteDocumentUploadStepUseCase:
             process=process,
         )
 
-        # 7. Start process if not in progress (legacy, should not happen)
+        # 8. Start process if not in progress (legacy, should not happen)
         if process.status != ScreeningStatus.IN_PROGRESS:
             process.status = ScreeningStatus.IN_PROGRESS
 
-        # 8. Advance to document review step and link it
+        # 9. Advance to document review step and link it
         review_step = process.document_review_step
         if review_step:
             review_step.upload_step_id = step.id
@@ -125,14 +131,14 @@ class CompleteDocumentUploadStepUseCase:
                 next_step=review_step,
             )
 
-        # 9. Persist changes
+        # 10. Persist changes
         await self.session.flush()
         await self.session.refresh(step)
 
-        # 10. Load documents for response
+        # 11. Load documents for response
         documents = await self.document_repository.list_for_step_with_types(step.id)
 
-        # 11. Build response
+        # 12. Build response
         return self._build_response(step, documents)
 
     async def _load_process_with_steps(
@@ -216,6 +222,7 @@ class CompleteDocumentUploadStepUseCase:
             completed_by=step.completed_by,
             reviewed_at=step.reviewed_at,
             reviewed_by=step.reviewed_by,
+            is_configured=step.is_configured,
             total_documents=step.total_documents,
             required_documents=step.required_documents,
             uploaded_documents=step.uploaded_documents,

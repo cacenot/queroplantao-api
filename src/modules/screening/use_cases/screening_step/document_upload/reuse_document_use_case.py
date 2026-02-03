@@ -11,6 +11,7 @@ from src.app.exceptions import (
     ScreeningDocumentNotFoundError,
     ScreeningDocumentReusePendingError,
     ScreeningDocumentTypeMismatchError,
+    ScreeningStepNotConfiguredError,
     ScreeningStepNotFoundError,
     ScreeningStepNotInProgressError,
 )
@@ -73,6 +74,7 @@ class ReuseDocumentUseCase:
             ScreeningDocumentNotFoundError: If screening document not found.
             DocumentNotFoundError: If professional document not found.
             ScreeningStepNotFoundError: If upload step not found.
+            ScreeningStepNotConfiguredError: If step is not configured.
             ScreeningStepNotInProgressError: If step is not in progress.
             ScreeningDocumentInvalidStatusError: If document status doesn't allow reuse.
             ScreeningDocumentReusePendingError: If professional document is pending.
@@ -88,14 +90,18 @@ class ReuseDocumentUseCase:
         if not step:
             raise ScreeningStepNotFoundError(step_id=str(doc.upload_step_id))
 
-        # 3. Validate step is in progress or correction needed
+        # 3. Validate step is configured
+        if not step.is_configured:
+            raise ScreeningStepNotConfiguredError(step_id=str(step.id))
+
+        # 4. Validate step is in progress or correction needed
         if step.status not in (StepStatus.IN_PROGRESS, StepStatus.CORRECTION_NEEDED):
             raise ScreeningStepNotInProgressError(
                 step_id=str(step.id),
                 current_status=step.status.value,
             )
 
-        # 4. Validate document status allows reuse (same as upload)
+        # 5. Validate document status allows reuse (same as upload)
         allowed_statuses = [
             ScreeningDocumentStatus.PENDING_UPLOAD,
             ScreeningDocumentStatus.CORRECTION_NEEDED,
@@ -145,14 +151,16 @@ class ReuseDocumentUseCase:
             doc.rejection_reason = None
 
         # 11. Update step upload count
-        step.uploaded_documents = await self._count_uploaded_documents(step.id)
+        step.uploaded_documents = (
+            await self.document_repository.count_uploaded_documents(step.id)
+        )
         step.updated_by = reused_by
 
         # 12. Persist changes
         await self.session.flush()
         await self.session.refresh(doc)
 
-        # 13. Build response
+        # 14. Build response
         return ScreeningDocumentResponse(
             id=doc.id,
             upload_step_id=doc.upload_step_id,
@@ -181,12 +189,3 @@ class ReuseDocumentUseCase:
             needs_correction=doc.needs_correction,
             is_complete=doc.is_complete,
         )
-
-    async def _count_uploaded_documents(self, step_id: UUID) -> int:
-        """Count documents that have been uploaded or reused."""
-        status_counts = await self.document_repository.count_by_status(step_id)
-        # Count all documents that are not PENDING_UPLOAD or CORRECTION_NEEDED
-        pending = status_counts.get(ScreeningDocumentStatus.PENDING_UPLOAD, 0)
-        correction = status_counts.get(ScreeningDocumentStatus.CORRECTION_NEEDED, 0)
-        total = sum(status_counts.values())
-        return total - pending - correction

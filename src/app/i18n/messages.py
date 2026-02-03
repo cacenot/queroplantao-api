@@ -128,6 +128,8 @@ class ScreeningMessages(StrEnum):
     STEP_INVALID_TYPE = "screening.step.invalid_type"
     STEP_CANNOT_GO_BACK = "screening.step.cannot_go_back"
     STEP_NOT_ASSIGNED_TO_USER = "screening.step.not_assigned_to_user"
+    STEP_NOT_CONFIGURED = "screening.step.not_configured"
+    STEP_ALREADY_CONFIGURED = "screening.step.already_configured"
 
     # Conversation messages
     CONVERSATION_REJECTED = "screening.conversation.rejected"

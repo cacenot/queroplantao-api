@@ -299,6 +299,26 @@ class ScreeningDocumentRepository(BaseRepository[ScreeningDocument]):
         result = await self.session.execute(query)
         return result.scalar_one() or 0
 
+    async def count_uploaded_documents(self, upload_step_id: UUID) -> int:
+        """
+        Count documents that have been uploaded or reused.
+
+        A document is considered "uploaded" if its status is NOT:
+        - PENDING_UPLOAD (waiting for upload)
+        - CORRECTION_NEEDED (rejected, needs re-upload)
+
+        Args:
+            upload_step_id: The document upload step UUID.
+
+        Returns:
+            Count of uploaded documents.
+        """
+        status_counts = await self.count_by_status(upload_step_id)
+        pending = status_counts.get(ScreeningDocumentStatus.PENDING_UPLOAD, 0)
+        correction = status_counts.get(ScreeningDocumentStatus.CORRECTION_NEEDED, 0)
+        total = sum(status_counts.values())
+        return total - pending - correction
+
     async def count_by_professional_document_id(
         self,
         professional_document_id: UUID,

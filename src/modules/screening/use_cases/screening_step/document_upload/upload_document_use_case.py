@@ -10,6 +10,7 @@ from src.app.config import Settings
 from src.app.dependencies.settings import get_settings
 from src.app.exceptions import (
     NotFoundError,
+    ScreeningStepNotConfiguredError,
     ScreeningStepNotInProgressError,
     ValidationError,
 )
@@ -93,6 +94,7 @@ class UploadDocumentUseCase:
 
         Raises:
             NotFoundError: If screening document not found.
+            ScreeningStepNotConfiguredError: If step is not configured.
             ScreeningStepNotInProgressError: If step is not in progress.
             ValidationError: If document status doesn't allow upload or file is invalid.
         """
@@ -112,14 +114,18 @@ class UploadDocumentUseCase:
                 identifier=str(doc.upload_step_id),
             )
 
-        # 3. Validate step is in progress or correction needed
+        # 3. Validate step is configured
+        if not step.is_configured:
+            raise ScreeningStepNotConfiguredError(step_id=str(step.id))
+
+        # 4. Validate step is in progress or correction needed
         if step.status not in (StepStatus.IN_PROGRESS, StepStatus.CORRECTION_NEEDED):
             raise ScreeningStepNotInProgressError(
                 step_id=str(step.id),
                 current_status=step.status.value,
             )
 
-        # 4. Validate document status allows upload
+        # 5. Validate document status allows upload
         allowed_statuses = [
             ScreeningDocumentStatus.PENDING_UPLOAD,
             ScreeningDocumentStatus.CORRECTION_NEEDED,
@@ -190,7 +196,9 @@ class UploadDocumentUseCase:
         )
 
         # 11. Update step upload count
-        step.uploaded_documents = await self._count_uploaded_documents(step.id)
+        step.uploaded_documents = (
+            await self.document_repository.count_uploaded_documents(step.id)
+        )
         step.updated_by = uploaded_by
 
         # 12. Persist changes
@@ -276,15 +284,6 @@ class UploadDocumentUseCase:
         doc.uploaded_at = now
         doc.uploaded_by = uploaded_by
         doc.updated_by = uploaded_by
-
-    async def _count_uploaded_documents(self, step_id: UUID) -> int:
-        """Count documents that have been uploaded."""
-        status_counts = await self.document_repository.count_by_status(step_id)
-        # Count all documents that are not PENDING_UPLOAD or CORRECTION_NEEDED
-        pending = status_counts.get(ScreeningDocumentStatus.PENDING_UPLOAD, 0)
-        correction = status_counts.get(ScreeningDocumentStatus.CORRECTION_NEEDED, 0)
-        total = sum(status_counts.values())
-        return total - pending - correction
 
     def _build_response(self, doc: ScreeningDocument) -> ScreeningDocumentResponse:
         """Build response from screening document."""

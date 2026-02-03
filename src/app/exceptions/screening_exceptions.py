@@ -227,6 +227,30 @@ class ScreeningStepNotAssignedToUserError(AppException):
         )
 
 
+class ScreeningStepNotConfiguredError(AppException):
+    """Raised when step is not configured (documents not set up)."""
+
+    def __init__(self, step_id: str) -> None:
+        super().__init__(
+            message=get_message(ScreeningMessages.STEP_NOT_CONFIGURED),
+            code=ScreeningErrorCodes.SCREENING_STEP_NOT_CONFIGURED,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            details={"step_id": step_id},
+        )
+
+
+class ScreeningStepAlreadyConfiguredError(AppException):
+    """Raised when trying to configure a step that is already configured."""
+
+    def __init__(self, step_id: str) -> None:
+        super().__init__(
+            message=get_message(ScreeningMessages.STEP_ALREADY_CONFIGURED),
+            code=ScreeningErrorCodes.SCREENING_STEP_ALREADY_CONFIGURED,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            details={"step_id": step_id},
+        )
+
+
 # =============================================================================
 # PROFESSIONAL DATA STEP EXCEPTIONS
 # =============================================================================

@@ -20,6 +20,12 @@ if TYPE_CHECKING:
 class DocumentUploadStepBase(BaseModel):
     """Document upload step-specific fields."""
 
+    # Configuration flag
+    is_configured: bool = Field(
+        default=False,
+        description="Whether documents have been configured for this step",
+    )
+
     # Summary counts (denormalized for quick access)
     total_documents: int = Field(
         default=0,
@@ -101,6 +107,14 @@ class DocumentUploadStep(DocumentUploadStepBase, ScreeningStepMixin, table=True)
     def can_submit(self) -> bool:
         """Check if all required documents are uploaded."""
         return len(self.required_pending_uploads) == 0
+
+    @property
+    def all_required_uploaded(self) -> bool:
+        """Check if all required documents have been uploaded."""
+        return (
+            self.required_documents == 0
+            or self.uploaded_documents >= self.required_documents
+        )
 
     @property
     def upload_progress(self) -> float:

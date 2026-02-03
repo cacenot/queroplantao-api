@@ -68,6 +68,7 @@ docs {
   
   - Não requer autenticação
   - Token deve estar válido e não expirado
+  - Step deve estar configurado (`is_configured = true`)
   - Triagem deve estar na etapa de upload (status IN_PROGRESS ou CORRECTION_NEEDED)
   - uploaded_by será null (acesso público)
   
@@ -78,6 +79,7 @@ docs {
   | 404 | `NOT_FOUND` | Token inválido ou triagem não encontrada |
   | 404 | `NOT_FOUND` | Documento de triagem não encontrado |
   | 410 | `SCREENING_EXPIRED` | Triagem expirou |
+  | 422 | `SCREENING_STEP_NOT_CONFIGURED` | Step não foi configurado (is_configured=false) |
   | 422 | `VALIDATION_ERROR` | Status do documento não permite upload |
   | 422 | `VALIDATION_ERROR` | Tipo de arquivo não permitido |
   | 422 | `VALIDATION_ERROR` | Arquivo muito grande (máx. 10 MB) |

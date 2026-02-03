@@ -112,6 +112,9 @@ class DocumentUploadStepResponse(StepResponseBase):
     Includes document counts and optional document list.
     """
 
+    # Configuration flag
+    is_configured: bool = False
+
     # Document counts (denormalized)
     total_documents: int = 0
     required_documents: int = 0

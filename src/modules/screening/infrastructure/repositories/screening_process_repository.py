@@ -155,6 +155,7 @@ class ScreeningProcessRepository(
 
         Uses denormalized fields (current_step_type, configured_step_types)
         instead of loading step relationships, for efficient listing.
+        Loads organization_professional for professional summary.
 
         Args:
             organization_id: The organization UUID.
@@ -171,7 +172,7 @@ class ScreeningProcessRepository(
             organization_id=organization_id,
             family_org_ids=family_org_ids,
             scope_policy=scope_policy,
-        )
+        ).options(selectinload(ScreeningProcess.organization_professional))
         return await self.list(
             filters=filters,
             sorting=sorting,
@@ -198,6 +199,7 @@ class ScreeningProcessRepository(
 
         Uses denormalized fields (current_step_type, configured_step_types)
         instead of loading step relationships, for efficient listing.
+        Loads organization_professional for professional summary.
 
         Args:
             organization_id: The organization UUID.
@@ -211,11 +213,15 @@ class ScreeningProcessRepository(
         Returns:
             Paginated list of screening processes.
         """
-        base_query = self._base_query_for_organization(
-            organization_id=organization_id,
-            family_org_ids=family_org_ids,
-            scope_policy=scope_policy,
-        ).where(ScreeningProcess.current_actor_id == actor_id)
+        base_query = (
+            self._base_query_for_organization(
+                organization_id=organization_id,
+                family_org_ids=family_org_ids,
+                scope_policy=scope_policy,
+            )
+            .where(ScreeningProcess.current_actor_id == actor_id)
+            .options(selectinload(ScreeningProcess.organization_professional))
+        )
         return await self.list(
             filters=filters,
             sorting=sorting,

@@ -156,6 +156,8 @@ MESSAGES: dict[str, str] = {
     ScreeningMessages.STEP_INVALID_TYPE: "Tipo de etapa inválido para esta operação. Esperado: {expected}, recebido: {received}",
     ScreeningMessages.STEP_CANNOT_GO_BACK: "Não é possível voltar para a etapa {step_type}",
     ScreeningMessages.STEP_NOT_ASSIGNED_TO_USER: "Esta etapa não está atribuída ao usuário atual",
+    ScreeningMessages.STEP_NOT_CONFIGURED: "Esta etapa precisa ser configurada antes de prosseguir",
+    ScreeningMessages.STEP_ALREADY_CONFIGURED: "Esta etapa já foi configurada e não pode ser reconfigurada",
     # Conversation
     ScreeningMessages.CONVERSATION_REJECTED: "Profissional rejeitado na conversa inicial",
     # Professional data

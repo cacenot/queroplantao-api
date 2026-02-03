@@ -1,7 +1,7 @@
 """Schemas for ScreeningProcess."""
 
 from datetime import datetime
-from typing import Optional
+from typing import TYPE_CHECKING, Optional, Self
 from uuid import UUID
 
 from pydantic import (
@@ -23,6 +23,9 @@ from src.modules.screening.domain.models.enums import (
 )
 from src.modules.users.domain.schemas.organization_user import UserInfo
 from src.shared.domain.value_objects import CPF, Phone
+
+if TYPE_CHECKING:
+    pass
 
 
 class StepTypeInfo(BaseModel):
@@ -89,6 +92,76 @@ def _coerce_step_status(value: object | None) -> StepStatus | None:
         return StepStatus(str(value))
     except ValueError:
         return None
+
+
+class _StepTypeValidatorsMixin:
+    """Mixin providing step type serializers and validators."""
+
+    current_step_type: StepTypeInfo
+    configured_step_types: list[StepTypeInfo]
+    step_info: dict[str, dict[str, object]] | None
+
+    @field_serializer("current_step_type")
+    def _serialize_current_step_type(
+        self, value: StepType | StepTypeInfo
+    ) -> StepTypeInfo:
+        if isinstance(value, StepTypeInfo):
+            return value
+        return _build_step_type_payload(value)
+
+    @field_serializer("configured_step_types")
+    def _serialize_configured_step_types(
+        self, value: list[StepTypeInfo] | list[str]
+    ) -> list[StepTypeInfo]:
+        if not value:
+            return []
+        if isinstance(value[0], StepTypeInfo):
+            return value  # type: ignore[return-value]
+        return [_build_step_type_payload(step_type) for step_type in value]  # type: ignore[arg-type]
+
+    @field_validator("current_step_type", mode="before")
+    @classmethod
+    def _parse_current_step_type(
+        cls, value: StepType | StepTypeInfo | str
+    ) -> StepTypeInfo:
+        if isinstance(value, StepTypeInfo):
+            return value
+        return _build_step_type_payload(value)
+
+    @field_validator("configured_step_types", mode="before")
+    @classmethod
+    def _parse_configured_step_types(
+        cls, value: list[StepTypeInfo] | list[str]
+    ) -> list[StepTypeInfo]:
+        if not value:
+            return []
+        if isinstance(value[0], StepTypeInfo):
+            return value  # type: ignore[return-value]
+        return [_build_step_type_payload(step_type) for step_type in value]  # type: ignore[arg-type]
+
+    @model_validator(mode="after")
+    def _apply_step_info(self) -> Self:
+        step_info = self.step_info or {}
+        has_step_info = bool(step_info)
+        current_type = _extract_step_type_value(self.current_step_type)
+        configured_types = [
+            _extract_step_type_value(step_type)
+            for step_type in self.configured_step_types
+        ]
+        self.current_step_type = _build_step_type_payload(
+            current_type,
+            step_info,
+            is_current=not has_step_info,
+        )
+        self.configured_step_types = [
+            _build_step_type_payload(
+                step_type,
+                step_info,
+                is_current=not has_step_info and step_type == current_type,
+            )
+            for step_type in configured_types
+        ]
+        return self
 
 
 class ScreeningProcessCreate(BaseModel):
@@ -203,106 +276,6 @@ class ScreeningProcessCancel(BaseModel):
     )
 
 
-class ScreeningProcessListResponse(BaseModel):
-    """Schema for screening process list (minimal fields, no relationships)."""
-
-    model_config = ConfigDict(from_attributes=True)
-
-    id: UUID
-    status: ScreeningStatus
-
-    # Step tracking (denormalized - no joins required)
-    current_step_type: StepTypeInfo
-    configured_step_types: list[StepTypeInfo]
-    step_info: dict[str, dict[str, object]] | None = Field(
-        default=None,
-        exclude=True,
-    )
-
-    # Professional info
-    professional_cpf: Optional[str]
-    professional_name: Optional[str]
-    professional_phone: Optional[str]
-    professional_email: Optional[str]
-    expected_professional_type: Optional[str]
-
-    # Assignment
-    owner_id: Optional[UUID]
-    current_actor_id: Optional[UUID]
-    supervisor_id: UUID
-
-    # Links
-    organization_professional_id: Optional[UUID]
-    client_company_id: Optional[UUID]
-
-    # Timestamps
-    created_at: datetime
-    updated_at: datetime
-    expires_at: Optional[datetime]
-
-    @field_serializer("current_step_type")
-    def _serialize_current_step_type(
-        self, value: StepType | StepTypeInfo
-    ) -> StepTypeInfo:
-        if isinstance(value, StepTypeInfo):
-            return value
-        return _build_step_type_payload(value)
-
-    @field_serializer("configured_step_types")
-    def _serialize_configured_step_types(
-        self, value: list[StepTypeInfo] | list[str]
-    ) -> list[StepTypeInfo]:
-        if not value:
-            return []
-        if isinstance(value[0], StepTypeInfo):
-            return value  # type: ignore[return-value]
-        return [_build_step_type_payload(step_type) for step_type in value]  # type: ignore[arg-type]
-
-    @field_validator("current_step_type", mode="before")
-    @classmethod
-    def _parse_current_step_type(
-        cls, value: StepType | StepTypeInfo | str
-    ) -> StepTypeInfo:
-        if isinstance(value, StepTypeInfo):
-            return value
-        return _build_step_type_payload(value)
-
-    @field_validator("configured_step_types", mode="before")
-    @classmethod
-    def _parse_configured_step_types(
-        cls, value: list[StepTypeInfo] | list[str]
-    ) -> list[StepTypeInfo]:
-        if not value:
-            return []
-        if isinstance(value[0], StepTypeInfo):
-            return value  # type: ignore[return-value]
-        return [_build_step_type_payload(step_type) for step_type in value]  # type: ignore[arg-type]
-
-    @model_validator(mode="after")
-    def _apply_step_info(self) -> "ScreeningProcessListResponse":
-        step_info = self.step_info or {}
-        has_step_info = bool(step_info)
-        current_type = _extract_step_type_value(self.current_step_type)
-        configured_types = [
-            _extract_step_type_value(step_type)
-            for step_type in self.configured_step_types
-        ]
-        self.current_step_type = _build_step_type_payload(
-            current_type,
-            step_info,
-            is_current=not has_step_info,
-        )
-        self.configured_step_types = [
-            _build_step_type_payload(
-                step_type,
-                step_info,
-                is_current=not has_step_info and step_type == current_type,
-            )
-            for step_type in configured_types
-        ]
-        return self
-
-
 class OrganizationProfessionalSummary(BaseModel):
     """Summary of an organization professional for screening responses."""
 
@@ -316,8 +289,8 @@ class OrganizationProfessionalSummary(BaseModel):
     avatar_url: Optional[str] = None
 
 
-class ScreeningProcessResponse(BaseModel):
-    """Schema for full screening process response."""
+class ScreeningProcessResponse(_StepTypeValidatorsMixin, BaseModel):
+    """Schema for screening process response (list and detail)."""
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -375,67 +348,9 @@ class ScreeningProcessResponse(BaseModel):
     created_by: Optional[UUID]
     updated_by: Optional[UUID]
 
-    @field_serializer("current_step_type")
-    def _serialize_current_step_type(
-        self, value: StepType | StepTypeInfo
-    ) -> StepTypeInfo:
-        if isinstance(value, StepTypeInfo):
-            return value
-        return _build_step_type_payload(value)
 
-    @field_serializer("configured_step_types")
-    def _serialize_configured_step_types(
-        self, value: list[StepTypeInfo] | list[str]
-    ) -> list[StepTypeInfo]:
-        if not value:
-            return []
-        if isinstance(value[0], StepTypeInfo):
-            return value  # type: ignore[return-value]
-        return [_build_step_type_payload(step_type) for step_type in value]  # type: ignore[arg-type]
-
-    @field_validator("current_step_type", mode="before")
-    @classmethod
-    def _parse_current_step_type(
-        cls, value: StepType | StepTypeInfo | str
-    ) -> StepTypeInfo:
-        if isinstance(value, StepTypeInfo):
-            return value
-        return _build_step_type_payload(value)
-
-    @field_validator("configured_step_types", mode="before")
-    @classmethod
-    def _parse_configured_step_types(
-        cls, value: list[StepTypeInfo] | list[str]
-    ) -> list[StepTypeInfo]:
-        if not value:
-            return []
-        if isinstance(value[0], StepTypeInfo):
-            return value  # type: ignore[return-value]
-        return [_build_step_type_payload(step_type) for step_type in value]  # type: ignore[arg-type]
-
-    @model_validator(mode="after")
-    def _apply_step_info(self) -> "ScreeningProcessResponse":
-        step_info = self.step_info or {}
-        has_step_info = bool(step_info)
-        current_type = _extract_step_type_value(self.current_step_type)
-        configured_types = [
-            _extract_step_type_value(step_type)
-            for step_type in self.configured_step_types
-        ]
-        self.current_step_type = _build_step_type_payload(
-            current_type,
-            step_info,
-            is_current=not has_step_info,
-        )
-        self.configured_step_types = [
-            _build_step_type_payload(
-                step_type,
-                step_info,
-                is_current=not has_step_info and step_type == current_type,
-            )
-            for step_type in configured_types
-        ]
-        return self
+# Alias for list - same schema, used for API clarity
+ScreeningProcessListResponse = ScreeningProcessResponse
 
 
 class ScreeningProcessDetailResponse(ScreeningProcessResponse):

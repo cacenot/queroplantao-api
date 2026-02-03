@@ -209,6 +209,57 @@ Resultado da validação pelo cliente.
 | APPROVED | Cliente aprovou o profissional |
 | REJECTED | Cliente rejeitou o profissional |
 
+### ScreeningErrorCodes (Error Codes)
+
+Códigos de erro específicos do módulo de triagem. Todos os códigos são prefixados com `SCREENING_`.
+
+#### Process Errors
+| Código | Descrição |
+|--------|-----------|
+| `SCREENING_PROCESS_NOT_FOUND` | Processo de triagem não encontrado |
+| `SCREENING_PROCESS_ACTIVE_EXISTS` | Já existe uma triagem ativa para este profissional |
+| `SCREENING_PROCESS_INVALID_STATUS` | Status do processo não permite esta ação |
+| `SCREENING_PROCESS_ALREADY_COMPLETED` | Processo já foi finalizado |
+| `SCREENING_PROCESS_CANNOT_APPROVE` | Não é possível aprovar o processo |
+| `SCREENING_PROCESS_CANNOT_REJECT` | Não é possível rejeitar o processo |
+| `SCREENING_PROCESS_CANNOT_CANCEL` | Não é possível cancelar o processo |
+| `SCREENING_PROCESS_HAS_REJECTED_DOCUMENTS` | Processo possui documentos rejeitados |
+| `SCREENING_PROCESS_INCOMPLETE_STEPS` | Etapas obrigatórias incompletas |
+
+#### Step Errors
+| Código | Descrição |
+|--------|-----------|
+| `SCREENING_STEP_NOT_FOUND` | Step não encontrado |
+| `SCREENING_STEP_ALREADY_COMPLETED` | Step já foi completado |
+| `SCREENING_STEP_SKIPPED` | Step foi pulado |
+| `SCREENING_STEP_NOT_IN_PROGRESS` | Step não está em andamento |
+| `SCREENING_STEP_NOT_PENDING` | Step não está pendente |
+| `SCREENING_STEP_INVALID_TYPE` | Tipo de step inválido |
+| `SCREENING_STEP_CANNOT_GO_BACK` | Não é possível retroceder no fluxo |
+| `SCREENING_STEP_NOT_ASSIGNED_TO_USER` | Step não atribuído a este usuário |
+| `SCREENING_STEP_NOT_CONFIGURED` | **Step não foi configurado (is_configured = false). Upload/reutilização/complete bloqueados.** |
+| `SCREENING_STEP_ALREADY_CONFIGURED` | **Step já foi configurado (is_configured = true). Reconfiguração não permitida.** |
+
+#### Document Errors
+| Código | Descrição |
+|--------|-----------|
+| `SCREENING_DOCUMENTS_NOT_UPLOADED` | Documentos não foram enviados |
+| `SCREENING_DOCUMENTS_MISSING_REQUIRED` | Documentos obrigatórios faltando |
+| `SCREENING_DOCUMENTS_PENDING_REVIEW` | Documentos aguardando revisão |
+| `SCREENING_DOCUMENTS_NOT_REVIEWED` | Documentos não foram revisados |
+| `SCREENING_DOCUMENT_NOT_FOUND` | Documento não encontrado |
+| `SCREENING_DOCUMENT_INVALID_STATUS` | Status do documento não permite esta ação |
+| `SCREENING_DOCUMENT_TYPE_MISMATCH` | Tipo de documento não corresponde |
+| `SCREENING_DOCUMENT_REUSE_PENDING` | Documento para reutilização está pendente |
+
+#### Alert Errors
+| Código | Descrição |
+|--------|-----------|
+| `SCREENING_ALERT_NOT_FOUND` | Alerta não encontrado |
+| `SCREENING_ALERT_ALREADY_EXISTS` | Já existe um alerta pendente |
+| `SCREENING_ALERT_ALREADY_RESOLVED` | Alerta já foi resolvido |
+| `SCREENING_PROCESS_BLOCKED_BY_ALERT` | Processo bloqueado por alerta pendente |
+
 ## Tabelas
 
 ### screening_processes
@@ -307,11 +358,16 @@ Cada tipo de step tem sua própria tabela com campos específicos. Todas herdam 
 
 | Campo Adicional | Tipo | Nullable | Descrição |
 |-----------------|------|----------|-----------|
-| total_required | INTEGER | ❌ | Total de documentos obrigatórios |
-| total_uploaded | INTEGER | ❌ | Total de documentos enviados |
-| total_optional | INTEGER | ❌ | Total de documentos opcionais |
+| is_configured | BOOLEAN | ❌ | Se os documentos foram configurados para este step (default: `false`) |
+| total_documents | INTEGER | ❌ | Total de documentos configurados |
+| required_documents | INTEGER | ❌ | Número de documentos obrigatórios |
+| uploaded_documents | INTEGER | ❌ | Número de documentos já enviados |
 
 **Relationship:** `documents` → lista de `ScreeningDocument`
+
+**Propriedades Computadas (não persistidas):**
+- `optional_documents` → `total_documents - required_documents`
+- `all_required_uploaded` → `uploaded_documents >= required_documents`
 
 #### screening_document_review_steps
 
@@ -538,8 +594,14 @@ Registro granular de cada alteração feita em uma versão.
    - Cria `ProfessionalVersion` com snapshot completo
    - Ao completar: aplica versão ao profissional real
 3. **DOCUMENT_UPLOAD** (Obrigatório): Configuração e upload de documentos
-   - Fase 1: Gestor configura quais documentos são necessários
-   - Fase 2: Profissional/Gestor faz upload dos arquivos
+   - **Fase 1 - Configuração** (`is_configured = false`):
+     - Gestor define quais documentos são necessários via endpoint `/configure`
+     - Upload, reutilização e complete são **bloqueados** nesta fase
+     - Após configuração, `is_configured = true` e step avança para `IN_PROGRESS`
+   - **Fase 2 - Upload** (`is_configured = true`):
+     - Profissional/Gestor faz upload dos arquivos
+     - Reconfiguração **não é permitida** (erro `SCREENING_STEP_ALREADY_CONFIGURED`)
+     - Step pode ser completado quando todos os documentos obrigatórios forem enviados
 4. **DOCUMENT_REVIEW** (Obrigatório): Revisão individual de cada documento
 5. **PAYMENT_INFO** (Opcional): Dados bancários e empresa PJ
 6. **CLIENT_VALIDATION** (Opcional): Aprovação final pelo cliente contratante
@@ -577,6 +639,15 @@ A qualquer momento durante a triagem (desde que `status = IN_PROGRESS`), um aler
 
 O processo de documentos é dividido em duas etapas com um fluxo de estados bem definido.
 
+**O DOCUMENT_UPLOAD possui duas fases controladas pela flag `is_configured`:**
+1. **Fase de Configuração** (`is_configured = false`): Gestor define quais documentos são necessários
+2. **Fase de Upload** (`is_configured = true`): Profissional/Gestor envia os documentos
+
+Esta separação garante que:
+- Documentos não podem ser enviados antes de serem configurados
+- A lista de documentos não pode ser alterada após a configuração inicial
+- O fluxo é mais previsível e rastreável
+
 #### Guia de Frontend (para agente de IA)
 
 **Objetivo:** o frontend deve tratar o backend como **fonte de verdade** do workflow.
@@ -585,11 +656,25 @@ O processo de documentos é dividido em duas etapas com um fluxo de estados bem 
 - Gestor (autenticado): `GET /api/v1/screenings/{screening_id}`
 - Profissional (público): `GET /api/v1/public/screening/{token}`
 
+**Verificar fase do Document Upload:**
+- Use `DocumentUploadStepResponse.is_configured` para determinar a fase:
+  - `is_configured = false` → Mostrar UI de configuração de documentos
+  - `is_configured = true` → Mostrar UI de upload de documentos
+
 **Como renderizar estado por documento (recomendação):**
 - Use `ScreeningDocument.status` (e flags como `needs_upload`, `needs_review`, `needs_correction`) para decidir UI.
-- Use contadores do step (`total_required`, `total_uploaded`, etc.) apenas como *informação auxiliar*.
+- Use contadores do step (`required_documents`, `uploaded_documents`, etc.) apenas como *informação auxiliar*.
+- Use `all_required_uploaded` (propriedade computada) para habilitar/desabilitar botão "Completar Step"
 
-**Ações por documento:**
+**Ações por fase:**
+
+*Fase de Configuração (`is_configured = false`):*
+- Gestor configura documentos:
+  - `POST /api/v1/screenings/{screening_id}/steps/document-upload/configure`
+  - Body: `{ documents: [{ document_type_id, is_required, order, description }] }`
+  - ⚠️ Esta ação só pode ser executada UMA VEZ
+
+*Fase de Upload (`is_configured = true`):*
 - Upload novo:
   - Gestor: `POST /api/v1/screenings/{screening_id}/documents/{document_id}/upload`
   - Público: `POST /api/v1/public/screening/{token}/documents/{document_id}/upload`
@@ -615,21 +700,29 @@ O processo de documentos é dividido em duas etapas com um fluxo de estados bem 
 │                         DOCUMENT_UPLOAD Step                                            │
 ├─────────────────────────────────────────────────────────────────────────────────────────┤
 │                                                                                         │
-│  Status: PENDING                                                                        │
-│  ──────────────────                                                                     │
+│  Fase 1: Configuração (is_configured = false)                                           │
+│  ─────────────────────────────────────────────                                          │
 │  Step criado mas ainda não configurado.                                                 │
 │  Nenhum documento foi selecionado ainda.                                                │
+│  status = PENDING, is_configured = false                                                │
+│                                                                                         │
+│  Ações BLOQUEADAS nesta fase:                                                           │
+│  • Upload de documento      → Error: SCREENING_STEP_NOT_CONFIGURED                      │
+│  • Reutilização de documento → Error: SCREENING_STEP_NOT_CONFIGURED                     │
+│  • Completar step           → Error: SCREENING_STEP_NOT_CONFIGURED                      │
 │                                                                                         │
 │       │                                                                                 │
 │       │ POST /api/v1/screenings/{screening_id}/steps/document-upload/configure          │
 │       │ Payload: lista de document_type_ids com is_required, order, description         │
-│       │ Pode ser chamado também com o step em IN_PROGRESS (mantém IN_PROGRESS)         │
+│       │ ⚠️ IMPORTANTE: Este endpoint só pode ser chamado UMA VEZ                        │
+│       │ Se is_configured=true → Error: SCREENING_STEP_ALREADY_CONFIGURED               │
 │       ▼                                                                                 │
 │                                                                                         │
-│  Status: IN_PROGRESS                                                                    │
-│  ────────────────────                                                                   │
+│  Fase 2: Upload (is_configured = true)                                                  │
+│  ────────────────────────────────────                                                   │
 │  Documentos configurados, aguardando uploads.                                           │
 │  ScreeningDocument records criados com status PENDING_UPLOAD.                           │
+│  status = IN_PROGRESS, is_configured = true                                             │
 │                                                                                         │
 │       │                                                                                 │
 │       │ Para cada documento (duas opções equivalentes):                                 │
@@ -981,19 +1074,57 @@ Finaliza a triagem e promove todos os documentos pendentes.
 | 404 | `SCREENING_PROCESS_NOT_FOUND` | Triagem não encontrada |
 | 422 | `VALIDATION_ERROR` | Etapas incompletas |
 
+### Error Codes do Document Upload Step
+
+O step de upload de documentos possui validações específicas baseadas na flag `is_configured`:
+
+| Status | Code | Contexto | Descrição |
+|--------|------|----------|-----------|
+| 409 | `SCREENING_STEP_ALREADY_CONFIGURED` | Configure | Tentativa de reconfigurar documentos após `is_configured = true` |
+| 422 | `SCREENING_STEP_NOT_CONFIGURED` | Upload | Tentativa de upload antes de configurar documentos (`is_configured = false`) |
+| 422 | `SCREENING_STEP_NOT_CONFIGURED` | Reuse | Tentativa de reutilização antes de configurar documentos |
+| 422 | `SCREENING_STEP_NOT_CONFIGURED` | Complete | Tentativa de completar step antes de configurar documentos |
+
+**Fluxo de Estados do Step:**
+
+```
+                ┌──────────────────────────────────┐
+                │  is_configured = false           │
+                │  status = PENDING                │
+                │                                  │
+                │  ❌ Upload bloqueado             │
+                │  ❌ Reutilização bloqueada       │
+                │  ❌ Complete bloqueado           │
+                └───────────────┬──────────────────┘
+                                │
+                                │ POST /configure
+                                │ ✅ Sucesso: is_configured = true
+                                │
+                                ▼
+                ┌──────────────────────────────────┐
+                │  is_configured = true            │
+                │  status = IN_PROGRESS            │
+                │                                  │
+                │  ✅ Upload permitido             │
+                │  ✅ Reutilização permitida       │
+                │  ✅ Complete permitido           │
+                │  ❌ Reconfiguração bloqueada     │
+                └──────────────────────────────────┘
+```
+
 #### Endpoints de Documentos
 
-| Método | Endpoint | Descrição | Quem usa |
-|--------|----------|-----------|----------|
-| POST | `/screening/{id}/steps/document-upload/configure` | Configura lista de documentos necessários (PENDING/IN_PROGRESS) | Gestor |
-| GET | `/screening/{id}/documents` | Lista documentos da triagem | Ambos |
-| POST | `/screening/{id}/documents/{doc_id}/upload` | Upload de arquivo (consolidado) | Profissional/Gestor |
-| POST | `/screening/{id}/documents/{doc_id}/reuse` | Reutiliza documento aprovado | Profissional/Gestor |
-| DELETE | `/screening/{id}/documents/{doc_id}` | Exclui documento da triagem | Profissional/Gestor |
-| POST | `/screening/{id}/steps/document-upload/complete` | Finaliza etapa de upload | Profissional/Gestor |
-| POST | `/screening/{id}/documents/{doc_id}/review` | Revisa documento individual | Gestor |
-| POST | `/screening/{id}/steps/document-review/complete` | Finaliza etapa de revisão | Gestor |
-| POST | `/screening/{id}/finalize` | Finaliza triagem e promove documentos | Gestor |
+| Método | Endpoint | Descrição | Pré-condição | Quem usa |
+|--------|----------|-----------|--------------|----------|
+| POST | `/screening/{id}/steps/document-upload/configure` | Configura lista de documentos | `is_configured = false` | Gestor |
+| GET | `/screening/{id}/documents` | Lista documentos da triagem | - | Ambos |
+| POST | `/screening/{id}/documents/{doc_id}/upload` | Upload de arquivo | `is_configured = true` | Profissional/Gestor |
+| POST | `/screening/{id}/documents/{doc_id}/reuse` | Reutiliza documento aprovado | `is_configured = true` | Profissional/Gestor |
+| DELETE | `/screening/{id}/documents/{doc_id}` | Exclui documento da triagem | - | Profissional/Gestor |
+| POST | `/screening/{id}/steps/document-upload/complete` | Finaliza etapa de upload | `is_configured = true` | Profissional/Gestor |
+| POST | `/screening/{id}/documents/{doc_id}/review` | Revisa documento individual | - | Gestor |
+| POST | `/screening/{id}/steps/document-review/complete` | Finaliza etapa de revisão | - | Gestor |
+| POST | `/screening/{id}/finalize` | Finaliza triagem e promove documentos | - | Gestor |
 
 #### Payload: Upload de Documento (Consolidado)
 
@@ -1071,8 +1202,61 @@ POST /screening/{id}/steps/document-upload/configure
 ```
 
 **Observações:**
-- O step pode estar em `PENDING` ou `IN_PROGRESS`
-- Se estiver em `PENDING`, a configuração move o step para `IN_PROGRESS`
+- O step deve estar com `is_configured = false` (ainda não configurado)
+- Após configuração, `is_configured = true` e o step move para `IN_PROGRESS`
+- **Reconfiguração NÃO é permitida**: chamar o endpoint novamente retorna erro `SCREENING_STEP_ALREADY_CONFIGURED`
+- Para alterar a lista de documentos, é necessário criar uma nova triagem
+
+**Validações:**
+- Se `is_configured = true` → HTTP 409 Conflict com código `SCREENING_STEP_ALREADY_CONFIGURED`
+- Se step não está em status `PENDING` ou `IN_PROGRESS` → HTTP 422
+
+#### Response: DocumentUploadStepResponse
+
+O schema de resposta do step de upload de documentos inclui:
+
+```json
+{
+  "id": "uuid",
+  "process_id": "uuid",
+  "step_type": "DOCUMENT_UPLOAD",
+  "order": 3,
+  "status": "IN_PROGRESS",
+  
+  // Flag de configuração
+  "is_configured": true,
+  
+  // Contadores
+  "total_documents": 5,
+  "required_documents": 3,
+  "uploaded_documents": 2,
+  
+  // Propriedade computada (não persistida)
+  // Indica se todos os documentos obrigatórios foram enviados
+  // all_required_uploaded = uploaded_documents >= required_documents
+  
+  // Campos herdados do step base
+  "assigned_to": "uuid-or-null",
+  "review_notes": null,
+  "rejection_reason": null,
+  "started_at": "2026-02-01T10:00:00Z",
+  "completed_at": null,
+  "completed_by": null,
+  "reviewed_at": null,
+  "reviewed_by": null,
+  "created_at": "2026-02-01T09:00:00Z",
+  "updated_at": "2026-02-01T10:30:00Z"
+}
+```
+
+**Campos importantes para o frontend:**
+
+| Campo | Tipo | Descrição |
+|-------|------|-----------|
+| `is_configured` | boolean | `false` = fase de configuração, `true` = fase de upload |
+| `total_documents` | integer | Total de documentos configurados |
+| `required_documents` | integer | Quantos são obrigatórios |
+| `uploaded_documents` | integer | Quantos já foram enviados |
 
 #### Obtendo Tipos de Documento Disponíveis
 

@@ -18,11 +18,21 @@ docs {
   # Reutilizar Documento
   
   auth: inherit
+  
+  ## Comportamento
+  
+  1. Valida que o step foi configurado (`is_configured = true`)
   2. Valida que o ProfessionalDocument existe e **não está pendente** (`is_pending=False`)
   3. Valida que o tipo de documento (`document_type_id`) corresponde
   4. Vincula o ProfessionalDocument ao ScreeningDocument
   5. Define o status como `PENDING_REVIEW`
   6. Registra a ação no `review_history`
+  
+  ## Pré-requisitos
+  
+  O step de upload de documentos deve estar na **Fase 2 (Upload)**, ou seja:
+  - `is_configured = true` (endpoint `/configure` foi chamado)
+  - Step em status `IN_PROGRESS` ou `CORRECTION_NEEDED`
   
   ## Diferença entre Upload e Reuse
   
@@ -41,6 +51,7 @@ docs {
   
   ## Restrições
   
+  - Step deve estar configurado (`is_configured = true`)
   - Documento a reutilizar **não pode estar pendente** (`is_pending=False`)
   - Tipo de documento deve corresponder ao requisitado
   - Step de upload deve estar em `IN_PROGRESS` ou `CORRECTION_NEEDED`
@@ -53,6 +64,7 @@ docs {
   | 404 | `SCREENING_DOCUMENT_NOT_FOUND` | Documento de triagem não encontrado |
   | 404 | `SCREENING_STEP_NOT_FOUND` | Etapa de triagem não encontrada |
   | 404 | `PROF_DOCUMENT_NOT_FOUND` | Documento do profissional não encontrado |
+  | 422 | `SCREENING_STEP_NOT_CONFIGURED` | Step não foi configurado (is_configured=false) |
   | 422 | `SCREENING_STEP_NOT_IN_PROGRESS` | Etapa não está em andamento |
   | 422 | `SCREENING_DOCUMENT_INVALID_STATUS` | Documento não pode ser reutilizado no status atual |
   | 422 | `SCREENING_DOCUMENT_REUSE_PENDING` | Documento pendente não pode ser reutilizado |
