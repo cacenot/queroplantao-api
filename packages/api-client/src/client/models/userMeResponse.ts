@@ -9,7 +9,7 @@ import type { UserMeResponsePhone } from "./userMeResponsePhone.js";
 import type { UserMeResponseCpf } from "./userMeResponseCpf.js";
 import type { UserMeResponseAvatarUrl } from "./userMeResponseAvatarUrl.js";
 import type { UserMeResponseEmailVerifiedAt } from "./userMeResponseEmailVerifiedAt.js";
-import type { SrcModulesUsersDomainSchemasUserRoleInfo } from "./srcModulesUsersDomainSchemasUserRoleInfo.js";
+import type { RoleInfo } from "./roleInfo.js";
 import type { PermissionInfo } from "./permissionInfo.js";
 import type { OrganizationMembershipInfo } from "./organizationMembershipInfo.js";
 
@@ -27,7 +27,7 @@ export type UserMeResponse = {
   emailVerifiedAt?: UserMeResponseEmailVerifiedAt;
   createdAt: Date;
   updatedAt: Date;
-  roles?: SrcModulesUsersDomainSchemasUserRoleInfo[];
+  roles?: RoleInfo[];
   permissions?: PermissionInfo[];
   organizations?: OrganizationMembershipInfo[];
 };

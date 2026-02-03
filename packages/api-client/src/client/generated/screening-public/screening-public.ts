@@ -113,10 +113,10 @@ export const getGetScreeningByTokenApiV1PublicScreeningTokenGetQueryOptions = <
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof getScreeningByTokenApiV1PublicScreeningTokenGet>>
   > = ({ signal }) =>
-      getScreeningByTokenApiV1PublicScreeningTokenGet(token, {
-        signal,
-        ...requestOptions,
-      });
+    getScreeningByTokenApiV1PublicScreeningTokenGet(token, {
+      signal,
+      ...requestOptions,
+    });
 
   return {
     queryKey,
@@ -155,18 +155,18 @@ export function useGetScreeningByTokenApiV1PublicScreeningTokenGet<
         TData
       >
     > &
-    Pick<
-      DefinedInitialDataOptions<
-        Awaited<
-          ReturnType<typeof getScreeningByTokenApiV1PublicScreeningTokenGet>
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<
+            ReturnType<typeof getScreeningByTokenApiV1PublicScreeningTokenGet>
+          >,
+          TError,
+          Awaited<
+            ReturnType<typeof getScreeningByTokenApiV1PublicScreeningTokenGet>
+          >
         >,
-        TError,
-        Awaited<
-          ReturnType<typeof getScreeningByTokenApiV1PublicScreeningTokenGet>
-        >
-      >,
-      "initialData"
-    >;
+        "initialData"
+      >;
     request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
@@ -190,18 +190,18 @@ export function useGetScreeningByTokenApiV1PublicScreeningTokenGet<
         TData
       >
     > &
-    Pick<
-      UndefinedInitialDataOptions<
-        Awaited<
-          ReturnType<typeof getScreeningByTokenApiV1PublicScreeningTokenGet>
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<
+            ReturnType<typeof getScreeningByTokenApiV1PublicScreeningTokenGet>
+          >,
+          TError,
+          Awaited<
+            ReturnType<typeof getScreeningByTokenApiV1PublicScreeningTokenGet>
+          >
         >,
-        TError,
-        Awaited<
-          ReturnType<typeof getScreeningByTokenApiV1PublicScreeningTokenGet>
-        >
-      >,
-      "initialData"
-    >;
+        "initialData"
+      >;
     request?: SecondParameter<typeof customFetch>;
   },
   queryClient?: QueryClient,
@@ -295,8 +295,8 @@ export type uploadDocumentByTokenApiV1PublicScreeningTokenDocumentsDocumentIdUpl
 
 export type uploadDocumentByTokenApiV1PublicScreeningTokenDocumentsDocumentIdUploadPostResponse =
 
-  | uploadDocumentByTokenApiV1PublicScreeningTokenDocumentsDocumentIdUploadPostResponseSuccess
-  | uploadDocumentByTokenApiV1PublicScreeningTokenDocumentsDocumentIdUploadPostResponseError;
+    | uploadDocumentByTokenApiV1PublicScreeningTokenDocumentsDocumentIdUploadPostResponseSuccess
+    | uploadDocumentByTokenApiV1PublicScreeningTokenDocumentsDocumentIdUploadPostResponseError;
 
 export const getUploadDocumentByTokenApiV1PublicScreeningTokenDocumentsDocumentIdUploadPostUrl =
   (token: string, documentId: string) => {
@@ -317,9 +317,9 @@ export const uploadDocumentByTokenApiV1PublicScreeningTokenDocumentsDocumentIdUp
     );
     if (
       bodyUploadDocumentByTokenApiV1PublicScreeningTokenDocumentsDocumentIdUploadPost.expiresAt !==
-      undefined &&
+        undefined &&
       bodyUploadDocumentByTokenApiV1PublicScreeningTokenDocumentsDocumentIdUploadPost.expiresAt !==
-      null
+        null
     ) {
       formData.append(
         `expires_at`,
@@ -328,9 +328,9 @@ export const uploadDocumentByTokenApiV1PublicScreeningTokenDocumentsDocumentIdUp
     }
     if (
       bodyUploadDocumentByTokenApiV1PublicScreeningTokenDocumentsDocumentIdUploadPost.notes !==
-      undefined &&
+        undefined &&
       bodyUploadDocumentByTokenApiV1PublicScreeningTokenDocumentsDocumentIdUploadPost.notes !==
-      null
+        null
     ) {
       formData.append(
         `notes`,

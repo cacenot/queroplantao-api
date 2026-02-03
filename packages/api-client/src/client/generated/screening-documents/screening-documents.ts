@@ -29,7 +29,7 @@ import { customFetch } from "../../custom-fetch.js";
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 /**
- * Configura a lista de documentos necessários para a triagem. Transiciona o step de PENDING para IN_PROGRESS.
+ * Configura a lista de documentos necessários para a triagem. Transiciona o step de PENDING para IN_PROGRESS ou mantém IN_PROGRESS.
  * @summary Configurar documentos
  */
 export type configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePostResponse201 =
@@ -55,8 +55,8 @@ export type configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfi
 
 export type configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePostResponse =
 
-  | configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePostResponseSuccess
-  | configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePostResponseError;
+    | configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePostResponseSuccess
+    | configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePostResponseError;
 
 export const getConfigureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePostUrl =
   (screeningId: string) => {
@@ -186,6 +186,170 @@ export const useConfigureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadC
     return useMutation(mutationOptions, queryClient);
   };
 /**
+ * Remove um documento de triagem e, se aplicável, o arquivo no Firebase Storage. A exclusão só é permitida enquanto o processo estiver IN_PROGRESS.
+ * @summary Excluir documento de triagem
+ */
+export type deleteScreeningDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdDeleteResponse204 =
+  {
+    data: void;
+    status: 204;
+  };
+
+export type deleteScreeningDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdDeleteResponse404 =
+  {
+    data: ErrorResponse;
+    status: 404;
+  };
+
+export type deleteScreeningDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdDeleteResponse422 =
+  {
+    data: ErrorResponse;
+    status: 422;
+  };
+
+export type deleteScreeningDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdDeleteResponseSuccess =
+  deleteScreeningDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdDeleteResponse204 & {
+    headers: Headers;
+  };
+export type deleteScreeningDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdDeleteResponseError =
+  (
+    | deleteScreeningDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdDeleteResponse404
+    | deleteScreeningDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdDeleteResponse422
+  ) & {
+    headers: Headers;
+  };
+
+export type deleteScreeningDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdDeleteResponse =
+
+    | deleteScreeningDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdDeleteResponseSuccess
+    | deleteScreeningDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdDeleteResponseError;
+
+export const getDeleteScreeningDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdDeleteUrl =
+  (screeningId: string, documentId: string) => {
+    return `/api/v1/screenings/${screeningId}/documents/${documentId}`;
+  };
+
+export const deleteScreeningDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdDelete =
+  async (
+    screeningId: string,
+    documentId: string,
+    options?: RequestInit,
+  ): Promise<deleteScreeningDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdDeleteResponse> => {
+    return customFetch<deleteScreeningDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdDeleteResponse>(
+      getDeleteScreeningDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdDeleteUrl(
+        screeningId,
+        documentId,
+      ),
+      {
+        ...options,
+        method: "DELETE",
+      },
+    );
+  };
+
+export const getDeleteScreeningDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdDeleteMutationOptions =
+  <TError = ErrorResponse, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<
+          typeof deleteScreeningDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdDelete
+        >
+      >,
+      TError,
+      { screeningId: string; documentId: string },
+      TContext
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  }): UseMutationOptions<
+    Awaited<
+      ReturnType<
+        typeof deleteScreeningDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdDelete
+      >
+    >,
+    TError,
+    { screeningId: string; documentId: string },
+    TContext
+  > => {
+    const mutationKey = [
+      "deleteScreeningDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdDelete",
+    ];
+    const { mutation: mutationOptions, request: requestOptions } = options
+      ? options.mutation &&
+        "mutationKey" in options.mutation &&
+        options.mutation.mutationKey
+        ? options
+        : { ...options, mutation: { ...options.mutation, mutationKey } }
+      : { mutation: { mutationKey }, request: undefined };
+
+    const mutationFn: MutationFunction<
+      Awaited<
+        ReturnType<
+          typeof deleteScreeningDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdDelete
+        >
+      >,
+      { screeningId: string; documentId: string }
+    > = (props) => {
+      const { screeningId, documentId } = props ?? {};
+
+      return deleteScreeningDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdDelete(
+        screeningId,
+        documentId,
+        requestOptions,
+      );
+    };
+
+    return { mutationFn, ...mutationOptions };
+  };
+
+export type DeleteScreeningDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdDeleteMutationResult =
+  NonNullable<
+    Awaited<
+      ReturnType<
+        typeof deleteScreeningDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdDelete
+      >
+    >
+  >;
+
+export type DeleteScreeningDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdDeleteMutationError =
+  ErrorResponse;
+
+/**
+ * @summary Excluir documento de triagem
+ */
+export const useDeleteScreeningDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdDelete =
+  <TError = ErrorResponse, TContext = unknown>(
+    options?: {
+      mutation?: UseMutationOptions<
+        Awaited<
+          ReturnType<
+            typeof deleteScreeningDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdDelete
+          >
+        >,
+        TError,
+        { screeningId: string; documentId: string },
+        TContext
+      >;
+      request?: SecondParameter<typeof customFetch>;
+    },
+    queryClient?: QueryClient,
+  ): UseMutationResult<
+    Awaited<
+      ReturnType<
+        typeof deleteScreeningDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdDelete
+      >
+    >,
+    TError,
+    { screeningId: string; documentId: string },
+    TContext
+  > => {
+    const mutationOptions =
+      getDeleteScreeningDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdDeleteMutationOptions(
+        options,
+      );
+
+    return useMutation(mutationOptions, queryClient);
+  };
+/**
  * Faz upload de um documento para a triagem. O arquivo é enviado via multipart/form-data e o backend faz upload para o Firebase Storage, cria o ProfessionalDocument (is_pending=True) e o vincula ao ScreeningDocument, inferindo qualification_id e specialty_id com base na categoria do documento.
  * @summary Upload de documento
  */
@@ -212,8 +376,8 @@ export type uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPos
 
 export type uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPostResponse =
 
-  | uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPostResponseSuccess
-  | uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPostResponseError;
+    | uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPostResponseSuccess
+    | uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPostResponseError;
 
 export const getUploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPostUrl =
   (screeningId: string, documentId: string) => {
@@ -234,9 +398,9 @@ export const uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPo
     );
     if (
       bodyUploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPost.expiresAt !==
-      undefined &&
+        undefined &&
       bodyUploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPost.expiresAt !==
-      null
+        null
     ) {
       formData.append(
         `expires_at`,
@@ -245,9 +409,9 @@ export const uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPo
     }
     if (
       bodyUploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPost.notes !==
-      undefined &&
+        undefined &&
       bodyUploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPost.notes !==
-      null
+        null
     ) {
       formData.append(
         `notes`,
@@ -428,8 +592,8 @@ export type reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostR
 
 export type reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostResponse =
 
-  | reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostResponseSuccess
-  | reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostResponseError;
+    | reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostResponseSuccess
+    | reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostResponseError;
 
 export const getReuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostUrl =
   (
@@ -625,8 +789,8 @@ export type reviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPos
 
 export type reviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPostResponse =
 
-  | reviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPostResponseSuccess
-  | reviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPostResponseError;
+    | reviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPostResponseSuccess
+    | reviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPostResponseError;
 
 export const getReviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPostUrl =
   (screeningId: string, documentId: string) => {
