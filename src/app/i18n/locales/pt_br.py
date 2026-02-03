@@ -150,7 +150,9 @@ MESSAGES: dict[str, str] = {
     ScreeningMessages.STEP_ALREADY_COMPLETED: "Esta etapa já foi concluída",
     ScreeningMessages.STEP_SKIPPED: "Esta etapa foi ignorada e não pode ser alterada",
     ScreeningMessages.STEP_NOT_IN_PROGRESS: "Esta etapa não está em andamento",
-    ScreeningMessages.STEP_NOT_PENDING: "Esta etapa não está pendente. Status atual: {status}",
+    ScreeningMessages.STEP_NOT_PENDING: (
+        "Esta etapa deve estar em PENDING ou IN_PROGRESS. Status atual: {status}"
+    ),
     ScreeningMessages.STEP_INVALID_TYPE: "Tipo de etapa inválido para esta operação. Esperado: {expected}, recebido: {received}",
     ScreeningMessages.STEP_CANNOT_GO_BACK: "Não é possível voltar para a etapa {step_type}",
     ScreeningMessages.STEP_NOT_ASSIGNED_TO_USER: "Esta etapa não está atribuída ao usuário atual",

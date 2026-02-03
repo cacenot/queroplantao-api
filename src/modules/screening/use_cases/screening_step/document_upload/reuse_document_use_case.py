@@ -108,7 +108,9 @@ class ReuseDocumentUseCase:
             professional_document_id
         )
         if not professional_doc:
-            raise DocumentNotFoundError(details={"document_id": str(professional_document_id)})
+            raise DocumentNotFoundError(
+                details={"document_id": str(professional_document_id)}
+            )
 
         # 6. Validate document is not pending (must be an approved document)
         if professional_doc.is_pending:

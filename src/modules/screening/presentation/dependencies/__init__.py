@@ -19,6 +19,7 @@ from src.modules.screening.presentation.dependencies.screening_alert import (
 )
 from src.modules.screening.presentation.dependencies.screening_document import (
     ConfigureDocumentsUC,
+    DeleteScreeningDocumentUC,
     ReviewDocumentUC as ReviewDocumentStepUC,
     UploadDocumentUC,
 )
@@ -66,6 +67,7 @@ __all__ = [
     "GoBackToStepUC",
     # Document step dependencies
     "ConfigureDocumentsUC",
+    "DeleteScreeningDocumentUC",
     "ReviewDocumentStepUC",
     "UploadDocumentUC",
 ]

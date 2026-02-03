@@ -10,6 +10,7 @@ from src.modules.screening.use_cases.screening_step.document_review import (
 )
 from src.modules.screening.use_cases.screening_step.document_upload import (
     ConfigureDocumentsUseCase,
+    DeleteScreeningDocumentUseCase,
     UploadDocumentUseCase,
 )
 
@@ -32,6 +33,14 @@ def get_upload_document_use_case(
 ) -> UploadDocumentUseCase:
     """Factory for UploadDocumentUseCase."""
     return UploadDocumentUseCase(session, settings)
+
+
+def get_delete_screening_document_use_case(
+    session: SessionDep,
+    settings: SettingsDep,
+) -> DeleteScreeningDocumentUseCase:
+    """Factory for DeleteScreeningDocumentUseCase."""
+    return DeleteScreeningDocumentUseCase(session, settings)
 
 
 # =============================================================================
@@ -58,6 +67,11 @@ ConfigureDocumentsUC = Annotated[
 UploadDocumentUC = Annotated[
     UploadDocumentUseCase,
     Depends(get_upload_document_use_case),
+]
+
+DeleteScreeningDocumentUC = Annotated[
+    DeleteScreeningDocumentUseCase,
+    Depends(get_delete_screening_document_use_case),
 ]
 
 ReviewDocumentUC = Annotated[

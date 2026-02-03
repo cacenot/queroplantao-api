@@ -7,7 +7,7 @@ from datetime import datetime
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, File, Form, UploadFile, status
+from fastapi import APIRouter, BackgroundTasks, File, Form, UploadFile, status
 
 from src.app.constants.error_codes import ProfessionalErrorCodes, ScreeningErrorCodes
 from src.app.dependencies import OrganizationContext
@@ -22,6 +22,7 @@ from src.modules.screening.domain.schemas.steps import (
 )
 from src.modules.screening.presentation.dependencies.screening_document import (
     ConfigureDocumentsUC,
+    DeleteScreeningDocumentUC,
     ReviewDocumentUC,
     UploadDocumentUC,
 )
@@ -42,7 +43,7 @@ router = APIRouter(tags=["Screening - Documents"])
     summary="Configurar documentos",
     description=(
         "Configura a lista de documentos necessários para a triagem. "
-        "Transiciona o step de PENDING para IN_PROGRESS."
+        "Transiciona o step de PENDING para IN_PROGRESS ou mantém IN_PROGRESS."
     ),
 )
 async def configure_documents(
@@ -57,6 +58,67 @@ async def configure_documents(
         screening_id=screening_id,
         data=data,
         configured_by=ctx.user,
+    )
+
+
+@router.delete(
+    "/{screening_id}/documents/{document_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Excluir documento de triagem",
+    description=(
+        "Remove um documento de triagem e, se aplicável, o arquivo no Firebase Storage. "
+        "A exclusão só é permitida enquanto o processo estiver IN_PROGRESS."
+    ),
+    responses={
+        404: {
+            "model": ErrorResponse,
+            "description": "Não encontrado",
+            "content": {
+                "application/json": {
+                    "examples": {
+                        "screening_document_not_found": {
+                            "summary": "Documento de triagem não encontrado",
+                            "value": {
+                                "code": ScreeningErrorCodes.SCREENING_DOCUMENT_NOT_FOUND,
+                                "message": "Documento de triagem não encontrado",
+                            },
+                        },
+                    }
+                }
+            },
+        },
+        422: {
+            "model": ErrorResponse,
+            "description": "Erro de validação",
+            "content": {
+                "application/json": {
+                    "examples": {
+                        "invalid_process_status": {
+                            "summary": "Processo em status inválido",
+                            "value": {
+                                "code": ScreeningErrorCodes.SCREENING_PROCESS_INVALID_STATUS,
+                                "message": "Processo de triagem não pode ser alterado no status APPROVED",
+                            },
+                        },
+                    }
+                }
+            },
+        },
+    },
+)
+async def delete_screening_document(
+    screening_id: UUID,
+    document_id: UUID,
+    ctx: OrganizationContext,
+    background_tasks: BackgroundTasks,
+    use_case: DeleteScreeningDocumentUC,
+) -> None:
+    """Delete a screening document by ID."""
+    _ = screening_id
+    await use_case.execute(
+        screening_document_id=document_id,
+        deleted_by=ctx.user,
+        background_tasks=background_tasks,
     )
 
 

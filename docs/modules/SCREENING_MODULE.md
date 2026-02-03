@@ -623,6 +623,7 @@ O processo de documentos é dividido em duas etapas com um fluxo de estados bem 
 │       │                                                                                 │
 │       │ POST /api/v1/screenings/{screening_id}/steps/document-upload/configure          │
 │       │ Payload: lista de document_type_ids com is_required, order, description         │
+│       │ Pode ser chamado também com o step em IN_PROGRESS (mantém IN_PROGRESS)         │
 │       ▼                                                                                 │
 │                                                                                         │
 │  Status: IN_PROGRESS                                                                    │
@@ -984,11 +985,11 @@ Finaliza a triagem e promove todos os documentos pendentes.
 
 | Método | Endpoint | Descrição | Quem usa |
 |--------|----------|-----------|----------|
-| POST | `/screening/{id}/steps/document-upload/configure` | Configura lista de documentos necessários | Gestor |
+| POST | `/screening/{id}/steps/document-upload/configure` | Configura lista de documentos necessários (PENDING/IN_PROGRESS) | Gestor |
 | GET | `/screening/{id}/documents` | Lista documentos da triagem | Ambos |
 | POST | `/screening/{id}/documents/{doc_id}/upload` | Upload de arquivo (consolidado) | Profissional/Gestor |
 | POST | `/screening/{id}/documents/{doc_id}/reuse` | Reutiliza documento aprovado | Profissional/Gestor |
-| DELETE | `/screening/{id}/documents/{doc_id}/upload` | Remove upload (antes da revisão) | Profissional/Gestor |
+| DELETE | `/screening/{id}/documents/{doc_id}` | Exclui documento da triagem | Profissional/Gestor |
 | POST | `/screening/{id}/steps/document-upload/complete` | Finaliza etapa de upload | Profissional/Gestor |
 | POST | `/screening/{id}/documents/{doc_id}/review` | Revisa documento individual | Gestor |
 | POST | `/screening/{id}/steps/document-review/complete` | Finaliza etapa de revisão | Gestor |
@@ -1068,6 +1069,10 @@ POST /screening/{id}/steps/document-upload/configure
   ]
 }
 ```
+
+**Observações:**
+- O step pode estar em `PENDING` ou `IN_PROGRESS`
+- Se estiver em `PENDING`, a configuração move o step para `IN_PROGRESS`
 
 #### Obtendo Tipos de Documento Disponíveis
 

@@ -55,8 +55,8 @@ export type configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfi
 
 export type configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePostResponse =
 
-    | configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePostResponseSuccess
-    | configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePostResponseError;
+  | configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePostResponseSuccess
+  | configureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePostResponseError;
 
 export const getConfigureDocumentsApiV1ScreeningsScreeningIdStepsDocumentUploadConfigurePostUrl =
   (screeningId: string) => {
@@ -212,8 +212,8 @@ export type uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPos
 
 export type uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPostResponse =
 
-    | uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPostResponseSuccess
-    | uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPostResponseError;
+  | uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPostResponseSuccess
+  | uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPostResponseError;
 
 export const getUploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPostUrl =
   (screeningId: string, documentId: string) => {
@@ -234,9 +234,9 @@ export const uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPo
     );
     if (
       bodyUploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPost.expiresAt !==
-        undefined &&
+      undefined &&
       bodyUploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPost.expiresAt !==
-        null
+      null
     ) {
       formData.append(
         `expires_at`,
@@ -245,9 +245,9 @@ export const uploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPo
     }
     if (
       bodyUploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPost.notes !==
-        undefined &&
+      undefined &&
       bodyUploadDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdUploadPost.notes !==
-        null
+      null
     ) {
       formData.append(
         `notes`,
@@ -428,8 +428,8 @@ export type reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostR
 
 export type reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostResponse =
 
-    | reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostResponseSuccess
-    | reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostResponseError;
+  | reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostResponseSuccess
+  | reuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostResponseError;
 
 export const getReuseDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReusePostUrl =
   (
@@ -625,8 +625,8 @@ export type reviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPos
 
 export type reviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPostResponse =
 
-    | reviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPostResponseSuccess
-    | reviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPostResponseError;
+  | reviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPostResponseSuccess
+  | reviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPostResponseError;
 
 export const getReviewDocumentApiV1ScreeningsScreeningIdDocumentsDocumentIdReviewPostUrl =
   (screeningId: string, documentId: string) => {

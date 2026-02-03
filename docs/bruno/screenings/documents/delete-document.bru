@@ -1,0 +1,34 @@
+meta {
+  name: Delete Screening Document
+  type: http
+  seq: 9
+}
+
+delete {
+  url: {{baseUrl}}/api/v1/screenings/{{screeningId}}/documents/{{documentId}}
+  auth: inherit
+}
+
+headers {
+  X-Organization-ID: {{organizationId}}
+}
+
+docs {
+  # Excluir Documento de Triagem
+  
+  Remove um documento de triagem e, quando aplicável, o arquivo no Firebase Storage.
+  
+  ## Comportamento
+  
+  - Permitido apenas quando o processo está em `IN_PROGRESS`
+  - Se o documento foi reutilizado em outra triagem, remove apenas o ScreeningDocument
+  - Caso contrário, remove o ProfessionalDocument e agenda a exclusão do arquivo
+  - Retorna **204 No Content**
+  
+  ## Error Codes
+  
+  | Status | Code | Descrição |
+  |--------|------|-----------|
+  | 404 | `SCREENING_DOCUMENT_NOT_FOUND` | Documento de triagem não encontrado |
+  | 422 | `SCREENING_PROCESS_INVALID_STATUS` | Processo de triagem em status inválido |
+}

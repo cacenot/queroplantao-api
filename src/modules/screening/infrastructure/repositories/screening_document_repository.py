@@ -2,7 +2,7 @@
 
 from uuid import UUID
 
-from sqlalchemy import Select, select
+from sqlalchemy import Select, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -10,6 +10,7 @@ from src.modules.screening.domain.models import (
     ScreeningDocument,
     ScreeningDocumentStatus,
 )
+from src.modules.screening.domain.models.steps import DocumentUploadStep
 from src.shared.infrastructure.repositories import BaseRepository
 
 
@@ -81,6 +82,31 @@ class ScreeningDocumentRepository(BaseRepository[ScreeningDocument]):
             select(ScreeningDocument)
             .where(ScreeningDocument.id == id)
             .options(selectinload(ScreeningDocument.document_type))
+        )
+        result = await self.session.execute(query)
+        return result.scalar_one_or_none()
+
+    async def get_by_id_with_step_and_process(
+        self,
+        id: UUID,
+    ) -> ScreeningDocument | None:
+        """
+        Get document by ID with upload step and process loaded.
+
+        Args:
+            id: The screening document UUID.
+
+        Returns:
+            ScreeningDocument with upload_step and process loaded, or None.
+        """
+        query = (
+            select(ScreeningDocument)
+            .where(ScreeningDocument.id == id)
+            .options(
+                selectinload(ScreeningDocument.upload_step).selectinload(
+                    DocumentUploadStep.process
+                )
+            )
         )
         result = await self.session.execute(query)
         return result.scalar_one_or_none()
@@ -254,6 +280,39 @@ class ScreeningDocumentRepository(BaseRepository[ScreeningDocument]):
         result = await self.session.execute(query)
         rows = result.all()
         return {row.status: row.count for row in rows}
+
+    async def count_total_for_step(self, upload_step_id: UUID) -> int:
+        """Count total documents for an upload step."""
+        query = select(func.count(ScreeningDocument.id)).where(
+            ScreeningDocument.upload_step_id == upload_step_id
+        )
+        result = await self.session.execute(query)
+        return result.scalar_one() or 0
+
+    async def count_required_for_step(self, upload_step_id: UUID) -> int:
+        """Count required documents for an upload step."""
+        query = (
+            select(func.count(ScreeningDocument.id))
+            .where(ScreeningDocument.upload_step_id == upload_step_id)
+            .where(ScreeningDocument.is_required.is_(True))
+        )
+        result = await self.session.execute(query)
+        return result.scalar_one() or 0
+
+    async def count_by_professional_document_id(
+        self,
+        professional_document_id: UUID,
+        *,
+        exclude_id: UUID | None = None,
+    ) -> int:
+        """Count screening documents linked to a professional document."""
+        query = select(func.count(ScreeningDocument.id)).where(
+            ScreeningDocument.professional_document_id == professional_document_id
+        )
+        if exclude_id is not None:
+            query = query.where(ScreeningDocument.id != exclude_id)
+        result = await self.session.execute(query)
+        return result.scalar_one() or 0
 
     async def are_all_approved(
         self,

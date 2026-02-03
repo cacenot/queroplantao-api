@@ -45,14 +45,14 @@ docs {
   auth: inherit
   ## Comportamento
   
-  1. Valida que o step está em PENDING
+  1. Valida que o step está em PENDING ou IN_PROGRESS
   2. Cria ScreeningDocument para cada item
-  3. Transiciona step para IN_PROGRESS
+  3. Transiciona step para IN_PROGRESS (se estava em PENDING)
   4. Retorna step com lista de documentos
   
   ## Pré-requisitos
   
-  - DocumentUploadStep deve estar em status PENDING
+  - DocumentUploadStep deve estar em status PENDING ou IN_PROGRESS
   - Steps anteriores (CONVERSATION, PROFESSIONAL_DATA) devem estar COMPLETED/APPROVED
   
   ## Error Codes
@@ -61,6 +61,6 @@ docs {
   |--------|------|-----------|
   | 404 | `SCREENING_PROCESS_NOT_FOUND` | Processo não encontrado |
   | 404 | `SCREENING_STEP_NOT_FOUND` | Step não encontrado |
-  | 422 | `SCREENING_STEP_NOT_PENDING` | Step não está em PENDING |
+  | 422 | `SCREENING_STEP_NOT_PENDING` | Step não está em PENDING ou IN_PROGRESS |
   | 422 | `DOCUMENT_TYPE_NOT_FOUND` | Tipo de documento não encontrado |
 }

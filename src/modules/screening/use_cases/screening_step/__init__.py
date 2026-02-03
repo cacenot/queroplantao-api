@@ -19,6 +19,7 @@ from src.modules.screening.use_cases.screening_step.document_review import (
 from src.modules.screening.use_cases.screening_step.document_upload import (
     CompleteDocumentUploadStepUseCase,
     ConfigureDocumentsUseCase,
+    DeleteScreeningDocumentUseCase,
     ReuseDocumentUseCase,
     UploadDocumentUseCase,
 )
@@ -43,6 +44,7 @@ __all__ = [
     # Document Upload
     "CompleteDocumentUploadStepUseCase",
     "ConfigureDocumentsUseCase",
+    "DeleteScreeningDocumentUseCase",
     "ReuseDocumentUseCase",
     "UploadDocumentUseCase",
     # Professional Data

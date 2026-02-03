@@ -40,12 +40,13 @@ class ConfigureDocumentsUseCase:
     This use case creates ScreeningDocument records for each document
     that the professional needs to upload.
 
-    The step transitions from PENDING to IN_PROGRESS after configuration.
+    The step transitions from PENDING to IN_PROGRESS after configuration
+    (or stays IN_PROGRESS if already started).
 
     Validations:
     - Process must exist and belong to organization
     - Document upload step must exist for the process
-    - Step must be PENDING (not yet configured)
+    - Step must be PENDING or IN_PROGRESS
     - All document types must exist
     """
 
@@ -78,7 +79,7 @@ class ConfigureDocumentsUseCase:
         Raises:
             ScreeningProcessNotFoundError: If process doesn't exist.
             ScreeningStepNotFoundError: If document upload step doesn't exist.
-            ScreeningStepNotPendingError: If step is not PENDING.
+            ScreeningStepNotPendingError: If step is not PENDING or IN_PROGRESS.
             NotFoundError: If any document type doesn't exist.
         """
         # 1. Load process with steps
@@ -91,8 +92,8 @@ class ConfigureDocumentsUseCase:
         if not step:
             raise ScreeningStepNotFoundError(step_id="document_upload")
 
-        # 3. Validate step is PENDING
-        if step.status != StepStatus.PENDING:
+        # 3. Validate step is PENDING or IN_PROGRESS
+        if step.status not in (StepStatus.PENDING, StepStatus.IN_PROGRESS):
             raise ScreeningStepNotPendingError(
                 step_id=str(step.id),
                 current_status=step.status.value,
@@ -128,10 +129,11 @@ class ConfigureDocumentsUseCase:
 
         await self.document_repository.bulk_create(documents)
 
-        # 6. Update step to IN_PROGRESS
-        step.status = StepStatus.IN_PROGRESS
-        step.started_at = datetime.now(timezone.utc)
-        StepWorkflowService.update_step_status(process, step)
+        # 6. Update step to IN_PROGRESS if it was PENDING
+        if step.status == StepStatus.PENDING:
+            step.status = StepStatus.IN_PROGRESS
+            step.started_at = datetime.now(timezone.utc)
+            StepWorkflowService.update_step_status(process, step)
 
         # 7. Update step counts
         step.total_documents = len(documents)
