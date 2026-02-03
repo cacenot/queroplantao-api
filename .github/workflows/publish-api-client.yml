@@ -54,6 +54,11 @@ jobs:
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "📦 Publishing version: $VERSION"
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -62,11 +67,6 @@ jobs:
           scope: ${{ env.NPM_SCOPE }}
           cache: "pnpm"
           cache-dependency-path: packages/api-client/pnpm-lock.yaml
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
 
       - name: Install Node dependencies
         working-directory: packages/api-client
