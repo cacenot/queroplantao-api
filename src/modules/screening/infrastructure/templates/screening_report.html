@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Relatório de Triagem - Compliance</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 1.5cm 2cm;
+            
+            @bottom-center {
+                content: "Documento gerado automaticamente pelo sistema Quero Plantão em {{ generated_at.strftime('%d/%m/%Y às %H:%M:%S') }}";
+                font-size: 8pt;
+                color: #666;
+            }
+            
+            @bottom-right {
+                content: "Página " counter(page) " de " counter(pages);
+                font-size: 8pt;
+                color: #666;
+            }
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+            font-size: 10pt;
+            line-height: 1.5;
+            color: #1f2937;
+        }
+        
+        /* ========== HEADER ========== */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 3px solid #2563eb;
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .header-left {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .logo {
+            height: 40px;
+            width: auto;
+        }
+        
+        .header-title {
+            color: #1e40af;
+            font-size: 16pt;
+            font-weight: 700;
+            margin: 0;
+        }
+        
+        .header-right {
+            text-align: right;
+            font-size: 9pt;
+            color: #6b7280;
+        }
+        
+        .header-right div {
+            margin-bottom: 0.25rem;
+        }
+        
+        .screening-id {
+            font-family: 'Courier New', monospace;
+            font-size: 8pt;
+            background: #f3f4f6;
+            padding: 0.125rem 0.375rem;
+            border-radius: 2px;
+        }
+        
+        /* ========== SECTIONS ========== */
+        .section {
+            margin-bottom: 1.5rem;
+            page-break-inside: avoid;
+        }
+        
+        .section-title {
+            color: #1e40af;
+            font-size: 12pt;
+            font-weight: 600;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 0.375rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .subsection-title {
+            color: #374151;
+            font-size: 10pt;
+            font-weight: 600;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        /* ========== PERSONAL DATA ========== */
+        .personal-header {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .professional-photo {
+            width: 90px;
+            height: 110px;
+            object-fit: cover;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+        
+        .personal-info {
+            flex: 1;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.375rem 1.5rem;
+        }
+        
+        .info-grid-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+        
+        .info-item {
+            margin-bottom: 0.25rem;
+        }
+        
+        .info-label {
+            font-size: 8pt;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+        
+        .info-value {
+            font-size: 10pt;
+            color: #1f2937;
+        }
+        
+        .info-value-large {
+            font-size: 12pt;
+            font-weight: 600;
+            color: #111827;
+        }
+        
+        /* ========== TABLES ========== */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 9pt;
+        }
+        
+        th, td {
+            border: 1px solid #e5e7eb;
+            padding: 0.5rem 0.625rem;
+            text-align: left;
+        }
+        
+        th {
+            background-color: #f9fafb;
+            font-weight: 600;
+            color: #374151;
+            font-size: 8pt;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+        
+        /* ========== STATUS BADGES ========== */
+        .status-badge {
+            display: inline-block;
+            padding: 0.125rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 8pt;
+            font-weight: 600;
+        }
+        
+        .status-approved {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status-pending, .status-pending_upload, .status-pending_review {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+        
+        .status-rejected, .status-correction_needed {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .status-completed, .status-in_progress {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .status-skipped, .status-reused {
+            background-color: #e5e7eb;
+            color: #4b5563;
+        }
+        
+        /* ========== DOWNLOAD BUTTON ========== */
+        .download-btn {
+            display: inline-block;
+            background-color: #2563eb;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 8pt;
+            font-weight: 500;
+        }
+        
+        .download-btn:hover {
+            background-color: #1d4ed8;
+        }
+        
+        /* ========== QUALIFICATION CARD ========== */
+        .qualification-card {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 6px;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .qualification-type {
+            font-size: 11pt;
+            font-weight: 600;
+            color: #0369a1;
+            margin-bottom: 0.375rem;
+        }
+        
+        .qualification-council {
+            font-size: 10pt;
+            color: #0c4a6e;
+        }
+        
+        /* ========== SPECIALTY CARD ========== */
+        .specialty-card {
+            background: #fef3c7;
+            border: 1px solid #fcd34d;
+            border-radius: 6px;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .specialty-name {
+            font-size: 11pt;
+            font-weight: 600;
+            color: #92400e;
+            margin-bottom: 0.375rem;
+        }
+        
+        .specialty-details {
+            font-size: 9pt;
+            color: #78350f;
+        }
+        
+        /* ========== HISTORY SUMMARY ========== */
+        .history-summary {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            background: #f9fafb;
+            border-radius: 6px;
+        }
+        
+        /* ========== EMPTY STATE ========== */
+        .empty-state {
+            color: #9ca3af;
+            font-style: italic;
+            padding: 0.5rem 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- ========== 1. CABEÇALHO ========== -->
+    <div class="header">
+        <div class="header-left">
+            {% if logo_base64 %}
+            <img src="data:image/png;base64,{{ logo_base64 }}" alt="Quero Plantão" class="logo">
+            {% endif %}
+            <h1 class="header-title">Relatório de Triagem - Compliance</h1>
+        </div>
+        <div class="header-right">
+            <div>Gerado em: <strong>{{ generated_at.strftime('%d/%m/%Y às %H:%M') }}</strong></div>
+            <div>ID: <span class="screening-id">{{ screening_id }}</span></div>
+        </div>
+    </div>
+    
+    <!-- ========== 2. DADOS PESSOAIS ========== -->
+    <div class="section">
+        <h2 class="section-title">Dados Pessoais</h2>
+        <div class="personal-header">
+            {% if professional_photo_base64 %}
+            <img src="data:image/jpeg;base64,{{ professional_photo_base64 }}" 
+                 alt="Foto do profissional" 
+                 class="professional-photo">
+            {% elif placeholder_base64 %}
+            <img src="data:image/png;base64,{{ placeholder_base64 }}" 
+                 alt="Foto não disponível" 
+                 class="professional-photo">
+            {% endif %}
+            <div class="personal-info">
+                <div class="info-item" style="margin-bottom: 0.5rem;">
+                    <div class="info-label">Nome Completo</div>
+                    <div class="info-value-large">{{ professional_name }}</div>
+                </div>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">CPF</div>
+                        <div class="info-value">{{ professional_cpf | format_cpf }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Data de Nascimento</div>
+                        <div class="info-value">{{ professional_birth_date.strftime('%d/%m/%Y') if professional_birth_date else '-' }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Email</div>
+                        <div class="info-value">{{ professional_email or '-' }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Telefone</div>
+                        <div class="info-value">{{ professional_phone | format_phone if professional_phone else '-' }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Gênero</div>
+                        <div class="info-value">{{ professional_gender_label or '-' }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Nacionalidade</div>
+                        <div class="info-value">{{ professional_nationality or '-' }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        {% if professional_address or professional_city %}
+        <div class="info-grid info-grid-3" style="margin-top: 0.5rem;">
+            <div class="info-item" style="grid-column: span 2;">
+                <div class="info-label">Endereço</div>
+                <div class="info-value">{{ professional_address or '-' }}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">CEP</div>
+                <div class="info-value">{{ professional_postal_code | format_cep if professional_postal_code else '-' }}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Cidade</div>
+                <div class="info-value">{{ professional_city or '-' }}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Estado</div>
+                <div class="info-value">{{ professional_state or '-' }}</div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- ========== 3. DADOS PROFISSIONAIS ========== -->
+    <div class="section">
+        <h2 class="section-title">Dados Profissionais</h2>
+        
+        <!-- 3.1 Formação Profissional (Qualificação) -->
+        {% if qualification %}
+        <h3 class="subsection-title">Formação Profissional</h3>
+        <div class="qualification-card">
+            <div class="qualification-type">{{ qualification.professional_type_label }}</div>
+            <div class="qualification-council">
+                {{ qualification.council_type }} {{ qualification.council_number }}/{{ qualification.council_state }}
+                {% if qualification.graduation_year %}
+                • Formado em {{ qualification.graduation_year }}
+                {% endif %}
+            </div>
+        </div>
+        {% else %}
+        <p class="empty-state">Qualificação não informada</p>
+        {% endif %}
+        
+        <!-- 3.2 Especialidade -->
+        {% if specialty %}
+        <h3 class="subsection-title">Especialidade</h3>
+        <div class="specialty-card">
+            <div class="specialty-name">{{ specialty.name }}</div>
+            <div class="specialty-details">
+                {% if specialty.rqe_number %}
+                RQE {{ specialty.rqe_number }}/{{ specialty.rqe_state }}
+                {% endif %}
+                {% if specialty.residency_status_label %}
+                • Residência: {{ specialty.residency_status_label }}
+                {% endif %}
+                {% if specialty.residency_institution %}
+                • {{ specialty.residency_institution }}
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- 3.3 Formação Acadêmica -->
+        {% if educations %}
+        <h3 class="subsection-title">Formação Acadêmica</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 20%;">Nível</th>
+                    <th style="width: 25%;">Curso</th>
+                    <th style="width: 30%;">Instituição</th>
+                    <th style="width: 15%;">Período</th>
+                    <th style="width: 10%;">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for edu in educations %}
+                <tr>
+                    <td>{{ edu.level_label }}</td>
+                    <td>{{ edu.course_name }}</td>
+                    <td>{{ edu.institution }}</td>
+                    <td>{{ edu.start_year or '-' }} - {{ edu.end_year or 'Atual' }}</td>
+                    <td>
+                        <span class="status-badge {{ 'status-completed' if edu.is_completed else 'status-pending' }}">
+                            {{ 'Concluído' if edu.is_completed else 'Em andamento' }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+    </div>
+    
+    <!-- ========== 4. DOCUMENTOS VERIFICADOS ========== -->
+    <div class="section">
+        <h2 class="section-title">Documentos Verificados</h2>
+        {% if documents %}
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 25%;">Documento</th>
+                    <th style="width: 12%;">Status</th>
+                    <th style="width: 15%;">Data Upload</th>
+                    <th style="width: 18%;">Revisor</th>
+                    <th style="width: 15%;">Data Revisão</th>
+                    <th style="width: 15%;">Ação</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for doc in documents %}
+                <tr>
+                    <td>{{ doc.document_type_name }}</td>
+                    <td>
+                        <span class="status-badge status-{{ doc.status | lower }}">
+                            {{ doc.status_label }}
+                        </span>
+                    </td>
+                    <td>{{ doc.uploaded_at.strftime('%d/%m/%Y') if doc.uploaded_at else '-' }}</td>
+                    <td>{{ doc.reviewed_by_name or '-' }}</td>
+                    <td>{{ doc.reviewed_at.strftime('%d/%m/%Y') if doc.reviewed_at else '-' }}</td>
+                    <td>
+                        {% if doc.download_url %}
+                        <a href="{{ doc.download_url }}" class="download-btn" target="_blank">Download</a>
+                        {% else %}
+                        <span style="color: #9ca3af;">-</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="empty-state">Nenhum documento verificado</p>
+        {% endif %}
+    </div>
+    
+    <!-- ========== 5. HISTÓRICO DA TRIAGEM ========== -->
+    <div class="section">
+        <h2 class="section-title">Histórico da Triagem</h2>
+        
+        <div class="history-summary">
+            <div class="info-item">
+                <div class="info-label">Data de Criação</div>
+                <div class="info-value">{{ created_at.strftime('%d/%m/%Y às %H:%M') }}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Responsável</div>
+                <div class="info-value">{{ owner_name or '-' }}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Data de Aprovação</div>
+                <div class="info-value">{{ completed_at.strftime('%d/%m/%Y às %H:%M') if completed_at else '-' }}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Aprovado por</div>
+                <div class="info-value">{{ completed_by_name or '-' }}</div>
+            </div>
+        </div>
+        
+        {% if steps_history %}
+        <h3 class="subsection-title">Etapas do Processo</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 30%;">Etapa</th>
+                    <th style="width: 20%;">Status</th>
+                    <th style="width: 25%;">Data de Conclusão</th>
+                    <th style="width: 25%;">Responsável</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for step in steps_history %}
+                <tr>
+                    <td>{{ step.step_label }}</td>
+                    <td>
+                        <span class="status-badge status-{{ step.status | lower }}">
+                            {{ step.status_label }}
+                        </span>
+                    </td>
+                    <td>{{ step.completed_at.strftime('%d/%m/%Y às %H:%M') if step.completed_at else '-' }}</td>
+                    <td>{{ step.completed_by_name or '-' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+    </div>
+    
+    <!-- ========== 6. RODAPÉ ========== -->
+    <!-- Rodapé é renderizado via @page @bottom-center no CSS -->
+</body>
+</html>

@@ -16,6 +16,9 @@ from src.modules.screening.use_cases import (
     ReuseDocumentUseCase,
     ReviewDocumentUseCase,
 )
+from src.modules.screening.use_cases.screening_report import (
+    GenerateScreeningReportUseCase,
+)
 
 # =============================================================================
 # NOTE: The following use cases don't exist and were never implemented:
@@ -108,4 +111,16 @@ FinalizeScreeningProcessUC = Annotated[
 ReuseDocumentUC = Annotated[ReuseDocumentUseCase, Depends(get_reuse_document_use_case)]
 ReviewDocumentUC = Annotated[
     ReviewDocumentUseCase, Depends(get_review_document_use_case)
+]
+
+
+# Report use case factory
+def get_generate_screening_report_use_case(
+    session: SessionDep,
+) -> GenerateScreeningReportUseCase:
+    return GenerateScreeningReportUseCase(session)
+
+
+GenerateScreeningReportUC = Annotated[
+    GenerateScreeningReportUseCase, Depends(get_generate_screening_report_use_case)
 ]

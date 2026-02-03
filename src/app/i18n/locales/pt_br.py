@@ -178,6 +178,9 @@ MESSAGES: dict[str, str] = {
     ScreeningMessages.ALERT_ALREADY_EXISTS: "Já existe um alerta pendente para esta triagem",
     ScreeningMessages.ALERT_ALREADY_RESOLVED: "Este alerta já foi resolvido",
     ScreeningMessages.PROCESS_BLOCKED_BY_ALERT: "Processo de triagem bloqueado por alerta pendente",
+    # Report
+    ScreeningMessages.NOT_APPROVED: "O relatório de compliance só pode ser gerado para triagens aprovadas",
+    ScreeningMessages.REPORT_GENERATION_FAILED: "Falha ao gerar o relatório de compliance: {error}",
     # ==========================================================================
     # Document Type messages
     # ==========================================================================

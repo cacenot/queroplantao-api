@@ -155,6 +155,10 @@ class ScreeningMessages(StrEnum):
     ALERT_ALREADY_RESOLVED = "screening.alert.already_resolved"
     PROCESS_BLOCKED_BY_ALERT = "screening.process.blocked_by_alert"
 
+    # Report messages
+    NOT_APPROVED = "screening.report.not_approved"
+    REPORT_GENERATION_FAILED = "screening.report.generation_failed"
+
 
 class UserMessages(StrEnum):
     """User management message keys."""

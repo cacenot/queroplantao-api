@@ -477,5 +477,34 @@ class ScreeningProcessBlockedByAlertError(AppException):
 
 
 # =============================================================================
+# REPORT EXCEPTIONS
+# =============================================================================
+
+
+class ScreeningNotApprovedError(AppException):
+    """Raised when trying to generate compliance report for non-approved screening."""
+
+    def __init__(self, screening_id: str, current_status: str) -> None:
+        super().__init__(
+            message=get_message(ScreeningMessages.NOT_APPROVED),
+            code=ScreeningErrorCodes.SCREENING_NOT_APPROVED,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            details={"screening_id": screening_id, "current_status": current_status},
+        )
+
+
+class ScreeningReportGenerationError(AppException):
+    """Raised when compliance report generation fails."""
+
+    def __init__(self, error: str) -> None:
+        super().__init__(
+            message=get_message(ScreeningMessages.REPORT_GENERATION_FAILED, error=error),
+            code=ScreeningErrorCodes.SCREENING_REPORT_GENERATION_FAILED,
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            details={"error": error},
+        )
+
+
+# =============================================================================
 # CLIENT VALIDATION EXCEPTIONS
 # =============================================================================

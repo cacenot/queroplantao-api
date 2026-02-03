@@ -25,8 +25,12 @@ from src.modules.screening.presentation.dependencies import (
     CreateScreeningProcessUC,
     DeleteScreeningProcessUC,
     FinalizeScreeningProcessUC,
+    GenerateScreeningReportUC,
     GetScreeningProcessUC,
     ListScreeningProcessesUC,
+)
+from src.modules.screening.domain.schemas.screening_report import (
+    ScreeningReportResponse,
 )
 from src.shared.domain.schemas import ErrorResponse
 
@@ -354,4 +358,95 @@ async def finalize_screening_process(
         screening_id=screening_id,
         finalized_by=ctx.user,
         family_org_ids=ctx.family_org_ids,
+    )
+
+
+@router.post(
+    "/{screening_id}/compliance-report",
+    response_model=ScreeningReportResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Gerar relatório de compliance",
+    description="""
+Gera um relatório PDF de compliance para uma triagem aprovada.
+
+O relatório contém:
+- Dados pessoais do profissional
+- Dados profissionais (qualificação, especialidade, formações)
+- Lista de documentos verificados com links de download
+- Histórico completo da triagem
+
+**Cache:**
+O PDF é gerado e armazenado no Firebase Storage. Chamadas subsequentes
+retornam a URL do PDF já gerado, a menos que `force=true`.
+
+**Regras:**
+- Só triagens com status APPROVED podem gerar relatório
+- Use `force=true` para regenerar o PDF (ex: após correção de dados)
+""",
+    responses={
+        404: {
+            "model": ErrorResponse,
+            "description": "Não encontrado",
+            "content": {
+                "application/json": {
+                    "examples": {
+                        "not_found": {
+                            "summary": "Triagem não encontrada",
+                            "value": {
+                                "code": ScreeningErrorCodes.SCREENING_PROCESS_NOT_FOUND,
+                                "message": "Processo de triagem não encontrado",
+                            },
+                        },
+                    }
+                }
+            },
+        },
+        422: {
+            "model": ErrorResponse,
+            "description": "Triagem não aprovada",
+            "content": {
+                "application/json": {
+                    "examples": {
+                        "not_approved": {
+                            "summary": "Triagem não aprovada",
+                            "value": {
+                                "code": ScreeningErrorCodes.SCREENING_NOT_APPROVED,
+                                "message": "O relatório de compliance só pode ser gerado para triagens aprovadas",
+                            },
+                        },
+                    }
+                }
+            },
+        },
+        500: {
+            "model": ErrorResponse,
+            "description": "Erro na geração",
+            "content": {
+                "application/json": {
+                    "examples": {
+                        "generation_failed": {
+                            "summary": "Falha na geração do PDF",
+                            "value": {
+                                "code": ScreeningErrorCodes.SCREENING_REPORT_GENERATION_FAILED,
+                                "message": "Falha ao gerar o relatório de compliance",
+                            },
+                        },
+                    }
+                }
+            },
+        },
+    },
+)
+async def generate_compliance_report(
+    screening_id: UUID,
+    ctx: OrganizationContext,
+    use_case: GenerateScreeningReportUC,
+    force: bool = False,
+) -> ScreeningReportResponse:
+    """Generate a compliance report PDF for an approved screening."""
+    return await use_case.execute(
+        organization_id=ctx.organization,
+        screening_id=screening_id,
+        family_org_ids=ctx.family_org_ids,
+        force=force,
     )

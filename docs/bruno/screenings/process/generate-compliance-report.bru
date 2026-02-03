@@ -1,0 +1,100 @@
+meta {
+  name: Generate Compliance Report
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{baseUrl}}/api/v1/screenings/{{screeningId}}/compliance-report
+  body: none
+  auth: inherit
+}
+
+params:query {
+  ~force: true
+}
+
+headers {
+  X-Organization-ID: {{organizationId}}
+}
+
+docs {
+  # Gerar Relatório de Compliance
+  
+  Gera um relatório PDF de compliance para uma triagem aprovada.
+  
+  ## Conteúdo do Relatório
+  
+  O PDF gerado contém:
+  
+  1. **Cabeçalho**
+     - Logo do Quero Plantão
+     - Título "Relatório de Triagem - Compliance"
+     - Data de geração e ID da triagem
+  
+  2. **Dados Pessoais**
+     - Foto do profissional (ou placeholder)
+     - Nome, CPF, email, telefone
+     - Data de nascimento, gênero, nacionalidade
+     - Endereço completo
+  
+  3. **Dados Profissionais**
+     - Qualificação (tipo, conselho, número, estado)
+     - Especialidade esperada (se definida)
+     - Formações acadêmicas
+  
+  4. **Documentos Verificados**
+     - Tabela com status, revisor, datas
+     - Links de download para cada documento
+  
+  5. **Histórico da Triagem**
+     - Data de criação e responsável
+     - Etapas concluídas com datas e responsáveis
+     - Data de aprovação final
+  
+  6. **Rodapé**
+     - Data/hora de geração automática
+  
+  ## Cache e Regeneração
+  
+  - O PDF é gerado e armazenado no Firebase Storage
+  - A URL é salva na coluna `compliance_report_url`
+  - Chamadas subsequentes retornam a URL em cache
+  - Use `?force=true` para forçar regeneração
+  
+  ## Query Parameters
+  
+  | Parâmetro | Tipo | Default | Descrição |
+  |-----------|------|---------|-----------|
+  | force | boolean | false | Se `true`, regenera o PDF mesmo que já exista |
+  
+  ## Response
+  
+  ```json
+  {
+    "url": "https://storage.googleapis.com/.../relatorio-compliance-joao-silva-20260203.pdf",
+    "generated_at": "2026-02-03T10:30:00Z",
+    "screening_id": "uuid"
+  }
+  ```
+  
+  ## Regras
+  
+  - Somente triagens com status `APPROVED` podem gerar relatório
+  - O PDF é gerado sob demanda na primeira chamada
+  - Chamadas subsequentes retornam URL do cache (a menos que `force=true`)
+  
+  ## Casos de Uso
+  
+  1. **Primeira geração**: Gera PDF, faz upload, salva URL, retorna
+  2. **Chamada em cache**: Retorna URL existente sem gerar novo PDF
+  3. **Regeneração forçada**: `?force=true` gera novo PDF e substitui URL
+  
+  ## Error Codes
+  
+  | Status | Code | Descrição |
+  |--------|------|-----------|
+  | 404 | `SCREENING_PROCESS_NOT_FOUND` | Triagem não encontrada |
+  | 422 | `SCREENING_NOT_APPROVED` | Triagem não está aprovada |
+  | 500 | `SCREENING_REPORT_GENERATION_FAILED` | Falha na geração do PDF |
+}

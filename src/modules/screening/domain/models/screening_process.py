@@ -202,6 +202,13 @@ class ScreeningProcessBase(BaseModel):
         description="Reason for cancellation (if cancelled)",
     )
 
+    # Compliance report
+    compliance_report_url: Optional[str] = Field(
+        default=None,
+        max_length=2048,
+        description="URL of the generated compliance report PDF in storage",
+    )
+
 
 class ScreeningProcess(
     ScreeningProcessBase,
