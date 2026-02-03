@@ -103,6 +103,8 @@ export const ErrorMessages: Record<string, string> = {
   [ErrorCodes.SCREENING_SCREENING_ALERT_ALREADY_EXISTS]: "Screening Alert Already Exists",
   [ErrorCodes.SCREENING_SCREENING_ALERT_ALREADY_RESOLVED]: "Screening Alert Already Resolved",
   [ErrorCodes.SCREENING_SCREENING_PROCESS_BLOCKED_BY_ALERT]: "Screening Process Blocked By Alert",
+  [ErrorCodes.SCREENING_SCREENING_NOT_APPROVED]: "Screening Not Approved",
+  [ErrorCodes.SCREENING_SCREENING_REPORT_GENERATION_FAILED]: "Screening Report Generation Failed",
   [ErrorCodes.USER_USER_NOT_FOUND]: "Usuário não encontrado",
   [ErrorCodes.USER_USER_ALREADY_MEMBER]: "Usuário já é membro desta organização",
   [ErrorCodes.USER_USER_NOT_MEMBER]: "Usuário não é membro desta organização",
