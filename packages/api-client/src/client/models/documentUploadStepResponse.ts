@@ -37,6 +37,7 @@ export type DocumentUploadStepResponse = {
   completedBy?: DocumentUploadStepResponseCompletedBy;
   reviewedAt?: DocumentUploadStepResponseReviewedAt;
   reviewedBy?: DocumentUploadStepResponseReviewedBy;
+  isConfigured?: boolean;
   totalDocuments?: number;
   requiredDocuments?: number;
   uploadedDocuments?: number;

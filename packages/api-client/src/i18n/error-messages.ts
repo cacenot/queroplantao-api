@@ -84,6 +84,8 @@ export const ErrorMessages: Record<string, string> = {
   [ErrorCodes.SCREENING_SCREENING_STEP_INVALID_TYPE]: "Screening Step Invalid Type",
   [ErrorCodes.SCREENING_SCREENING_STEP_CANNOT_GO_BACK]: "Screening Step Cannot Go Back",
   [ErrorCodes.SCREENING_SCREENING_STEP_NOT_ASSIGNED_TO_USER]: "Screening Step Not Assigned To User",
+  [ErrorCodes.SCREENING_SCREENING_STEP_NOT_CONFIGURED]: "Screening Step Not Configured",
+  [ErrorCodes.SCREENING_SCREENING_STEP_ALREADY_CONFIGURED]: "Screening Step Already Configured",
   [ErrorCodes.SCREENING_SCREENING_CONVERSATION_REJECTED]: "Screening Conversation Rejected",
   [ErrorCodes.SCREENING_SCREENING_PROFESSIONAL_NOT_LINKED]: "Screening Professional Not Linked",
   [ErrorCodes.SCREENING_SCREENING_PROFESSIONAL_NO_QUALIFICATION]: "Screening Professional No Qualification",

@@ -25,7 +25,7 @@ import type {
   ErrorResponse,
   HTTPValidationError,
   ListScreeningProcessesApiV1ScreeningsGetParams,
-  PaginatedResponseScreeningProcessListResponse,
+  PaginatedResponseScreeningProcessResponse,
   ScreeningProcessCancel,
   ScreeningProcessCreate,
   ScreeningProcessDetailResponse,
@@ -192,7 +192,7 @@ export const useCreateScreeningProcessApiV1ScreeningsPost = <
  * @summary Listar triagens
  */
 export type listScreeningProcessesApiV1ScreeningsGetResponse200 = {
-  data: PaginatedResponseScreeningProcessListResponse;
+  data: PaginatedResponseScreeningProcessResponse;
   status: 200;
 };
 

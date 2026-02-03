@@ -5,8 +5,8 @@
  * REST API para gestão de plantões médicos
  * OpenAPI spec version: 0.1.0
  */
-import type { ScreeningStatus } from "./screeningStatus.js";
 import type { StepTypeInfo } from "./stepTypeInfo.js";
+import type { ScreeningStatus } from "./screeningStatus.js";
 import type { ScreeningProcessDetailResponseProfessionalCpf } from "./screeningProcessDetailResponseProfessionalCpf.js";
 import type { ScreeningProcessDetailResponseProfessionalName } from "./screeningProcessDetailResponseProfessionalName.js";
 import type { ScreeningProcessDetailResponseProfessionalPhone } from "./screeningProcessDetailResponseProfessionalPhone.js";
@@ -37,11 +37,11 @@ import type { ScreeningProcessDetailResponseRequiredDocuments } from "./screenin
  * Schema for detailed screening process response with nested data.
  */
 export type ScreeningProcessDetailResponse = {
+  currentStepType: StepTypeInfo;
+  configuredStepTypes: StepTypeInfo[];
   id: string;
   organizationId: string;
   status: ScreeningStatus;
-  currentStepType: StepTypeInfo;
-  configuredStepTypes: StepTypeInfo[];
   professionalCpf: ScreeningProcessDetailResponseProfessionalCpf;
   professionalName: ScreeningProcessDetailResponseProfessionalName;
   professionalPhone: ScreeningProcessDetailResponseProfessionalPhone;

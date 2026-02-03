@@ -6,4 +6,11 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export type ScreeningProcessListResponseProfessionalName = string | null;
+/**
+ * Simplified role info for responses.
+ */
+export type SrcModulesUsersDomainSchemasUserRoleInfo = {
+  id: string;
+  code: string;
+  name: string;
+};
