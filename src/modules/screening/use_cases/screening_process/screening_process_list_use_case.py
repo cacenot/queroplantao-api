@@ -152,5 +152,7 @@ class ListScreeningProcessesUseCase:
             total=result.total,
             page=result.page,
             page_size=result.page_size,
-            pages=result.pages,
+            total_pages=result.total_pages,
+            has_next=result.has_next,
+            has_previous=result.has_previous,
         )
