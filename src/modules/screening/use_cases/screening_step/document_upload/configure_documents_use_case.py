@@ -140,9 +140,8 @@ class ConfigureDocumentsUseCase:
         step.required_documents = sum(1 for d in documents if d.is_required)
         step.uploaded_documents = 0
 
-        # 8. Start process if still in DRAFT
-        if process.status == ScreeningStatus.DRAFT:
-            process.status = ScreeningStatus.IN_PROGRESS
+        # 8. Start process
+        process.status = ScreeningStatus.IN_PROGRESS
 
         # 9. Persist changes
         await self.session.flush()
@@ -178,6 +177,10 @@ class ConfigureDocumentsUseCase:
         doc_type_map: dict[UUID, DocumentType],
     ) -> DocumentUploadStepResponse:
         """Build response with documents summary."""
+        all_required_uploaded = (
+            step.required_documents == 0
+            or step.uploaded_documents >= step.required_documents
+        )
         doc_summaries = []
         for doc in documents:
             doc_type = doc_type_map.get(doc.document_type_id)
@@ -212,6 +215,6 @@ class ConfigureDocumentsUseCase:
             required_documents=step.required_documents,
             uploaded_documents=step.uploaded_documents,
             upload_progress=step.upload_progress,
-            all_required_uploaded=step.all_required_uploaded,
+            all_required_uploaded=all_required_uploaded,
             documents=doc_summaries,
         )

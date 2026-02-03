@@ -39,4 +39,4 @@ class DeleteProfessionalCompanyUseCase:
         if professional_company is None:
             raise CompanyNotFoundError()
 
-        await self.repository.soft_delete(professional_company_id)
+        await self.repository.delete(professional_company_id)

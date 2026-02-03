@@ -3,7 +3,7 @@
 from typing import TYPE_CHECKING, Generic, Literal, TypeVar
 from uuid import UUID
 
-from fastapi_restkit.pagination import PaginatedResponse
+from src.shared.domain.schemas import PaginatedResponse
 from sqlalchemy import Select, select
 from sqlmodel import SQLModel
 

@@ -1,6 +1,6 @@
 """Use case for searching specialties by name."""
 
-from fastapi_restkit.pagination import PaginatedResponse, PaginationParams
+from src.shared.domain.schemas import PaginatedResponse, PaginationParams
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.shared.domain.models.specialty import Specialty

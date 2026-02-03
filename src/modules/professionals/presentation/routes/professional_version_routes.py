@@ -4,7 +4,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, status
 from fastapi_restkit.filterset import filter_as_query
-from fastapi_restkit.pagination import PaginatedResponse, PaginationParams
+from src.shared.domain.schemas import PaginatedResponse, PaginationParams
 from fastapi_restkit.sortingset import sorting_as_query
 
 from src.app.constants.error_codes import ProfessionalErrorCodes

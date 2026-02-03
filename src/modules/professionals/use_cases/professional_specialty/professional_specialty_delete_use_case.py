@@ -41,4 +41,4 @@ class DeleteProfessionalSpecialtyUseCase:
         if professional_specialty is None:
             raise SpecialtyNotFoundError()
 
-        await self.repository.soft_delete(professional_specialty_id)
+        await self.repository.delete(professional_specialty_id)

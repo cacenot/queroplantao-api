@@ -6,7 +6,7 @@ Lists screening processes with pagination and filters.
 
 from uuid import UUID
 
-from fastapi_restkit.pagination import PaginatedResponse, PaginationParams
+from src.shared.domain.schemas import PaginatedResponse, PaginationParams
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.modules.screening.domain.schemas import ScreeningProcessListResponse

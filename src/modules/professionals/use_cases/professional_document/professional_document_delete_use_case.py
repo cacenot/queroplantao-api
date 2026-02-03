@@ -39,4 +39,4 @@ class DeleteProfessionalDocumentUseCase:
         if document is None:
             raise DocumentNotFoundError()
 
-        await self.repository.soft_delete(document_id)
+        await self.repository.delete(document_id)

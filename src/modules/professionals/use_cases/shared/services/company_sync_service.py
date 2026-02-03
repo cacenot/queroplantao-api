@@ -70,7 +70,7 @@ class CompanySyncService:
             link.id for link in existing_links if link.id not in matched_ids
         ]
         for link_id in ids_to_delete:
-            await self.professional_company_repository.soft_delete(link_id)
+            await self.professional_company_repository.delete(link_id)
 
         await self.session.flush()
         return result

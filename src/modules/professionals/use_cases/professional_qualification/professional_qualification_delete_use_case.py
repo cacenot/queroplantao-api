@@ -42,4 +42,4 @@ class DeleteProfessionalQualificationUseCase:
         if qualification is None:
             raise QualificationNotFoundError()
 
-        await self.repository.soft_delete(qualification_id)
+        await self.repository.delete(qualification_id)

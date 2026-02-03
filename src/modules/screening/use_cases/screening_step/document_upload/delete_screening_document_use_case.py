@@ -93,9 +93,11 @@ class DeleteScreeningDocumentUseCase:
 
         reused = False
         if professional_doc:
-            reused_count = await self.document_repository.count_by_professional_document_id(
-                professional_doc.id,
-                exclude_id=doc.id,
+            reused_count = (
+                await self.document_repository.count_by_professional_document_id(
+                    professional_doc.id,
+                    exclude_id=doc.id,
+                )
             )
             reused = reused_count > 0
 
@@ -129,8 +131,8 @@ class DeleteScreeningDocumentUseCase:
         step.total_documents = await self.document_repository.count_total_for_step(
             step_id
         )
-        step.required_documents = await self.document_repository.count_required_for_step(
-            step_id
+        step.required_documents = (
+            await self.document_repository.count_required_for_step(step_id)
         )
         status_counts = await self.document_repository.count_by_status(step_id)
         pending = status_counts.get(ScreeningDocumentStatus.PENDING_UPLOAD, 0)

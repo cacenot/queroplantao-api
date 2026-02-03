@@ -2,7 +2,8 @@
 Schemas compartilhados (pagination, common responses, etc).
 """
 
-from fastapi_restkit.pagination import PaginatedResponse, PaginationParams
+from fastapi_restkit.models import PaginationParams
+from fastapi_restkit.pagination import PaginatedResponse
 
 from src.shared.domain.schemas.bank_account import (
     BankAccountResponse,

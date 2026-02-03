@@ -44,4 +44,4 @@ class DeleteProfessionalEducationUseCase:
                 identifier=str(education_id),
             )
 
-        await self.repository.soft_delete(education_id)
+        await self.repository.delete(education_id)

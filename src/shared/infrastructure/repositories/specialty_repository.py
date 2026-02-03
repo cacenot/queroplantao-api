@@ -2,7 +2,7 @@
 
 from uuid import UUID
 
-from fastapi_restkit.pagination import PaginatedResponse
+from src.shared.domain.schemas import PaginatedResponse
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 

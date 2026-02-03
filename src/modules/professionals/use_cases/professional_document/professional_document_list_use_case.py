@@ -2,7 +2,7 @@
 
 from uuid import UUID
 
-from fastapi_restkit.pagination import PaginatedResponse, PaginationParams
+from src.shared.domain.schemas import PaginatedResponse, PaginationParams
 from fastapi_restkit.filters import ListFilter
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload

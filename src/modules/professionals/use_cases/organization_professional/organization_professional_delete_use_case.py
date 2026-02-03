@@ -48,4 +48,4 @@ class DeleteOrganizationProfessionalUseCase:
             raise ProfessionalNotFoundError()
 
         # Soft delete
-        await self.repository.soft_delete(professional_id)
+        await self.repository.delete(professional_id)

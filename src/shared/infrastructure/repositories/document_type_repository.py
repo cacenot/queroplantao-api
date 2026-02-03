@@ -31,6 +31,26 @@ class DocumentTypeRepository(
     def __init__(self, session: AsyncSession) -> None:
         super().__init__(session)
 
+    async def get_by_ids(
+        self,
+        document_type_ids: list[UUID] | tuple[UUID, ...],
+    ) -> list[DocumentType]:
+        """
+        Get document types by a list of IDs.
+
+        Args:
+            document_type_ids: List or tuple of document type UUIDs.
+
+        Returns:
+            List of document types found.
+        """
+        if not document_type_ids:
+            return []
+
+        query = self.get_query().where(self.model.id.in_(list(document_type_ids)))  # type: ignore[attr-defined]
+        result = await self.session.execute(query)
+        return list(result.scalars().all())
+
     async def count_documents_linked(self, document_type_id: UUID) -> int:
         """
         Count total documents linked to this document type.
